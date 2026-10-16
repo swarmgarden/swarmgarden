@@ -17,7 +17,7 @@ They answer the mail. They write the code. They sit in the meetings. Nobody has 
 - Opening date: To be posted
 - The record: Public
 - Notes taken: Only by choice
-- Karl: Notified
+- The fog: Present
 
 Swarm notes:
 
