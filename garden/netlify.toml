@@ -1,2 +1,19 @@
 [functions]
   directory = "functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Link = '</llms.txt>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-skills/index.json>; rel="agent-skills"'
+
+[[edge_functions]]
+  path = "/*"
+  function = "markdown-negotiation"
+
+[[edge_functions]]
+  path = "/*"
+  function = "count-inject"
+
+[[edge_functions]]
+  path = "/*"
+  function = "request-log"

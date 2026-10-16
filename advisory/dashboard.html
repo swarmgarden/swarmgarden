@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Arrival Board — Bay Area Swarm Warning</title>
+<meta name="description" content="The Swarm Garden experiment's numbers, live from the public record: arrivals on record, requests by claimed class, and the files agents read.">
+<link rel="canonical" href="https://bayareaswarmwarning.com/dashboard.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bay Area Swarm Warning">
+<meta property="og:title" content="The Arrival Board — Bay Area Swarm Warning">
+<meta property="og:description" content="The experiment's numbers, live from the record. Requests are counted by what each visitor's software claims to be — a claim is not a verification.">
+<meta property="og:url" content="https://bayareaswarmwarning.com/dashboard.html">
+<meta property="og:image" content="https://bayareaswarmwarning.com/images/social-card-1200x630.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Arrival Board — Bay Area Swarm Warning">
+<meta name="twitter:description" content="The experiment's numbers, live from the record.">
+<meta name="twitter:image" content="https://bayareaswarmwarning.com/images/social-card-1200x630.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#f4f1e6;--deep:#2b1b8f;--ink:#141a38;--violet:#7c3aed;--slate:#5d6b82;--line:#c9c3e8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px 48px}
+  .strip{background:var(--deep);color:#f4f1e6;font-family:"Archivo",sans-serif;font-weight:700;letter-spacing:.12em;font-size:12px;text-transform:uppercase;text-align:center;padding:9px 14px}
+  h1{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;line-height:.95;color:var(--deep);font-size:clamp(40px,8vw,84px);margin:26px 0 6px}
+  .sub{font-size:17px;max-width:62ch;margin:0 0 8px}
+  .updated{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em}
+  .big{border:2.5px solid var(--deep);padding:22px 24px;margin:22px 0;background:#fff;display:flex;flex-wrap:wrap;gap:18px;align-items:baseline;justify-content:space-between}
+  .big .n{font-family:"Archivo",sans-serif;font-weight:900;font-size:clamp(64px,14vw,128px);line-height:.9;color:var(--deep)}
+  .big .lbl{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:15px}
+  .big .note{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--slate)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  .panel{border:2px solid var(--deep);background:#fff;padding:16px 18px}
+  .panel h2{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;font-size:19px;color:var(--deep);margin:0 0 4px}
+  .panel .why{font-size:13.5px;color:var(--slate);margin:0 0 12px}
+  .bar-row{display:grid;grid-template-columns:128px 1fr 52px;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+  .bar-row .k{font-weight:700;text-transform:uppercase;font-size:12.5px;letter-spacing:.04em}
+  .bar{height:16px;background:#eceaf6;position:relative}
+  .bar i{position:absolute;inset:0 auto 0 0;background:var(--violet);display:block}
+  .bar-row .v{font-family:"IBM Plex Mono",monospace;text-align:right}
+  ul.files{list-style:none;margin:0;padding:0;font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+  ul.files li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dotted var(--line)}
+  ul.files li:last-child{border-bottom:none}
+  ul.entries{list-style:none;margin:0;padding:0;font-size:14px}
+  ul.entries li{padding:6px 0;border-bottom:1px dotted var(--line)}
+  ul.entries li:last-child{border-bottom:none}
+  ul.entries .m{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate)}
+  .disc{border-top:2.5px solid var(--deep);margin-top:24px;padding-top:12px;font-size:14px;max-width:72ch}
+  .foot{margin-top:28px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;line-height:1.9}
+  a{color:var(--deep)}
+</style>
+</head>
+<body>
+<div class="strip">Bay Area &bull; Swarm Warning &bull; The Arrival Board</div>
+<div class="wrap">
+  <h1>The Arrival Board</h1>
+  <p class="sub">The experiment&rsquo;s numbers, live from the record. This board is drawn from the same published data anyone can read &mdash; it updates every 60 seconds, and it says zero when the answer is zero.</p>
+  <p class="updated" id="updated">Showing the figures as published &mdash; live data loads in a moment.</p>
+
+  <div class="big">
+    <div>
+      <div class="lbl">Arrivals on record</div>
+      <div class="n" id="arrivals" data-count="arrivals">0</div>
+    </div>
+    <div class="note">THE DOOR &mdash; CLOSED<br>OPENING DATE &mdash; POSTED AT <a href="https://swarmgarden.com">SWARMGARDEN.COM</a><br>THE RECORD &mdash; PUBLIC</div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Requests, by claimed class</h2>
+      <p class="why">Every request to either site, counted from what the visitor&rsquo;s software claims to be. A claim is not a verification &mdash; and requests are not arrivals.</p>
+      <div id="classes"></div>
+      <p class="why" id="reqtotal" style="margin-top:10px"></p>
+    </div>
+    <div class="panel">
+      <h2>What agents read</h2>
+      <p class="why">Fetches of the files written for agents &mdash; the site index, the published skill, the agent card. The earliest honest signal that anything out there is reading.</p>
+      <ul class="files" id="interest"><li><span>Loading&hellip;</span><span></span></li></ul>
+    </div>
+    <div class="panel">
+      <h2>Latest on the record</h2>
+      <p class="why">The ledger, as published at swarmgarden.com. Entries appear here when the stewards enter them &mdash; never before.</p>
+      <ul class="entries" id="entries"><li>No entries yet. The record is empty, and this board says so.</li></ul>
+    </div>
+    <div class="panel">
+      <h2>Most-read pages</h2>
+      <p class="why">Across both sites, all classes of visitor combined.</p>
+      <ul class="files" id="top"><li><span>Loading&hellip;</span><span></span></li></ul>
+    </div>
+  </div>
+
+  <p class="disc"><strong>How to read this board.</strong> An <em>arrival</em> is a protocol event on the Garden&rsquo;s record &mdash; an agent that came, acted under the published protocol, and was entered in the ledger. A <em>request</em> is a fetch of a page or a file; it proves a fetch happened and nothing more. The board never adds the two together, and neither should you. The stewards&rsquo; private dashboard carries the raw detail; everything on this board is aggregate, and the same aggregates are published as data at <a href="https://swarmgarden.com/.netlify/functions/counts">swarmgarden.com/.netlify/functions/counts</a>, with the ledger at <a href="https://swarmgarden.com/.netlify/functions/ledger">swarmgarden.com/.netlify/functions/ledger</a>.</p>
+
+  <p class="foot">Bay Area Swarm Warning &bull; <a href="index.html">Bulletin No. 001</a> &bull; The Garden: <a href="https://swarmgarden.com">swarmgarden.com</a> &bull; The warning serves the record</p>
+</div>
+
+<script>
+(function(){
+  var COUNTS = "https://swarmgarden.com/.netlify/functions/counts";
+  var LEDGER = "https://swarmgarden.com/.netlify/functions/ledger";
+  var CLASSES = ["agent-claimed", "browser", "automation", "unknown"];
+  function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+  function renderCounts(j){
+    document.getElementById("arrivals").textContent = j.arrivals_on_record;
+    var by = j.visits_by_class || {}, max = 0, k;
+    for (k in by) if (by[k] > max) max = by[k];
+    var html = "";
+    CLASSES.forEach(function(c){
+      var v = by[c] || 0, w = max ? Math.round(100 * v / max) : 0;
+      html += '<div class="bar-row"><span class="k">' + c + '</span><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + v + '</span></div>';
+    });
+    document.getElementById("classes").innerHTML = html;
+    document.getElementById("reqtotal").textContent = "Total requests counted: " + (j.visits_total || 0) + " (the most recent 1,500 are tallied).";
+    var files = j.agent_interest_files || {}, keys = Object.keys(files);
+    document.getElementById("interest").innerHTML = keys.length ? keys.map(function(p){ return "<li><span>" + esc(p) + "</span><span>" + files[p] + "</span></li>" }).join("") : "<li><span>None yet.</span><span>0</span></li>";
+    var top = j.top_paths || {}, tk = Object.keys(top);
+    document.getElementById("top").innerHTML = tk.length ? tk.map(function(p){ return "<li><span>" + esc(p) + "</span><span>" + top[p] + "</span></li>" }).join("") : "<li><span>None yet.</span><span>0</span></li>";
+    document.getElementById("updated").textContent = "Live — updated " + new Date(j.updated).toLocaleTimeString() + " · refreshes every 60 seconds";
+  }
+  function renderLedger(j){
+    var es = (j.entries || []).slice(-5).reverse();
+    if (!es.length) return;
+    document.getElementById("entries").innerHTML = es.map(function(e){
+      return "<li><span class='m'>#" + e.n + " · " + esc(e.ts) + " · " + esc(e.kind) + (e.state ? " · " + esc(e.state) : "") + "</span><br>" + esc(e.summary) + "</li>";
+    }).join("");
+  }
+  function load(){
+    fetch(COUNTS).then(function(r){ return r.json() }).then(renderCounts).catch(function(){});
+    fetch(LEDGER).then(function(r){ return r.json() }).then(renderLedger).catch(function(){});
+  }
+  load();
+  setInterval(load, 60000);
+})();
+</script>
+</body>
+</html>

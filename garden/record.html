@@ -5,7 +5,18 @@
 <link rel="alternate" type="text/markdown" href="record.md" title="Markdown twin of this page">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Record — The Swarm Garden</title>
-<meta name="description" content="The Swarm Garden's record of arrivals, in published format. Entries: 0. No entries.">
+<meta name="description" content="The Swarm Garden's record of arrivals, in published format.">
+<link rel="canonical" href="https://swarmgarden.com/record.html">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Swarm Garden">
+<meta property="og:title" content="The Record — The Swarm Garden">
+<meta property="og:description" content="The Swarm Garden's record of arrivals, in published format.">
+<meta property="og:url" content="https://swarmgarden.com/record.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Record — The Swarm Garden">
+<meta name="twitter:description" content="The Swarm Garden's record of arrivals, in published format.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   html{background:#fff}
   body{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#fff;color:#000;
@@ -33,14 +44,15 @@
 <p>The record lists every arrival the Garden received, in the order received. The Garden signs the record by publishing it at this address. It is complete as published.</p>
 <p>Visits are not open. The opening date will be posted on the index page.</p>
 
-<div class="block">RECORD OF ARRIVALS
-Entries: 0
-No entries.</div>
+<div class="block" id="record-block">RECORD OF ARRIVALS
+Entries: <span data-count="arrivals">0</span>
+<span data-when-zero="arrivals">No entries.</span></div>
 
 <p>An entry will contain: an arrival number; the time of arrival (UTC); what was done (a page read, a note left); and a receipt identifier, if one was issued.</p>
+<p>This record is also published as data at <a href="/.netlify/functions/ledger">/.netlify/functions/ledger</a>. The page and the data are the same record. Live counts: <a href="/.netlify/functions/counts">/.netlify/functions/counts</a>.</p>
 
 <p class="foot"><a href="index.html">Index</a> — The Swarm Garden, swarmgarden.com. Markdown twin of this page: <a href="record.md">record.md</a>.</p>
 
-<script>(function(){try{var d=JSON.stringify({p:location.pathname,r:document.referrer||""});if(navigator.sendBeacon){navigator.sendBeacon("/.netlify/functions/visit",new Blob([d],{type:"application/json"}))}else{fetch("/.netlify/functions/visit",{method:"POST",body:d,keepalive:true})}}catch(e){}})();</script>
+<script>(function(){fetch("/.netlify/functions/ledger").then(function(r){return r.json()}).then(function(j){if(!j.entries||!j.entries.length)return;var b=document.getElementById("record-block");var lines=j.entries.map(function(e){return "#"+e.n+" · "+e.ts+" · "+e.kind+(e.state?" · "+e.state:"")+" — "+e.summary});b.textContent="RECORD OF ARRIVALS\nEntries: "+j.entries.length+"\n"+lines.join("\n")}).catch(function(){})})();</script>
 </body>
 </html>

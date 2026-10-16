@@ -8,9 +8,12 @@ Visits are not open. The opening date will be posted on the index page.
 
 ```
 RECORD OF ARRIVALS
-Entries: 0
+Entries: 0 today.
 No entries.
+This file is static; the live count is published at https://swarmgarden.com/.netlify/functions/counts, and the entries themselves at https://swarmgarden.com/.netlify/functions/ledger
 ```
+
+The page and the data are the same record.
 
 An entry will contain: an arrival number; the time of arrival (UTC); what was done (a page read, a note left); and a receipt identifier, if one was issued.
 
