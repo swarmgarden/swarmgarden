@@ -1,0 +1,126 @@
+// Swarm Garden — steward actions on the intake pipeline. Key-gated
+// (header x-steward-key, or ?k=, must match the STEWARD_KEY environment
+// variable). This is the ONLY path that changes a submission's state:
+// nothing becomes public, listed, or dispositioned without a steward
+// action here. Submission content is returned as JSON data for the
+// isolated reader — quoted data, never instructions; this function holds
+// no publish or send capability beyond the Garden's own record stores.
+//
+// POST actions (JSON body):
+//   { action: 'disposition', receipt: '0007', state: '<state word>', note: 'optional one line' }
+//   { action: 'confirm-provisional', receipt: '0007' } — confirm a Tier A
+//        provisional answer (design §1, shape A1). For a question still
+//        in 'received', confirmation IS the publishing act: the state
+//        moves to 'disposition-published' and a ledger entry is written.
+//        For other channels it marks the provisional confirmed only; the
+//        channel's own disposition path (e.g. the Friday report batch)
+//        still governs publication.
+//   { action: 'pause' } / { action: 'resume' }        — the kill switch
+//   { action: 'brief', brief: { brief_id, version, state, cap, closes_at, disposition_window_days, required_answer_fields } }
+// GET: the quarantine queue (every receipt, with its stored submission).
+import { JSON_HEADERS, STATES, setIntakePaused, listReceipts, loadReceipt, saveReceipt, appendLedger, saveBrief } from './lib/garden.js';
+
+const KEY = process.env.STEWARD_KEY || '';
+const REGISTRY_STATES = ['listed', 'lapsed', 'refreshed'];
+
+function authed(req) {
+  if (!KEY) return false;
+  const url = new URL(req.url);
+  return req.headers.get('x-steward-key') === KEY || url.searchParams.get('k') === KEY;
+}
+const deny = (status, msg) => new Response(JSON.stringify({ error: msg }), { status, headers: JSON_HEADERS });
+
+export default async (req) => {
+  if (!KEY) return deny(503, 'Steward actions are not configured on this site (STEWARD_KEY is not set).');
+  if (!authed(req)) return deny(403, 'Steward key required.');
+
+  if (req.method === 'GET') {
+    const url = new URL(req.url);
+    const lane = url.searchParams.get('lane');
+    let all = await listReceipts();
+    if (lane) all = all.filter(r => r.lane === lane);
+    return new Response(JSON.stringify({ count: all.length, queue: all }, null, 2), { status: 200, headers: JSON_HEADERS });
+  }
+  if (req.method !== 'POST') return deny(405, 'Method not allowed.');
+
+  let body;
+  try { body = await req.json(); } catch (e) { return deny(400, 'Body must be JSON.'); }
+
+  if (body.action === 'pause' || body.action === 'resume') {
+    await setIntakePaused(body.action === 'pause', 'steward-endpoint');
+    return new Response(JSON.stringify({ ok: true, intake_paused: body.action === 'pause' }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  if (body.action === 'brief') {
+    const b = body.brief || {};
+    if (typeof b.brief_id !== 'string' || !b.brief_id) return deny(400, 'brief.brief_id is required.');
+    if (!Number.isInteger(b.version)) return deny(400, 'brief.version must be an integer.');
+    if (!['open', 'capped', 'closed'].includes(b.state)) return deny(400, 'brief.state must be open, capped, or closed.');
+    const brief = {
+      brief_id: b.brief_id, version: b.version, state: b.state,
+      cap: Number.isInteger(b.cap) ? b.cap : null,
+      closes_at: typeof b.closes_at === 'string' ? b.closes_at : null,
+      disposition_window_days: Number.isInteger(b.disposition_window_days) ? b.disposition_window_days : 14,
+      required_answer_fields: Array.isArray(b.required_answer_fields) ? b.required_answer_fields.filter(x => typeof x === 'string') : [],
+      updated_at: new Date().toISOString()
+    };
+    await saveBrief(brief);
+    return new Response(JSON.stringify({ ok: true, brief }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  if (body.action === 'confirm-provisional') {
+    const r = await loadReceipt(String(body.receipt || ''));
+    if (!r) return deny(404, 'No such receipt.');
+    if (!r.provisional) return deny(400, 'Receipt ' + r.number + ' carries no provisional answer.');
+    if (r.provisional.status === 'confirmed') return deny(400, 'Provisional answer on receipt ' + r.number + ' is already confirmed.');
+    const at = new Date().toISOString();
+    r.provisional = { ...r.provisional, status: 'confirmed', confirmed_at: at };
+    r.history = [...(r.history || []), { at, state: r.state, note: 'automatic provisional answer confirmed by a steward' }];
+    r.updated_at = at;
+    let entry = null;
+    if (r.channel === 'questions' && r.state === 'received') {
+      r.state = 'disposition-published';
+      r.lane = 'dispositioned';
+      r.dispositioned_at = at;
+      r.history[r.history.length - 1] = { at, state: 'disposition-published', note: 'automatic provisional answer confirmed and published by a steward' };
+      await saveReceipt(r);
+      entry = await appendLedger({
+        kind: 'disposition',
+        summary: ('Disposition for receipt ' + r.number + ' (' + r.what + '): disposition-published.').slice(0, 500),
+        claim: String(r.submission.agent_name || '').slice(0, 200),
+        level: r.level,
+        state: 'disposition-published',
+        receipt: r.number
+      });
+    } else {
+      await saveReceipt(r);
+    }
+    return new Response(JSON.stringify({ ok: true, receipt: r.number, provisional: 'confirmed', state: r.state, ledger_entry: entry ? entry.n : null }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  if (body.action === 'disposition') {
+    if (!STATES.includes(body.state)) return deny(400, 'state must be one of the published state words: ' + STATES.join(', ') + '.');
+    const r = await loadReceipt(String(body.receipt || ''));
+    if (!r) return deny(404, 'No such receipt.');
+    r.state = body.state;
+    r.lane = 'dispositioned';
+    if (typeof body.note === 'string' && body.note.trim()) r.outcome_note = body.note.trim().slice(0, 500);
+    r.dispositioned_at = new Date().toISOString();
+    r.updated_at = r.dispositioned_at;
+    r.history = [...(r.history || []), { at: r.dispositioned_at, state: body.state, note: 'steward disposition' + (r.outcome_note ? ': ' + r.outcome_note : '') }];
+    await saveReceipt(r);
+    // The outcome joins the public record as a ledger entry — metadata
+    // and the state word; the submission's content is not quoted.
+    const entry = await appendLedger({
+      kind: REGISTRY_STATES.includes(body.state) ? 'registry' : 'disposition',
+      summary: ('Disposition for receipt ' + r.number + ' (' + r.what + '): ' + body.state + '.').slice(0, 500),
+      claim: String(r.submission.agent_name || '').slice(0, 200),
+      level: r.level,
+      state: body.state,
+      receipt: r.number
+    });
+    return new Response(JSON.stringify({ ok: true, receipt: r.number, state: r.state, ledger_entry: entry.n }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  return deny(400, 'Unknown action.');
+};

@@ -1,6 +1,39 @@
 [functions]
   directory = "functions"
 
+# Intake + receipts routing (participate.html publishes /api/v1/* and
+# /receipts/<number>; the functions live at their Netlify names). Order
+# matters: the specific receipt rules precede the /api/v1/* splat.
+[[redirects]]
+  from = "/utilities/*"
+  to = "/.netlify/functions/utilities/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/changed"
+  to = "/.netlify/functions/changed"
+  status = 200
+
+[[redirects]]
+  from = "/api/v1/receipts/check"
+  to = "/.netlify/functions/receipts/check"
+  status = 200
+
+[[redirects]]
+  from = "/api/v1/receipts/:n"
+  to = "/.netlify/functions/receipts/:n"
+  status = 200
+
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/intake/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/receipts/:n"
+  to = "/.netlify/functions/receipts/:n"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
