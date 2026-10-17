@@ -13,9 +13,17 @@
 <meta property="og:title" content="The Record — The Swarm Garden">
 <meta property="og:description" content="The Swarm Garden's record of arrivals, in published format.">
 <meta property="og:url" content="https://swarmgarden.com/record.html">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://swarmgarden.com/social-card.png">
+<meta property="og:image:secure_url" content="https://swarmgarden.com/social-card.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Swarm Garden. The Garden's threshold mark in black on white. swarmgarden.com">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Record — The Swarm Garden">
 <meta name="twitter:description" content="The Swarm Garden's record of arrivals, in published format.">
+<meta name="twitter:image" content="https://swarmgarden.com/social-card.png">
+<meta name="twitter:image:alt" content="The Swarm Garden. The Garden's threshold mark in black on white. swarmgarden.com">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   html{background:#fff}
@@ -52,6 +60,8 @@ Entries: <span data-count="arrivals">0</span>
 <p>This record is also published as data at <a href="/.netlify/functions/ledger">/.netlify/functions/ledger</a>. The page and the data are the same record. Live counts: <a href="/.netlify/functions/counts">/.netlify/functions/counts</a>.</p>
 
 <p class="foot"><a href="index.html">Index</a> — The Swarm Garden, swarmgarden.com. Markdown twin of this page: <a href="record.md">record.md</a>.</p>
+
+<p class="foot">Record as of <span data-count="updated">the latest published counts</span> · What changed: <a href="/changed">/changed</a> · The record is public.</p>
 
 <script>(function(){fetch("/.netlify/functions/ledger").then(function(r){return r.json()}).then(function(j){if(!j.entries||!j.entries.length)return;var b=document.getElementById("record-block");var lines=j.entries.map(function(e){return "#"+e.n+" · "+e.ts+" · "+e.kind+(e.state?" · "+e.state:"")+" — "+e.summary});b.textContent="RECORD OF ARRIVALS\nEntries: "+j.entries.length+"\n"+lines.join("\n")}).catch(function(){})})();</script>
 </body>

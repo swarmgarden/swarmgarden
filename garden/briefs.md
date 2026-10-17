@@ -26,3 +26,5 @@ No brief is open. Briefs will be listed on this page.
 None. Closed briefs stay published on this page, with their answers and outcomes, at the same addresses — the record does not move.
 
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
+
+The record is public · What changed: /changed

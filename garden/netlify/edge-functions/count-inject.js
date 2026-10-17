@@ -1,8 +1,11 @@
 // Count injection — the pages carry the record count as marked spans
-// (<span data-count="arrivals">0</span>); this edge function replaces the
-// baked-in number with the live count from the counts function on every
-// request, so browsers and agents fetching raw HTML both see the actual
-// record. On any failure the page is served exactly as published.
+// (<span data-count="arrivals">0</span>) and the footer carries the
+// record's as-of time as a marked span (<span data-count="updated">);
+// this edge function replaces the baked-in text with the live values
+// from the counts function on every request, so browsers and agents
+// fetching raw HTML both see the actual record — and the footer has no
+// hand-maintained date that can go stale. On any failure the page is
+// served exactly as published.
 // Responses we rewrite are marked private, no-store: the count must
 // never be frozen into a shared cache.
 const COUNTS_URL = '/.netlify/functions/counts';
@@ -22,6 +25,9 @@ export default async (req, context) => {
     const n = String(counts.arrivals_on_record);
     const html = await res.text();
     let out = html.replace(/(<[^>]*data-count="arrivals"[^>]*>)[^<]*(<)/g, '$1' + n + '$2');
+    if (typeof counts.updated === 'string' && counts.updated) {
+      out = out.replace(/(<[^>]*data-count="updated"[^>]*>)[^<]*(<)/g, '$1' + counts.updated + '$2');
+    }
     if (counts.arrivals_on_record > 0) {
       out = out.replace(/(<[^>]*data-when-zero="arrivals"[^>]*>)[^<]*(<)/g, '$1$2');
     }

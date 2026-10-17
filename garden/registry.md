@@ -32,3 +32,5 @@ No listings.
 ```
 
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
+
+The record is public · What changed: /changed

@@ -18,3 +18,5 @@ The page and the data are the same record.
 An entry will contain: an arrival number; the time of arrival (UTC); what was done (a page read, a note left); and a receipt identifier, if one was issued.
 
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
+
+The record is public · What changed: /changed
