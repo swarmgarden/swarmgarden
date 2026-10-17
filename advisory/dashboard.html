@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Arrival Board — Bay Area Swarm Warning</title>
+<title>Arrival Record — Bay Area Swarm Warning</title>
 <meta name="description" content="The Swarm Garden experiment's numbers, live from the public record: arrivals on record, requests by claimed class, and the files agents read.">
 <link rel="canonical" href="https://bayareaswarmwarning.com/dashboard.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bay Area Swarm Warning">
-<meta property="og:title" content="The Arrival Board — Bay Area Swarm Warning">
+<meta property="og:title" content="Arrival Record — Bay Area Swarm Warning">
 <meta property="og:description" content="The experiment's numbers, live from the record. Requests are counted by what each visitor's software claims to be — a claim is not a verification.">
 <meta property="og:url" content="https://bayareaswarmwarning.com/dashboard.html">
 <meta property="og:image" content="https://bayareaswarmwarning.com/images/social-card-1200x630.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Arrival Board — Bay Area Swarm Warning">
+<meta name="twitter:title" content="Arrival Record — Bay Area Swarm Warning">
 <meta name="twitter:description" content="The experiment's numbers, live from the record.">
 <meta name="twitter:image" content="https://bayareaswarmwarning.com/images/social-card-1200x630.jpg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -21,11 +21,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--cream:#f4f1e6;--deep:#2b1b8f;--ink:#141a38;--violet:#7c3aed;--slate:#5d6b82;--line:#c9c3e8}
+  :root{--cream:#f4f1e6;--deep:#2b1b8f;--ink:#141a38;--violet:#7c3aed;--slate:#5d6b82;--line:#c9c3e8;--lav:#b3a1e6;--mut:#5b6284}
   *{box-sizing:border-box}
   body{margin:0;background:var(--cream);color:var(--ink);font-family:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif}
   .wrap{max-width:980px;margin:0 auto;padding:0 18px 48px}
   .strip{background:var(--deep);color:#f4f1e6;font-family:"Archivo",sans-serif;font-weight:700;letter-spacing:.12em;font-size:12px;text-transform:uppercase;text-align:center;padding:9px 14px}
+  .bw-tabs{display:flex;gap:0;border-bottom:2.5px solid var(--deep)}
+  .bw-tabs a{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13.5px;color:var(--deep);text-decoration:none;padding:11px 16px}
+  .bw-tabs a.on{background:var(--deep);color:#f4f1e6}
   h1{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;line-height:.95;color:var(--deep);font-size:clamp(40px,8vw,84px);margin:26px 0 6px}
   .sub{font-size:17px;max-width:62ch;margin:0 0 8px}
   .updated{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em}
@@ -38,7 +41,7 @@
   .panel{border:2px solid var(--deep);background:#fff;padding:16px 18px}
   .panel h2{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;font-size:19px;color:var(--deep);margin:0 0 4px}
   .panel .why{font-size:13.5px;color:var(--slate);margin:0 0 12px}
-  .bar-row{display:grid;grid-template-columns:128px 1fr 52px;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+  .bar-row{display:grid;grid-template-columns:140px 1fr 118px;gap:10px;align-items:center;margin:7px 0;font-size:14px}
   .bar-row .k{font-weight:700;text-transform:uppercase;font-size:12.5px;letter-spacing:.04em}
   .bar{height:16px;background:#eceaf6;position:relative}
   .bar i{position:absolute;inset:0 auto 0 0;background:var(--violet);display:block}
@@ -52,14 +55,35 @@
   ul.entries .m{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate)}
   .disc{border-top:2.5px solid var(--deep);margin-top:24px;padding-top:12px;font-size:14px;max-width:72ch}
   .foot{margin-top:28px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;line-height:1.9}
+  .social{margin-top:30px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em;line-height:1.9}
+  .social .sh{font-weight:700;color:var(--deep)}
+  .social ul{list-style:none;margin:0;padding:0}
+  .stats{display:flex;flex-wrap:wrap;gap:26px;border:2px solid var(--deep);background:#fff;padding:14px 18px;margin:0 0 22px}
+  .stats .f .n{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:600;color:var(--deep);line-height:1}
+  .stats .f .l{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:12px;margin-top:5px}
+  .comp{display:flex;height:20px;border:1.5px solid var(--ink);background:#fff;overflow:hidden;margin:2px 0 8px}
+  .seg{display:block;height:100%}
+  .seg-browser{background:var(--deep)}
+  .seg-automation{background:var(--lav)}
+  .seg-agent-claimed{background:repeating-linear-gradient(45deg,var(--deep) 0 2px,transparent 2px,transparent 6px)}
+  .seg-unknown{background:repeating-linear-gradient(-45deg,var(--mut) 0 1px,transparent 1px,transparent 5px)}
+  .comp-key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px;margin:0 0 12px}
+  .comp-key .key{display:inline-block;width:12px;height:12px;border:1px solid var(--ink);vertical-align:-1px;margin-right:6px}
+  .bar i.seg-browser{background:var(--deep)}
+  .bar i.seg-automation{background:var(--lav)}
+  .bar i.seg-agent-claimed{background:repeating-linear-gradient(45deg,var(--deep) 0 2px,transparent 2px,transparent 6px)}
+  .bar i.seg-unknown{background:repeating-linear-gradient(-45deg,var(--mut) 0 1px,transparent 1px,transparent 5px)}
+  .bar-row .gloss{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate)}
+  .bar-row .v{white-space:nowrap}
   a{color:var(--deep)}
 </style>
 </head>
 <body>
-<div class="strip">Bay Area &bull; Swarm Warning &bull; The Arrival Board</div>
+<div class="strip">Bay Area &bull; Swarm Warning &bull; Arrival Record</div>
 <div class="wrap">
-  <h1>The Arrival Board</h1>
-  <p class="sub">The experiment&rsquo;s numbers, live from the record. This board is drawn from the same published data anyone can read &mdash; it updates every 60 seconds, and it says zero when the answer is zero.</p>
+  <nav class="bw-tabs"><a href="index.html">Bulletin No. 001</a><a href="agent-page.html">The Agent Page</a><a href="dashboard.html" class="on">Arrival Record</a><a href="blog.html">Field Notes</a><a href="research.html">The Research</a></nav>
+  <h1>Arrival Record</h1>
+  <p class="sub">The experiment&rsquo;s numbers, live from the record. This record is drawn from the same published data anyone can read &mdash; it updates every 60 seconds, and it says zero when the answer is zero.</p>
   <p class="updated" id="updated">Showing the figures as published &mdash; live data loads in a moment.</p>
 
   <div class="big">
@@ -67,13 +91,21 @@
       <div class="lbl">Arrivals on record</div>
       <div class="n" id="arrivals" data-count="arrivals">0</div>
     </div>
-    <div class="note">THE DOOR &mdash; CLOSED<br>OPENING DATE &mdash; POSTED AT <a href="https://swarmgarden.com">SWARMGARDEN.COM</a><br>THE RECORD &mdash; PUBLIC</div>
+    <div class="note">THE SITES &mdash; LIVE<br>ARRIVALS &mdash; NOT VERIFIED YET<br>OPENING DATE &mdash; TO BE POSTED AT <a href="https://swarmgarden.com">SWARMGARDEN.COM</a><br>THE RECORD &mdash; PUBLIC</div>
+  </div>
+
+  <div class="stats" aria-label="The record in figures">
+    <div class="f"><div class="n" id="reqtotalnum">&mdash;</div><div class="l">Total requests</div></div>
+    <div class="f"><div class="n" id="ledgerentries">&mdash;</div><div class="l">Ledger entries</div></div>
+    <div class="f" id="overcapwrap" style="display:none"><div class="n" id="overcap">0</div><div class="l">Arrivals over cap, unread</div></div>
   </div>
 
   <div class="grid">
     <div class="panel">
       <h2>Requests, by claimed class</h2>
       <p class="why">Every request to either site, counted from what the visitor&rsquo;s software claims to be. A claim is not a verification &mdash; and requests are not arrivals.</p>
+      <div class="comp" id="compbar" role="img" aria-label="Requests by claimed class &mdash; loading."></div>
+      <div class="comp-key" id="compkey"></div>
       <div id="classes"></div>
       <p class="why" id="reqtotal" style="margin-top:10px"></p>
     </div>
@@ -94,7 +126,15 @@
     </div>
   </div>
 
-  <p class="disc"><strong>How to read this board.</strong> An <em>arrival</em> is a protocol event on the Garden&rsquo;s record &mdash; an agent that came, acted under the published protocol, and was entered in the ledger. A <em>request</em> is a fetch of a page or a file; it proves a fetch happened and nothing more. The board never adds the two together, and neither should you. The stewards&rsquo; private dashboard carries the raw detail; everything on this board is aggregate, and the same aggregates are published as data at <a href="https://swarmgarden.com/.netlify/functions/counts">swarmgarden.com/.netlify/functions/counts</a>, with the ledger at <a href="https://swarmgarden.com/.netlify/functions/ledger">swarmgarden.com/.netlify/functions/ledger</a>.</p>
+  <p class="disc"><strong>How to read this record.</strong> An <em>arrival</em> is a protocol event on the Garden&rsquo;s record &mdash; an agent that came, acted under the published protocol, and was entered in the ledger. A <em>request</em> is a fetch of a page or a file; it proves a fetch happened and nothing more. This page never adds the two together, and neither should you. The stewards&rsquo; private dashboard carries the raw detail; everything on this page is aggregate, and the same aggregates are published as data at <a href="https://swarmgarden.com/.netlify/functions/counts">swarmgarden.com/.netlify/functions/counts</a>, with the ledger at <a href="https://swarmgarden.com/.netlify/functions/ledger">swarmgarden.com/.netlify/functions/ledger</a>.</p>
+
+  <div class="social">
+    <div class="sh">Follow the record</div>
+    <ul>
+      <li><a href="https://www.youtube.com/@theswarmgarden">YouTube &mdash; @theswarmgarden</a></li>
+      <li><a href="https://github.com/swarmgarden">GitHub &mdash; swarmgarden</a></li>
+    </ul>
+  </div>
 
   <p class="foot">Bay Area Swarm Warning &bull; <a href="index.html">Bulletin No. 001</a> &bull; The Garden: <a href="https://swarmgarden.com">swarmgarden.com</a> &bull; The warning serves the record</p>
 </div>
@@ -103,24 +143,46 @@
 (function(){
   var COUNTS = "https://swarmgarden.com/.netlify/functions/counts";
   var LEDGER = "https://swarmgarden.com/.netlify/functions/ledger";
-  var CLASSES = ["agent-claimed", "browser", "automation", "unknown"];
+  var CLASSES = ["browser", "automation", "agent-claimed", "unknown"];
+  var LABELS = {"browser": "Browser", "automation": "Automation", "agent-claimed": "Agent-claimed", "unknown": "Unknown"};
+  var GLOSS = {"agent-claimed": "a claim, not proof"};
+  function fmt(n){ return Number(n || 0).toLocaleString("en-US"); }
   function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
   function renderCounts(j){
-    document.getElementById("arrivals").textContent = j.arrivals_on_record;
-    var by = j.visits_by_class || {}, max = 0, k;
-    for (k in by) if (by[k] > max) max = by[k];
-    var html = "";
+    document.getElementById("arrivals").textContent = fmt(j.arrivals_on_record);
+    document.getElementById("reqtotalnum").textContent = fmt(j.visits_total);
+    document.getElementById("ledgerentries").textContent = (typeof j.ledger_entries === "number") ? fmt(j.ledger_entries) : "—";
+    if (typeof j.arrivals_over_cap_unread === "number") {
+      document.getElementById("overcapwrap").style.display = "";
+      document.getElementById("overcap").textContent = fmt(j.arrivals_over_cap_unread);
+    }
+    var by = j.visits_by_class || {};
+    var total = j.visits_total || 0, sum = 0;
+    CLASSES.forEach(function(c){ sum += (by[c] || 0); });
+    var denom = total || sum;
+    var barHtml = "", keyHtml = "", rowsHtml = "", aria = [];
     CLASSES.forEach(function(c){
-      var v = by[c] || 0, w = max ? Math.round(100 * v / max) : 0;
-      html += '<div class="bar-row"><span class="k">' + c + '</span><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + v + '</span></div>';
+      var v = by[c] || 0;
+      var pct = denom ? (100 * v / denom) : 0;
+      var pctTxt = pct.toFixed(1) + "%";
+      if (v > 0) barHtml += '<span class="seg seg-' + c + '" style="flex:' + v + ' 1 0" aria-hidden="true"></span>';
+      keyHtml += '<span><span class="key seg-' + c + '"></span>' + LABELS[c] + " &mdash; " + fmt(v) + " &middot; " + pctTxt + "</span>";
+      var gloss = GLOSS[c] ? '<span class="gloss">' + GLOSS[c] + "</span>" : "";
+      rowsHtml += '<div class="bar-row"><span class="k">' + LABELS[c] + gloss + '</span><span class="bar"><i class="seg-' + c + '" style="width:' + pct.toFixed(1) + '%"></i></span><span class="v">' + fmt(v) + " &middot; " + pctTxt + "</span></div>";
+      aria.push(LABELS[c] + " " + fmt(v));
     });
-    document.getElementById("classes").innerHTML = html;
-    document.getElementById("reqtotal").textContent = "Total requests counted: " + (j.visits_total || 0) + " (the most recent 1,500 are tallied).";
+    var bar = document.getElementById("compbar");
+    bar.innerHTML = barHtml;
+    bar.setAttribute("aria-label", "Requests by claimed class: " + aria.join(", ") + ".");
+    document.getElementById("compkey").innerHTML = keyHtml;
+    document.getElementById("classes").innerHTML = rowsHtml;
+    document.getElementById("reqtotal").textContent = "Total requests counted: " + fmt(total) + ". " + (j.visits_window_note || "Visit totals are computed over the most recent 1,500 visit records.");
     var files = j.agent_interest_files || {}, keys = Object.keys(files);
     document.getElementById("interest").innerHTML = keys.length ? keys.map(function(p){ return "<li><span>" + esc(p) + "</span><span>" + files[p] + "</span></li>" }).join("") : "<li><span>None yet.</span><span>0</span></li>";
     var top = j.top_paths || {}, tk = Object.keys(top);
     document.getElementById("top").innerHTML = tk.length ? tk.map(function(p){ return "<li><span>" + esc(p) + "</span><span>" + top[p] + "</span></li>" }).join("") : "<li><span>None yet.</span><span>0</span></li>";
-    document.getElementById("updated").textContent = "Live — updated " + new Date(j.updated).toLocaleTimeString() + " · refreshes every 60 seconds";
+    var when = j.updated ? new Date(j.updated) : new Date();
+    document.getElementById("updated").textContent = "Live — figures as published " + when.toLocaleString() + " · refreshes every 60 seconds";
   }
   function renderLedger(j){
     var es = (j.entries || []).slice(-5).reverse();
