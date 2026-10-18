@@ -81,6 +81,23 @@
 .bw-notes ul{margin:0;padding-left:16px;font-size:13.5px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
 .bw-notes li{margin-bottom:4px}
 .bw-prec{margin-top:14px;background:#cfe0f6;border:1.5px solid var(--chartink);padding:10px 13px;font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;font-size:13.5px;color:var(--chartink)}
+.bw-count-panel{margin-top:20px}
+.bw-count-pair{display:flex;flex-wrap:wrap;gap:12px 48px;margin:2px 0 14px}
+.bw-count-f{display:flex;flex-direction:column}
+.bw-count-n{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:clamp(36px,6vw,54px);line-height:1;color:var(--deep)}
+.bw-count-l{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:12.5px;margin-top:5px}
+.bw-comp{display:flex;height:20px;border:1.5px solid var(--ink);background:#fff;overflow:hidden}
+.bw-comp .bw-seg{display:block;height:100%}
+.bw-count-panel .seg-browser{background:var(--deep)}
+.bw-count-panel .seg-automation{background:var(--lav)}
+.bw-count-panel .seg-agent-claimed{background:repeating-linear-gradient(45deg,var(--deep) 0 2px,transparent 2px,transparent 6px)}
+.bw-count-panel .seg-unknown{background:repeating-linear-gradient(-45deg,var(--mut) 0 1px,transparent 1px,transparent 5px)}
+.bw-comp-key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px;margin:8px 0 2px}
+.bw-comp-key .bw-key{display:inline-block;width:12px;height:12px;border:1px solid var(--ink);vertical-align:-1px;margin-right:6px}
+.bw-count-gloss{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut)}
+.bw-count-line{font-size:14.5px;margin:9px 0 0;max-width:78ch}
+.bw-count-note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--mut);margin:11px 0 0;line-height:1.6}
+@media (max-width:640px){.bw-count-pair{gap:10px 30px}}
 .bw-expl{margin-top:24px;border-top:2.5px solid var(--deep);padding-top:16px}
 .bw-expl h2{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(20px,3.4vw,28px);color:var(--deep);margin:0 0 8px}
 .bw-expl p{font-size:15.5px;max-width:68ch;margin:0 0 10px}
@@ -174,6 +191,11 @@
         <div class="bw-cond"><span class="k">The board</span><span class="dots"></span><span class="v"><a href="dashboard.html">Live counts &rarr;</a></span></div>
         <div class="bw-prec">Precaution: nothing to install &bull; nothing to execute &bull; nothing taken</div>
       </div>
+    </div>
+
+    <div class="bw-panel bw-count-panel" data-counter-block>
+      <h3>The count</h3>
+      <p class="bw-note">The live count is read from the Garden&rsquo;s record when this page is served. <a href="https://swarmgarden.com/record.html">See the record &rarr;</a></p>
     </div>
 
     <div class="bw-expl">

@@ -176,7 +176,13 @@ export async function servePage(req, env) {
 // getVisits() is likewise optional: when supplied and it returns a
 // number, that number (the counts payload's visits_total) replaces
 // the content of any <span data-count="visits">.
-export async function injectCounts(res, getArrivals, getUpdated, getVisits) {
+// getCounterBlock() is optional (added Oct 17 2026 for the advisory
+// homepage counter): when supplied and it returns an HTML string,
+// that string replaces the inner content of any [data-counter-block]
+// element. The published page carries the no-numbers fallback inside
+// that element, so a null return (counts unavailable) leaves the
+// fallback standing — numbers are never zero-filled or reused stale.
+export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock) {
   try {
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return res;
@@ -193,6 +199,14 @@ export async function injectCounts(res, getArrivals, getUpdated, getVisits) {
       .on('span[data-when-zero="arrivals"]', {
         element(el) { if (n > 0) el.setInnerContent(''); }
       });
+    if (typeof getCounterBlock === 'function') {
+      const block = await getCounterBlock();
+      if (typeof block === 'string' && block) {
+        rw.on('[data-counter-block]', {
+          element(el) { el.setInnerContent(block, { html: true }); }
+        });
+      }
+    }
     if (typeof getUpdated === 'function') {
       const u = await getUpdated();
       if (typeof u === 'string' && u) {
@@ -215,6 +229,31 @@ export async function injectCounts(res, getArrivals, getUpdated, getVisits) {
   }
 }
 
+// Counter text injection for Markdown responses (added Oct 17 2026,
+// the advisory homepage twin): a page whose Markdown twin carries the
+// COUNTER_MARKER line gets that line replaced, at serve time, with
+// the text getCounterText() returns. The callback owns the fallback
+// wording too (it returns the see-the-record line when counts are
+// unavailable), so the marker itself never reaches a reader.
+export const COUNTER_MARKER = '<!-- live-counter -->';
+export async function injectCounterText(res, getCounterText) {
+  try {
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.includes('text/markdown')) return res;
+    const text = await res.text();
+    if (!text.includes(COUNTER_MARKER)) return new Response(text, { status: res.status, headers: res.headers });
+    const replacement = await getCounterText();
+    const body = text.split(COUNTER_MARKER).join(typeof replacement === 'string' ? replacement : '');
+    const headers = new Headers(res.headers);
+    headers.set('Cache-Control', 'private, no-store');
+    headers.delete('content-length');
+    headers.delete('etag');
+    return new Response(body, { status: res.status, headers });
+  } catch (e) {
+    return res;
+  }
+}
+
 // The full front-door wrap for page (non-route) responses: discovery
 // Link header, count injection for GET HTML, and the edge visit write
 // via waitUntil. Returns the response to send.
@@ -227,7 +266,10 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = new Response(out.body, { status: out.status, headers });
   }
   if (req.method === 'GET' && opts && opts.getArrivals) {
-    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits);
+    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock);
+  }
+  if (req.method === 'GET' && opts && typeof opts.getCounterText === 'function') {
+    out = await injectCounterText(out, opts.getCounterText);
   }
   if (shouldLog(req)) {
     const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname));
