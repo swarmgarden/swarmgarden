@@ -1482,6 +1482,112 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await advW.dispose();
 }
 
+// P2-15: the rotating-salt visitor digest (lens spec B-e; burn-down
+// B48; steward ruling Oct 18 2026: BUILD). Semantics are pinned
+// directly against shared/visitor.mjs with a known-answer vector
+// computed independently (node:crypto createHmac), and end-to-end
+// through the front door on dedicated instances carrying DISTINCT
+// per-site test secrets: the digest is deterministic within a day,
+// rotates across days, differs across sites for the same triple,
+// and the fixture address appears nowhere in the stored record.
+{
+  const { visitorDigest } = await import(path.join(ROOT, 'shared', 'visitor.mjs'));
+  const { createHmac } = await import('node:crypto');
+  const S = 'unit-test-secret', D = '2026-10-18', IP = '192.0.2.44', UA = 'DigestCheck/1.0';
+  const expected = createHmac('sha256', S).update(D + '|' + IP + '|' + UA).digest('hex').slice(0, 16);
+  checkP2('digest: known-answer vector — first 16 hex of HMAC-SHA-256(secret, "UTC date|address|UA")',
+    (await visitorDigest(S, D, IP, UA)) === expected, expected);
+  checkP2('digest: deterministic within a day — and a different UTC date, address, UA, or secret changes it (daily rotation; per-site separation)',
+    (await visitorDigest(S, D, IP, UA)) === expected &&
+    (await visitorDigest(S, '2026-10-19', IP, UA)) !== expected &&
+    (await visitorDigest(S, D, '192.0.2.45', UA)) !== expected &&
+    (await visitorDigest(S, D, IP, 'DigestCheck/2.0')) !== expected &&
+    (await visitorDigest('another-secret', D, IP, UA)) !== expected, '');
+  checkP2('digest: no secret or no address gives the empty digest (the record honestly carries none)',
+    (await visitorDigest('', D, IP, UA)) === '' && (await visitorDigest(S, D, '', UA)) === '' && (await visitorDigest(S, D, null, UA)) === '', '');
+
+  const ptToday = (() => {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+    const g = (t) => (parts.find(p => p.type === t) || {}).value || '';
+    return g('year') + '-' + g('month') + '-' + g('day');
+  })();
+  const todayUtc = new Date().toISOString().slice(0, 10);
+  const pollStatsJson = async (mf, url, pred) => {
+    let sj = null;
+    for (let i = 0; i < 40; i++) {
+      sj = await (await req(mf, url)).json();
+      if (pred(sj)) return sj;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return sj;
+  };
+  const dayOf = (sj) => (((sj || {}).visits || {}).visitor_digests || {}).days || [];
+
+  // Garden, dedicated instance carrying the test secret. Fixture
+  // shape: (ip, ua1) x3, (ip, ua2) x1, (ip2, ua1) x1 — three
+  // distinct digests with counts {3,1,1}; repeat share 3/5.
+  const digW = await makeWorker({
+    script: path.join(HERE, 'build/garden-worker.mjs'), pubDir: path.join(GARDEN, 'public'),
+    schemaFile: path.join(GARDEN, 'schema.sql'),
+    bindings: { SITE_HOST: 'swarmgarden.com', AE_DATASET: 'garden_visits', ...SECRETS, INTAKE_OPEN: 'true', GUESTBOOK_OPEN: 'true', SIGNAL_OPEN: 'true', HUMAN_OPEN: 'true', VISITOR_DIGEST_SECRET: 'garden-test-secret' }
+  });
+  const digIp = '192.0.2.60', digIp2 = '192.0.2.61', digUa = 'DigestFixture/1.0';
+  for (let i = 0; i < 3; i++) await req(digW, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': digUa, ...ipH(digIp) } });
+  await req(digW, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'DigestFixture/2.0', ...ipH(digIp) } });
+  await req(digW, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': digUa, ...ipH(digIp2) } });
+  const dStats = await pollStatsJson(digW, FN + '/stats?k=test-stats-key&format=json',
+    sj => (sj.recent || []).filter(r => (r.ua || '').includes('DigestFixture')).length >= 5 &&
+      dayOf(sj).some(d => d.digest_requests >= 5));
+  const fx = (dStats.recent || []).filter(r => (r.ua || '').includes('DigestFixture'));
+  const digests = fx.map(r => r.visitor);
+  const countsPerDigest = Object.values(digests.reduce((m, d) => { m[d] = (m[d] || 0) + 1; return m; }, {})).sort();
+  const gardenDigest = await visitorDigest('garden-test-secret', todayUtc, digIp, digUa);
+  checkP2('digest e2e: the same (day, address, UA) shares one digest; a different address or UA is a different digest (counts {3,1,1})',
+    fx.length === 5 && countsPerDigest.join(',') === '1,1,3' &&
+    digests.filter(d => d === gardenDigest).length === 3 &&
+    digests.every(d => /^[0-9a-f]{16}$/.test(d)), JSON.stringify(digests));
+  checkP2('digest e2e: the fixture addresses appear nowhere in the stored records (the address is an HMAC input, discarded)',
+    fx.length === 5 && !JSON.stringify(fx).includes(digIp) && !JSON.stringify(fx).includes(digIp2), '');
+  const dayRow = dayOf(dStats).find(d => d.day === ptToday);
+  checkP2('digest stats: the series carries today (Pacific) — distinct 3, digest-bearing requests 5, repeat requests 3, repeat share 60.0%',
+    !!dayRow && dayRow.distinct_visitor_digests === 3 && dayRow.digest_requests === 5 &&
+    dayRow.repeat_requests === 3 && dayRow.repeat_share === '60.0%', JSON.stringify(dayOf(dStats)));
+  const dCounts = await (await req(digW, FN + '/counts')).json();
+  checkP2('digest: the public counts payload is unchanged — no digest field, no digest value, totals intact',
+    typeof dCounts.visits_total === 'number' && dCounts.visits_total === 5 &&
+    !('visitor_digests' in dCounts) && !JSON.stringify(dCounts).includes(gardenDigest), JSON.stringify(dCounts).slice(0, 160));
+  const dHtml = await (await req(digW, FN + '/stats?k=test-stats-key')).text();
+  checkP2('digest stats (HTML): the section prints under its ruled name, with the approximation line and the era line',
+    dHtml.includes('Distinct visitor digests, by day (Pacific)') &&
+    dHtml.includes('Distinct visitor digests (one day; unlinked across days)') &&
+    dHtml.includes('shared egress (a NAT household, a corporate proxy) collapses distinct counts down') &&
+    dHtml.includes('The series begins with the first digest-bearing record'), dHtml.slice(0, 120));
+
+  // Advisory, dedicated instance with a DIFFERENT secret: the same
+  // triple digests differently — the two sites' digests can never
+  // be compared, so the keys cannot merge what the datasets do not.
+  const digAdv = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', VISITOR_DIGEST_SECRET: 'advisory-test-secret' }
+  });
+  const A = 'https://bayareaswarmwarning.com';
+  await req(digAdv, A + '/index.html', { headers: { 'user-agent': digUa, ...ipH(digIp) } });
+  const aStats = await pollStatsJson(digAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json',
+    sj => (sj.recent || []).some(r => (r.ua || '').includes('DigestFixture')));
+  const aRec = (aStats.recent || []).find(r => (r.ua || '').includes('DigestFixture'));
+  const advisoryDigest = await visitorDigest('advisory-test-secret', todayUtc, digIp, digUa);
+  const keySet = (o) => JSON.stringify(Object.keys(o || {}).sort());
+  checkP2('digest e2e (Advisory): the same triple under the Advisory\u2019s own secret yields its own digest — never comparable across sites',
+    !!aRec && aRec.visitor === advisoryDigest && advisoryDigest !== gardenDigest &&
+    !JSON.stringify(aRec).includes(digIp), JSON.stringify(aRec));
+  checkP2('digest parity: the standardized visits block key set stays identical on both sites, visitor_digests included',
+    !!aStats && !!aStats.visits && keySet(aStats.visits) === keySet(dStats.visits) && 'visitor_digests' in aStats.visits,
+    'advisory ' + keySet(aStats && aStats.visits) + ' vs garden ' + keySet(dStats.visits));
+  await digW.dispose();
+  await digAdv.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();

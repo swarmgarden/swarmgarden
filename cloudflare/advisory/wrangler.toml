@@ -68,3 +68,8 @@ HUMAN_OPEN = "true"
 # SECRETS — names only, set with `wrangler secret put`:
 #   STATS_KEY     — gates this site's dashboard route
 #   AE_API_TOKEN  — read-only Analytics Engine token for dashboard reads
+#   VISITOR_DIGEST_SECRET — per-site secret for the rotating-salt
+#                   visitor digest (lens spec B-e); DISTINCT per site
+#                   (never the Garden's value), generated at
+#                   provisioning and never recorded anywhere;
+#                   unset = records carry no digest

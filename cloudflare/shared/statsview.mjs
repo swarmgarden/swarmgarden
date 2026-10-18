@@ -63,6 +63,40 @@ export function verdictTableHtml(esc, byNameVerdict) {
   return h + '</table>';
 }
 
+// The visitor-digest series (lens spec B-e). Published name, on any
+// surface: "distinct visitor digests (one day; unlinked across
+// days)" — never bare "visitors". A digest is 16 hex chars of an
+// HMAC over (UTC day, egress address, user-agent) under a per-site
+// secret (shared/visitor.mjs); equal digests mean the same (day,
+// egress address, user-agent) triple — not the same person or
+// device. The error directions travel with the figures, in one
+// line: shared egress collapses distinct counts down; egress
+// rotation inflates them. Days are Pacific days.
+export const DIGEST_NAME = 'Distinct visitor digests (one day; unlinked across days)';
+export const DIGEST_NOTE = 'A digest count is an approximation, not a census: shared egress (a NAT household, a corporate proxy) collapses distinct counts down; egress rotation inflates them up. Equal digests mean the same (day, egress address, user-agent) triple — never the same person. Nothing links across days: the date is inside the keyed message, so digests from a previous day cannot be recomputed or matched.';
+export const DIGEST_ERA_NOTE = 'The series begins with the first digest-bearing record (the Oct 18, 2026 deployment); earlier records carry no digest and none is implied for them. Records whose request reached the edge without an address header carry no digest either and sit outside this series.';
+
+export function visitorDigestDays(byVisitorDay) {
+  return Object.entries(byVisitorDay || {}).sort().map(([day, d]) => ({
+    day,
+    distinct_visitor_digests: d.distinct,
+    digest_requests: d.digest_requests,
+    repeat_requests: d.repeat_requests,
+    repeat_share: d.digest_requests > 0 ? (100 * d.repeat_requests / d.digest_requests).toFixed(1) + '%' : '—'
+  }));
+}
+
+export function visitorDigestTableHtml(esc, byVisitorDay) {
+  const days = Object.entries(byVisitorDay || {}).sort();
+  let h = '<p>' + esc(DIGEST_NAME) + '. ' + esc(DIGEST_NOTE) + ' ' + esc(DIGEST_ERA_NOTE) + '</p>';
+  if (!days.length) return h + '<p>No digest-bearing records yet.</p>';
+  h += '<table border="1" cellspacing="0" cellpadding="4"><tr><th>day (Pacific)</th><th>distinct visitor digests</th><th>digest-bearing requests</th><th>requests from digests seen more than once</th><th>repeat share</th></tr>';
+  for (const [day, d] of days) {
+    h += '<tr><td>' + esc(day) + '</td><td>' + d.distinct + '</td><td>' + d.digest_requests + '</td><td>' + d.repeat_requests + '</td><td>' + (d.digest_requests > 0 ? (100 * d.repeat_requests / d.digest_requests).toFixed(1) + '%' : '—') + '</td></tr>';
+  }
+  return h + '</table>';
+}
+
 // The standardized `visits` block for the ?format=json shape — the
 // B1 verification step diffs this block's key set between the two
 // sites' pages: identical keys, per-site values. Both routes build
@@ -89,7 +123,8 @@ export function visitsBlock(agg, asOf) {
       no_referer_recorded: agg.referrersGrouped.no_referer_recorded
     },
     by_verdict: agg.byVerdict,
-    verdicts_by_name: verdictRows(agg.byNameVerdict)
+    verdicts_by_name: verdictRows(agg.byNameVerdict),
+    visitor_digests: { name: DIGEST_NAME, days: visitorDigestDays(agg.byVisitorDay) }
   };
 }
 

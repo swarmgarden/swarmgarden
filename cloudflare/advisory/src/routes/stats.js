@@ -47,14 +47,14 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { humanTotal, setHumanPaused } from '../lib/human.js';
 
 const BASIS = 'All recorded visits since Oct 17, 2026';
 
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict']);
+  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday']);
   const recent = await readRecentVisits(env, 50); // newest first — display list only
   return { a, recent };
 }
@@ -82,7 +82,7 @@ function aggregate(a) {
     readDepth: Object.keys(a.byPath).length,
     referrersGrouped: groupReferrers(a.byRef, a.total),
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
-    byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict,
+    byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
     edge: (a.byVia && a.byVia['edge']) || 0, beacon: 0 // the beacon write path is not carried over; every record is edge-written
   };
 }
@@ -159,6 +159,7 @@ export default async (req, env) => {
   html += '<p>Edge geography — a country is the network exit point, not the operator&rsquo;s home.</p>';
   html += '<h4>Top referrers</h4>' + referrerTableHtml(esc, agg.referrersGrouped, agg.total);
   html += '<h4>Address-range verdicts, by claimed name</h4>' + verdictTableHtml(esc, agg.byNameVerdict);
+  html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
 
   // ---- Channel knocks (B-b read) ----
   html += '<h3>Channel knocks — refused POST attempts</h3>';

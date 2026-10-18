@@ -94,6 +94,10 @@ HUMAN_OPEN = "true"
 #   STATS_KEY     — gates the dashboard route
 #   LEDGER_KEY    — gates ledger appends
 #   AE_API_TOKEN  — read-only Analytics Engine token for dashboard/count reads
+#   VISITOR_DIGEST_SECRET — per-site secret for the rotating-salt
+#                   visitor digest (lens spec B-e); DISTINCT per site,
+#                   generated at provisioning and never recorded
+#                   anywhere; unset = records carry no digest
 #
 # THE DOOR: INTAKE_OPEN was deliberately ABSENT through the build (unset
 # = intake closed regardless of any steward pause flag — the outer

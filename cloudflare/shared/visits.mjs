@@ -15,6 +15,16 @@ import { claimedBot } from './behaviour.mjs';
 // address itself is never stored. Records written before that change
 // carry none of the three; the eras are labelled wherever verdict
 // rates are printed.
+// plus, from Oct 18 2026 (lens spec B-e), the visitor digest
+//   { visitor }
+// — 16 hex chars of an HMAC over (UTC date, egress address,
+// user-agent) under a per-site Worker secret (shared/visitor.mjs).
+// Within a day it links a visitor's requests; across days it links
+// nothing (the date is inside the keyed message). Records written
+// before the change carry no digest; records whose request reached
+// the edge without an address header, or whose Worker had no secret
+// provisioned, carry ''. The address itself is never stored — it is
+// an input to a one-way function and is discarded.
 //   cls/purpose come from shared/taxonomy.mjs classify() at write time;
 //   behaviour labels are NOT stored — they are computed at query time
 //   over these records (shared/behaviour.mjs).
@@ -58,10 +68,11 @@ import { claimedBot } from './behaviour.mjs';
 //   blob14  : asOrganization
 //   blob15  : cname (Oct 18 2026)      blob16: ipverdict
 //   blob17  : rangever
+//   blob18  : visitor (Oct 18 2026, lens spec B-e — the digest)
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-// (AE allowance is 20 blobs; 17 are used. New stored fields are a
+// (AE allowance is 20 blobs; 18 are used. New stored fields are a
 // finite resource — see the lens spec's blob-budget note.)
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever'];
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -185,6 +196,16 @@ export async function readRecentVisits(env, limit) {
 //                counts — the same claims, computed exactly.
 //   'cname'   -> byCname    (the write-time claimed name, blob15)
 //   'verdict' -> byVerdict  (the write-time range verdict, blob16)
+//   'visitorday' -> byVisitorDay: per Pacific day, the digest series
+//                (lens spec B-e): distinct visitor digests,
+//                digest-bearing requests, requests from digests seen
+//                more than once that day, and the repeat share. The
+//                grouping runs over (digest, UTC hour) rows folded
+//                into Pacific days in code — Pacific offsets are
+//                whole hours, so an hour bucket lies inside exactly
+//                one Pacific day. Records with no digest (the
+//                pre-change era, or no address header at the edge)
+//                are outside the series and never folded into it.
 //   'nameverdict' -> byNameVerdict: the combined (name × verdict)
 //                grouping for the per-name verification-rate tables
 //                (lens spec A4). All three describe the era since the
@@ -238,6 +259,51 @@ function foldGroups(rows, skip) {
     map[k] = (map[k] || 0) + Number(row.c || 0);
   }
   return map;
+}
+
+// The Pacific day containing a whole UTC hour ('YYYY-MM-DDTHH').
+// Pacific offsets are whole hours (-8/-7), so an hour bucket never
+// straddles a Pacific midnight — the fold from (digest, UTC hour)
+// groups to Pacific days is exact, not approximate.
+const PT_DAY_PARTS = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' });
+function ptDayOfUtcHour(h) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(h || '')) return '';
+  const parts = PT_DAY_PARTS.formatToParts(new Date(h + ':00:00Z'));
+  const g = (t) => (parts.find(p => p.type === t) || {}).value || '';
+  return g('year') + '-' + g('month') + '-' + g('day');
+}
+
+// Fold (digest, UTC hour, count) rows into the per-Pacific-day
+// digest series (lens spec B-e). Digests are counted as what they
+// are — approximations of distinct visitors within one day: shared
+// egress collapses the distinct count down, egress rotation
+// inflates it up. The labelling that travels with these figures
+// lives in shared/statsview.mjs.
+function foldVisitorDays(rows) {
+  const days = {}; // ptDay -> Map(digest -> count)
+  for (const row of rows) {
+    const v = row.v;
+    if (!v) continue;
+    const day = ptDayOfUtcHour(String(row.h || ''));
+    if (!day) continue;
+    const m = days[day] || (days[day] = new Map());
+    m.set(v, (m.get(v) || 0) + Number(row.c || 0));
+  }
+  const out = {};
+  for (const [day, m] of Object.entries(days)) {
+    let digestRequests = 0, repeatRequests = 0;
+    for (const c of m.values()) {
+      digestRequests += c;
+      if (c > 1) repeatRequests += c;
+    }
+    out[day] = {
+      distinct: m.size,
+      digest_requests: digestRequests,
+      repeat_requests: repeatRequests,
+      repeat_share: digestRequests > 0 ? repeatRequests / digestRequests : 0
+    };
+  }
+  return out;
 }
 
 export async function aggregateVisits(env, dims) {
@@ -294,6 +360,22 @@ export async function aggregateVisits(env, dims) {
         m[n][v] = (m[n][v] || 0) + Number(r.c || 0);
       }
       out.byNameVerdict = m;
+    } else if (dim === 'visitorday') {
+      // The digest series (lens spec B-e): one query returns
+      // (digest, UTC hour, count) rows; the Pacific-day fold runs
+      // in code (foldVisitorDays). Records with no digest are
+      // skipped by the fold — the series is digest-bearing records
+      // only, deployment-forward by construction.
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, 'SELECT blob18 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM ' + env.AE_DATASET +
+          " WHERE index1 = '" + host + "' GROUP BY v, h LIMIT " + GROUP_LIMIT);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
+        rows = results || [];
+      }
+      out.byVisitorDay = foldVisitorDays(rows);
     } else if (dim === 'ua') {
       const byUa = await runGroup('ua');
       const crawlers = {}, fetchers = {};

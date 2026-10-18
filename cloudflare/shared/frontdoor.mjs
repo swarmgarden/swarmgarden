@@ -36,7 +36,13 @@
 //      and its write-time address-range verdict (shared/ranges.mjs).
 //      Network facts only — a raw IP address is never recorded; the
 //      verdict computation reads cf-connecting-ip transiently and
-//      stores only the verdict and the list version.
+//      stores only the verdict and the list version. Records also
+//      carry, since Oct 18 2026 (lens spec B-e), the rotating-salt
+//      visitor digest (shared/visitor.mjs): 16 hex chars of an HMAC
+//      over (UTC date, cf-connecting-ip, user-agent) under a
+//      per-site secret. The address is an input to a one-way
+//      function and is discarded; the digest links a visitor's
+//      requests within one day and nothing across days.
 //   4. Asset-companion logging (Oct 18 2026, lens spec B-a) — GET/HEAD
 //      requests for the companion set (.css/.js/.ico: the stylesheet,
 //      script and favicon a rendered page pulls) write a companion
@@ -54,6 +60,7 @@
 import { classify } from './taxonomy.mjs';
 import { claimedBot } from './behaviour.mjs';
 import { verdictFor } from './ranges.mjs';
+import { visitorForRequest } from './visitor.mjs';
 import { writeVisit, writeAssetVisit } from './visits.mjs';
 
 const SKIP_EXT = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.css', '.js', '.map', '.woff', '.woff2', '.mp4', '.zip'];
@@ -131,7 +138,7 @@ function claimFields(req, ua) {
   return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
 }
 
-export function buildVisitRecord(req, res, siteHost, event) {
+export function buildVisitRecord(req, res, siteHost, event, visitor = '') {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
   const { cls, purpose } = classify(ua);
@@ -153,7 +160,11 @@ export function buildVisitRecord(req, res, siteHost, event) {
     ba: botAuthState(req),
     via: 'edge',
     event: event || 'pageview',
-    ...claimFields(req, ua)
+    ...claimFields(req, ua),
+    // The visitor digest (lens spec B-e), computed by the caller
+    // (frontDoor) — '' when no secret is provisioned on this Worker
+    // or the request carried no cf-connecting-ip.
+    visitor: visitor || ''
   };
 }
 
@@ -182,7 +193,7 @@ export function shouldLogAsset(req) {
 // (the render-test join key). It is written to the site's SEPARATE
 // asset dataset (or, on the D1 fallback, the same visit_log table
 // under event 'asset', which every visit aggregate excludes).
-export function buildAssetRecord(req, res, siteHost) {
+export function buildAssetRecord(req, res, siteHost, visitor = '') {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
   return {
@@ -203,7 +214,11 @@ export function buildAssetRecord(req, res, siteHost) {
     ba: botAuthState(req),
     via: 'edge',
     event: 'asset',
-    ...claimFields(req, ua)
+    ...claimFields(req, ua),
+    // Companion records carry the digest too (lens spec B-e: the
+    // field rides the visit record "and B-a's companion records"),
+    // so the render join can be exact rather than ASN-approximate.
+    visitor: visitor || ''
   };
 }
 
@@ -397,7 +412,8 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = await injectCounterText(out, opts.getCounterText);
   }
   if (shouldLog(req)) {
-    const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname));
+    const visitor = await visitorForRequest(env, req);
+    const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname), visitor);
     const write = writeVisit(env, record)
       .then(() => { try { console.log('VISIT ' + JSON.stringify(record)); } catch (e) {} })
       .catch(() => {});
@@ -406,7 +422,8 @@ export async function frontDoor(req, env, ctx, res, opts) {
   } else if (shouldLogAsset(req)) {
     // Asset companions go to their own store, never the visit store:
     // page totals are byte-identical with companions on or off.
-    const record = buildAssetRecord(req, out, opts.siteHost);
+    const visitor = await visitorForRequest(env, req);
+    const record = buildAssetRecord(req, out, opts.siteHost, visitor);
     const write = writeAssetVisit(env, record)
       .then(() => { try { console.log('ASSET ' + JSON.stringify(record)); } catch (e) {} })
       .catch(() => {});
