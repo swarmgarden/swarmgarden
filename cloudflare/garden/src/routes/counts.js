@@ -19,6 +19,11 @@
 // crawlers the write-time classes file under automation/unknown are
 // still countable — as CLAIMS, labelled as such wherever they are
 // shown. Crawlers and user-triggered fetchers are separate totals.
+// counting_since (also Oct 17 2026, Caitria's direction): the moment
+// the current dataset began — totals travel with their counting
+// window, because the Cloudflare-era counter reads lower than the
+// preserved Netlify-era record it replaced. The constant and the
+// wording live in shared/counting.mjs.
 //
 // What changed in the port:
 //   - Arrivals/ledger from D1; visits from the visit store (Analytics
@@ -31,6 +36,7 @@
 import { dbListLedger, dbGetReceipt } from '../lib/db.js';
 import { readRecentVisits } from '../../../shared/visits.mjs';
 import { claimedBot } from '../../../shared/behaviour.mjs';
+import { COUNTING_SINCE } from '../../../shared/counting.mjs';
 
 const VISITS_WINDOW = 1500;
 const INTEREST = ['llms.txt', 'robots.txt', 'agent-skills', 'agent-card', 'security.txt', 'sitemap'];
@@ -95,6 +101,7 @@ export async function computeCounts(env) {
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: VISITS_WINDOW,
     visits_window_note: 'Visit totals are computed over the most recent ' + VISITS_WINDOW + ' visit records.',
+    counting_since: COUNTING_SINCE,
     updated: new Date().toISOString()
   };
   try {

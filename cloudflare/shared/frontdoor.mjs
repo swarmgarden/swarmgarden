@@ -176,13 +176,18 @@ export async function servePage(req, env) {
 // getVisits() is likewise optional: when supplied and it returns a
 // number, that number (the counts payload's visits_total) replaces
 // the content of any <span data-count="visits">.
+// getWindow() is likewise optional (added Oct 17 2026 with the
+// counting window): when supplied and it returns a string, that
+// string replaces the content of any <span data-count="window"> —
+// the Garden homepage's "Counting since" row, so the age of the
+// record is spliced in live beside the total it describes.
 // getCounterBlock() is optional (added Oct 17 2026 for the advisory
 // homepage counter): when supplied and it returns an HTML string,
 // that string replaces the inner content of any [data-counter-block]
 // element. The published page carries the no-numbers fallback inside
 // that element, so a null return (counts unavailable) leaves the
 // fallback standing — numbers are never zero-filled or reused stale.
-export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock) {
+export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock, getWindow) {
   try {
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return res;
@@ -220,6 +225,14 @@ export async function injectCounts(res, getArrivals, getUpdated, getVisits, getC
       if (typeof v === 'number') {
         rw.on('span[data-count="visits"]', {
           element(el) { el.setInnerContent(String(v)); }
+        });
+      }
+    }
+    if (typeof getWindow === 'function') {
+      const w = await getWindow();
+      if (typeof w === 'string' && w) {
+        rw.on('span[data-count="window"]', {
+          element(el) { el.setInnerContent(w); }
         });
       }
     }
@@ -266,7 +279,7 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = new Response(out.body, { status: out.status, headers });
   }
   if (req.method === 'GET' && opts && opts.getArrivals) {
-    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock);
+    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock, opts.getWindow);
   }
   if (req.method === 'GET' && opts && typeof opts.getCounterText === 'function') {
     out = await injectCounterText(out, opts.getCounterText);

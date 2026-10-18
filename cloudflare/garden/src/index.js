@@ -12,6 +12,7 @@
 //   edge (front door) only. A POST there falls through to the assets
 //   and 404s, like any other unpublished path.
 import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
+import { countingParts } from '../../shared/counting.mjs';
 import { computeCounts } from './routes/counts.js';
 import countsRoute from './routes/counts.js';
 import ledgerRoute from './routes/ledger.js';
@@ -89,6 +90,18 @@ export default {
       getVisits: async () => {
         const c = await getCounts();
         return c ? c.visits_total : null;
+      },
+      // The counting window beside the homepage total (Oct 17 2026):
+      // the "Counting since" row's span gets "Oct 17, 2026 — this
+      // record is N days old" (hours inside the first 48), computed
+      // from the payload's counting_since at serve time. Null when
+      // the payload carries none — the row then keeps its published
+      // start date, which is true on its own.
+      getWindow: async () => {
+        const c = await getCounts();
+        if (!c) return null;
+        const p = countingParts(c.counting_since);
+        return p ? p.date + ' — ' + p.age : null;
       }
     });
   }

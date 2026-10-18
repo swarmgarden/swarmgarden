@@ -16,6 +16,12 @@
 //     verification — and user-triggered fetchers are a separate line,
 //     never folded into the crawler count.
 //   - The as-of line prints the payload's own `updated` timestamp.
+//   - The counting window travels with the totals (Caitria,
+//     Oct 17 2026): the payload's counting_since becomes the sentence
+//     "Counting since Oct 17, 2026 — this record is N days old"
+//     (hours inside the first 48). When the payload carries no
+//     counting_since, no window is claimed at all.
+import { countingSentence } from '../../shared/counting.mjs';
 
 const CLASSES = [
   ['browser', 'Browser'],
@@ -86,6 +92,7 @@ export function counterBlockHtml(c) {
   const files = agentFilesTotal(c);
   const filesLine = '<p class="bw-count-line"><strong>The agent-facing files were read ' + fmt(files) + (files === 1 ? ' time' : ' times') + '</strong>' +
     ' &mdash; robots.txt, llms.txt, the agent card, the published skills, the sitemap: the files written for agents to read.</p>';
+  const win = countingSentence(c.counting_since);
   return '' +
     '<h3>The count &mdash; live from the Garden record</h3>' +
     '<div class="bw-count-pair">' +
@@ -95,7 +102,7 @@ export function counterBlockHtml(c) {
     '<div class="bw-comp" role="img" aria-label="' + esc(aria) + '">' + segs + '</div>' +
     '<div class="bw-comp-key">' + key + '</div>' +
     crawlerLine + fetcherLine + filesLine +
-    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="dashboard.html">the Arrival Record</a>.</p>';
+    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="dashboard.html">the Arrival Record</a>.</p>';
 }
 
 // The Markdown-twin treatment: the same figures as plain text.
@@ -115,10 +122,14 @@ export function counterBlockText(c) {
     '',
     '- Verified arrivals: ' + fmt(c.arrivals_on_record),
     '- Total recorded visits: ' + fmt(c.visits_total) + ' — ' + breakdown,
+  ];
+  const winText = countingSentence(c.counting_since);
+  if (winText) lines.push('- ' + winText + '.');
+  lines.push(
     crawlers.total > 0
       ? '- Claimed crawlers: ' + fmt(crawlers.total) + (crawlerNames ? ' — ' + crawlerNames : '') + '. A crawler name is what the visit\u2019s software announced; a claim, not a verification.'
-      : '- Claimed crawlers: none yet. A crawler name, when one appears, is what the visit\u2019s software announced; a claim, not a verification.',
-  ];
+      : '- Claimed crawlers: none yet. A crawler name, when one appears, is what the visit\u2019s software announced; a claim, not a verification.'
+  );
   if (fetchers.total > 0) {
     lines.push('- Fetcher visits: ' + fmt(fetchers.total) + (fetcherNames ? ' — ' + fetcherNames : '') + '. A fetcher acts on a specific person\u2019s request, so it is counted apart from crawlers.');
   }
