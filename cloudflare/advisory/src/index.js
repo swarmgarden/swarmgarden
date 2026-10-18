@@ -13,6 +13,7 @@ import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
 import { logAttempt } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
 import humanRoute from './routes/human.js';
+import renderRoute from './routes/render.js';
 import { humanTotal } from './lib/human.js';
 import { counterBlockHtml, counterBlockText, COUNTER_TEXT_FALLBACK } from './counter.js';
 
@@ -48,6 +49,27 @@ export default {
       // a counted press writes none (the press table counts it).
       if (req.method !== 'GET' && req.method !== 'HEAD') {
         const w = logAttempt(env, req, res, 'human-press');
+        if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
+      }
+      return res;
+    }
+    // The render claim (added Oct 18 2026, lens spec B-d): a short
+    // script on this site's human pages (homepage, Arrival Record)
+    // posts the page path here after the page renders; the claim is
+    // kept in this site's own render_claims table and published as
+    // "render-signalled". Answered directly, like the press — a
+    // claim-path failure can never reach page serving, and the
+    // route's reads are not visit-logged. Recorded claims are not
+    // knocks; refusals are (lens spec B-b).
+    if (url.pathname === '/api/v1/render-claim') {
+      let res = await renderRoute(req, env, ctx);
+      if (!res.headers.get('link')) {
+        const headers = new Headers(res.headers);
+        headers.set('Link', LINK_HEADER);
+        res = new Response(res.body, { status: res.status, headers });
+      }
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        const w = logAttempt(env, req, res, 'render-claim');
         if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
       }
       return res;

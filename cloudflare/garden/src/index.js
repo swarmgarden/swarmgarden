@@ -30,6 +30,7 @@ import notesRoute from './routes/notes.js';
 import guestbookStewardRoute from './routes/guestbook.js';
 import { challengeRoute, signalRoute } from './routes/signal.js';
 import humanRoute from './routes/human.js';
+import renderRoute from './routes/render.js';
 import { signpost404 } from './lib/signpost.js';
 export { Sequencer } from './lib/sequencer.js';
 
@@ -53,6 +54,13 @@ function route(pathname) {
   // BEFORE the generic /api/v1/ intake branch — a press is not an
   // intake channel and stands on its own gate (HUMAN_OPEN).
   if (pathname === '/api/v1/human-press') return humanRoute;
+  // The render claim (added Oct 18 2026, lens spec B-d): likewise
+  // matched BEFORE the generic /api/v1/ intake branch. On the
+  // Garden the endpoint stands gated shut (RENDER_OPEN absent —
+  // no Garden page carries the script); the route answers its
+  // how-to on GET and refuses POSTs, and the refusals are counted
+  // as knocks on the 'render-claim' channel by the wrap below.
+  if (pathname === '/api/v1/render-claim') return renderRoute;
   if (pathname === '/.netlify/functions/guestbook') return guestbookStewardRoute;
   if (pathname.startsWith('/api/v1/receipts/') || pathname === '/api/v1/receipts') return receiptsRoute;
   if (pathname.startsWith('/receipts/')) return receiptsRoute;

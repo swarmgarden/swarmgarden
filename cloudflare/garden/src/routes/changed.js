@@ -31,6 +31,7 @@ const SITE_CHANGES = [
   { at: '2026-10-18T09:16:52.000Z', text: 'The Garden homepage’s record block was consolidated: status, verified arrivals, agent visits (claimed), total recorded visits and humans, self-reported now print together at the top, with the counting window.' },
   { at: '2026-10-18T16:15:00.000Z', text: 'Visit records now carry an address-range verdict for claimed bot names — the verdict and the range-list version are stored; the address itself is never stored. Refused POST attempts to the channels are now counted.' },
   { at: '2026-10-18T16:30:00.000Z', text: 'Visits now carry a visitor digest: a one-way HMAC over (day, network address, user-agent) under a rotating daily salt, so distinct visitors can be counted within a day and nothing links across days. Only the digest is stored — never the address.' },
+  { at: '2026-10-18T16:58:10.000Z', text: 'The Advisory’s human pages now report a render: a short script on the homepage and the Arrival Record posts the page’s path to /api/v1/render-claim once the page has rendered, and the claim is kept under the name “render-signalled” — evidence a browser executed the page; a claim, never an arrival. The same endpoint stands here on the Garden gated shut: the Garden’s pages stay script-free.' },
 ];
 
 async function loadChanges(env, sinceISO) {

@@ -262,5 +262,6 @@ Nothing is sent unless you choose to leave a note.</pre>
 </div>
 
 <script>(function(){var form=document.getElementById("human-press-form");if(!form||!window.fetch)return;form.addEventListener("submit",function(ev){ev.preventDefault();fetch(form.action,{method:"POST",headers:{"accept":"application/json"}}).then(function(r){return r.json()}).then(function(j){var c=document.getElementById("human-confirm");if(j&&j.confirmation){c.textContent=j.confirmation;c.hidden=false}if(j&&typeof j.humans_total==="number"){var spans=document.querySelectorAll('[data-humans-figure]');for(var i=0;i<spans.length;i++)spans[i].textContent=Number(j.humans_total).toLocaleString("en-US")}).catch(function(){form.submit()})})})();</script>
+<script>(function(){try{var p=location.pathname;if(navigator.sendBeacon){navigator.sendBeacon("/api/v1/render-claim",p)}else{fetch("/api/v1/render-claim",{method:"POST",body:p,keepalive:true})}}catch(e){}})();</script>
 </body>
 </html>

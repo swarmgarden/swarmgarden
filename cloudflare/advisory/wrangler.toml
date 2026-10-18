@@ -59,6 +59,17 @@ AE_DATASET = "advisory_visits"
 # redeploy, or pause the count from the keyed stats route (POST
 # action human-pause); the published figure stays up either way.
 HUMAN_OPEN = "true"
+# The render claim (added Oct 18 2026, lens spec B-d; Caitria's
+# ruling: build as a documented render signal): a short script on
+# this site's human pages (homepage, Arrival Record) posts the
+# page path to /api/v1/render-claim after the page renders; claims
+# are kept in this site's own render_claims table and published as
+# "render-signalled". Like HUMAN_OPEN, RENDER_OPEN is set HERE —
+# opening the instrument is the commission. Kill switch: set this
+# to anything but "true" and redeploy, or pause the endpoint from
+# the keyed stats route (POST action render-pause). The Garden
+# runs the same endpoint with its gate deliberately shut.
+RENDER_OPEN = "true"
 # COUNTS_ORIGIN — where arrivals are read from; defaults to
 # https://swarmgarden.com. The staging override (the Garden's
 # workers.dev address) was removed at the Phase 5 cutover, Oct 17 2026,

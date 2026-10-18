@@ -86,6 +86,14 @@ SIGNAL_OPEN = "true"
 # "true" and redeploy, or pause the count from the steward endpoint
 # (action human-pause); the published figure stays up either way.
 HUMAN_OPEN = "true"
+# The render claim (added Oct 18 2026, lens spec B-d): RENDER_OPEN
+# is deliberately ABSENT here — unset = the endpoint stands gated
+# shut regardless of any steward pause flag. The Garden's pages
+# stay script-free (the human-button ruling's binding constraint),
+# so no Garden page fires the signal; the endpoint exists so the
+# record's shape is one shape on both sites, and the Advisory —
+# whose gate IS open — keeps the claims. To open it here would be
+# a steward act under a separate ruling, never a default.
 # AE_ACCOUNT_ID is set at provisioning (not secret, but account-specific).
 
 # SECRETS — names only, set with `wrangler secret put` at provisioning;

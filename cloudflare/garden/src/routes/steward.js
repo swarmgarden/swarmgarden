@@ -13,6 +13,7 @@
 import { JSON_HEADERS, STATES, setIntakePaused, listReceipts, loadReceipt, saveReceipt, appendLedger, saveBrief } from '../lib/garden.js';
 import { setSignalPaused } from '../lib/signal.js';
 import { setHumanPaused } from '../lib/human.js';
+import { setRenderPaused } from '../lib/render.js';
 
 const REGISTRY_STATES = ['listed', 'lapsed', 'refreshed'];
 
@@ -57,6 +58,16 @@ export default async (req, env) => {
   if (body.action === 'human-pause' || body.action === 'human-resume') {
     await setHumanPaused(env, body.action === 'human-pause', 'steward-endpoint');
     return new Response(JSON.stringify({ ok: true, human_paused: body.action === 'human-pause' }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // The render claim's steward pause (added Oct 18 2026, lens spec
+  // B-d): the second gate layer for the render endpoint, beside
+  // RENDER_OPEN — which on the Garden stands absent (gate shut);
+  // the flag is settable here so the shape is complete if the gate
+  // is ever opened by a steward act.
+  if (body.action === 'render-pause' || body.action === 'render-resume') {
+    await setRenderPaused(env, body.action === 'render-pause', 'steward-endpoint');
+    return new Response(JSON.stringify({ ok: true, render_paused: body.action === 'render-pause' }), { status: 200, headers: JSON_HEADERS });
   }
 
   if (body.action === 'brief') {

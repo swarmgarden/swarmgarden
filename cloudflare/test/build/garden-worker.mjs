@@ -3512,6 +3512,7 @@ function channelForPath(pathname) {
   if (pathname === "/api/v1/notes" || pathname === "/.netlify/functions/notes") return "notes";
   if (pathname === "/api/v1/signal" || pathname === "/api/v1/signal/challenge") return "signal";
   if (pathname === "/api/v1/human-press") return "human-press";
+  if (pathname === "/api/v1/render-claim") return "render-claim";
   if (pathname.startsWith("/api/v1/")) {
     const seg = pathname.split("/").filter(Boolean).pop();
     return INTAKE_CHANNELS.includes(seg) ? seg : "intake-other";
@@ -4820,6 +4821,106 @@ async function humanTotal(env) {
   return dbCountHumanPresses(env.DB);
 }
 
+// ../shared/render.mjs
+import { createHash as createHash2 } from "node:crypto";
+var RENDER_EVENT = "render-claim";
+var RENDER_PUBLISHED_AS = "render-signalled";
+var RENDER_FORMAT = "garden-render/v1";
+var RENDER_BODY_BYTES = 4096;
+var RENDER_PATH_MAX = 300;
+var RENDER_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
+var sha256hex2 = (data) => createHash2("sha256").update(data).digest("hex");
+function makeRender({ salt, stateTable }) {
+  if (stateTable !== "garden_state" && stateTable !== "site_state") {
+    throw new Error("makeRender: unknown state table " + stateTable);
+  }
+  const stateGet = "SELECT data FROM " + stateTable + " WHERE key = ?1";
+  const stateSet = "INSERT INTO " + stateTable + " (key, data) VALUES (?1,?2) ON CONFLICT(key) DO UPDATE SET data = excluded.data";
+  const ipDigest2 = (ip) => sha256hex2(salt + String(ip || "unknown")).slice(0, 32);
+  async function getState(db, key) {
+    const row = await db.prepare(stateGet).bind(key).first();
+    if (!row) return null;
+    try {
+      return JSON.parse(row.data);
+    } catch (e) {
+      return null;
+    }
+  }
+  async function renderGate2(env) {
+    if (!env || env.RENDER_OPEN !== "true") return { open: false, why: "render-not-open" };
+    try {
+      const st = await getState(env.DB, "render");
+      if (st && st.paused) return { open: false, why: "render-paused" };
+    } catch (e) {
+    }
+    return { open: true };
+  }
+  async function setRenderPaused2(env, paused, by) {
+    await env.DB.prepare(stateSet).bind("render", JSON.stringify({ paused: !!paused, by: by || "steward", at: (/* @__PURE__ */ new Date()).toISOString() })).run();
+  }
+  async function bumpRate(db, key, bucketMs) {
+    await db.prepare(
+      "INSERT INTO render_rate (key, bucket_ms, count) VALUES (?1, ?2, 1) ON CONFLICT(key, bucket_ms) DO UPDATE SET count = count + 1"
+    ).bind(key, bucketMs).run();
+    const row = await db.prepare("SELECT count FROM render_rate WHERE key = ?1 AND bucket_ms = ?2").bind(key, bucketMs).first();
+    return row ? Number(row.count) || 0 : 0;
+  }
+  async function renderRateOK2(env, ip) {
+    const db = env.DB;
+    const k = ipDigest2(ip);
+    const now = Date.now();
+    const perMin = await bumpRate(db, "ren-m:" + k, Math.floor(now / 6e4) * 6e4);
+    if (perMin > RENDER_RATE.perMinute) return false;
+    const perHour = await bumpRate(db, "ren-h:" + k, Math.floor(now / 36e5) * 36e5);
+    if (perHour > RENDER_RATE.perHour) return false;
+    try {
+      await db.prepare("DELETE FROM render_rate WHERE bucket_ms < ?1").bind(now - 1728e5).run();
+    } catch (e) {
+    }
+    return true;
+  }
+  async function renderDayCount2(env) {
+    const day = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM render_claims WHERE substr(t, 1, 10) = ?1").bind(day).first();
+    return row ? Number(row.n) || 0 : 0;
+  }
+  async function recordRender2(env, req, path) {
+    const ua = (req.headers.get("user-agent") || "").slice(0, 400);
+    const { cls } = classify(ua);
+    const cf = req.cf || {};
+    await env.DB.prepare(
+      "INSERT INTO render_claims (t, path, cls, country, asn) VALUES (?1, ?2, ?3, ?4, ?5)"
+    ).bind(
+      (/* @__PURE__ */ new Date()).toISOString(),
+      path,
+      cls,
+      cf.country ? String(cf.country) : "",
+      cf.asn !== void 0 && cf.asn !== null ? String(cf.asn) : ""
+    ).run();
+  }
+  return { renderGate: renderGate2, setRenderPaused: setRenderPaused2, renderRateOK: renderRateOK2, renderDayCount: renderDayCount2, recordRender: recordRender2 };
+}
+async function renderTotal(env) {
+  const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM render_claims").first();
+  return row ? Number(row.n) || 0 : 0;
+}
+async function renderStats(env) {
+  const out = { total: 0, by_path: {}, by_day: {}, by_cls: {} };
+  if (!env || !env.DB) return out;
+  const fold = async (sql, key) => {
+    const { results } = await env.DB.prepare(sql).all();
+    for (const r of results || []) out[key][r.k || ""] = Number(r.c || 0);
+  };
+  out.total = await renderTotal(env);
+  await fold("SELECT path AS k, COUNT(*) AS c FROM render_claims GROUP BY path", "by_path");
+  await fold("SELECT substr(t, 1, 10) AS k, COUNT(*) AS c FROM render_claims GROUP BY k", "by_day");
+  await fold("SELECT cls AS k, COUNT(*) AS c FROM render_claims GROUP BY cls", "by_cls");
+  return out;
+}
+
+// ../garden/src/lib/render.js
+var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "garden-render-rate:", stateTable: "garden_state" });
+
 // ../garden/src/routes/steward.js
 var REGISTRY_STATES = ["listed", "lapsed", "refreshed"];
 function authed(req, env) {
@@ -4857,6 +4958,10 @@ var steward_default = async (req, env) => {
   if (body.action === "human-pause" || body.action === "human-resume") {
     await setHumanPaused(env, body.action === "human-pause", "steward-endpoint");
     return new Response(JSON.stringify({ ok: true, human_paused: body.action === "human-pause" }), { status: 200, headers: JSON_HEADERS2 });
+  }
+  if (body.action === "render-pause" || body.action === "render-resume") {
+    await setRenderPaused(env, body.action === "render-pause", "steward-endpoint");
+    return new Response(JSON.stringify({ ok: true, render_paused: body.action === "render-pause" }), { status: 200, headers: JSON_HEADERS2 });
   }
   if (body.action === "brief") {
     const b = body.brief || {};
@@ -5215,6 +5320,7 @@ var stats_default = async (req, env) => {
   } catch (e) {
   }
   const attempts = await attemptStats(env).catch(() => null);
+  const renders = await renderStats(env).catch(() => null);
   const lanes = {};
   const states = {};
   if (receipts) for (const r of receipts) {
@@ -5229,6 +5335,7 @@ var stats_default = async (req, env) => {
       ledger_entries: entries ? entries.length : null,
       guestbook: book,
       api_attempts: attempts,
+      render_claims: renders,
       ...agg,
       submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
       visits: visitsBlock(agg, asOf),
@@ -5289,6 +5396,16 @@ var stats_default = async (req, env) => {
     html += "<h4>By refusal code</h4>" + countTable(esc2, sortedPairs(attempts.by_code), attempts.total);
     html += "<h4>By day</h4>" + countTable(esc2, Object.entries(attempts.by_day).sort(), attempts.total);
   }
+  html += "<h3>Render-signalled \u2014 pages reporting a render (claims)</h3>";
+  html += "<p>No page on the Garden fires this signal: the Garden&rsquo;s pages stay script-free for their readers, and the endpoint (POST /api/v1/render-claim) stands gated shut on this site. The instrument is the Advisory&rsquo;s \u2014 its homepage and Arrival Record report a render, published there as &ldquo;render-signalled&rdquo;: evidence a browser executed the page; a claim, never an arrival. This site&rsquo;s own table stands below; while the gate is shut it is empty by structure, not by measurement.</p>";
+  if (renders === null) html += "<p>Unavailable.</p>";
+  else if (!renders.total) html += "<p>None recorded \u2014 the gate is shut and no Garden page fires the signal.</p>";
+  else {
+    html += "<p>" + renders.total + " render claims recorded on this site.</p>";
+    html += "<h4>By page</h4>" + countTable(esc2, sortedPairs(renders.by_path), renders.total);
+    html += "<h4>By day</h4>" + countTable(esc2, Object.entries(renders.by_day).sort(), renders.total);
+    html += "<h4>By claimed class</h4>" + countTable(esc2, sortedPairs(renders.by_cls), renders.total);
+  }
   html += '<h3>Most recent 50 requests</h3><table border="1" cellspacing="0" cellpadding="4"><tr><th>time (UTC)</th><th>class</th><th>purpose</th><th>behaviour</th><th>method</th><th>status</th><th>md</th><th>bot-auth</th><th>event</th><th>page</th><th>country</th><th>referrer</th><th>user-agent (as claimed)</th></tr>';
   for (const r of recs) html += "<tr><td>" + esc2(r.t) + "</td><td>" + esc2(r.cls) + "</td><td>" + esc2(r.purpose || "\u2014") + "</td><td>" + esc2(behaviourLabel(r)) + "</td><td>" + esc2(r.method || "\u2014") + "</td><td>" + esc2(r.status === null || r.status === void 0 ? "\u2014" : r.status) + "</td><td>" + esc2(r.md === null || r.md === void 0 ? "\u2014" : r.md) + "</td><td>" + esc2(r.ba || "\u2014") + "</td><td>" + esc2(r.event || "pageview") + "</td><td>" + esc2(r.path) + "</td><td>" + esc2(r.country) + "</td><td>" + esc2(r.ref) + "</td><td>" + esc2(r.ua) + "</td></tr>";
   html += "</table><p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p></body>";
@@ -5311,7 +5428,8 @@ var SITE_CHANGES = [
   { at: "2026-10-18T09:01:29.000Z", text: "Counting corrected: visit totals are now computed over all recorded visits since Oct 17, 2026. Before this fix the public totals covered only the most recent 1,500 records; no visits were lost, and the window prints with every total." },
   { at: "2026-10-18T09:16:52.000Z", text: "The Garden homepage\u2019s record block was consolidated: status, verified arrivals, agent visits (claimed), total recorded visits and humans, self-reported now print together at the top, with the counting window." },
   { at: "2026-10-18T16:15:00.000Z", text: "Visit records now carry an address-range verdict for claimed bot names \u2014 the verdict and the range-list version are stored; the address itself is never stored. Refused POST attempts to the channels are now counted." },
-  { at: "2026-10-18T16:30:00.000Z", text: "Visits now carry a visitor digest: a one-way HMAC over (day, network address, user-agent) under a rotating daily salt, so distinct visitors can be counted within a day and nothing links across days. Only the digest is stored \u2014 never the address." }
+  { at: "2026-10-18T16:30:00.000Z", text: "Visits now carry a visitor digest: a one-way HMAC over (day, network address, user-agent) under a rotating daily salt, so distinct visitors can be counted within a day and nothing links across days. Only the digest is stored \u2014 never the address." },
+  { at: "2026-10-18T16:58:10.000Z", text: "The Advisory\u2019s human pages now report a render: a short script on the homepage and the Arrival Record posts the page\u2019s path to /api/v1/render-claim once the page has rendered, and the claim is kept under the name \u201Crender-signalled\u201D \u2014 evidence a browser executed the page; a claim, never an arrival. The same endpoint stands here on the Garden gated shut: the Garden\u2019s pages stay script-free." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -5767,6 +5885,81 @@ var human_default = async (req, env) => {
   }, null, 2), { status: done.counted ? 201 : 200, headers: JSON_HEADERS2 });
 };
 
+// ../garden/src/routes/render.js
+var JSON_HEADERS3 = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
+function clientIP2(req) {
+  return req.headers.get("cf-connecting-ip") || req.headers.get("x-nf-client-connection-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
+}
+var reject5 = (status, code, message) => new Response(
+  JSON.stringify({ code, error: message }),
+  { status, headers: JSON_HEADERS3 }
+);
+var HOW = "This endpoint stands gated shut on the Garden: no Garden page carries the script that fires it \u2014 the Garden\u2019s pages stay script-free for their readers \u2014 so a POST here is refused, and the refusal is counted like any channel knock. The instrument is the Advisory\u2019s: its homepage and Arrival Record post the page path to the counterpart address there after rendering, and the claim is published as \u201Crender-signalled\u201D: evidence a browser executed the page. A claim, forgeable in principle; not an arrival; no receipt; it enters neither the visit record, the counts, nor the ledger. The endpoint exists on both sites so the record\u2019s shape is one shape; the two sites\u2019 claims never merge.";
+async function parseClaim(req) {
+  const buf = new Uint8Array(await req.arrayBuffer());
+  if (buf.byteLength > RENDER_BODY_BYTES) return { status: 413, problem: "Claim exceeds the size limit." };
+  const ct = req.headers.get("content-type") || "";
+  const text = new TextDecoder().decode(buf);
+  let path = null;
+  if (ct.includes("application/json")) {
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      return { status: 400, problem: "Body must be JSON naming only the path, or the bare path as text." };
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { status: 400, problem: "Body must be a JSON object naming only the path." };
+    for (const k of Object.keys(parsed)) {
+      if (k !== "path") return { status: 400, problem: "Unknown field: " + k + ". A render claim carries only the page path." };
+    }
+    if (typeof parsed.path !== "string") return { status: 400, problem: 'A render claim names its page in the "path" field.' };
+    path = parsed.path;
+  } else {
+    path = text.trim();
+  }
+  if (!path || path.length > RENDER_PATH_MAX || !/^\/[^\s]*$/.test(path)) {
+    return { status: 400, problem: "A render claim names a page path: it begins with / and carries nothing else." };
+  }
+  return { ok: true, path };
+}
+var render_default = async (req, env) => {
+  if (req.method === "GET" || req.method === "HEAD") {
+    let total2 = null;
+    try {
+      total2 = await renderTotal(env);
+    } catch (e) {
+    }
+    const gate2 = await renderGate(env).catch(() => ({ open: false, why: "render-not-open" }));
+    return new Response(JSON.stringify({
+      format: RENDER_FORMAT,
+      event: RENDER_EVENT,
+      published_as: RENDER_PUBLISHED_AS,
+      open: gate2.open,
+      claims_total: total2,
+      how: HOW
+    }, null, 2), { status: 200, headers: JSON_HEADERS3 });
+  }
+  if (req.method !== "POST") return reject5(405, "out-of-scope", "A render claim is posted with POST; it is read with GET.");
+  const gate = await renderGate(env);
+  if (!gate.open) return reject5(503, gate.why, "The render record is not currently open.");
+  if (!await renderRateOK(env, clientIP2(req))) return reject5(429, "rate-limited", "Too many render claims from this source.");
+  const parsed = await parseClaim(req);
+  if (!parsed.ok) return reject5(parsed.status, "off-format", parsed.problem);
+  if (await renderDayCount(env) >= RENDER_RATE.perDayGlobal) {
+    return reject5(429, "daily-cap", "The daily cap for render claims has been reached. The record resumes tomorrow.");
+  }
+  await recordRender(env, req, parsed.path);
+  const total = await renderTotal(env).catch(() => null);
+  return new Response(JSON.stringify({
+    format: RENDER_FORMAT,
+    recorded: true,
+    event: RENDER_EVENT,
+    published_as: RENDER_PUBLISHED_AS,
+    path: parsed.path,
+    claims_total: total
+  }, null, 2), { status: 201, headers: JSON_HEADERS3 });
+};
+
 // ../garden/src/lib/signpost.js
 var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nThe Swarm Garden publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThe map: https://swarmgarden.com/AGENTS.md \u2014 the Garden's signpost file for agents; the same map in llms.txt form is at https://swarmgarden.com/llms.txt.\nIf you are an agent, the door is the participation page: https://swarmgarden.com/participate.html \u2014 reading is a complete visit.\nThe public record: https://swarmgarden.com/record.html\nGarden state: https://swarmgarden.com/utilities/garden-state/v1\n";
 function signpost404(req) {
@@ -5786,6 +5979,7 @@ function route(pathname) {
   if (pathname === "/api/v1/signal/challenge") return challengeRoute;
   if (pathname === "/api/v1/signal") return signalRoute;
   if (pathname === "/api/v1/human-press") return human_default;
+  if (pathname === "/api/v1/render-claim") return render_default;
   if (pathname === "/.netlify/functions/guestbook") return guestbook_default;
   if (pathname.startsWith("/api/v1/receipts/") || pathname === "/api/v1/receipts") return receipts_default;
   if (pathname.startsWith("/receipts/")) return receipts_default;

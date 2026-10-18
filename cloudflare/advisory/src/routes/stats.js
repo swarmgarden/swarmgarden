@@ -49,7 +49,9 @@ import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
 import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
+import { renderStats } from '../../../shared/render.mjs';
 import { humanTotal, setHumanPaused } from '../lib/human.js';
+import { setRenderPaused } from '../lib/render.js';
 
 const BASIS = 'All recorded visits since Oct 17, 2026';
 
@@ -102,6 +104,14 @@ export default async (req, env) => {
       await setHumanPaused(env, body.action === 'human-pause', 'stats-route');
       return new Response(JSON.stringify({ ok: true, human_paused: body.action === 'human-pause' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
+    // The render claim's pause (added Oct 18 2026, lens spec B-d):
+    // the second gate layer for the render endpoint, beside
+    // RENDER_OPEN, in the same shape. POST { action: 'render-pause'
+    // | 'render-resume' }.
+    if (body.action === 'render-pause' || body.action === 'render-resume') {
+      await setRenderPaused(env, body.action === 'render-pause', 'stats-route');
+      return new Response(JSON.stringify({ ok: true, render_paused: body.action === 'render-pause' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
     return new Response(JSON.stringify({ error: 'Unknown action.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
   let loaded;
@@ -113,10 +123,11 @@ export default async (req, env) => {
   const arrivals = await loadArrivals(env);
   const humans = await humanTotal(env).catch(() => null);
   const attempts = await attemptStats(env).catch(() => null);
+  const renders = await renderStats(env).catch(() => null);
 
   if (url.searchParams.get('format') === 'json') {
     return new Response(JSON.stringify({
-      arrivals_on_record: arrivals, humans_self_reported: humans, api_attempts: attempts,
+      arrivals_on_record: arrivals, humans_self_reported: humans, api_attempts: attempts, render_claims: renders,
       ...agg, visits: visitsBlock(agg, asOf), recent: recs
     }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
@@ -170,6 +181,18 @@ export default async (req, env) => {
     html += '<h4>By channel</h4>' + countTable(esc, sortedPairs(attempts.by_channel), attempts.total);
     html += '<h4>By refusal code</h4>' + countTable(esc, sortedPairs(attempts.by_code), attempts.total);
     html += '<h4>By day</h4>' + countTable(esc, Object.entries(attempts.by_day).sort(), attempts.total);
+  }
+
+  // ---- Render-signalled (B-d read) ----
+  html += '<h3>Render-signalled — pages reporting a render (claims)</h3>';
+  html += '<p>A page&rsquo;s own script posts a claim to /api/v1/render-claim after the page renders; the claim is kept in this site&rsquo;s own table and published under the name &ldquo;render-signalled&rdquo;: evidence a browser executed the page. It is forgeable in principle — anyone can post one by hand — and it is never an arrival: it enters neither the visit record, the counts, nor the ledger.</p>';
+  if (renders === null) html += '<p>Unavailable.</p>';
+  else if (!renders.total) html += '<p>None recorded yet.</p>';
+  else {
+    html += '<p>' + renders.total + ' render claims recorded on this site.</p>';
+    html += '<h4>By page</h4>' + countTable(esc, sortedPairs(renders.by_path), renders.total);
+    html += '<h4>By day</h4>' + countTable(esc, Object.entries(renders.by_day).sort(), renders.total);
+    html += '<h4>By claimed class</h4>' + countTable(esc, sortedPairs(renders.by_cls), renders.total);
   }
 
   // ---- Recent 50 (display only) ----

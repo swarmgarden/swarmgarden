@@ -1588,6 +1588,147 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await digAdv.dispose();
 }
 
+// P2-16: the render claim (lens spec B-d; steward ruling Oct 18
+// 2026: BUILD as a documented render signal, published as
+// "render-signalled"). The Advisory's gate is open and its human
+// pages carry the firing script; the Garden's gate stands shut and
+// its pages stay script-free. Claims live in each site's own
+// render_claims table — never in the visit datasets, never in the
+// counts. The pins: the beacon-shaped POST records; the body
+// carries the path ONLY (any other field refused, the human-press
+// discipline); the rate shape and the daily cap bind; the pause
+// binds; page loads alone record nothing (the asymmetry the
+// instrument exists for); refusals count as knocks on the
+// 'render-claim' channel; the Garden refuses and its counts
+// payload gains no render key.
+{
+  const A = 'https://bayareaswarmwarning.com';
+  const RUA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+  const renAdv = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', RENDER_OPEN: 'true' }
+  });
+  const post = (mf, base, ip, body, ct) => req(mf, base + '/api/v1/render-claim',
+    { method: 'POST', headers: { 'content-type': ct, 'user-agent': RUA, ...ipH(ip) }, body });
+  const howJson = async (mf, base) => (await req(mf, base + '/api/v1/render-claim')).json();
+
+  // The beacon's own shape: text/plain, the bare path as the body.
+  let r = await post(renAdv, A, '192.0.2.70', '/index.html', 'text/plain;charset=UTF-8');
+  let rj = await r.json();
+  checkP2('render: a beacon-shaped POST (text body = the path) records a claim', r.status === 201 && rj.recorded === true && rj.event === 'render-claim' && rj.published_as === 'render-signalled' && rj.claims_total === 1, r.status + ' ' + JSON.stringify(rj));
+  // The JSON shape records too.
+  r = await post(renAdv, A, '192.0.2.70', JSON.stringify({ path: '/dashboard.html' }), 'application/json');
+  rj = await r.json();
+  checkP2('render: a JSON claim {"path": ...} records', r.status === 201 && rj.claims_total === 2, r.status + ' ' + JSON.stringify(rj));
+  // One field only — anything else is refused (fresh networks, so
+  // the rate shape cannot mask the format verdicts).
+  r = await post(renAdv, A, '192.0.2.72', JSON.stringify({ path: '/x', note: 'hi' }), 'application/json');
+  rj = await r.json();
+  checkP2('render: an extra field is refused 400 off-format', r.status === 400 && rj.code === 'off-format', r.status + ' ' + JSON.stringify(rj));
+  r = await post(renAdv, A, '192.0.2.73', JSON.stringify({}), 'application/json');
+  rj = await r.json();
+  checkP2('render: a claim naming no path is refused 400 off-format', r.status === 400 && rj.code === 'off-format', r.status + ' ' + JSON.stringify(rj));
+  r = await post(renAdv, A, '192.0.2.74', 'index.html', 'text/plain');
+  rj = await r.json();
+  checkP2('render: a path not beginning with / is refused 400 off-format', r.status === 400 && rj.code === 'off-format', r.status + ' ' + JSON.stringify(rj));
+  r = await post(renAdv, A, '192.0.2.75', '/' + 'x'.repeat(5000), 'text/plain');
+  rj = await r.json();
+  checkP2('render: an oversized body is refused 413 off-format', r.status === 413 && rj.code === 'off-format', r.status + ' ' + JSON.stringify(rj));
+  // The how-to read: format, the stored event name, the published
+  // name, the gate, and the total — the refusals above added none.
+  const how = await howJson(renAdv, A);
+  checkP2('render: GET answers the how-to (format garden-render/v1, event render-claim, published as render-signalled, gate open, total 2)',
+    how.format === 'garden-render/v1' && how.event === 'render-claim' && how.published_as === 'render-signalled' && how.open === true && how.claims_total === 2, JSON.stringify(how).slice(0, 200));
+
+  // The asymmetry, in harness form: serving the pages records
+  // nothing — only an executed script fires — and the served
+  // pages carry the script.
+  const homeHtml = await (await req(renAdv, A + '/')).text();
+  const dashHtml = await (await req(renAdv, A + '/dashboard.html')).text();
+  const howAfter = await howJson(renAdv, A);
+  checkP2('render: plain page fetches record no claim (only an executed page fires)', howAfter.claims_total === 2, 'total ' + howAfter.claims_total);
+  checkP2('render: the Advisory homepage and Arrival Record carry the firing script',
+    homeHtml.includes('sendBeacon') && homeHtml.includes('/api/v1/render-claim') && dashHtml.includes('/api/v1/render-claim'));
+
+  // The keyed stats page carries the figure, under its ruled name.
+  const aStats = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+  checkP2('render: stats JSON carries render_claims (total + by page)',
+    !!aStats.render_claims && aStats.render_claims.total === 2 && aStats.render_claims.by_path['/index.html'] === 1 && aStats.render_claims.by_path['/dashboard.html'] === 1,
+    JSON.stringify(aStats.render_claims));
+  const aStatsHtml = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key')).text();
+  checkP2('render: stats HTML publishes the figure as Render-signalled, with its documented limit',
+    aStatsHtml.includes('Render-signalled') && aStatsHtml.includes('forgeable in principle'));
+
+  // The steward pause binds, from the keyed stats route (this
+  // site's steward-action surface).
+  await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'render-pause' }) });
+  r = await post(renAdv, A, '192.0.2.71', '/index.html', 'text/plain');
+  rj = await r.json();
+  checkP2('render: while paused, a claim is refused 503 render-paused', r.status === 503 && rj.code === 'render-paused', r.status + ' ' + JSON.stringify(rj));
+  await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'render-resume' }) });
+  r = await post(renAdv, A, '192.0.2.71', '/index.html', 'text/plain');
+  checkP2('render: after resume, claims record again', r.status === 201, String(r.status));
+
+  // Refusals counted as knocks on the render-claim channel (B-b).
+  let knocks = null;
+  for (let i = 0; i < 30 && !knocks; i++) {
+    const sj = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+    if (sj.api_attempts && sj.api_attempts.by_channel && sj.api_attempts.by_channel['render-claim'] >= 1) knocks = sj.api_attempts.by_channel['render-claim'];
+    else await new Promise(res => setTimeout(res, 150));
+  }
+  checkP2('render: refusals are counted as knocks on the render-claim channel', !!knocks, 'knocks ' + knocks);
+  await renAdv.dispose();
+
+  // The rate shape and the daily cap, on a dedicated instance.
+  const renRate = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', RENDER_OPEN: 'true' }
+  });
+  const seq = [];
+  for (let i = 0; i < 4; i++) seq.push((await post(renRate, A, '192.0.2.80', '/index.html', 'text/plain')).status);
+  r = await post(renRate, A, '192.0.2.81', '/index.html', 'text/plain');
+  checkP2('render: the per-network shape binds (3/min from one network, the 4th refused; another network unaffected)',
+    JSON.stringify(seq) === '[201,201,201,429]' && r.status === 201, 'seq ' + JSON.stringify(seq) + ' other ' + r.status);
+  const rdb = await renRate.getD1Database('DB');
+  const seedRows = [];
+  const nowIso = new Date().toISOString();
+  for (let i = 0; i < 300; i++) seedRows.push(rdb.prepare('INSERT INTO render_claims (t, path, cls, country, asn) VALUES (?1, ?2, ?3, ?4, ?5)').bind(nowIso, '/seed', 'test', '', ''));
+  for (let i = 0; i < seedRows.length; i += 50) await rdb.batch(seedRows.slice(i, i + 50));
+  r = await post(renRate, A, '192.0.2.82', '/index.html', 'text/plain');
+  rj = await r.json();
+  checkP2('render: the 300/day global cap binds', r.status === 429 && rj.code === 'daily-cap', r.status + ' ' + JSON.stringify(rj));
+  await renRate.dispose();
+
+  // The Garden: the gate stands shut, the pages stay script-free,
+  // and the counts payload gains nothing.
+  r = await req(open, 'https://swarmgarden.com/api/v1/render-claim', { method: 'POST', headers: { 'content-type': 'text/plain', 'user-agent': RUA, ...ipH('192.0.2.90') }, body: '/index.html' });
+  rj = await r.json();
+  checkP2('render (Garden): a POST is refused 503 render-not-open — the gate stands shut', r.status === 503 && rj.code === 'render-not-open', r.status + ' ' + JSON.stringify(rj));
+  const gHow = await howJson(open, 'https://swarmgarden.com');
+  checkP2('render (Garden): GET answers the how-to with the gate shut and zero claims', gHow.open === false && gHow.claims_total === 0, JSON.stringify(gHow).slice(0, 160));
+  const gCounts = await (await req(open, FN + '/counts')).json();
+  checkP2('render (Garden): the counts payload carries no render figure (byte-shape for existing consumers unchanged)', !('render_claims' in gCounts) && !JSON.stringify(gCounts).includes('render'), Object.keys(gCounts).join(','));
+  const gHome = await (await req(open, 'https://swarmgarden.com/')).text();
+  checkP2('render (Garden): the homepage carries no firing script — the Garden stays script-free', !gHome.includes('render-claim') && !gHome.includes('sendBeacon'), gHome.slice(0, 120));
+  const gStatsHtml = await (await req(open, FN + '/stats?k=test-stats-key')).text();
+  checkP2('render (Garden): the keyed stats page shows the structural line — no Garden page fires the signal', gStatsHtml.includes('Render-signalled') && gStatsHtml.includes('stay script-free'));
+  let gKnocks = null;
+  for (let i = 0; i < 30 && !gKnocks; i++) {
+    const sj = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+    if (sj.api_attempts && sj.api_attempts.by_channel && sj.api_attempts.by_channel['render-claim'] >= 1) gKnocks = sj.api_attempts.by_channel['render-claim'];
+    else await new Promise(res => setTimeout(res, 150));
+  }
+  checkP2('render (Garden): the shut-gate refusal is counted as a knock on the render-claim channel', !!gKnocks, 'knocks ' + gKnocks);
+  // The steward pause action exists on the Garden too (the flag is
+  // settable even while the env gate stands shut — shape complete).
+  r = await req(open, FN + '/steward', { method: 'POST', headers: { 'content-type': 'application/json', 'x-steward-key': 'test-steward-key' }, body: JSON.stringify({ action: 'render-pause' }) });
+  rj = await r.json();
+  checkP2('render (Garden): the steward render-pause action answers', r.status === 200 && rj.render_paused === true, r.status + ' ' + JSON.stringify(rj));
+  await req(open, FN + '/steward', { method: 'POST', headers: { 'content-type': 'application/json', 'x-steward-key': 'test-steward-key' }, body: JSON.stringify({ action: 'render-resume' }) });
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();

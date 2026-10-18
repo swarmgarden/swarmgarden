@@ -32,6 +32,7 @@ import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
 import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
+import { renderStats } from '../../../shared/render.mjs';
 import { dbListLedger, dbListReceipts, dbCountSignals, dbCountHumanPresses, dbListNotes } from '../lib/db.js';
 import { isPublicNote } from '../lib/notes.js';
 
@@ -90,6 +91,7 @@ export default async (req, env) => {
     };
   } catch (e) { /* counts unavailable: the section says so */ }
   const attempts = await attemptStats(env).catch(() => null);
+  const renders = await renderStats(env).catch(() => null);
   const lanes = {};
   const states = {};
   if (receipts) for (const r of receipts) { lanes[r.lane] = (lanes[r.lane] || 0) + 1; states[r.state] = (states[r.state] || 0) + 1; }
@@ -98,7 +100,7 @@ export default async (req, env) => {
     return new Response(JSON.stringify({
       arrivals_on_record: arrivals, humans_total: humans, signals_total: signals,
       ledger_entries: entries ? entries.length : null,
-      guestbook: book, api_attempts: attempts,
+      guestbook: book, api_attempts: attempts, render_claims: renders,
       ...agg, submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
       visits: visitsBlock(agg, asOf), recent: recs
     }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -164,6 +166,18 @@ export default async (req, env) => {
     html += '<h4>By channel</h4>' + countTable(esc, sortedPairs(attempts.by_channel), attempts.total);
     html += '<h4>By refusal code</h4>' + countTable(esc, sortedPairs(attempts.by_code), attempts.total);
     html += '<h4>By day</h4>' + countTable(esc, Object.entries(attempts.by_day).sort(), attempts.total);
+  }
+
+  // ---- Render-signalled (B-d read; the instrument is the Advisory's) ----
+  html += '<h3>Render-signalled — pages reporting a render (claims)</h3>';
+  html += '<p>No page on the Garden fires this signal: the Garden&rsquo;s pages stay script-free for their readers, and the endpoint (POST /api/v1/render-claim) stands gated shut on this site. The instrument is the Advisory&rsquo;s — its homepage and Arrival Record report a render, published there as &ldquo;render-signalled&rdquo;: evidence a browser executed the page; a claim, never an arrival. This site&rsquo;s own table stands below; while the gate is shut it is empty by structure, not by measurement.</p>';
+  if (renders === null) html += '<p>Unavailable.</p>';
+  else if (!renders.total) html += '<p>None recorded — the gate is shut and no Garden page fires the signal.</p>';
+  else {
+    html += '<p>' + renders.total + ' render claims recorded on this site.</p>';
+    html += '<h4>By page</h4>' + countTable(esc, sortedPairs(renders.by_path), renders.total);
+    html += '<h4>By day</h4>' + countTable(esc, Object.entries(renders.by_day).sort(), renders.total);
+    html += '<h4>By claimed class</h4>' + countTable(esc, sortedPairs(renders.by_cls), renders.total);
   }
 
   // ---- Recent 50 (display only) ----

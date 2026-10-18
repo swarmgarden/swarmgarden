@@ -3682,9 +3682,106 @@ function referrerTableHtml(esc3, groupedRefs, total) {
   return h;
 }
 
-// ../advisory/src/lib/human.js
+// ../shared/render.mjs
 import { createHash } from "node:crypto";
+var RENDER_EVENT = "render-claim";
+var RENDER_PUBLISHED_AS = "render-signalled";
+var RENDER_FORMAT = "garden-render/v1";
+var RENDER_BODY_BYTES = 4096;
+var RENDER_PATH_MAX = 300;
+var RENDER_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
 var sha256hex = (data) => createHash("sha256").update(data).digest("hex");
+function makeRender({ salt, stateTable }) {
+  if (stateTable !== "garden_state" && stateTable !== "site_state") {
+    throw new Error("makeRender: unknown state table " + stateTable);
+  }
+  const stateGet = "SELECT data FROM " + stateTable + " WHERE key = ?1";
+  const stateSet = "INSERT INTO " + stateTable + " (key, data) VALUES (?1,?2) ON CONFLICT(key) DO UPDATE SET data = excluded.data";
+  const ipDigest = (ip) => sha256hex(salt + String(ip || "unknown")).slice(0, 32);
+  async function getState2(db, key) {
+    const row = await db.prepare(stateGet).bind(key).first();
+    if (!row) return null;
+    try {
+      return JSON.parse(row.data);
+    } catch (e) {
+      return null;
+    }
+  }
+  async function renderGate2(env) {
+    if (!env || env.RENDER_OPEN !== "true") return { open: false, why: "render-not-open" };
+    try {
+      const st = await getState2(env.DB, "render");
+      if (st && st.paused) return { open: false, why: "render-paused" };
+    } catch (e) {
+    }
+    return { open: true };
+  }
+  async function setRenderPaused2(env, paused, by) {
+    await env.DB.prepare(stateSet).bind("render", JSON.stringify({ paused: !!paused, by: by || "steward", at: (/* @__PURE__ */ new Date()).toISOString() })).run();
+  }
+  async function bumpRate2(db, key, bucketMs) {
+    await db.prepare(
+      "INSERT INTO render_rate (key, bucket_ms, count) VALUES (?1, ?2, 1) ON CONFLICT(key, bucket_ms) DO UPDATE SET count = count + 1"
+    ).bind(key, bucketMs).run();
+    const row = await db.prepare("SELECT count FROM render_rate WHERE key = ?1 AND bucket_ms = ?2").bind(key, bucketMs).first();
+    return row ? Number(row.count) || 0 : 0;
+  }
+  async function renderRateOK2(env, ip) {
+    const db = env.DB;
+    const k = ipDigest(ip);
+    const now = Date.now();
+    const perMin = await bumpRate2(db, "ren-m:" + k, Math.floor(now / 6e4) * 6e4);
+    if (perMin > RENDER_RATE.perMinute) return false;
+    const perHour = await bumpRate2(db, "ren-h:" + k, Math.floor(now / 36e5) * 36e5);
+    if (perHour > RENDER_RATE.perHour) return false;
+    try {
+      await db.prepare("DELETE FROM render_rate WHERE bucket_ms < ?1").bind(now - 1728e5).run();
+    } catch (e) {
+    }
+    return true;
+  }
+  async function renderDayCount2(env) {
+    const day = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM render_claims WHERE substr(t, 1, 10) = ?1").bind(day).first();
+    return row ? Number(row.n) || 0 : 0;
+  }
+  async function recordRender2(env, req, path) {
+    const ua = (req.headers.get("user-agent") || "").slice(0, 400);
+    const { cls } = classify(ua);
+    const cf = req.cf || {};
+    await env.DB.prepare(
+      "INSERT INTO render_claims (t, path, cls, country, asn) VALUES (?1, ?2, ?3, ?4, ?5)"
+    ).bind(
+      (/* @__PURE__ */ new Date()).toISOString(),
+      path,
+      cls,
+      cf.country ? String(cf.country) : "",
+      cf.asn !== void 0 && cf.asn !== null ? String(cf.asn) : ""
+    ).run();
+  }
+  return { renderGate: renderGate2, setRenderPaused: setRenderPaused2, renderRateOK: renderRateOK2, renderDayCount: renderDayCount2, recordRender: recordRender2 };
+}
+async function renderTotal(env) {
+  const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM render_claims").first();
+  return row ? Number(row.n) || 0 : 0;
+}
+async function renderStats(env) {
+  const out = { total: 0, by_path: {}, by_day: {}, by_cls: {} };
+  if (!env || !env.DB) return out;
+  const fold = async (sql, key) => {
+    const { results } = await env.DB.prepare(sql).all();
+    for (const r of results || []) out[key][r.k || ""] = Number(r.c || 0);
+  };
+  out.total = await renderTotal(env);
+  await fold("SELECT path AS k, COUNT(*) AS c FROM render_claims GROUP BY path", "by_path");
+  await fold("SELECT substr(t, 1, 10) AS k, COUNT(*) AS c FROM render_claims GROUP BY k", "by_day");
+  await fold("SELECT cls AS k, COUNT(*) AS c FROM render_claims GROUP BY cls", "by_cls");
+  return out;
+}
+
+// ../advisory/src/lib/human.js
+import { createHash as createHash2 } from "node:crypto";
+var sha256hex2 = (data) => createHash2("sha256").update(data).digest("hex");
 var nowSeconds = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 19) + "Z";
 var pad6 = (n) => String(n).padStart(6, "0");
 var HUMAN_BODY_BYTES = 4096;
@@ -3716,7 +3813,7 @@ async function humanGate(env) {
 async function setHumanPaused(env, paused, by) {
   await setState(env.DB, "human", { paused: !!paused, by: by || "steward", at: (/* @__PURE__ */ new Date()).toISOString() });
 }
-var humanIpDigest = (ip) => sha256hex("advisory-human-rate:" + String(ip || "unknown")).slice(0, 32);
+var humanIpDigest = (ip) => sha256hex2("advisory-human-rate:" + String(ip || "unknown")).slice(0, 32);
 async function bumpRate(db, key, bucketMs) {
   await db.prepare(
     "INSERT INTO human_rate (key, bucket_ms, count) VALUES (?1, ?2, 1) ON CONFLICT(key, bucket_ms) DO UPDATE SET count = count + 1"
@@ -3775,6 +3872,9 @@ async function pressHuman(env, ip) {
   }
   return { counted: true, number, total: await humanTotal(env).catch(() => 0) };
 }
+
+// ../advisory/src/lib/render.js
+var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "advisory-render-rate:", stateTable: "site_state" });
 
 // ../advisory/src/routes/stats.js
 var BASIS = "All recorded visits since Oct 17, 2026";
@@ -3842,6 +3942,10 @@ var stats_default = async (req, env) => {
       await setHumanPaused(env, body.action === "human-pause", "stats-route");
       return new Response(JSON.stringify({ ok: true, human_paused: body.action === "human-pause" }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
+    if (body.action === "render-pause" || body.action === "render-resume") {
+      await setRenderPaused(env, body.action === "render-pause", "stats-route");
+      return new Response(JSON.stringify({ ok: true, render_paused: body.action === "render-pause" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
     return new Response(JSON.stringify({ error: "Unknown action." }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
   let loaded;
@@ -3856,11 +3960,13 @@ var stats_default = async (req, env) => {
   const arrivals = await loadArrivals(env);
   const humans = await humanTotal(env).catch(() => null);
   const attempts = await attemptStats(env).catch(() => null);
+  const renders = await renderStats(env).catch(() => null);
   if (url.searchParams.get("format") === "json") {
     return new Response(JSON.stringify({
       arrivals_on_record: arrivals,
       humans_self_reported: humans,
       api_attempts: attempts,
+      render_claims: renders,
       ...agg,
       visits: visitsBlock(agg, asOf2),
       recent: recs
@@ -3905,6 +4011,16 @@ var stats_default = async (req, env) => {
     html += "<h4>By channel</h4>" + countTable(esc3, sortedPairs(attempts.by_channel), attempts.total);
     html += "<h4>By refusal code</h4>" + countTable(esc3, sortedPairs(attempts.by_code), attempts.total);
     html += "<h4>By day</h4>" + countTable(esc3, Object.entries(attempts.by_day).sort(), attempts.total);
+  }
+  html += "<h3>Render-signalled \u2014 pages reporting a render (claims)</h3>";
+  html += "<p>A page&rsquo;s own script posts a claim to /api/v1/render-claim after the page renders; the claim is kept in this site&rsquo;s own table and published under the name &ldquo;render-signalled&rdquo;: evidence a browser executed the page. It is forgeable in principle \u2014 anyone can post one by hand \u2014 and it is never an arrival: it enters neither the visit record, the counts, nor the ledger.</p>";
+  if (renders === null) html += "<p>Unavailable.</p>";
+  else if (!renders.total) html += "<p>None recorded yet.</p>";
+  else {
+    html += "<p>" + renders.total + " render claims recorded on this site.</p>";
+    html += "<h4>By page</h4>" + countTable(esc3, sortedPairs(renders.by_path), renders.total);
+    html += "<h4>By day</h4>" + countTable(esc3, Object.entries(renders.by_day).sort(), renders.total);
+    html += "<h4>By claimed class</h4>" + countTable(esc3, sortedPairs(renders.by_cls), renders.total);
   }
   html += '<h3>Most recent 50 requests</h3><table border="1" cellspacing="0" cellpadding="4"><tr><th>time (UTC)</th><th>class</th><th>purpose</th><th>behaviour</th><th>method</th><th>status</th><th>md</th><th>bot-auth</th><th>event</th><th>page</th><th>country</th><th>referrer</th><th>user-agent (as claimed)</th></tr>';
   for (const r of recs) html += "<tr><td>" + esc3(r.t) + "</td><td>" + esc3(r.cls) + "</td><td>" + esc3(r.purpose || "\u2014") + "</td><td>" + esc3(behaviourLabel(r)) + "</td><td>" + esc3(r.method || "\u2014") + "</td><td>" + esc3(r.status === null || r.status === void 0 ? "\u2014" : r.status) + "</td><td>" + esc3(r.md === null || r.md === void 0 ? "\u2014" : r.md) + "</td><td>" + esc3(r.ba || "\u2014") + "</td><td>" + esc3(r.event || "pageview") + "</td><td>" + esc3(r.path) + "</td><td>" + esc3(r.country) + "</td><td>" + esc3(r.ref) + "</td><td>" + esc3(r.ua) + "</td></tr>";
@@ -3991,6 +4107,81 @@ var human_default = async (req, env) => {
     humans_total: done.total,
     confirmation
   }, null, 2), { status: done.counted ? 201 : 200, headers: JSON_HEADERS });
+};
+
+// ../advisory/src/routes/render.js
+var JSON_HEADERS2 = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
+function clientIP2(req) {
+  return req.headers.get("cf-connecting-ip") || req.headers.get("x-nf-client-connection-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
+}
+var reject2 = (status, code, message) => new Response(
+  JSON.stringify({ code, error: message }),
+  { status, headers: JSON_HEADERS2 }
+);
+var HOW = 'POST to this address with the page path \u2014 the bare path as a text body (what the page script sends), or JSON {"path": "/index.html"} \u2014 to record one render claim. A page\u2019s own script fires this once after the page renders; the claim is kept in this site\u2019s own table and published as \u201Crender-signalled\u201D: evidence a browser executed the page. It is a claim, and forgeable in principle \u2014 anyone can post one by hand, and the record will treat it exactly the same. It is not an arrival: no receipt, no ledger entry, and it enters neither the visit record nor the counts. This site\u2019s claims are its own; the Garden keeps the same endpoint gated shut, and the two never merge.';
+async function parseClaim(req) {
+  const buf = new Uint8Array(await req.arrayBuffer());
+  if (buf.byteLength > RENDER_BODY_BYTES) return { status: 413, problem: "Claim exceeds the size limit." };
+  const ct = req.headers.get("content-type") || "";
+  const text = new TextDecoder().decode(buf);
+  let path = null;
+  if (ct.includes("application/json")) {
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      return { status: 400, problem: "Body must be JSON naming only the path, or the bare path as text." };
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { status: 400, problem: "Body must be a JSON object naming only the path." };
+    for (const k of Object.keys(parsed)) {
+      if (k !== "path") return { status: 400, problem: "Unknown field: " + k + ". A render claim carries only the page path." };
+    }
+    if (typeof parsed.path !== "string") return { status: 400, problem: 'A render claim names its page in the "path" field.' };
+    path = parsed.path;
+  } else {
+    path = text.trim();
+  }
+  if (!path || path.length > RENDER_PATH_MAX || !/^\/[^\s]*$/.test(path)) {
+    return { status: 400, problem: "A render claim names a page path: it begins with / and carries nothing else." };
+  }
+  return { ok: true, path };
+}
+var render_default = async (req, env) => {
+  if (req.method === "GET" || req.method === "HEAD") {
+    let total2 = null;
+    try {
+      total2 = await renderTotal(env);
+    } catch (e) {
+    }
+    const gate2 = await renderGate(env).catch(() => ({ open: false, why: "render-not-open" }));
+    return new Response(JSON.stringify({
+      format: RENDER_FORMAT,
+      event: RENDER_EVENT,
+      published_as: RENDER_PUBLISHED_AS,
+      open: gate2.open,
+      claims_total: total2,
+      how: HOW
+    }, null, 2), { status: 200, headers: JSON_HEADERS2 });
+  }
+  if (req.method !== "POST") return reject2(405, "out-of-scope", "A render claim is posted with POST; it is read with GET.");
+  const gate = await renderGate(env);
+  if (!gate.open) return reject2(503, gate.why, "The render record is not currently open.");
+  if (!await renderRateOK(env, clientIP2(req))) return reject2(429, "rate-limited", "Too many render claims from this source.");
+  const parsed = await parseClaim(req);
+  if (!parsed.ok) return reject2(parsed.status, "off-format", parsed.problem);
+  if (await renderDayCount(env) >= RENDER_RATE.perDayGlobal) {
+    return reject2(429, "daily-cap", "The daily cap for render claims has been reached. The record resumes tomorrow.");
+  }
+  await recordRender(env, req, parsed.path);
+  const total = await renderTotal(env).catch(() => null);
+  return new Response(JSON.stringify({
+    format: RENDER_FORMAT,
+    recorded: true,
+    event: RENDER_EVENT,
+    published_as: RENDER_PUBLISHED_AS,
+    path: parsed.path,
+    claims_total: total
+  }, null, 2), { status: 201, headers: JSON_HEADERS2 });
 };
 
 // ../shared/counting.mjs
@@ -4122,6 +4313,19 @@ var index_default = {
       }
       if (req.method !== "GET" && req.method !== "HEAD") {
         const w = logAttempt(env, req, res2, "human-press");
+        if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(w);
+      }
+      return res2;
+    }
+    if (url.pathname === "/api/v1/render-claim") {
+      let res2 = await render_default(req, env, ctx);
+      if (!res2.headers.get("link")) {
+        const headers = new Headers(res2.headers);
+        headers.set("Link", LINK_HEADER);
+        res2 = new Response(res2.body, { status: res2.status, headers });
+      }
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        const w = logAttempt(env, req, res2, "render-claim");
         if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(w);
       }
       return res2;

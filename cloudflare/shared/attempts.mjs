@@ -38,6 +38,7 @@ export function channelForPath(pathname) {
   if (pathname === '/api/v1/notes' || pathname === '/.netlify/functions/notes') return 'notes';
   if (pathname === '/api/v1/signal' || pathname === '/api/v1/signal/challenge') return 'signal';
   if (pathname === '/api/v1/human-press') return 'human-press';
+  if (pathname === '/api/v1/render-claim') return 'render-claim';
   if (pathname.startsWith('/api/v1/')) {
     const seg = pathname.split('/').filter(Boolean).pop();
     return INTAKE_CHANNELS.includes(seg) ? seg : 'intake-other';

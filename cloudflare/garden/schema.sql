@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS api_attempts (
   id      INTEGER PRIMARY KEY AUTOINCREMENT,
   t       TEXT NOT NULL,                -- ISO timestamp of the attempt
   route   TEXT NOT NULL,                -- the path as called
-  channel TEXT NOT NULL,                -- answers|questions|reports|registry|notes|signal|human-press|intake-other|unrouted
+  channel TEXT NOT NULL,                -- answers|questions|reports|registry|notes|signal|human-press|render-claim|intake-other|unrouted
   method  TEXT NOT NULL,
   status  INTEGER NOT NULL,             -- the HTTP status returned
   code    TEXT NOT NULL DEFAULT '',     -- refusal code from the response JSON, best-effort
@@ -138,4 +138,30 @@ CREATE TABLE IF NOT EXISTS api_attempts (
   country TEXT NOT NULL DEFAULT '',     -- edge facts, as on the visit record
   asn     TEXT NOT NULL DEFAULT '',
   as_org  TEXT NOT NULL DEFAULT ''
+);
+
+-- Render claims (added Oct 18 2026, lens spec B-d): the same
+-- shape as the Advisory's — a page's script posts its path after
+-- rendering; the claim is published as "render-signalled". On
+-- the Garden the endpoint stands gated shut (RENDER_OPEN absent:
+-- no Garden page carries the script), so this table stands empty
+-- by structure, not by measurement; the Advisory's claims live
+-- in its own D1 and never merge with this one. The rate table
+-- holds the fixed-window per-network counters (ren-m: / ren-h: +
+-- one-way digest); no raw address is stored anywhere. Written by
+-- shared/render.mjs from the route; read by the keyed stats page.
+CREATE TABLE IF NOT EXISTS render_claims (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  t       TEXT NOT NULL,                -- ISO timestamp of the claim
+  path    TEXT NOT NULL,                -- the page path the claim names
+  cls     TEXT NOT NULL DEFAULT '',     -- the UA's claimed class (shared taxonomy)
+  country TEXT NOT NULL DEFAULT '',     -- edge facts, as on the visit record
+  asn     TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_render_claims_t ON render_claims(t);
+CREATE TABLE IF NOT EXISTS render_rate (
+  key       TEXT NOT NULL,              -- ren-m:<digest> / ren-h:<digest>
+  bucket_ms INTEGER NOT NULL,           -- the fixed window's start, epoch ms
+  count     INTEGER NOT NULL,
+  PRIMARY KEY (key, bucket_ms)
 );
