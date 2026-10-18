@@ -7,40 +7,48 @@
 // Port changes: visits come from the visit store (Analytics Engine or
 // the D1 fallback) instead of a Blobs scan; every record is edge-written
 // now, so the beacon column reads 0 by construction.
-import { readRecentVisits } from '../../../shared/visits.mjs';
+// Oct 18 2026 correction (same defect as the public counts, Caitria's
+// flag): the aggregates were computed over the newest 1,500 raw
+// records read into code, so once the dataset passed 1,500 every
+// total on this page silently understated the record. They are now
+// exact SQL aggregates over the FULL dataset (shared/visits.mjs
+// aggregateVisits); behaviour labels fold from the per-path groups
+// (the label is a function of the path alone, so the fold is exact).
+// The raw read survives only for the recent-50 table — a display
+// list, where a limit trims what is shown, never what is counted.
+import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { dbListLedger, dbListReceipts } from '../lib/db.js';
 
 async function loadVisits(env) {
-  const recs = await readRecentVisits(env, 1500); // newest first
-  return recs.sort((a, b) => (a.t < b.t ? -1 : 1)); // ascending, as the Netlify dashboard read them
+  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'via']);
+  const recent = await readRecentVisits(env, 50); // newest first — display list only
+  return { a, recent };
 }
 
-function aggregate(recs) {
-  const byClass = {}, byDay = {}, byPath = {}, interest = {}, byPurpose = {}, byBehaviour = {}, byStatus = {};
-  let edge = 0, beacon = 0;
-  for (const r of recs) {
-    byClass[r.cls] = (byClass[r.cls] || 0) + 1;
-    if (r.purpose) byPurpose[r.purpose] = (byPurpose[r.purpose] || 0) + 1;
-    const bl = behaviourLabel(r); byBehaviour[bl] = (byBehaviour[bl] || 0) + 1;
-    if (Number.isInteger(r.status)) byStatus[r.status] = (byStatus[r.status] || 0) + 1;
-    const d = (r.t || '').slice(0, 10); byDay[d] = (byDay[d] || 0) + 1;
-    byPath[r.path] = (byPath[r.path] || 0) + 1;
-    if (r.via === 'edge') edge++; else beacon++;
-    if (INTEREST.some(s => (r.path || '').includes(s))) interest[r.path] = (interest[r.path] || 0) + 1;
+function aggregate(a) {
+  const byBehaviour = {}, interest = {};
+  for (const [p, c] of Object.entries(a.byPath)) {
+    const bl = behaviourLabel({ path: p }); byBehaviour[bl] = (byBehaviour[bl] || 0) + c;
+    if (INTEREST.some(s => p.includes(s))) interest[p] = c;
   }
-  const top = (obj, n) => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
-  return { total: recs.length, byClass, byPurpose, byBehaviour, byStatus, byDay, topPaths: top(byPath, 12), interest: top(interest, 12), edge, beacon, readDepth: Object.keys(byPath).length };
+  const top = (obj, n) => Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n);
+  const edge = (a.byVia && a.byVia['edge']) || 0;
+  return {
+    total: a.total, byClass: a.byClass, byPurpose: a.byPurpose, byBehaviour, byStatus: a.byStatus, byDay: a.byDay,
+    topPaths: top(a.byPath, 12), interest: top(interest, 12), edge, beacon: a.total - edge, readDepth: Object.keys(a.byPath).length
+  };
 }
 
 export default async (req, env) => {
   const KEY = env.STATS_KEY || '';
   const url = new URL(req.url);
   if (!KEY || url.searchParams.get('k') !== KEY) return new Response('Key required.', { status: 403, headers: { 'Content-Type': 'text/plain' } });
-  let recs;
-  try { recs = await loadVisits(env); }
+  let loaded;
+  try { loaded = await loadVisits(env); }
   catch (e) { return new Response('Storage read failed. Visit records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
-  const agg = aggregate(recs);
+  const recs = loaded.recent; // newest first, at most 50 — display list
+  const agg = aggregate(loaded.a);
   const entries = await dbListLedger(env.DB).catch(() => null);
   const receipts = await dbListReceipts(env.DB).catch(() => null);
   const arrivals = entries ? entries.filter(e => e.kind === 'arrival').length : null;
@@ -48,7 +56,7 @@ export default async (req, env) => {
   if (url.searchParams.get('format') === 'json') {
     const lanes = {};
     if (receipts) for (const r of receipts) lanes[r.lane] = (lanes[r.lane] || 0) + 1;
-    return new Response(JSON.stringify({ arrivals_on_record: arrivals, ...agg, submissions: receipts ? { total: receipts.length, by_lane: lanes } : null, recent: recs.slice(-50).reverse() }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    return new Response(JSON.stringify({ arrivals_on_record: arrivals, ...agg, submissions: receipts ? { total: receipts.length, by_lane: lanes } : null, recent: recs }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
 
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -79,7 +87,7 @@ export default async (req, env) => {
     }
   }
   html += '<h3>Most recent 50 requests</h3><table border="1" cellspacing="0" cellpadding="4"><tr><th>time (UTC)</th><th>class</th><th>purpose</th><th>behaviour</th><th>method</th><th>status</th><th>md</th><th>bot-auth</th><th>via</th><th>page</th><th>country</th><th>referrer</th><th>user-agent (as claimed)</th></tr>';
-  for (const r of recs.slice(-50).reverse()) html += '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.cls) + '</td><td>' + esc(r.purpose || '—') + '</td><td>' + esc(behaviourLabel(r)) + '</td><td>' + esc(r.method || '—') + '</td><td>' + esc(r.status === null || r.status === undefined ? '—' : r.status) + '</td><td>' + esc(r.md === null || r.md === undefined ? '—' : r.md) + '</td><td>' + esc(r.ba || '—') + '</td><td>' + esc(r.via || 'edge') + '</td><td>' + esc(r.path) + '</td><td>' + esc(r.country) + '</td><td>' + esc(r.ref) + '</td><td>' + esc(r.ua) + '</td></tr>';
+  for (const r of recs) html += '<tr><td>' + esc(r.t) + '</td><td>' + esc(r.cls) + '</td><td>' + esc(r.purpose || '—') + '</td><td>' + esc(behaviourLabel(r)) + '</td><td>' + esc(r.method || '—') + '</td><td>' + esc(r.status === null || r.status === undefined ? '—' : r.status) + '</td><td>' + esc(r.md === null || r.md === undefined ? '—' : r.md) + '</td><td>' + esc(r.ba || '—') + '</td><td>' + esc(r.via || 'edge') + '</td><td>' + esc(r.path) + '</td><td>' + esc(r.country) + '</td><td>' + esc(r.ref) + '</td><td>' + esc(r.ua) + '</td></tr>';
   html += '</table><p>Labels describe what each request\u2019s user-agent claims. A claim is not a verification.</p></body>';
   return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html', 'Cache-Control': 'no-store' } });
 };

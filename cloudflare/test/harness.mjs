@@ -393,7 +393,10 @@ check('over-cap receipt page says it counts as an arrival and was not read',
 res = await req(open, FN + '/counts');
 body = await res.json();
 check('counts publish the over-cap composition (D2)', body.arrivals_over_cap_unread >= 1, JSON.stringify(body).slice(0, 240));
-check('counts label the visits window inside the JSON', body.visits_window_records === 1500 && /1500/.test(body.visits_window_note || ''), JSON.stringify(body).slice(0, 240));
+check('counts state the full-dataset basis inside the JSON (Oct 18 2026 correction: no window cap)',
+  body.visits_window_records === body.visits_total &&
+  body.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+  JSON.stringify(body).slice(0, 240));
 
 // ---------- 16. utilities ----------
 const UT = 'https://swarmgarden.com/utilities';
@@ -632,7 +635,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const fake = {
     arrivals_on_record: 0, visits_total: 10, visits_by_class: { browser: 10 },
     crawlers_claimed: { total: 0, by_name: {} }, fetchers_claimed: { total: 0, by_name: {} },
-    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over the most recent 1500 visit records.',
+    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
   const winRe = /Counting since Oct 17, 2026 — (the first hour of counting|the first \d+ hours of counting|this record is \d+ days? old)/;
@@ -1003,7 +1006,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const fake = {
     arrivals_on_record: 0, visits_total: 10, visits_by_class: { browser: 10 },
     crawlers_claimed: { total: 0, by_name: {} }, fetchers_claimed: { total: 0, by_name: {} },
-    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over the most recent 1500 visit records.',
+    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
   checkP2('counter block (Advisory): the humans line rides with a local total, gloss attached',
@@ -1130,6 +1133,106 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   checkP2('alignment: dashboard plumbing is untouched — its COUNTS constant still uses the legacy address',
     dashBody.includes('var COUNTS = "https://swarmgarden.com/.netlify/functions/counts"'), '');
   await advP.dispose();
+}
+
+// P2-13: exact totals (Oct 18 2026, Caitria's flag) — the counts
+// endpoint and BOTH keyed stats dashboards used to compute their
+// totals over the newest 1,500 raw records read into code; past
+// 1,500 records every published total silently understated the
+// record. The pins below compute the expected totals INDEPENDENTLY —
+// by reading the visit store's rows and counting them here, the old
+// way — and require the endpoints to match, including with a store
+// deliberately filled past the old cap.
+{
+  const sameMap = (a, b) => {
+    const ka = Object.keys(a || {}).sort(), kb = Object.keys(b || {}).sort();
+    return JSON.stringify(ka) === JSON.stringify(kb) && ka.every(k => a[k] === b[k]);
+  };
+  const storeAgg = async (mf) => {
+    const db = await mf.getD1Database('DB');
+    const { results } = await db.prepare('SELECT data FROM visit_log').all();
+    const byClass = {}; let total = 0;
+    for (const row of results || []) {
+      let r; try { r = JSON.parse(row.data); } catch (e) { continue; }
+      total++;
+      byClass[r.cls] = (byClass[r.cls] || 0) + 1;
+    }
+    return { total, byClass };
+  };
+  const pollCounts = async (pred) => {
+    let b = null;
+    for (let i = 0; i < 40; i++) {
+      b = await (await req(open, FN + '/counts')).json();
+      if (pred(b)) return b;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return b;
+  };
+  // Two more real visits, then endpoint vs independent aggregate.
+  await req(open, 'https://swarmgarden.com/record.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)' } });
+  let expected = await storeAgg(open);
+  let payload = await pollCounts(b => b.visits_total === expected.total && expected.total > 0);
+  expected = await storeAgg(open);
+  checkP2('exact counts: visits_total equals an independent aggregate over the visit store',
+    payload.visits_total === expected.total && expected.total > 0,
+    'endpoint ' + payload.visits_total + ' vs store ' + expected.total);
+  checkP2('exact counts: visits_by_class equals the independent aggregate',
+    sameMap(payload.visits_by_class, expected.byClass),
+    JSON.stringify({ endpoint: payload.visits_by_class, store: expected.byClass }));
+  checkP2('exact counts: the stated basis matches the arithmetic (records = total; note states the full dataset)',
+    payload.visits_window_records === payload.visits_total &&
+    payload.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    JSON.stringify({ records: payload.visits_window_records, total: payload.visits_total, note: payload.visits_window_note }));
+  const gStats = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+  checkP2('exact counts: the Garden steward dashboard total equals the same independent aggregate',
+    gStats.total === expected.total && sameMap(gStats.byClass, expected.byClass),
+    'dashboard ' + gStats.total + ' vs store ' + expected.total);
+  // Past the old cap: 1,600 synthetic records straight into the store.
+  {
+    const db = await open.getD1Database('DB');
+    const rec = JSON.stringify({ t: new Date().toISOString(), site: 'swarmgarden.com', path: '/synthetic-exactness-probe', ref: '', country: '', region: '', asn: '', asOrganization: '', ua: 'SyntheticProbe/1.0', cls: 'unknown', purpose: null, method: 'GET', status: 200, md: null, ba: null, via: 'edge', event: 'pageview' });
+    const stmt = db.prepare('INSERT INTO visit_log (t, data) VALUES (?1, ?2)');
+    for (let base = 0; base < 1600; base += 100) {
+      const batch = [];
+      for (let i = 0; i < 100; i++) batch.push(stmt.bind(new Date().toISOString(), rec));
+      await db.batch(batch);
+    }
+  }
+  expected = await storeAgg(open);
+  payload = await pollCounts(b => b.visits_total === expected.total);
+  checkP2('exact counts: with the store past the old 1,500 cap, visits_total is still the full count',
+    payload.visits_total === expected.total && payload.visits_total > 1500,
+    'endpoint ' + payload.visits_total + ' vs store ' + expected.total);
+  checkP2('exact counts: past the cap, by_class and the window key still match the store',
+    sameMap(payload.visits_by_class, expected.byClass) && payload.visits_window_records === payload.visits_total,
+    JSON.stringify({ endpoint: payload.visits_by_class, store: expected.byClass }));
+  const gStats2 = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+  checkP2('exact counts: past the cap, the Garden steward dashboard total is still the full count',
+    gStats2.total === expected.total && sameMap(gStats2.byClass, expected.byClass),
+    'dashboard ' + gStats2.total + ' vs store ' + expected.total);
+  // Advisory: its keyed dashboard gets the same parity treatment on
+  // its OWN dataset.
+  const advX = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key' }
+  });
+  const AX = 'https://bayareaswarmwarning.com';
+  await req(advX, AX + '/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advX, AX + '/dashboard.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advX, AX + '/index.html', { headers: { 'user-agent': 'curl/8.0' } });
+  let aStats = null, aExpected = null;
+  for (let i = 0; i < 40; i++) {
+    aExpected = await storeAgg(advX);
+    aStats = await (await req(advX, AX + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+    if (aStats && aStats.total === aExpected.total && aExpected.total >= 3) break;
+    await new Promise(r => setTimeout(r, 150));
+  }
+  checkP2('exact counts (Advisory): the steward dashboard total equals an independent aggregate over its own store',
+    !!aStats && aStats.total === aExpected.total && aExpected.total >= 3 && sameMap(aStats.byClass, aExpected.byClass),
+    'dashboard ' + (aStats && aStats.total) + ' vs store ' + (aExpected && aExpected.total));
+  await advX.dispose();
 }
 
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');

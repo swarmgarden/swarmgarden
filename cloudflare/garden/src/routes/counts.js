@@ -9,8 +9,23 @@
 // Labelling rules (classification synthesis, Oct 17 2026), unchanged:
 //   - Arrivals are published WITH their composition:
 //     arrivals_over_cap_unread is the part whose content was never read.
-//   - Visit totals are computed over a WINDOW of the most recent
-//     VISITS_WINDOW records, and the JSON says so, in the open.
+//   - Visit totals are computed over ALL recorded visits since
+//     counting began, and the JSON says so, in the open.
+//
+// Correction (Oct 18 2026, Caitria's flag): the launch build computed
+// the visit totals over a WINDOW of the most recent 1,500 records —
+// a read sized for launch volumes and never re-sized as they grew.
+// The Garden's dataset passed 1,500 records on its first night, and
+// from then on the published total permanently understated the
+// record. A counting experiment cannot run on a capped count, so the
+// totals are now exact SQL aggregates over the full dataset
+// (shared/visits.mjs aggregateVisits — the same GROUP BY arithmetic
+// the hourly snapshot pulls). The visits_window_* keys are kept for
+// compatibility and now tell the truth: visits_window_records is the
+// number of records the totals were computed over (the full count),
+// and the note states the full-dataset basis. Nothing was ever lost —
+// every request stayed recorded in the dataset; only this endpoint's
+// arithmetic was capped.
 //
 // Additive fields (Oct 17 2026, backwards-compatible — every
 // Netlify-era key is unchanged): crawlers_claimed / fetchers_claimed
@@ -34,11 +49,9 @@
 //     the Netlify build's prepared-but-inactive BEACON_SEPARATION
 //     branch is gone. Totals are edge-only by construction.
 import { dbListLedger, dbGetReceipt, dbCountSignals, dbCountHumanPresses } from '../lib/db.js';
-import { readRecentVisits } from '../../../shared/visits.mjs';
-import { claimedBot } from '../../../shared/behaviour.mjs';
+import { aggregateVisits } from '../../../shared/visits.mjs';
 import { COUNTING_SINCE } from '../../../shared/counting.mjs';
 
-const VISITS_WINDOW = 1500;
 const INTEREST = ['llms.txt', 'robots.txt', 'agent-skills', 'agent-card', 'security.txt', 'sitemap'];
 
 async function readLedger(env) {
@@ -64,30 +77,26 @@ async function countOverCap(env, receiptNumbers) {
 }
 
 async function readVisits(env) {
-  const recs = await readRecentVisits(env, VISITS_WINDOW);
-  const byClass = {}, byPath = {}, interest = {}, crawlers = {}, fetchers = {};
-  let total = 0;
-  for (const r of recs) {
-    total++;
-    byClass[r.cls] = (byClass[r.cls] || 0) + 1;
-    byPath[r.path] = (byPath[r.path] || 0) + 1;
-    if (INTEREST.some(x => (r.path || '').includes(x))) interest[r.path] = (interest[r.path] || 0) + 1;
-    // Claimed-bot aggregates (additive, Oct 17 2026): the stored UA
-    // strings re-read at query time through the shared dictionary
-    // (shared/behaviour.mjs). A name here is what the visit's own
-    // software announced — a claim, never a verification. Crawlers
-    // (operator-scheduled) and fetchers (user-triggered) are counted
-    // apart, always.
-    const bot = claimedBot(r.ua);
-    if (bot && bot.kind === 'crawler') crawlers[bot.name] = (crawlers[bot.name] || 0) + 1;
-    else if (bot && bot.kind === 'fetcher') fetchers[bot.name] = (fetchers[bot.name] || 0) + 1;
+  // Exact aggregates over the full dataset (Oct 18 2026 correction —
+  // see the header). The claimed-bot aggregates keep their Oct 17
+  // semantics: the stored UA strings re-read at query time through
+  // the shared dictionary (shared/behaviour.mjs), now grouped and
+  // counted in SQL first and folded through the dictionary weighted
+  // by group counts. A name here is what the visit's own software
+  // announced — a claim, never a verification. Crawlers
+  // (operator-scheduled) and fetchers (user-triggered) are counted
+  // apart, always. Only the ranked LISTS are cut (top 10) — a display
+  // limit on a ranked list; every total is the full count.
+  const a = await aggregateVisits(env, ['class', 'path', 'ua']);
+  const interest = {};
+  for (const [p, c] of Object.entries(a.byPath)) {
+    if (INTEREST.some(x => p.includes(x))) interest[p] = c;
   }
-  const top = (obj, n) => Object.fromEntries(Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n));
-  const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
+  const top = (obj, n) => Object.fromEntries(Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n));
   return {
-    total, byClass, topPaths: top(byPath, 10), interest: top(interest, 10),
-    crawlersClaimed: { total: sum(crawlers), by_name: top(crawlers, 10) },
-    fetchersClaimed: { total: sum(fetchers), by_name: top(fetchers, 10) }
+    total: a.total, byClass: a.byClass, topPaths: top(a.byPath, 10), interest: top(interest, 10),
+    crawlersClaimed: a.crawlersClaimed,
+    fetchersClaimed: a.fetchersClaimed
   };
 }
 
@@ -101,8 +110,8 @@ export async function computeCounts(env) {
     visits_total: 0, visits_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
-    visits_window_records: VISITS_WINDOW,
-    visits_window_note: 'Visit totals are computed over the most recent ' + VISITS_WINDOW + ' visit records.',
+    visits_window_records: 0,
+    visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
     counting_since: COUNTING_SINCE,
     updated: new Date().toISOString()
   };
@@ -129,6 +138,9 @@ export async function computeCounts(env) {
   try {
     const v = await readVisits(env);
     out.visits_total = v.total;
+    // The compatibility key tells the truth now: the totals above
+    // were computed over this many records — all of them.
+    out.visits_window_records = v.total;
     out.visits_by_class = v.byClass;
     out.crawlers_claimed = v.crawlersClaimed;
     out.fetchers_claimed = v.fetchersClaimed;
