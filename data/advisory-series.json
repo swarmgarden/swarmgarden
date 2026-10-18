@@ -11,9 +11,9 @@
     {
       "agent-claimed": 4,
       "automation": 139,
-      "browser": 358,
+      "browser": 360,
       "day": "2026-10-18",
-      "total": 651,
+      "total": 653,
       "unknown": 150
     }
   ],
@@ -25,16 +25,16 @@
     "unknown"
   ],
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 1:29:41 PM PT",
-  "generated_at_utc": "2026-10-18T20:29:41Z",
+  "generated_at_pt": "Oct 18, 2026, 1:34:03 PM PT",
+  "generated_at_utc": "2026-10-18T20:34:03Z",
   "site": "advisory",
   "unavailable_notes": [],
   "visitor_days": [
     {
       "day": "2026-10-18",
-      "digest_requests": 278,
+      "digest_requests": 280,
       "distinct_visitors": 61,
-      "repeat_requests": 237
+      "repeat_requests": 239
     }
   ],
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (UTC date, network address, user-agent) under a per-site secret: it links a visitor's requests within a day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. Shared network egress understates the count; rotating egress overstates it."
