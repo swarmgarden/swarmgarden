@@ -8,6 +8,13 @@ import { claimedBot } from './behaviour.mjs';
 // A visit record is the Oct 17 classification shape:
 //   { t, site, path, ref, country, region, asn, asOrganization, ua,
 //     cls, purpose, method, status, md, ba, via, event }
+// plus, from Oct 18 2026 (lens spec A2), the write-time claim fields
+//   { cname, ipverdict, rangever }
+// — the claimed-bot name and its address-range verdict, computed at
+// the edge from cf-connecting-ip transiently (shared/ranges.mjs); the
+// address itself is never stored. Records written before that change
+// carry none of the three; the eras are labelled wherever verdict
+// rates are printed.
 //   cls/purpose come from shared/taxonomy.mjs classify() at write time;
 //   behaviour labels are NOT stored — they are computed at query time
 //   over these records (shared/behaviour.mjs).
@@ -49,8 +56,12 @@ import { claimedBot } from './behaviour.mjs';
 //   blob10  : via              blob11: event
 //   blob12  : region           blob13: asn (as string)
 //   blob14  : asOrganization
+//   blob15  : cname (Oct 18 2026)      blob16: ipverdict
+//   blob17  : rangever
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization'];
+// (AE allowance is 20 blobs; 17 are used. New stored fields are a
+// finite resource — see the lens spec's blob-budget note.)
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -76,6 +87,33 @@ export async function writeVisit(env, record) {
   return 'd1-fallback';
 }
 
+// Asset-companion writes (lens spec B-a): a SEPARATE Analytics Engine
+// dataset per site (the ASSET_VISITS binding), so companion rows can
+// never enter the visit totals. The D1 fallback has no second store:
+// fallback companion rows land in the same visit_log table under
+// event 'asset', and every visit read below (aggregateVisits,
+// readRecentVisits) EXCLUDES event 'asset' on that path — the
+// correctness trap the spec names, pinned by the harness.
+export async function writeAssetVisit(env, record) {
+  if (aeConfigured(env) && env.ASSET_VISITS) {
+    env.ASSET_VISITS.writeDataPoint({
+      indexes: [record.site || ''],
+      blobs: AE_BLOBS.map(k => {
+        const v = record[k];
+        return v === null || v === undefined ? '' : String(v);
+      }),
+      doubles: [
+        Number.isInteger(record.status) ? record.status : -1,
+        (record.md === 0 || record.md === 1) ? record.md : -1
+      ]
+    });
+    return 'analytics-engine-assets';
+  }
+  await env.DB.prepare('INSERT INTO visit_log (t, data) VALUES (?1, ?2)')
+    .bind(record.t, JSON.stringify(record)).run();
+  return 'd1-fallback';
+}
+
 async function aeSql(env, sql) {
   const res = await fetch(
     'https://api.cloudflare.com/client/v4/accounts/' + env.AE_ACCOUNT_ID + '/analytics_engine/sql',
@@ -90,7 +128,10 @@ async function readFromD1(env, limit) {
   const { results } = await env.DB.prepare('SELECT data FROM visit_log ORDER BY id DESC LIMIT ?1')
     .bind(limit).all();
   // Newest first, as written; callers that aggregate sort as needed.
-  return (results || []).map(r => { try { return JSON.parse(r.data); } catch (e) { return null; } }).filter(Boolean);
+  // Asset-companion rows (event 'asset', D1 fallback only — see
+  // writeAssetVisit) are not visit records and never display as such.
+  return (results || []).map(r => { try { return JSON.parse(r.data); } catch (e) { return null; } })
+    .filter(r => r && r.event !== 'asset');
 }
 
 async function readFromAE(env, limit) {
@@ -142,6 +183,13 @@ export async function readRecentVisits(env, limit) {
 //                through the shared claimed-bot dictionary
 //                (shared/behaviour.mjs) weighted by their group
 //                counts — the same claims, computed exactly.
+//   'cname'   -> byCname    (the write-time claimed name, blob15)
+//   'verdict' -> byVerdict  (the write-time range verdict, blob16)
+//   'nameverdict' -> byNameVerdict: the combined (name × verdict)
+//                grouping for the per-name verification-rate tables
+//                (lens spec A4). All three describe the era since the
+//                verdict fields began; earlier records carry neither
+//                field and are skipped, never folded into a verdict.
 // `total` is a dedicated count() over the same scope, never a sum of
 // a grouped map. The scope matches the raw read's: this site's own
 // dataset rows (AE index1 = SITE_HOST). The dataset begins at
@@ -166,8 +214,20 @@ const AGG_DIMS = {
   event: ['byEvent', 'blob11', '$.event', v => !v],
   via: ['byVia', 'blob10', '$.via', null],
   ref: ['byRef', 'blob3', '$.ref', v => !v],
-  ua: ['byUa', 'blob5', '$.ua', null]
+  ua: ['byUa', 'blob5', '$.ua', null],
+  // The verdict fields (Oct 18 2026, lens spec A4): records written
+  // before the fields began carry '' / no key and are skipped, so a
+  // verdict grouping describes the deployment-forward era only.
+  cname: ['byCname', 'blob15', '$.cname', v => !v],
+  verdict: ['byVerdict', 'blob16', '$.ipverdict', v => !v]
 };
+
+// On the D1 fallback path, asset-companion rows share the visit_log
+// table (writeAssetVisit) and must be excluded from every visit
+// aggregate, or the headline totals silently inflate (lens spec B-a's
+// correctness trap). The AE path needs no filter: the datasets are
+// physically separate there.
+const D1_NOT_ASSET = "COALESCE(json_extract(data, '$.event'), '') != 'asset'";
 
 function foldGroups(rows, skip) {
   const map = {};
@@ -195,7 +255,7 @@ export async function aggregateVisits(env, dims) {
       const expr = dim === 'day'
         ? "substr(json_extract(data, '$.t'), 1, 10)"
         : "json_extract(data, '" + d1Path + "')";
-      const { results } = await env.DB.prepare('SELECT ' + expr + ' AS k, COUNT(*) AS c FROM visit_log GROUP BY k').all();
+      const { results } = await env.DB.prepare('SELECT ' + expr + ' AS k, COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET + ' GROUP BY k').all();
       rows = results || [];
     }
     out[key] = foldGroups(rows, skip);
@@ -207,12 +267,34 @@ export async function aggregateVisits(env, dims) {
     const rows = await aeSql(env, 'SELECT count() AS c FROM ' + env.AE_DATASET + " WHERE index1 = '" + host + "'");
     out.total = rows.length ? Number(rows[0].c || 0) : 0;
   } else {
-    const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM visit_log').first();
+    const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET).first();
     out.total = row ? Number(row.c || 0) : 0;
   }
 
   for (const dim of dims) {
-    if (dim === 'ua') {
+    if (dim === 'nameverdict') {
+      // The combined per-name verdict grouping (lens spec A4): one
+      // query returns the full (claimed name × verdict) table.
+      // Records with no name or no verdict (the pre-field era) are
+      // skipped — the table is deployment-forward by construction.
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, 'SELECT blob15 AS n, blob16 AS v, count() AS c FROM ' + env.AE_DATASET +
+          " WHERE index1 = '" + host + "' GROUP BY n, v LIMIT " + GROUP_LIMIT);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY n, v').all();
+        rows = results || [];
+      }
+      const m = {};
+      for (const r of rows) {
+        const n = r.n || '', v = r.v || '';
+        if (!n || !v) continue;
+        m[n] = m[n] || {};
+        m[n][v] = (m[n][v] || 0) + Number(r.c || 0);
+      }
+      out.byNameVerdict = m;
+    } else if (dim === 'ua') {
       const byUa = await runGroup('ua');
       const crawlers = {}, fetchers = {};
       for (const [ua, c] of Object.entries(byUa)) {

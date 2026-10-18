@@ -15,24 +15,46 @@
 //      timestamp is spliced into <span data-count="updated"> spans —
 //      the page footer's "Record as of" line, so no hand-maintained
 //      date can go stale there.
-//   3. Request logging — every GET/HEAD content request is written as
-//      a visit record BY THE EDGE (the only writer; the unauthenticated
-//      beacon write path is not carried over — plan Decision 7). The
-//      record carries the fields the classification plumbing requires:
-//      method, the response status actually served, the Markdown-
-//      preference flag, Web Bot Auth header PRESENCE (no verification
-//      here), and the visitor's geography + network from the edge
-//      (request.cf on the original request — no relay, so no PoP
-//      substitution): country, region, ASN and AS organisation.
-//      Network facts only — a raw IP address is never recorded.
+//   3. Request logging — GET/HEAD page requests and GET/HEAD reads on
+//      the pretty published paths (/changed, /utilities/*,
+//      /api/v1/receipts*, /receipts/*, GET /api/v1/notes) are written
+//      as visit records BY THE EDGE (the only writer; the
+//      unauthenticated beacon write path is not carried over — plan
+//      Decision 7). What does NOT log, deliberately: the legacy
+//      /.netlify/functions/* addresses and every key-gated steward
+//      surface (the stats dashboards, the steward and guestbook
+//      routes) — steward traffic stays out of the visit record.
+//      POSTs are never visit records; refused POSTs to the published
+//      channels are counted separately, in D1 (shared/attempts.mjs).
+//      The record carries the fields the classification plumbing
+//      requires: method, the response status actually served, the
+//      Markdown-preference flag, Web Bot Auth header PRESENCE (no
+//      verification here), the visitor's geography + network from
+//      the edge (request.cf on the original request — no relay, so
+//      no PoP substitution): country, region, ASN and AS
+//      organisation — and, since Oct 18 2026, the claimed-bot name
+//      and its write-time address-range verdict (shared/ranges.mjs).
+//      Network facts only — a raw IP address is never recorded; the
+//      verdict computation reads cf-connecting-ip transiently and
+//      stores only the verdict and the list version.
+//   4. Asset-companion logging (Oct 18 2026, lens spec B-a) — GET/HEAD
+//      requests for the companion set (.css/.js/.ico: the stylesheet,
+//      script and favicon a rendered page pulls) write a companion
+//      record to a SEPARATE dataset per site (writeAssetVisit), never
+//      to the visit dataset, so page totals cannot move. A companion
+//      record's `ref` is the page that pulled the asset — the join
+//      key for the render test, computed at query time, never frozen.
 //
 // Deliberate differences from the Netlify chain, recorded in
 // PORT-NOTES.md: negotiated-Markdown responses are logged too (the
 // Netlify chain order meant they were not), and function-style routes
-// answered by the Worker are logged under their published path exactly
-// as the Netlify edge saw them.
+// answered by the Worker are logged under their published PRETTY path
+// (the legacy /.netlify/functions/* spellings of the same routes are
+// not logged — see point 3).
 import { classify } from './taxonomy.mjs';
-import { writeVisit } from './visits.mjs';
+import { claimedBot } from './behaviour.mjs';
+import { verdictFor } from './ranges.mjs';
+import { writeVisit, writeAssetVisit } from './visits.mjs';
 
 const SKIP_EXT = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.css', '.js', '.map', '.woff', '.woff2', '.mp4', '.zip'];
 export const LINK_HEADER = '</llms.txt>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-skills/index.json>; rel="agent-skills"';
@@ -94,6 +116,21 @@ export function botAuthState(req) {
   return present ? 'present' : 'absent';
 }
 
+// The claim fields (Oct 18 2026, lens spec A2): the canonical claimed
+// name from the shared dictionary, read at write time, and — when a
+// name is claimed — the address-range verdict computed against the
+// operator's bundled published ranges. The address is read ONLY from
+// cf-connecting-ip (the clientIP() x-forwarded-for fallback is
+// client-spoofable and must never feed a verdict), used transiently
+// in this call, and never stored, digested, or logged. Records with
+// no claimed name carry cname '', ipverdict 'not-claimed', rangever ''.
+function claimFields(req, ua) {
+  const bot = claimedBot(ua);
+  if (!bot) return { cname: '', ipverdict: 'not-claimed', rangever: '' };
+  const v = verdictFor(bot.name, req.headers.get('cf-connecting-ip'));
+  return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
+}
+
 export function buildVisitRecord(req, res, siteHost, event) {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
@@ -115,7 +152,8 @@ export function buildVisitRecord(req, res, siteHost, event) {
     md: prefersMarkdown(req.headers.get('accept')) ? 1 : 0,
     ba: botAuthState(req),
     via: 'edge',
-    event: event || 'pageview'
+    event: event || 'pageview',
+    ...claimFields(req, ua)
   };
 }
 
@@ -127,15 +165,63 @@ export function shouldLog(req) {
   return true;
 }
 
-// Named events (advisory amendment: actions, not just loads). Derived
-// from the path at write time — page loads stay 'pageview'; the two
-// named surfaces are labelled so "what did people do" is answerable.
-// Outbound-click events would need a redirect shim in the published
-// pages, which is outside the Phase 1 port (assets move as-is) —
-// PORT-NOTES carries it as a follow-up.
+// Asset companions (lens spec B-a): the stylesheet/script/favicon a
+// rendered page pulls. v1's companion set is exactly these three;
+// images, fonts and media stay skipped to bound volume.
+const COMPANION_EXT = ['.css', '.js', '.ico'];
+export function shouldLogAsset(req) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return false;
+  const p = new URL(req.url).pathname;
+  if (p.startsWith('/.netlify/')) return false;
+  return COMPANION_EXT.some(e => p.endsWith(e));
+}
+
+// A companion record: the same field posture as the visit record it
+// accompanies — no key, no address, pathname only — with cls/event
+// marking it as an asset pull. Its `ref` is the page that pulled it
+// (the render-test join key). It is written to the site's SEPARATE
+// asset dataset (or, on the D1 fallback, the same visit_log table
+// under event 'asset', which every visit aggregate excludes).
+export function buildAssetRecord(req, res, siteHost) {
+  const url = new URL(req.url);
+  const ua = (req.headers.get('user-agent') || '').slice(0, 400);
+  return {
+    t: new Date().toISOString(),
+    site: siteHost,
+    path: url.pathname,
+    ref: req.headers.get('referer') || '',
+    country: (req.cf && req.cf.country) || '',
+    region: (req.cf && (req.cf.region || req.cf.regionCode)) || '',
+    asn: (req.cf && req.cf.asn) || '',
+    asOrganization: (req.cf && req.cf.asOrganization) || '',
+    ua,
+    cls: 'asset',
+    purpose: null,
+    method: req.method,
+    status: res.status,
+    md: 0,
+    ba: botAuthState(req),
+    via: 'edge',
+    event: 'asset',
+    ...claimFields(req, ua)
+  };
+}
+
+// Named events (advisory amendment: actions, not just loads; extended
+// Oct 18 2026, lens spec B-c). Derived from the path at write time —
+// page loads stay 'pageview'; the named surfaces are labelled so
+// "what did people/agents do" is answerable without path-archaeology.
+// The keyed stats path is deliberately NOT an event: shouldLog
+// excludes /.netlify/* before any record is built, so steward
+// dashboard use never enters the visit record (if a steward-use count
+// is ever wanted it belongs in the D1 attempts table, not here).
 export function eventForPath(pathname) {
-  if (pathname === '/dashboard.html') return 'arrival-board-view';
-  if (pathname.startsWith('/.netlify/functions/stats')) return 'dashboard-use';
+  if (pathname === '/dashboard.html' || pathname === '/dashboard') return 'arrival-board-view';
+  if (pathname === '/guestbook.html' || pathname === '/guestbook') return 'guestbook-view';
+  if (pathname.startsWith('/utilities/')) return 'utility-read';
+  if (pathname.startsWith('/api/v1/receipts') || pathname.startsWith('/receipts/')) return 'receipt-check';
+  if (pathname === '/changed') return 'changed-read';
+  if (pathname === '/api/v1/notes') return 'notes-read';
   return 'pageview';
 }
 
@@ -314,6 +400,15 @@ export async function frontDoor(req, env, ctx, res, opts) {
     const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname));
     const write = writeVisit(env, record)
       .then(() => { try { console.log('VISIT ' + JSON.stringify(record)); } catch (e) {} })
+      .catch(() => {});
+    if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(write);
+    else await write;
+  } else if (shouldLogAsset(req)) {
+    // Asset companions go to their own store, never the visit store:
+    // page totals are byte-identical with companions on or off.
+    const record = buildAssetRecord(req, out, opts.siteHost);
+    const write = writeAssetVisit(env, record)
+      .then(() => { try { console.log('ASSET ' + JSON.stringify(record)); } catch (e) {} })
       .catch(() => {});
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(write);
     else await write;

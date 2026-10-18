@@ -1,0 +1,325 @@
+{
+ "generated_at": "2026-10-18T16:02:52.479Z",
+ "tool": "tools/fetch-ranges/fetch-ranges.mjs",
+ "lists": {
+  "gptbot": {
+   "operator": "OpenAI",
+   "source": "https://openai.com/gptbot.json",
+   "creation_time": "2026-09-22T02:00:07.000000",
+   "ipv4_prefixes": 18,
+   "ipv6_prefixes": 0,
+   "file": "gptbot.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "searchbot": {
+   "operator": "OpenAI",
+   "source": "https://openai.com/searchbot.json",
+   "creation_time": "2026-01-02T11:00:00.000000",
+   "ipv4_prefixes": 39,
+   "ipv6_prefixes": 0,
+   "file": "searchbot.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "chatgpt-user": {
+   "operator": "OpenAI",
+   "source": "https://openai.com/chatgpt-user.json",
+   "creation_time": "2026-10-07T16:05:32.418450",
+   "ipv4_prefixes": 234,
+   "ipv6_prefixes": 0,
+   "file": "chatgpt-user.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "googlebot": {
+   "operator": "Google",
+   "source": "https://developers.google.com/static/search/apis/ipranges/googlebot.json",
+   "creation_time": "2026-10-16T14:46:09.000000",
+   "ipv4_prefixes": 170,
+   "ipv6_prefixes": 147,
+   "file": "googlebot.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "google-common-crawlers": {
+   "operator": "Google",
+   "source": "https://developers.google.com/static/crawling/ipranges/common-crawlers.json",
+   "creation_time": "2026-10-16T14:46:09.000000",
+   "ipv4_prefixes": 170,
+   "ipv6_prefixes": 147,
+   "file": "google-common-crawlers.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "google-special-crawlers": {
+   "operator": "Google",
+   "source": "https://developers.google.com/static/crawling/ipranges/special-crawlers.json",
+   "creation_time": "2026-10-16T14:46:08.000000",
+   "ipv4_prefixes": 136,
+   "ipv6_prefixes": 136,
+   "file": "google-special-crawlers.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "google-user-triggered-fetchers": {
+   "operator": "Google",
+   "source": "https://developers.google.com/static/crawling/ipranges/user-triggered-fetchers.json",
+   "creation_time": "2026-10-16T14:46:09.000000",
+   "ipv4_prefixes": 534,
+   "ipv6_prefixes": 534,
+   "file": "google-user-triggered-fetchers.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "anthropic": {
+   "operator": "Anthropic",
+   "source": "https://claude.com/crawling/bots.json",
+   "creation_time": "2026-10-07T00:00:00Z",
+   "ipv4_prefixes": 38,
+   "ipv6_prefixes": 0,
+   "file": "anthropic.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  },
+  "bingbot": {
+   "operator": "Microsoft",
+   "source": "https://www.bing.com/toolbox/bingbot.json",
+   "creation_time": "2024-01-03T10:00:00.121331",
+   "ipv4_prefixes": 28,
+   "ipv6_prefixes": 0,
+   "file": "bingbot.json",
+   "fetched_at": "2026-10-18T16:02:52.479Z"
+  }
+ },
+ "names": {
+  "Claude-SearchBot": {
+   "operator": "Anthropic",
+   "list": "anthropic"
+  },
+  "OAI-SearchBot": {
+   "operator": "OpenAI",
+   "list": "searchbot"
+  },
+  "Meta-ExternalAgent": {
+   "operator": "Meta",
+   "list": null,
+   "reason": "no-list",
+   "note": "Meta publishes no per-crawler range file (its crawler addresses ride its AS32934 announcements only)."
+  },
+  "Meta Web Indexer": {
+   "operator": "Meta",
+   "list": null,
+   "reason": "no-list",
+   "note": "Meta publishes no per-crawler range file."
+  },
+  "PerplexityBot": {
+   "operator": "Perplexity",
+   "list": null,
+   "reason": "no-list",
+   "note": "Perplexity publishes no machine-readable range file."
+  },
+  "facebookexternalhit": {
+   "operator": "Meta",
+   "list": null,
+   "reason": "no-list",
+   "note": "Meta publishes no per-crawler range file."
+  },
+  "Internet Archive": {
+   "operator": "Internet Archive",
+   "list": null,
+   "reason": "no-list",
+   "note": "The Internet Archive publishes no machine-readable range file for archive.org_bot."
+  },
+  "ClaudeBot": {
+   "operator": "Anthropic",
+   "list": "anthropic"
+  },
+  "Googlebot": {
+   "operator": "Google",
+   "list": "googlebot"
+  },
+  "Amazonbot": {
+   "operator": "Amazon",
+   "list": null,
+   "reason": "no-list",
+   "note": "Amazon publishes no usable range list for this crawler."
+  },
+  "Bytespider": {
+   "operator": "ByteDance",
+   "list": null,
+   "reason": "no-list",
+   "note": "ByteDance publishes no usable range list for this crawler."
+  },
+  "DuckDuckBot": {
+   "operator": "DuckDuckGo",
+   "list": null,
+   "reason": "no-list",
+   "note": "DuckDuckGo lists addresses on a web page; no machine-readable range file is published."
+  },
+  "YandexBot": {
+   "operator": "Yandex",
+   "list": null,
+   "reason": "no-list",
+   "note": "Yandex publishes no machine-readable range file."
+  },
+  "Baiduspider": {
+   "operator": "Baidu",
+   "list": null,
+   "reason": "no-list",
+   "note": "Baidu publishes no machine-readable range file."
+  },
+  "Pinterestbot": {
+   "operator": "Pinterest",
+   "list": null,
+   "reason": "no-list",
+   "note": "Pinterest publishes no machine-readable range file."
+  },
+  "LinkedInBot": {
+   "operator": "LinkedIn",
+   "list": null,
+   "reason": "no-list",
+   "note": "LinkedIn publishes no machine-readable range file."
+  },
+  "Twitterbot": {
+   "operator": "X",
+   "list": null,
+   "reason": "no-list",
+   "note": "X publishes no machine-readable range file for Twitterbot."
+  },
+  "Discordbot": {
+   "operator": "Discord",
+   "list": null,
+   "reason": "no-list",
+   "note": "Discord publishes no machine-readable range file."
+  },
+  "GoogleOther": {
+   "operator": "Google",
+   "list": "google-common-crawlers"
+  },
+  "SemrushBot": {
+   "operator": "Semrush",
+   "list": null,
+   "reason": "no-list",
+   "note": "Semrush publishes no machine-readable range file."
+  },
+  "AhrefsBot": {
+   "operator": "Ahrefs",
+   "list": null,
+   "reason": "no-list",
+   "note": "Ahrefs publishes no machine-readable range file."
+  },
+  "PetalBot": {
+   "operator": "Huawei",
+   "list": null,
+   "reason": "no-list",
+   "note": "Huawei publishes no machine-readable range file for PetalBot."
+  },
+  "Applebot": {
+   "operator": "Apple",
+   "list": null,
+   "reason": "no-list",
+   "note": "Apple publishes no machine-readable range file for Applebot."
+  },
+  "Bingbot": {
+   "operator": "Microsoft",
+   "list": "bingbot"
+  },
+  "GPTBot": {
+   "operator": "OpenAI",
+   "list": "gptbot"
+  },
+  "CCBot": {
+   "operator": "Common Crawl",
+   "list": null,
+   "reason": "no-list",
+   "note": "Common Crawl publishes no fixed range list (the crawl rides cloud address space)."
+  },
+  "AI2Bot": {
+   "operator": "Ai2",
+   "list": null,
+   "reason": "no-list",
+   "note": "Ai2 publishes no machine-readable range file."
+  },
+  "Cohere": {
+   "operator": "Cohere",
+   "list": null,
+   "reason": "no-list",
+   "note": "Cohere publishes no machine-readable range file."
+  },
+  "Diffbot": {
+   "operator": "Diffbot",
+   "list": null,
+   "reason": "no-list",
+   "note": "Diffbot publishes no machine-readable range file."
+  },
+  "YouBot": {
+   "operator": "You.com",
+   "list": null,
+   "reason": "no-list",
+   "note": "You.com publishes no machine-readable range file."
+  },
+  "Webzio": {
+   "operator": "Webz.io",
+   "list": null,
+   "reason": "no-list",
+   "note": "Webz.io publishes no machine-readable range file."
+  },
+  "MJ12bot": {
+   "operator": "Majestic",
+   "list": null,
+   "reason": "no-list",
+   "note": "Majestic publishes no machine-readable range file."
+  },
+  "DotBot": {
+   "operator": "Moz",
+   "list": null,
+   "reason": "no-list",
+   "note": "Moz publishes no machine-readable range file for DotBot."
+  },
+  "MSNBot": {
+   "operator": "Microsoft",
+   "list": null,
+   "reason": "no-list",
+   "note": "Microsoft publishes a range file for Bingbot only; no usable list is published for this retired name."
+  },
+  "Yahoo Slurp": {
+   "operator": "Yahoo",
+   "list": null,
+   "reason": "no-list",
+   "note": "Yahoo publishes no machine-readable range file for Slurp."
+  },
+  "Anthropic": {
+   "operator": "Anthropic",
+   "list": "anthropic"
+  },
+  "Meta-ExternalFetcher": {
+   "operator": "Meta",
+   "list": null,
+   "reason": "no-list",
+   "note": "Meta publishes no per-crawler range file."
+  },
+  "Perplexity-User": {
+   "operator": "Perplexity",
+   "list": null,
+   "reason": "no-list",
+   "note": "Perplexity publishes no machine-readable range file."
+  },
+  "ChatGPT-User": {
+   "operator": "OpenAI",
+   "list": "chatgpt-user"
+  },
+  "Claude-User": {
+   "operator": "Anthropic",
+   "list": "anthropic"
+  },
+  "Google-Agent": {
+   "operator": "Google",
+   "list": "google-user-triggered-fetchers"
+  },
+  "MistralAI-User": {
+   "operator": "Mistral AI",
+   "list": null,
+   "reason": "no-list",
+   "note": "Mistral AI publishes no machine-readable range file."
+  },
+  "DuckAssistBot": {
+   "operator": "DuckDuckGo",
+   "list": null,
+   "reason": "no-list",
+   "note": "DuckDuckGo publishes no machine-readable range file for this fetcher."
+  }
+ }
+}
