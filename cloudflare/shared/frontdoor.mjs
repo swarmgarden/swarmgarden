@@ -187,7 +187,12 @@ export async function servePage(req, env) {
 // element. The published page carries the no-numbers fallback inside
 // that element, so a null return (counts unavailable) leaves the
 // fallback standing — numbers are never zero-filled or reused stale.
-export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock, getWindow) {
+// getAgentClaimed() is likewise optional (added Oct 17 2026, the
+// Garden homepage's claimed figure): when supplied and it returns a
+// number, that number (the counts payload's visits_by_class
+// agent-claimed count, from the serving Worker's own visit store)
+// replaces the content of any <span data-count="agent-claimed">.
+export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock, getWindow, getAgentClaimed) {
   try {
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return res;
@@ -236,6 +241,14 @@ export async function injectCounts(res, getArrivals, getUpdated, getVisits, getC
         });
       }
     }
+    if (typeof getAgentClaimed === 'function') {
+      const a = await getAgentClaimed();
+      if (typeof a === 'number') {
+        rw.on('span[data-count="agent-claimed"]', {
+          element(el) { el.setInnerContent(String(a)); }
+        });
+      }
+    }
     return rw.transform(new Response(res.body, { status: res.status, headers }));
   } catch (e) {
     return res;
@@ -279,7 +292,7 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = new Response(out.body, { status: out.status, headers });
   }
   if (req.method === 'GET' && opts && opts.getArrivals) {
-    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock, opts.getWindow);
+    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock, opts.getWindow, opts.getAgentClaimed);
   }
   if (req.method === 'GET' && opts && typeof opts.getCounterText === 'function') {
     out = await injectCounterText(out, opts.getCounterText);

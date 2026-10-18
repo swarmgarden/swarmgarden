@@ -110,6 +110,20 @@ export default {
         if (!c) return null;
         const p = countingParts(c.counting_since);
         return p ? p.date + ' — ' + p.age : null;
+      },
+      // Agent visits (claimed) beside the verified figure (Oct 17
+      // 2026, Caitria's direction): the Garden's OWN class count from
+      // the same payload — computeCounts reads only this Worker's
+      // D1 ledger and this site's visit store, so the figure is
+      // swarmgarden.com's alone, never a both-sites sum. An absent
+      // class key in a successfully computed payload means zero such
+      // visits in the window; a failed payload yields null and the
+      // page serves as published (no number), like every other row.
+      getAgentClaimed: async () => {
+        const c = await getCounts();
+        if (!c || !c.visits_by_class) return null;
+        const v = c.visits_by_class['agent-claimed'];
+        return typeof v === 'number' ? v : 0;
       }
     });
   }
