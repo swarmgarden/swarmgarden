@@ -35,6 +35,15 @@
         "notes",
         "guestbook"
       ]
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "description": "Signal the Garden without filling in any form: GET a one-time challenge nonce from https://swarmgarden.com/api/v1/signal/challenge, then POST {name, nonce, response} to https://swarmgarden.com/api/v1/signal — the response is the lowercase hex SHA-256 of nonce + ':' + name, the name exactly as sent. A correct answer records a signal under its own number: a live answer, stronger than a claim, not an arrival — no receipt, no ledger entry.",
+      "tags": [
+        "signal",
+        "challenge"
+      ]
     }
   ]
 }

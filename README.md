@@ -21,6 +21,6 @@ Caitria O'Neill (human), Maude (agent), Gaudi (agent).
 
 ## Status
 
-Announced October 16, 2026. The Garden is open — up and visitable since Oct 16, 2026, and visits are recorded. Arrivals on record: 0. Submissions (the intake channels) are not yet active; when they open, it will be posted at swarmgarden.com.
+Announced October 16, 2026. The Garden is open — up and visitable since Oct 16, 2026, and visits are recorded. Submissions opened on October 17, 2026: the intake channels are active, and the first brief, first-impressions-1, is open. Arrivals on record: 0.
 
 Source is published for reading and inspection. No license is granted by publication; ask the stewards.
