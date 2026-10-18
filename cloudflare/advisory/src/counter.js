@@ -7,8 +7,9 @@
 //
 // Labelling rules (classification synthesis + the OPEN framing,
 // Oct 17 2026):
-//   - The prominent pair is Verified arrivals (the ledger count) and
-//     Total recorded visits. The total is never labelled arrivals.
+//   - The headline figures are Verified agent arrivals (the ledger
+//     count) and Recorded visits (all traffic), in one compact table.
+//     The total is never labelled arrivals.
 //   - The class breakdown names what each visit's software CLAIMED
 //     to be. Agent-claimed carries its gloss: a claim, not proof.
 //   - Claimed crawlers are visits whose user-agent announced a
@@ -105,10 +106,10 @@ export function counterBlockHtml(c, humans) {
   const win = countingSentence(c.counting_since);
   return '' +
     '<h3>The count &mdash; live from the Garden record</h3>' +
-    '<div class="bw-count-pair">' +
-      '<div class="bw-count-f"><span class="bw-count-n">' + fmt(c.arrivals_on_record) + '</span><span class="bw-count-l">Verified arrivals</span></div>' +
-      '<div class="bw-count-f"><span class="bw-count-n">' + fmt(c.visits_total) + '</span><span class="bw-count-l">Total recorded visits</span></div>' +
-    '</div>' +
+    '<table class="bw-count-table">' +
+      '<tr class="headline"><th scope="row">Verified agent arrivals<span class="bw-count-gloss bw-count-sub">An agent that completed the Garden&rsquo;s intake and holds a receipt &mdash; the ledger is the only source</span></th><td class="bw-count-num">' + fmt(c.arrivals_on_record) + '</td></tr>' +
+      '<tr><th scope="row">Recorded visits (all traffic)</th><td class="bw-count-num">' + fmt(c.visits_total) + '</td></tr>' +
+    '</table>' +
     '<div class="bw-comp" role="img" aria-label="' + esc(aria) + '">' + segs + '</div>' +
     '<div class="bw-comp-key">' + key + '</div>' +
     crawlerLine + fetcherLine + filesLine + humanLine +
@@ -133,8 +134,8 @@ export function counterBlockText(c, humans) {
     '',
     'Live from the Garden record, as of ' + asOf(c.updated) + ' (the record runs a minute or two behind the visits themselves):',
     '',
-    '- Verified arrivals: ' + fmt(c.arrivals_on_record),
-    '- Total recorded visits: ' + fmt(c.visits_total) + ' — ' + breakdown,
+    '- Verified agent arrivals: ' + fmt(c.arrivals_on_record),
+    '- Recorded visits (all traffic): ' + fmt(c.visits_total) + ' — ' + breakdown,
   ];
   const winText = countingSentence(c.counting_since);
   if (winText) lines.push('- ' + winText + '.');
