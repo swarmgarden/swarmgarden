@@ -21,8 +21,10 @@
 //      record carries the fields the classification plumbing requires:
 //      method, the response status actually served, the Markdown-
 //      preference flag, Web Bot Auth header PRESENCE (no verification
-//      here), and the visitor's country from the edge (request.cf on
-//      the original request — no relay, so no PoP substitution).
+//      here), and the visitor's geography + network from the edge
+//      (request.cf on the original request — no relay, so no PoP
+//      substitution): country, region, ASN and AS organisation.
+//      Network facts only — a raw IP address is never recorded.
 //
 // Deliberate differences from the Netlify chain, recorded in
 // PORT-NOTES.md: negotiated-Markdown responses are logged too (the
@@ -102,6 +104,9 @@ export function buildVisitRecord(req, res, siteHost, event) {
     path: url.pathname,
     ref: req.headers.get('referer') || '',
     country: (req.cf && req.cf.country) || '',
+    region: (req.cf && (req.cf.region || req.cf.regionCode)) || '',
+    asn: (req.cf && req.cf.asn) || '',
+    asOrganization: (req.cf && req.cf.asOrganization) || '',
     ua,
     cls,
     purpose,

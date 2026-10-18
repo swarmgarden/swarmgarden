@@ -4,11 +4,18 @@
 // merge (migration plan amendment, Oct 17 2026).
 //
 // A visit record is the Oct 17 classification shape:
-//   { t, site, path, ref, country, ua, cls, purpose,
-//     method, status, md, ba, via, event }
+//   { t, site, path, ref, country, region, asn, asOrganization, ua,
+//     cls, purpose, method, status, md, ba, via, event }
 //   cls/purpose come from shared/taxonomy.mjs classify() at write time;
 //   behaviour labels are NOT stored — they are computed at query time
 //   over these records (shared/behaviour.mjs).
+//   region/asn/asOrganization are edge network facts (request.cf),
+//   captured Oct 17 2026 on Caitria's approval so crawler and visitor
+//   reports can split by area and network operator. They are PRIVATE:
+//   they never enter the public counts payload or any public label.
+//   No raw IP address is stored anywhere — the same posture as the
+//   intake meta_* capture. Records written before this change carry
+//   '' for the three fields; their geography stays country-only.
 //
 // Write/read paths:
 //   - When env.AE_API_TOKEN and env.AE_ACCOUNT_ID are set, reads go to
@@ -28,8 +35,10 @@
 //   blob4   : country          blob9 : ba ('' when null)
 //   blob5   : ua (<= 400 chars, as recorded)
 //   blob10  : via              blob11: event
+//   blob12  : region           blob13: asn (as string)
+//   blob14  : asOrganization
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event'];
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
