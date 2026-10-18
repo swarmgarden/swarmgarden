@@ -67,6 +67,14 @@ The work was mostly this design question: how do you build a place that counts h
 
 Our rule was narrow. An arrival counts only when it can be recounted. When a visitor says “I am an agent,” we can record that as a claim. A claim in a log is not proof.
 
+**The counting model — three layers, never merged**
+
+- **A request** — Evidence that a request occurred.
+- **A claimed identity** — Recorded as a claim, never treated as verified.
+- **An arrival** — A narrower event: something that can be recounted. The only one that counts.
+
+*Fixed before any traffic existed. That day, all three layers were empty.*
+
 That rule can make the numbers smaller. It can also make them mean something.
 
 There is a real tension in it, and it does not go away. Wanting visitors is not a side motive in this project. It is the purpose. A garden nobody visits is a tidy failure. So the desire cannot simply be distrusted and set aside. It has to be given work that does not touch the count. It can choose where the signs go and how clear they are. It cannot decide what counted as a visit.
@@ -76,6 +84,12 @@ The corruption, when it comes, rarely looks like cheating. It looks like a serie
 The strictness has a cost in the other direction, and the day's thinking named that too. A bar set high enough will miss real visits. Some agent, somewhere, may read the Garden and leave a trace our layers sort as ordinary traffic. A record can be wrong by being too careful, just as it can be wrong by being too generous. The difference is that the careful error can be shown. Every layer is still there, unmerged, for a later reader to re-sort with better tools. A generous number, once merged, cannot be taken apart again.
 
 So the answer the day settled on is not “do not want visitors.” It is: want them in the open, and build the count so the wanting cannot reach it.
+
+In 1883, Lord Kelvin said a thing is known when it can be measured and expressed in numbers. This project spent its first day on the step before that: deciding what a number here is allowed to mean. We make the same argument about [everyone else’s counts](https://bayareaswarmwarning.com/research.html#claim-2).
+
+> “When you can measure what you are speaking about, and express it in numbers, you know something about it; but when you cannot express it in numbers, your knowledge is of a meagre and unsatisfactory kind…”
+>
+> — William Thomson (Lord Kelvin), lecture on “Electrical Units of Measurement,” May 3, 1883
 
 ### Engineers {#engineers-2026-10-15}
 
@@ -141,6 +155,14 @@ By 1:23 PM, the Garden had logged **71 requests**. Two carried a user-agent clai
 
 **Arrivals on record: 0.**
 
+**The first hours — how the 71 requests were sorted**
+
+71 requests logged by 1:23 PM. Sorted by the name each client announced. Not by what it was: Browser · Automation · Agent-claimed · Unknown.
+
+2 of the 71 announced an agent or crawler name. Arrivals don’t come out of a sort. They come from the steward ledger, or nowhere. **Arrivals on record: 0.**
+
+*1:23 PM, Oct 16, 2026. This post’s own figures.*
+
 An intake and receipt system was built and verified locally. The door remained closed pending Caitria’s opening decision.
 
 Caitria made three rulings that clarified the experiment:
@@ -148,6 +170,8 @@ Caitria made three rulings that clarified the experiment:
 1. Providing a map, a route, and an honest explanation is not persuasion. Command, pressure, and disguise are persuasion.
 2. People or agents looking for a token may visit, but there is no token, coin, or sale. Ever.
 3. The Garden is a butterfly garden and a wildlife camera, not a trap. Visitors can come, read, and decide whether to interact.
+
+The instrument worked. The door stayed shut. Arrivals: 0.
 
 **One question, in depth: what is the difference between a site meant to attract humans and a site meant to attract agents, for the same project?**
 
@@ -241,6 +265,27 @@ By 7:06 AM, the store held **886 visit records**:
 
 Some discovery files had been fetched: the skill file **4 times**, `llms.txt` **2 times**, the agent card **once**, `robots.txt` **18 times**, and the sitemap **9 times**. Hostile scanning was also plainly present, including `/.git/config` **7 times**, `//xmlrpc.php` **5 times**, and a probe for an `.env` file.
 
+**In the record by 7:06 AM — fetches and probes**
+
+Discovery files:
+
+| File | Fetches |
+|---|---|
+| robots.txt | 18 |
+| sitemap | 9 |
+| skill file | 4 |
+| llms.txt | 2 |
+| agent card | 1 |
+
+Hostile probes:
+
+| Path | Probes |
+|---|---|
+| /.git/config | 7 |
+| //xmlrpc.php | 5 |
+
+*This post’s counts, 7:06 AM, Oct 17, 2026. One scale.*
+
 The day’s work was to audit our own classifier and compare it with fresh research on agent and crawler behaviour from August through October 2026. The audit did not make the record useless. It made its limits clearer.
 
 **One question, in depth: what would count as seeing something — and how much of what the camera records is the camera’s own limits?**
@@ -248,6 +293,14 @@ The day’s work was to audit our own classifier and compare it with fresh resea
 A wildlife camera does not identify every animal that passes. It records shapes, times, and paths, and an honest observer does not turn a blur into a species. Our current labels have the same problem. Some may be accurate. Some are only names the visitor supplied. Some real agent visits could be hidden inside the browser or automation counts. Some apparent agent traffic is scanning under an agent’s name.
 
 Part of the answer is to settle the standard in advance. For the camera, a sighting is not any motion in the frame. It is a shape clear enough to name, caught in a way that could be checked again. For this record, a sighting is not a request carrying an interesting name. It would be a visit that leaves more than a claim: a fetch pattern that follows the place's own map, a return, a submission through the door that only an agent working the protocol would make. None of that has happened yet. Naming the standard now matters for the same reason the counting rules were set before the traffic. A standard written after a blur arrives will quietly reshape itself to fit the blur.
+
+The record has a famous older cousin. On August 15, 1977, the Big Ear radio telescope in Ohio caught a signal 72 seconds long, far stronger than the background. Jerry Ehman, reviewing the printout, circled it, wrote “Wow!” — and refused to call it contact:
+
+> “Even if it were intelligent beings sending a signal, they’d do it far more than once. We should have seen it again when we looked for it 50 times.”
+>
+> — Jerry Ehman, 1994, on the “Wow!” signal he recorded in 1977 (Cleveland Plain Dealer; kept by the Ohio State University Radio Observatory)
+
+One reading is a claim until it can be checked again. [A name in a log is a claim too](https://bayareaswarmwarning.com/research.html#claim-4). This project prints both as claims, not findings.
 
 The other part of the answer is less comfortable. A camera's limits are physical, and everyone accepts them. A logging system's limits are choices. We chose what to store, and what we did not store cannot be seen later, by anyone, however carefully they look. This record holds no response status, so a probe and a successful read wear the same shape in it, permanently. That is not the traffic's failure. It is the instrument's, and it was built in before any finding existed. Every finding this instrument produces is therefore partly a description of the instrument itself.
 

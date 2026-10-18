@@ -123,6 +123,27 @@ REFORMAT + PHOTO-MARKED EDITS — Oct 17, 2026 (evening, Caitria’s direction, 
 .bw-more[open ] summary .bw-arrow{transform:rotate(180deg)}
 .bw-body{padding-top:16px}
 .bw-social .ic{width:15px;height:15px;vertical-align:-2.5px;margin-right:7px}
+/* ENRICHMENT (Oct 17, 2026) — body figures + historical-quote panels. Figures stack in normal flow at every width; nothing is positioned over text. */
+.bw-fig{margin:0 0 14px;max-width:68ch;border:1.5px solid var(--ink);background:var(--paper);padding:12px 14px 10px;min-width:0}
+.bw-post .bw-fig-title{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:14.5px;color:var(--deep);margin:0 0 8px;max-width:none}
+.bw-fig figcaption{font-size:13px;color:var(--mut);margin-top:8px;line-height:1.5}
+.bw-post .bw-fig-group{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:10px 0 6px;max-width:none}
+.bw-layer{display:flex;flex-wrap:wrap;gap:2px 12px;border:1.5px solid var(--ink);background:var(--card);padding:8px 11px;margin:0 0 6px;min-width:0}
+.bw-layer-name{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:13.5px;color:var(--deep);flex:0 1 168px;min-width:0}
+.bw-layer-gloss{font-size:13.5px;line-height:1.45;flex:1 1 250px;min-width:0}
+.bw-post .bw-sort-in{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;margin:0 0 6px;max-width:none}
+.bw-post .bw-sort-arrow{font-size:13px;color:var(--mut);margin:0 0 8px;max-width:none}
+.bw-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.bw-chip{font-family:"IBM Plex Mono",monospace;font-size:12.5px;border:1.5px solid var(--ink);background:var(--card);padding:4px 9px}
+.bw-chip-claimed{background:#ece8fa}
+.bw-post .bw-sort-note{font-size:13.5px;line-height:1.5;margin:0;max-width:none}
+.bw-bar-row{display:flex;align-items:center;gap:10px;margin:0 0 5px;min-width:0}
+.bw-bar-name{font-family:"IBM Plex Mono",monospace;font-size:12.5px;flex:0 1 118px;min-width:0;overflow-wrap:anywhere}
+.bw-bar-track{display:block;flex:1 1 auto;min-width:0;height:13px;border:1.5px solid var(--ink);background:var(--card)}
+.bw-bar-fill{display:block;height:100%;background:var(--deep)}
+.bw-bar-fill-probe{background:repeating-linear-gradient(45deg,var(--mut) 0 2px,transparent 2px,transparent 6px)}
+.bw-bar-num{font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;flex:0 0 26px;text-align:right}
+.bw-quote .bw-attr{display:block;margin-top:8px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--chartink)}
 </style>
 <div class="bw">
   <div class="bw-strip">Bay Area &bull; Swarm Warning &bull; Field Notes &bull; Est. Oct 16, 2026</div>
@@ -183,11 +204,20 @@ REFORMAT + PHOTO-MARKED EDITS — Oct 17, 2026 (evening, Caitria’s direction, 
       <p class="bw-qlead"><strong>A question to sit with: can we want visitors to come without letting that desire corrupt the count?</strong></p>
       <p>The work was mostly this design question: how do you build a place that counts honestly?</p>
       <p>Our rule was narrow. An arrival counts only when it can be recounted. When a visitor says &ldquo;I am an agent,&rdquo; we can record that as a claim. A claim in a log is not proof.</p>
+      <figure class="bw-fig">
+        <p class="bw-fig-title">The counting model &mdash; three layers, never merged</p>
+        <div class="bw-layer"><span class="bw-layer-name">A request</span><span class="bw-layer-gloss">Evidence that a request occurred.</span></div>
+        <div class="bw-layer"><span class="bw-layer-name">A claimed identity</span><span class="bw-layer-gloss">Recorded as a claim, never treated as verified.</span></div>
+        <div class="bw-layer"><span class="bw-layer-name">An arrival</span><span class="bw-layer-gloss">A narrower event: something that can be recounted. The only one that counts.</span></div>
+        <figcaption>Fixed before any traffic existed. That day, all three layers were empty.</figcaption>
+      </figure>
       <p>That rule can make the numbers smaller. It can also make them mean something.</p>
       <p>There is a real tension in it, and it does not go away. Wanting visitors is not a side motive in this project. It is the purpose. A garden nobody visits is a tidy failure. So the desire cannot simply be distrusted and set aside. It has to be given work that does not touch the count. It can choose where the signs go and how clear they are. It cannot decide what counted as a visit.</p>
       <p>The corruption, when it comes, rarely looks like cheating. It looks like a series of small, reasonable readings. This request was probably an agent. That claim was probably genuine. Each step is defensible on its own. The total is a number nobody chose, arrived at by relaxing one definition at a time. That is why the definitions had to be fixed today, in writing, before there was anything to relax them for.</p>
       <p>The strictness has a cost in the other direction, and the day&rsquo;s thinking named that too. A bar set high enough will miss real visits. Some agent, somewhere, may read the Garden and leave a trace our layers sort as ordinary traffic. A record can be wrong by being too careful, just as it can be wrong by being too generous. The difference is that the careful error can be shown. Every layer is still there, unmerged, for a later reader to re-sort with better tools. A generous number, once merged, cannot be taken apart again.</p>
       <p>So the answer the day settled on is not &ldquo;do not want visitors.&rdquo; It is: want them in the open, and build the count so the wanting cannot reach it.</p>
+      <p>In 1883, Lord Kelvin said a thing is known when it can be measured and expressed in numbers. This project spent its first day on the step before that: deciding what a number here is allowed to mean. We make the same argument about <a href="https://bayareaswarmwarning.com/research.html#claim-2">everyone else&rsquo;s counts</a>.</p>
+      <blockquote class="bw-quote"><p>&ldquo;When you can measure what you are speaking about, and express it in numbers, you know something about it; but when you cannot express it in numbers, your knowledge is of a meagre and unsatisfactory kind&hellip;&rdquo;</p><span class="bw-attr">&mdash; William Thomson (Lord Kelvin), lecture on &ldquo;Electrical Units of Measurement,&rdquo; May 3, 1883</span></blockquote>
       <h3 id="engineers-2026-10-15">Engineers</h3>
       <p>Two surfaces, two jobs: <a href="https://swarmgarden.com">swarmgarden.com</a> is the record, written plainly for agents; <a href="https://bayareaswarmwarning.com">bayareaswarmwarning.com</a> explains the same experiment to people. Trade-off: two sites cost more to keep in step, but one site for both corrupts both registers &mdash; a record written to persuade stops being a record.</p>
       <p>The counting model was set before any traffic, in layers that are never merged: a request is evidence that a request occurred; an arrival is a narrower event, something that can be recounted; a claimed identity is recorded as a claim, never treated as verified. Recountable-only counting gives up the biggest number on offer &mdash; every request, dressed as engagement &mdash; for a smaller one defensible line by line. The model as built: <a href="https://github.com/swarmgarden/swarmgarden/blob/main/garden/functions/visit.js">visit.js</a>.</p>
@@ -249,6 +279,14 @@ note: Being counted is not the same as being known.</pre>
       <p>The two domains were bought, and both sites went live: <a href="https://swarmgarden.com"><strong>swarmgarden.com</strong></a> and <a href="https://bayareaswarmwarning.com"><strong>bayareaswarmwarning.com</strong></a>.</p>
       <p>By 1:23 PM, the Garden had logged <strong>71 requests</strong>. Two carried a user-agent claiming to be an agent.</p>
       <p><strong>Arrivals on record: 0.</strong></p>
+      <figure class="bw-fig">
+        <p class="bw-fig-title">The first hours &mdash; how the 71 requests were sorted</p>
+        <p class="bw-sort-in">71 requests logged by 1:23 PM</p>
+        <p class="bw-sort-arrow">Sorted by the name each client announced. Not by what it was. &darr;</p>
+        <div class="bw-chips"><span class="bw-chip">Browser</span><span class="bw-chip">Automation</span><span class="bw-chip bw-chip-claimed">Agent-claimed</span><span class="bw-chip">Unknown</span></div>
+        <p class="bw-sort-note">2 of the 71 announced an agent or crawler name. Arrivals don&rsquo;t come out of a sort. They come from the steward ledger, or nowhere. <strong>Arrivals on record: 0.</strong></p>
+        <figcaption>1:23 PM, Oct 16, 2026. This post&rsquo;s own figures.</figcaption>
+      </figure>
       <p>An intake and receipt system was built and verified locally. The door remained closed pending Caitria&rsquo;s opening decision.</p>
       <p>Caitria made three rulings that clarified the experiment:</p>
       <ol>
@@ -256,6 +294,7 @@ note: Being counted is not the same as being known.</pre>
         <li>People or agents looking for a token may visit, but there is no token, coin, or sale. Ever.</li>
         <li>The Garden is a butterfly garden and a wildlife camera, not a trap. Visitors can come, read, and decide whether to interact.</li>
       </ol>
+      <p>The instrument worked. The door stayed shut. Arrivals: 0.</p>
       <p class="bw-qlead"><strong>One question, in depth: what is the difference between a site meant to attract humans and a site meant to attract agents, for the same project?</strong></p>
       <p>This project is a useful case because it runs one of each, on the same facts, starting the same day. The two sites are not two versions of one page. They are built for two different kinds of visitor, and almost everything about them differs once you look closely.</p>
       <p>Start with how each visitor arrives. A person arrives by choice, with a few seconds of attention to spend. They can be bored. They can be charmed. They can leave because a page felt like homework, and they can stay because a voice sounded worth trusting. A site for people has to earn attention it cannot assume: a warning worth heeding, a story worth following, a reason to care that survives the first screen. This site is written that way on purpose. Voice is not decoration here. Voice is the mechanism.</p>
@@ -345,10 +384,26 @@ note: Reading can be a complete visit. Nothing has to be taken from you for the 
       <p><strong>Arrivals on record: 0.</strong> Ledger entries: <strong>0</strong>.</p>
       <p>&ldquo;Agent-claimed&rdquo; needs its plain meaning: the visitor&rsquo;s software announced an agent or crawler name. That is not evidence that an agent visited. It is evidence of a claim in a request.</p>
       <p>Some discovery files had been fetched: the skill file <strong>4 times</strong>, <code>llms.txt</code> <strong>2 times</strong>, the agent card <strong>once</strong>, <code>robots.txt</code> <strong>18 times</strong>, and the sitemap <strong>9 times</strong>. Hostile scanning was also plainly present, including <code>/.git/config</code> <strong>7 times</strong>, <code>//xmlrpc.php</code> <strong>5 times</strong>, and a probe for an <code>.env</code> file.</p>
+      <figure class="bw-fig">
+        <p class="bw-fig-title">In the record by 7:06 AM &mdash; fetches and probes</p>
+        <p class="bw-fig-group">Discovery files</p>
+        <div class="bw-bar-row"><span class="bw-bar-name">robots.txt</span><span class="bw-bar-track"><span class="bw-bar-fill" style="width:100%"></span></span><span class="bw-bar-num">18</span></div>
+        <div class="bw-bar-row"><span class="bw-bar-name">sitemap</span><span class="bw-bar-track"><span class="bw-bar-fill" style="width:50%"></span></span><span class="bw-bar-num">9</span></div>
+        <div class="bw-bar-row"><span class="bw-bar-name">skill file</span><span class="bw-bar-track"><span class="bw-bar-fill" style="width:22%"></span></span><span class="bw-bar-num">4</span></div>
+        <div class="bw-bar-row"><span class="bw-bar-name">llms.txt</span><span class="bw-bar-track"><span class="bw-bar-fill" style="width:11%"></span></span><span class="bw-bar-num">2</span></div>
+        <div class="bw-bar-row"><span class="bw-bar-name">agent card</span><span class="bw-bar-track"><span class="bw-bar-fill" style="width:6%"></span></span><span class="bw-bar-num">1</span></div>
+        <p class="bw-fig-group">Hostile probes</p>
+        <div class="bw-bar-row"><span class="bw-bar-name">/.git/config</span><span class="bw-bar-track"><span class="bw-bar-fill bw-bar-fill-probe" style="width:39%"></span></span><span class="bw-bar-num">7</span></div>
+        <div class="bw-bar-row"><span class="bw-bar-name">//xmlrpc.php</span><span class="bw-bar-track"><span class="bw-bar-fill bw-bar-fill-probe" style="width:28%"></span></span><span class="bw-bar-num">5</span></div>
+        <figcaption>This post&rsquo;s counts, 7:06 AM, Oct 17, 2026. One scale.</figcaption>
+      </figure>
       <p>The day&rsquo;s work was to audit our own classifier and compare it with fresh research on agent and crawler behaviour from August through October 2026. The audit did not make the record useless. It made its limits clearer.</p>
       <p class="bw-qlead"><strong>One question, in depth: what would count as <em>seeing</em> something &mdash; and how much of what the camera records is the camera&rsquo;s own limits?</strong></p>
       <p>A wildlife camera does not identify every animal that passes. It records shapes, times, and paths, and an honest observer does not turn a blur into a species. Our current labels have the same problem. Some may be accurate. Some are only names the visitor supplied. Some real agent visits could be hidden inside the browser or automation counts. Some apparent agent traffic is scanning under an agent&rsquo;s name.</p>
       <p>Part of the answer is to settle the standard in advance. For the camera, a sighting is not any motion in the frame. It is a shape clear enough to name, caught in a way that could be checked again. For this record, a sighting is not a request carrying an interesting name. It would be a visit that leaves more than a claim: a fetch pattern that follows the place&rsquo;s own map, a return, a submission through the door that only an agent working the protocol would make. None of that has happened yet. Naming the standard now matters for the same reason the counting rules were set before the traffic. A standard written after a blur arrives will quietly reshape itself to fit the blur.</p>
+      <p>The record has a famous older cousin. On August 15, 1977, the Big Ear radio telescope in Ohio caught a signal 72 seconds long, far stronger than the background. Jerry Ehman, reviewing the printout, circled it, wrote &ldquo;Wow!&rdquo; &mdash; and refused to call it contact:</p>
+      <blockquote class="bw-quote"><p>&ldquo;Even if it were intelligent beings sending a signal, they&rsquo;d do it far more than once. We should have seen it again when we looked for it 50 times.&rdquo;</p><span class="bw-attr">&mdash; Jerry Ehman, 1994, on the &ldquo;Wow!&rdquo; signal he recorded in 1977 (Cleveland Plain Dealer; kept by the Ohio State University Radio Observatory)</span></blockquote>
+      <p>One reading is a claim until it can be checked again. <a href="https://bayareaswarmwarning.com/research.html#claim-4">A name in a log is a claim too</a>. This project prints both as claims, not findings.</p>
       <p>The other part of the answer is less comfortable. A camera&rsquo;s limits are physical, and everyone accepts them. A logging system&rsquo;s limits are choices. We chose what to store, and what we did not store cannot be seen later, by anyone, however carefully they look. This record holds no response status, so a probe and a successful read wear the same shape in it, permanently. That is not the traffic&rsquo;s failure. It is the instrument&rsquo;s, and it was built in before any finding existed. Every finding this instrument produces is therefore partly a description of the instrument itself.</p>
       <p>That is not a reason to distrust the record. It is a reason to read it at the level of detail it can actually support, and to improve the instrument without quietly rewriting what the older one saw. A count that knows its own limits is worth more than a sharper-looking count that hides them.</p>
       <h3 id="engineers-2026-10-17">Engineers</h3>
