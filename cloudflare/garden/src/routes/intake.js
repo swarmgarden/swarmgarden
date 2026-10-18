@@ -32,7 +32,7 @@ import { botAuthState } from '../../../shared/frontdoor.mjs';
 // never in publicReceipt()'s allowlist and never in the ledger entry.
 // Fields whose source the edge did not supply are omitted, never
 // substituted.
-function stewardMeta(req) {
+export function stewardMeta(req) {
   const cf = req.cf || {};
   const ua = req.headers.get('user-agent');
   return {

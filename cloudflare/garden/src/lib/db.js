@@ -89,6 +89,30 @@ export async function dbListBriefs(db) {
   return (results || []).map(r => parse(r.data)).filter(Boolean);
 }
 
+// ---- visitors' book notes ----
+export async function dbInsertNote(db, n) {
+  await db.prepare(
+    'INSERT INTO guestbook_notes (number, name_claim, message, received_at, publish_at, status, flags, data) VALUES (?1,?2,?3,?4,?5,?6,?7,?8)'
+  ).bind(n.number, n.name_claim, n.message, n.received_at, n.publish_at, n.status, JSON.stringify(n.flags || []), JSON.stringify(n)).run();
+}
+export async function dbUpdateNote(db, n) {
+  await db.prepare(
+    'UPDATE guestbook_notes SET name_claim=?2, message=?3, received_at=?4, publish_at=?5, status=?6, flags=?7, data=?8 WHERE number=?1'
+  ).bind(n.number, n.name_claim, n.message, n.received_at, n.publish_at, n.status, JSON.stringify(n.flags || []), JSON.stringify(n)).run();
+}
+export async function dbGetNote(db, number) {
+  const row = await db.prepare('SELECT data FROM guestbook_notes WHERE number = ?1').bind(String(number)).first();
+  return row ? parse(row.data) : null;
+}
+export async function dbListNotes(db) {
+  const { results } = await db.prepare('SELECT data FROM guestbook_notes ORDER BY number ASC').all();
+  return (results || []).map(r => parse(r.data)).filter(Boolean);
+}
+export async function dbMaxNoteNumber(db) {
+  const row = await db.prepare('SELECT MAX(CAST(number AS INTEGER)) AS m FROM guestbook_notes').first();
+  return row && row.m ? Number(row.m) : 0;
+}
+
 // ---- garden state (the steward pause flag) ----
 export async function dbGetState(db, key) {
   const row = await db.prepare('SELECT data FROM garden_state WHERE key = ?1').bind(key).first();

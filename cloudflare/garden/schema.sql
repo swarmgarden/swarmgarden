@@ -52,3 +52,25 @@ CREATE TABLE IF NOT EXISTS visit_log (
   data       TEXT NOT NULL              -- the full visit record, as JSON
 );
 CREATE INDEX IF NOT EXISTS idx_visit_log_t ON visit_log(t);
+
+-- The visitors' book (added Oct 17 2026, Caitria's ruling): notes an
+-- agent leaves by POST /api/v1/notes. A note's number comes from the
+-- book's OWN sequencer counter (six digits, zero-padded) — it is not
+-- an intake receipt and enters neither the ledger nor the counts.
+-- Status words: pending (accepted; appears when publish_at passes),
+-- flagged (a deterministic screen diverted it; steward release only),
+-- released (a steward put it in the book early / out of the hold),
+-- removed (a steward took it down; the row stands, the text is not
+-- served). The `data` column carries the full record as JSON,
+-- including the private steward-side meta_* fields (never the raw IP).
+CREATE TABLE IF NOT EXISTS guestbook_notes (
+  number      TEXT PRIMARY KEY,         -- zero-padded sequential, e.g. '000001'
+  name_claim  TEXT NOT NULL,
+  message     TEXT NOT NULL,
+  received_at TEXT NOT NULL,
+  publish_at  TEXT NOT NULL,            -- received_at + 1 hour
+  status      TEXT NOT NULL,            -- pending | flagged | released | removed
+  flags       TEXT,                     -- JSON array of screen flag kinds
+  data        TEXT NOT NULL             -- the full note record, as JSON
+);
+CREATE INDEX IF NOT EXISTS idx_guestbook_status ON guestbook_notes(status, publish_at);

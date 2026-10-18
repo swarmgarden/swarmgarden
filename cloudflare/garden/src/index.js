@@ -22,6 +22,8 @@ import stewardRoute from './routes/steward.js';
 import statsRoute from './routes/stats.js';
 import changedRoute from './routes/changed.js';
 import utilitiesRoute from './routes/utilities.js';
+import notesRoute from './routes/notes.js';
+import guestbookStewardRoute from './routes/guestbook.js';
 export { Sequencer } from './lib/sequencer.js';
 
 const SITE_HOST = 'swarmgarden.com';
@@ -30,6 +32,12 @@ const SITE_HOST = 'swarmgarden.com';
 function route(pathname) {
   // Published pretty addresses.
   if (pathname === '/changed') return changedRoute;
+  // The visitors' book (added Oct 17 2026): matched BEFORE the generic
+  // /api/v1/ branch, which is the intake router — the book is not an
+  // intake channel and stays live while intake is closed.
+  if (pathname === '/api/v1/notes') return notesRoute;
+  if (pathname === '/.netlify/functions/notes') return notesRoute;
+  if (pathname === '/.netlify/functions/guestbook') return guestbookStewardRoute;
   if (pathname.startsWith('/api/v1/receipts/') || pathname === '/api/v1/receipts') return receiptsRoute;
   if (pathname.startsWith('/receipts/')) return receiptsRoute;
   if (pathname.startsWith('/api/v1/')) return intakeRoute;

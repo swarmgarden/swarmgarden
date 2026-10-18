@@ -57,6 +57,12 @@ dataset = "garden_visits"
 [vars]
 SITE_HOST = "swarmgarden.com"
 AE_DATASET = "garden_visits"
+# The visitors' book (added Oct 17 2026, Caitria's ruling): unlike
+# INTAKE_OPEN, GUESTBOOK_OPEN is set HERE, in the file — opening the
+# book is the commission, so the value travels with the build. Kill
+# switch: set this to anything but "true" and redeploy, or pause the
+# book from its steward page; the book itself stays up either way.
+GUESTBOOK_OPEN = "true"
 # AE_ACCOUNT_ID is set at provisioning (not secret, but account-specific).
 
 # SECRETS — names only, set with `wrangler secret put` at provisioning;

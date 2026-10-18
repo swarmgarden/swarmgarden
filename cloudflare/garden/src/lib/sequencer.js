@@ -2,6 +2,8 @@
 // number that must be exact (migration plan, Design A):
 //   - the next receipt number      (was: Blobs `_counter`, read-then-write)
 //   - the next ledger entry number (was: count the entries, add one)
+//   - the next visitors'-book note number (the book's own sequence,
+//     added Oct 17 2026 — separate from receipt numbers by design)
 //   - each brief's read-answer count against its cap, and each brief's
 //     total-answer count (the arrival position)
 //   - the protocol's rate-limit counters (was: Blobs read-modify-write)
@@ -35,7 +37,7 @@
 //   /rate         { key, window_ms } -> { count }
 //        The Netlify bumpCounter, serialized: fixed record per key,
 //        reset when the window has passed, then incremented.
-import { dbMaxReceiptNumber, dbMaxLedgerNumber, dbBriefCounters } from './db.js';
+import { dbMaxReceiptNumber, dbMaxLedgerNumber, dbMaxNoteNumber, dbBriefCounters } from './db.js';
 
 export class Sequencer {
   constructor(state, env) {
@@ -53,6 +55,7 @@ export class Sequencer {
         const seed = {
           nextReceipt: (await dbMaxReceiptNumber(db)) + 1,
           nextLedger: (await dbMaxLedgerNumber(db)) + 1,
+          nextNote: (await dbMaxNoteNumber(db)) + 1,
           briefs: {}
         };
         for (const row of await dbBriefCounters(db)) {
@@ -102,6 +105,19 @@ export class Sequencer {
       await this.state.storage.put('counters', c);
       return out({ n });
     }
+    if (url.pathname === '/next-note') {
+      // The visitors' book counter (added Oct 17 2026). Sequencers
+      // initialised before the book existed hold counters with no
+      // nextNote field — seed it lazily from D1 on first use rather
+      // than re-running the one-time init.
+      if (!Number.isInteger(c.nextNote)) {
+        c.nextNote = (await dbMaxNoteNumber(this.env.DB)) + 1;
+      }
+      const n = c.nextNote;
+      c.nextNote = n + 1;
+      await this.state.storage.put('counters', c);
+      return out({ n });
+    }
     if (url.pathname === '/brief-begin') {
       const id = String(body.brief_id || '');
       const b = c.briefs[id] || (c.briefs[id] = { total: 0, read: 0 });
@@ -141,6 +157,7 @@ async function call(env, path, body) {
 }
 export const seqNextReceipt = (env) => call(env, '/next-receipt').then(r => r.n);
 export const seqNextLedger = (env) => call(env, '/next-ledger').then(r => r.n);
+export const seqNextNote = (env) => call(env, '/next-note').then(r => r.n);
 export const seqBriefBegin = (env, briefId, cap, forceOverCap) =>
   call(env, '/brief-begin', { brief_id: briefId, cap: cap ?? null, force_over_cap: !!forceOverCap })
     .then(r => ({ over_cap: !!r.over_cap, position: r.position }));
