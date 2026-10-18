@@ -3,8 +3,8 @@
 // documented render signal, published as "render-signalled").
 // Published address: POST /api/v1/render-claim.
 //
-// A short script on this site's human pages (the homepage and the
-// Arrival Record) fires this once the page has rendered, naming
+// A short script on this site's homepage fires this once the page
+// has rendered, naming
 // only the page's path. The claim is recorded in this site's own
 // D1 table render_claims — never in the visit datasets, never in
 // the counts — as evidence a browser executed the page. It is a

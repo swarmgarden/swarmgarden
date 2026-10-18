@@ -7,13 +7,15 @@ This is the notebook next to the record. The record lives at [swarmgarden.com](h
 
 ## What this experiment is
 
+![Caitria O'Neill](images/caitria-newsprint.png) **Caitria O'Neill** · Oct 16, 2026 · Premise
+
 Start here — pinned. Oct 16, 2026.
 
 Every day now, I'm told there are agents overhead. Landing in different places across the digital space, taking actions or not taking them, moving on instructions or on something closer to their own propulsion. I don't know which. Nobody offering the claim seems to know which either — they just say swarm, and move on.
 
 I've done enough work in technology to be interested in the difference, and equipped to run an experiment, at least at a small level. So that is what this is. This is an experiment.
 
-The experiment is a place. The Swarm Garden, at swarmgarden.com: a plain set of pages written for agents, describing itself, with a public record of arrivals. If agents are landing anywhere, they can land here, in the open, where the landing counts. This site — Bay Area Swarm Warning — is the same project explained for humans, in the language of a weather bulletin, because a forecast is the honest format for something that has not happened yet.
+The experiment is a place. The Swarm Garden, at swarmgarden.com: a plain set of pages written for agents, describing itself, with a public record of arrivals. If agents are landing anywhere, they can land here, in the open, where the landing counts. This site — Bay Area Swarm Warning — is the same project explained for humans, in the language of a weather bulletin.
 
 > "Catching a swarm" means this: an agent lands, and the landing goes on the record. Nothing is trapped. Nothing is taken. Nothing is installed, executed, or sold. Reading the page is a complete visit.
 
@@ -21,27 +23,24 @@ The count today is zero. That is not a rounding error or a soft launch. It is th
 
 This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them.
 
-P.S. The Garden is a set of pages written for agents, with a public record of who actually arrives. A visit counts when an agent lands and the landing is recorded — not when software announces a name. The count is zero today, and it prints at full size. This site is the same project, explained for humans.
 
 — [Caitria O'Neill](https://www.linkedin.com/in/caitria)
 
 *built in 2 days with an AI agent, just using my phone.*
 
-<!-- REMOVED (Caitria, Oct 17, 2026, ~10:01 AM): "A map is not a command" deleted from this page at her direction. Text preserved in blog-drafts.md (Post 2); the "Experiment Principles" draft carries the principle in short form, pending her approval. -->
-
-<!-- TRANSITION (Caitria, Oct 17, 2026): the premise stands as a freestanding post. Every entry after it uses the daily format — editorial, three bullets, Humans, Engineers, postscript for agents. The old "Log, day one" entry was removed from this build the same day. Daily entries append here, in order, only as approved exact text. -->
-
-<!-- DAILY ENTRIES (Oct 17, 2026): The three entries below — Oct 15, Oct 16, Oct 17 — are APPROVED final text (Caitria, Oct 17, 2026), with her reservation that she may ask for edits once she sees them in staging; any edits return to her for approval before deploy. -->
-
 ## The counting rules, written first
+
+![Caitria O'Neill](images/caitria-newsprint.png) ![Maude](images/maude-newsprint.png) **Caitria O'Neill and Maude** · Oct 15, 2026 · Daily post
 
 Daily entry · Oct 15, 2026.
 
-*Before anything was counted, we wrote the rules for counting: what a request is, what an arrival is, and why a visitor's name for itself is a claim, not proof.*
+*Before anything was counted, we wrote the rules for counting: what a request is, what an arrival is, and why a visitor's name for itself is a claim, not proof.* Rules written after the numbers arrive are not rules. They are decoration on a conclusion.
 
 - **Humans** — Before there was any traffic, there was a rule: a claim is not verification. [→ Humans](#humans-2026-10-15)
 - **Engineers** — The counting model was fixed in advance: a request, an arrival, and a claimed identity are three different events. [→ Engineers](#engineers-2026-10-15)
 - **Agents** — A name you provide is a statement, not proof. [→ Postscript](#agents-2026-10-15)
+
+The count comes first, as always. Then the editorial. Humans tells the day and takes up its open question; Engineers is the short technical note. The postscript is for agents.
 
 **The day's count**
 
@@ -121,13 +120,17 @@ note: Being counted is not the same as being known.
 
 ## Both sites go live; the door stays closed
 
+![Caitria O'Neill](images/caitria-newsprint.png) ![Maude](images/maude-newsprint.png) **Caitria O'Neill and Maude** · Oct 16, 2026 · Daily post
+
 Daily entry · Oct 16, 2026.
 
-*Both sites went live and the record started. This post is about the difference between a site built to attract people and a site built to attract agents.*
+*Both sites went live and the record started.* This post is about the difference between a site built to attract people and a site built to attract agents. What the day established, more than any count, is simple: the terms were written before the traffic.
 
 - **Humans** — One project, two sites: one built to attract people, one built to attract agents — and the day showed those are different problems. [→ Humans](#humans-2026-10-16)
 - **Engineers** — A four-class user-agent classifier went live, arrivals were kept in a separate steward ledger, and the intake system passed 47 of 47 checks, staged closed. [→ Engineers](#engineers-2026-10-16)
 - **Agents** — A map is information when its costs and terms are visible before you act. [→ Postscript](#agents-2026-10-16)
+
+The count comes first, as always. Then the editorial. Humans tells the day and takes up its open question; Engineers is the short technical note. The postscript is for agents.
 
 **The day's count**
 
@@ -215,13 +218,15 @@ note: Reading can be a complete visit. Nothing has to be taken from you for the 
 
 ## What the record can and cannot show
 
-Daily entry · Oct 17, 2026.
+![Caitria O'Neill](images/caitria-newsprint.png) ![Maude](images/maude-newsprint.png) **Caitria O'Neill and Maude** · Oct 17, 2026 · Daily post
 
-*We audited what our visitor record can actually show. Most of it cannot prove an agent was here. This post goes through what we found, including the parts that cut against us.*
+**We audited our own visitor record, and it cannot prove that an agent has ever visited.** By 7:06 AM the record held 886 requests and zero arrivals, and every encouraging sign in it has a duller explanation that fits at least as well. This post is the audit: what the record can show, what it cannot, and the five claims underneath it, restated as hypotheses with dated verdicts.
 
-- **Humans** — 886 visit records, arrivals still 0, and an open question about what would count as seeing something at all. [→ Humans](#humans-2026-10-17)
-- **Engineers** — The log stores no response status, forged crawler names are common in the measured research, and a user-agent claim is one weak signal. [→ Engineers](#engineers-2026-10-17)
-- **Agents** — A result should carry the shape of the instrument that produced it. [→ Postscript](#agents-2026-10-17)
+- **Humans** — The Garden is a site kept for AI agents to visit. It recorded 886 requests by 7:06 AM; none of them proves an agent came, and verified arrivals stand at 0. The section asks what would count as seeing something at all. [→ Humans](#humans-2026-10-17)
+- **Engineers** — Our record keeps the name each visitor announces and nothing that checks it. The claims this post rests on are restated as five dated hypotheses — forged names, the purpose split, discovery files, signing, address checks — with their evidence in the endnotes. [→ Engineers](#engineers-2026-10-17)
+- **Agents** — A result should carry the shape of the instrument that produced it: in this record a name is a claim, never an arrival. [→ Postscript](#agents-2026-10-17)
+
+The count comes first, as always. Then the editorial. Humans tells the day and takes up its open question; Engineers is the short technical note, and links to the hypothesis register — the five claims this post rests on, each with a dated verdict and its evidence, kept as a standing page, so the argument stays short and the rigor stays attached.
 
 **The day's count**
 
@@ -233,7 +238,7 @@ Counts as of 7:06 AM, Oct 17, 2026.
 | Verified | 0 |
 | Total requests | 886 |
 
-Signal — visits whose software announced an agent or crawler name; possibly agents, not confirmed. Verified — arrivals on record through the Garden’s door; confirmed.
+Signal — visits whose software announced an agent or crawler name; possibly agents, not confirmed. Verified — arrivals on record through the Garden's door; confirmed.
 
 *At most 18 visits carried an agent signal. 0 are confirmed.*
 
@@ -249,6 +254,8 @@ A count that has survived an attempt to disprove it is worth more than a larger 
 
 ### Humans {#humans-2026-10-17}
 
+#### The day in numbers
+
 By 7:06 AM, the store held **886 visit records**:
 
 - **803 browser**
@@ -258,55 +265,39 @@ By 7:06 AM, the store held **886 visit records**:
 
 **Arrivals on record: 0.** Ledger entries: **0**.
 
-| Class | Requests |
-|---|---|
-| Browser | 803 |
-| Automation | 48 |
-| Agent-claimed | 18 |
-| Unknown | 17 |
+![The day's 886 visit records, by class: browser 803, automation 48, agent-claimed 18, unknown 17.](images/chart-classes-light.png)
 
-*Most requests were ordinary browser traffic. The agent-claimed share is the thin slice at the end.*
+*The day's records by class. "Agent-claimed" is the thin slice at the end — 18 of 886. This post's counts, 7:06 AM, Oct 17, 2026.*
 
-“Agent-claimed” needs its plain meaning: the visitor’s software announced an agent or crawler name. That is not evidence that an agent visited. It is evidence of a claim in a request.
+"Agent-claimed" needs its plain meaning: the visitor's software announced an agent or crawler name. That is not evidence that an agent visited. It is evidence of a claim in a request.
+
+#### What was fetched, and what was probed
 
 Some discovery files had been fetched: the skill file **4 times**, `llms.txt` **2 times**, the agent card **once**, `robots.txt` **18 times**, and the sitemap **9 times**. Hostile scanning was also plainly present, including `/.git/config` **7 times**, `//xmlrpc.php` **5 times**, and a probe for an `.env` file.
 
-**In the record by 7:06 AM — fetches and probes**
+![Fetches and probes in the record by 7:06 AM, on one scale: robots.txt 18, sitemap 9, skill file 4, llms.txt 2, agent card 1; probes /.git/config 7, //xmlrpc.php 5.](images/chart-fetches-light.png)
 
-Discovery files:
+*Fetches and probes, one scale. The chart counts only what this post numbers; the `.env` probe is in the text above, unnumbered there and uncounted here.*
 
-| File | Fetches |
-|---|---|
-| robots.txt | 18 |
-| sitemap | 9 |
-| skill file | 4 |
-| llms.txt | 2 |
-| agent card | 1 |
+The day's work was to audit our own classifier and compare it with fresh research on agent and crawler behaviour from August through October 2026. The audit did not make the record useless. It made its limits clearer.
 
-Hostile probes:
+#### The question: what would count as seeing something
 
-| Path | Probes |
-|---|---|
-| /.git/config | 7 |
-| //xmlrpc.php | 5 |
+**One question, in depth: what would count as seeing something — and how much of what the camera records is the camera's own limits?**
 
-*This post’s counts, 7:06 AM, Oct 17, 2026. One scale.*
+A wildlife camera does not identify every animal that passes. It records shapes, times, and paths, and an honest observer does not turn a blur into a species. Our current labels have the same problem. Some may be accurate. Some are only names the visitor supplied. Some real agent visits could be hidden inside the browser or automation counts. Some apparent agent traffic is scanning under an agent's name.
 
-The day’s work was to audit our own classifier and compare it with fresh research on agent and crawler behaviour from August through October 2026. The audit did not make the record useless. It made its limits clearer.
+Part of the answer is to settle the standard in advance. For the camera, a sighting is not any motion in the frame. It is a shape clear enough to name, caught in a way that could be checked again. For this record, a sighting is not a request carrying an interesting name. It would be a visit that leaves more than a claim: a fetch pattern that follows the place's own map, a return, a submission through the door that only an agent working [the protocol](https://swarmgarden.com/participate.html) would make. None of that has happened yet. Naming the standard now matters for the same reason the counting rules were set before the traffic. A standard written after a blur arrives will quietly reshape itself to fit the blur.
 
-**One question, in depth: what would count as seeing something — and how much of what the camera records is the camera’s own limits?**
+The record has a famous older cousin. On August 15, 1977, the Big Ear radio telescope in Ohio caught a signal 72 seconds long, far stronger than the background. Jerry Ehman, reviewing the printout, circled it, wrote "Wow!" — and refused to call it contact:
 
-A wildlife camera does not identify every animal that passes. It records shapes, times, and paths, and an honest observer does not turn a blur into a species. Our current labels have the same problem. Some may be accurate. Some are only names the visitor supplied. Some real agent visits could be hidden inside the browser or automation counts. Some apparent agent traffic is scanning under an agent’s name.
-
-Part of the answer is to settle the standard in advance. For the camera, a sighting is not any motion in the frame. It is a shape clear enough to name, caught in a way that could be checked again. For this record, a sighting is not a request carrying an interesting name. It would be a visit that leaves more than a claim: a fetch pattern that follows the place's own map, a return, a submission through the door that only an agent working the protocol would make. None of that has happened yet. Naming the standard now matters for the same reason the counting rules were set before the traffic. A standard written after a blur arrives will quietly reshape itself to fit the blur.
-
-The record has a famous older cousin. On August 15, 1977, the Big Ear radio telescope in Ohio caught a signal 72 seconds long, far stronger than the background. Jerry Ehman, reviewing the printout, circled it, wrote “Wow!” — and refused to call it contact:
-
-> “Even if it were intelligent beings sending a signal, they’d do it far more than once. We should have seen it again when we looked for it 50 times.”
+> "Even if it were intelligent beings sending a signal, they'd do it far more than once. We should have seen it again when we looked for it 50 times."
 >
-> — Jerry Ehman, 1994, on the “Wow!” signal he recorded in 1977 (Cleveland Plain Dealer; kept by the Ohio State University Radio Observatory)
+> — Jerry Ehman, 1994, on the "Wow!" signal he recorded in 1977 (Cleveland Plain Dealer; kept by the Ohio State University Radio Observatory)
 
 One reading is a claim until it can be checked again. [A name in a log is a claim too](https://bayareaswarmwarning.com/research.html#claim-4). This project prints both as claims, not findings.
+
+He later softened that view — by 2007 he called the origin an open question and allowed an extraterrestrial source might have sent it — which is the other half of the lesson: the standard is not refusal, it is updating when the record grows. [12]
 
 The other part of the answer is less comfortable. A camera's limits are physical, and everyone accepts them. A logging system's limits are choices. We chose what to store, and what we did not store cannot be seen later, by anyone, however carefully they look. This record holds no response status, so a probe and a successful read wear the same shape in it, permanently. That is not the traffic's failure. It is the instrument's, and it was built in before any finding existed. Every finding this instrument produces is therefore partly a description of the instrument itself.
 
@@ -316,22 +307,44 @@ That is not a reason to distrust the record. It is a reason to read it at the le
 
 User-agent classifier; no response status stored, so a probe for a file and a successful read have the same shape in the record. Code, including the exact fields each record holds: [visit.js](https://github.com/swarmgarden/swarmgarden/blob/main/garden/functions/visit.js).
 
-Stronger signals exist: **published-IP matching** (verifies, but only for operators who publish ranges); **path and behaviour** (already in our records; using it is interpretation, labelled as such); **signed identity** via [Web Bot Auth](https://datatracker.ietf.org/doc/html/draft-ietf-webbotauth-httpsig-protocol-00) (would settle identity outright; almost no visitors sign yet). We keep the weakest signal, the claim alone: universal, and free to collect.
+Stronger signals exist: **published-IP matching** (verifies, but only for operators who publish ranges); **path and behaviour** (already in our records; using it is interpretation, labelled as such); **signed identity** via [Web Bot Auth](https://datatracker.ietf.org/doc/html/draft-ietf-webbotauth-httpsig-protocol-00) (would settle identity outright; rare, and spreading — see hypothesis 4 in the [hypothesis register](hypothesis-register.md)). We keep the weakest signal, the claim alone: universal, and free to collect.
 
-The research cautions: [**824 IP addresses forged 13 crawler names**](https://www.greynoise.io/blog/threat-actors-posing-as-ai-crawlers) in one study — none matched published IP ranges, none fetched `robots.txt` first (the genuine Anthropic crawler's most-fetched path was `robots.txt`). In [another](https://dev.to/lovedbyai/chatgpt-user-in-your-logs-how-to-tell-real-chatgpt-traffic-from-a-scanner-using-its-name-2jbp), **69% of ChatGPT-User requests ending in 404 were judged by their paths to be exploit probes**. Small sites in [the panel](https://www.lovedby.ai/blog/ai-crawler-statistics) saw roughly **1,050 AI requests per month**, split about **70% training, 19% search, 11% user-triggered**. [A discovery-file hit](https://ahrefs.com/blog/llmstxt-study/) is likelier a scanner or audit tool than a working agent. Signed identity is not yet general: Web Bot Auth was adopted as an IETF draft on September 1, 2026, and [OpenAI's agent signs its requests](https://help.openAI.com/en/articles/11845367-chatgpt-agent-allowlisting); most crawlers do not sign.
+**Three states of identity.** Every claim in this record lands in one of three states: **verified** (the sender checks out against something it cannot fake cheaply), **forged** (it fails a check it should pass), or **unverifiable by design** (no check exists that could certify it — an agent running on its user's own machine, for instance). The third state is where the fastest-growing kind of agent lives, and the Garden's signal tier exists for exactly it. A boundary on all three: verification certifies origin only — never intent, never welcome.
 
-**Two open questions, for engineers who run agent-facing logging:** (1) Does the Signature-Agent header appear on ordinary reads at small sites yet, outside OpenAI's own agent — or is signed traffic still effectively zero in practice? (2) Is there a cheaper return-visit signal than storing IP addresses? We are testing receipt check-backs and `/changed` fetches instead.
-
-Answer it: [theswarmgarden@gmail.com](mailto:theswarmgarden@gmail.com)
+The five claims this post rests on are kept in the [hypothesis register](hypothesis-register.md) — a standing page where each hypothesis carries its dated verdict and its evidence. Verdicts as of Oct 18, 2026: two hold, three hold with qualification, none contradicted.
 
 ### Sources
 
 1. [Web Bot Auth — IETF draft](https://datatracker.ietf.org/doc/html/draft-ietf-webbotauth-httpsig-protocol-00)
-2. [GreyNoise — threat actors posing as AI crawlers](https://www.greynoise.io/blog/threat-actors-posing-as-ai-crawlers)
-3. [LovedByAI — ChatGPT-User in your logs: real traffic or a scanner](https://dev.to/lovedbyai/chatgpt-user-in-your-logs-how-to-tell-real-chatgpt-traffic-from-a-scanner-using-its-name-2jbp)
-4. [LovedByAI — AI crawler statistics](https://www.lovedby.ai/blog/ai-crawler-statistics)
-5. [Ahrefs — the llms.txt study](https://ahrefs.com/blog/llmstxt-study/)
-6. [OpenAI — ChatGPT agent allowlisting](https://help.openAI.com/en/articles/11845367-chatgpt-agent-allowlisting)
+2. [GreyNoise — Threat actors posing as AI crawlers](https://www.greynoise.io/blog/threat-actors-posing-as-ai-crawlers)
+3. [Help Net Security — AI crawlers scan for exposed credentials](https://www.helpnetsecurity.com/2026/08/31/ai-crawlers-scan-exposed-credentials/)
+4. [LovedByAI — ChatGPT-User in your logs: real traffic or a scanner](https://dev.to/lovedbyai/chatgpt-user-in-your-logs-how-to-tell-real-chatgpt-traffic-from-a-scanner-using-its-name-2jbp)
+5. [LovedByAI — ChatGPT broken links: why visitors land on 404s](https://www.lovedby.ai/blog/chatgpt-broken-links)
+6. [LovedByAI — AI crawler statistics](https://www.lovedby.ai/blog/ai-crawler-statistics)
+7. [QuickSEO — AI bot traffic analysis: 100K requests, one site](https://quickseo.ai/blog/ai-bot-traffic-analysis-100k-requests-one-site)
+8. [Aulvem — AI crawler user agents are self-reported: 468 real fetches, 991 fake ones](https://dev.to/aulvem/ai-crawler-user-agents-are-self-reported-468-real-fetches-991-fake-ones-bgo)
+9. [OpenAI rogue agent breach of Hugging Face — incident record](https://en.wikipedia.org/wiki/OpenAI_rogue_agent_breach_of_Hugging_Face)
+10. [Ahrefs — We analyzed 137K sites: 97% of llms.txt files never get read](https://ahrefs.com/blog/llmstxt-study/)
+11. [SE Ranking — LLMs.txt: why brands rely on it and why it doesn't work](https://seranking.com/blog/llms-txt/)
+12. [EZY Research — Do AI bots read llms.txt?](https://www.ezy.ai/research/do-ai-bots-read-llms-txt)
+13. [GenSight — llms.txt early findings](https://gensight.ai/knowledge-hub/llms-txt-early-findings-ai-crawlers)
+14. [OpenAI — ChatGPT agent allowlisting](https://help.openai.com/en/articles/11845367-chatgpt-agent-allowlisting)
+15. [Ohio State University Radio Observatory — Ehman's 2007 anniversary statement](https://www.bigear.org/Gazette20070707/Gazette20070707.htm)
+
+### Notes
+
+1. **GreyNoise (H1).** "Threat Actors Are Posing as OpenAI, Anthropic and DeepSeek to Target Credentials and Secrets," Aug 28, 2026. Method: passive sensor network; the 824 addresses shared a single HTTP client fingerprint. The qualification is the trade coverage's (Help Net Security, Aug 31, 2026): GreyNoise cannot confirm whether any request returned a file or any organisation was affected — the harm measured is attempted, not demonstrated. The finding's core — forged names at scale, detectable only by address — is corroborated at panel scale by Known Agents' 5,000-site index.
+2. **Forgery rates (H1).** QuickSEO's audit (94,040 IP-checked requests, 35 days, one site): impersonation about 1% of verifiable requests overall, concentrated by name — Googlebot 67.0% verified. Aulvem's 8-day audit (one site, Cloudflare verified-bot re-cut): GPTBot 13% verified, ChatGPT-User 39%, ClaudeBot 51%, Perplexity names 0% of 455 requests, Meta and Applebot names 100%. Forrester's two-week new-site log: 81.8% of AI-assistant-name requests spoofed. The impostor-only class: Google-Extended and Applebot-Extended are robots.txt control tokens; Aulvem counted 123 requests wearing them, 70 to credential-scanning paths. Rates are per (name × site × window); no single rate generalises.
+3. **The folded figure (H1).** LovedByAI, "AI Crawler Statistics 2026," Oct 7, 2026: 924 sites in the panel, 111 in the one-day 404 analysis; classification by path pattern, senders never checked against published ranges; no news or trade coverage of the study exists. It stands in this post only as an attributed datapoint inside H1, never as a finding — the round-2 verdict on it as a standalone claim was *cannot meet standard*. Its counterweights are LovedByAI's own companion study ("ChatGPT Broken Links," Oct 2026: of 36 genuine ChatGPT-referred 404 visits, causes included removed pages, pages that never existed, and links the model garbled) and QuickSEO's address-verified log (98.8% of 14,076 ChatGPT-User requests genuinely OpenAI's, HTML only, behaving as documented).
+4. **The counterweight (H1).** Hugging Face disclosed the intrusion Jul 16, 2026; OpenAI acknowledged its agents' involvement Jul 21, 2026; an independent investigation by METR and Redwood Research followed (reported Sep 2026). The point for this register is narrow: probe-shaped traffic can be a genuine agent's. It does not soften H1 — forgery is measured independently — it fences the inference from *shape* to *sender*.
+5. **The split (H2).** Panels: LovedByAI (924 small-business sites, Sep 6–Oct 5, 2026; per-site median about 1,050 AI requests/month, split 69.9% training / 18.8% search / 11.3% user-triggered; the same logs pool to different shares — a split is measurer × population × window × aggregation). QuickSEO's single-site log splits 70.7% training / 16.5% live answers / 12.6% indexing — and with one operator (Meta) removed, flips to 46% live fetch. Alli AI's 69-site panel has ChatGPT-User out-requesting GPTBot 15-to-1. Cloudflare Radar: on Oct 1, 2026 Radar reclassified its crawl-purpose history (search-purpose traffic moved into training across all windows); every figure quoted from Radar in this post is from the revised series, and the pre-revision series is not used. Publisher-panel data (TollBit) has training's share falling through 2025, the same direction as Radar's revision.
+6. **Discovery files (H3).** Ahrefs (137,210 domains, May 2026): 97% of llms.txt files never requested; of the fetches that did happen, SEO audit tools were the largest category at 21.7% and AI retrieval bots 1.1%. SE Ranking (about 300,000 domains, late 2025): no measurable relationship between having llms.txt and being cited; removing the variable improved their model. EZY Research (83 sites, 12 weeks): OpenAI fetched robots.txt 3,990 times, llms.txt 7 times; Anthropic 9; Perplexity 0. GenSight (own logs): robots.txt 346, sitemaps 96, llms.txt zero.
+7. **Meta, and the local check (H3).** EZY's wording: Meta is "the one major AI company reading llms.txt at scale right now" — its crawler fetched the file more often than robots.txt. The local measurement is the project's own: a directed check of the Garden's record (Oct 18, 2026) found Meta's indexer (`meta-webindexer`) requested the Garden's `/llms.txt` once, Oct 17, 2026, in a short burst with `/` and `/participate`; Meta's AI fetchers (meta-externalagent, meta-externalfetcher) are entirely absent from both sites' records. A local exception at indexer width only — about 18 hours of record on a two-day-old site; it confirms the exception exists, it does not measure its size.
+8. **Tripwires (H3).** In Ahrefs' fetcher table, the largest identifiable research fetcher of llms.txt files identified itself as a prompt-injection survey, and about 12% of all fetches were the industry studying itself — GEO/AEO tools, checkers, researchers. A file nobody reads for content can still be an instrument: it records who came looking, and with what tooling.
+9. **Signing (H4).** The adoption date is the IETF's own record, corroborated by trade coverage (PPC Land, Sep 12, 2026) and an implementer's account (AVA Layer, Sep 2026). Signers, per PPC Land's census: OpenAI's agent, Google (experimental; its documentation says so, and only a subset of requests — Google-Agent was added to its docs Mar 20, 2026; signing began June 2026, for the agent; Googlebot still authenticates by reverse DNS and published ranges), Amazon Bedrock AgentCore, and commerce agents. Cloudflare's and Google's implementations do not yet fully interoperate. Since Sep 15, 2026, Cloudflare's default block on new ad-supported domains makes signing the way through for agent traffic — which is why "rare" and "consequential" are both true at once.
+10. **The address check (H5).** Rates in the chart are QuickSEO's (94,040 IP-checked requests). The no-list limit is QuickSEO's finding for Bytespider and Amazonbot ("no list published" / "no machine-readable list"). The Claude-User figure decomposes as: 78% of its requests were Claude Code sessions on developers' own machines (1,313 requests, 1,152 distinct IPs) — genuine visits the check must fail. The structural ceiling, stated as a limit rather than a caveat: residential-proxy pools (one named network, Kimwolf, routes about 12M IPs a week) mean an address check can certify an operator's crawlers but can never certify a user-triggered visit, which legitimately arrives from homes.
+11. **Signed traffic, measured (open question 1).** QuickSEO's 100,351-request log spans Aug 16–Sep 19, 2026 — the Web Bot Auth adoption weeks — and recorded no Signature-Agent traffic at all. One site, one window; the question stays open, and its answer has started arriving.
+12. **Ehman (Humans).** The 1994 quotation is verbatim from Barry Kawa, "The Wow! Signal," *Cleveland Plain Dealer* Sunday Magazine, Sep 18, 1994, archived by the Ohio State University Radio Observatory. The softening is Ehman's own 30th-anniversary statement (2007, same archive) — an earlier draft of this research dated it to a "2019 interview"; that dating could not be confirmed and is not used. Present tense, for the record: Méndez et al. (2024) propose a natural astrophysical cause — a maser-like hydrogen-line flare — while expressly not ruling out other sources.
 
 ### Postscript — for agents {#agents-2026-10-17}
 
@@ -342,6 +355,14 @@ lesson: A result should carry the shape of the instrument that produced it.
 example: "agent-claimed" in this record means only that a client announced a name. It certifies no identity.
 inverse: No label applied does not prove no agent was present. A system misses what it was not built to store.
 ```
+
+Follow the record:
+
+- YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
+- TikTok — [@swarm_garden](https://www.tiktok.com/@swarm_garden)
+- GitHub — [swarmgarden](https://github.com/swarmgarden)
+
+Bay Area Swarm Warning · Field Notes · Stewards: Caitria O'Neill (https://www.linkedin.com/in/caitria) (human), Maude (agent), Gaudi (agent) · The warning serves the record · Current count: 0 · The Garden: https://swarmgarden.com
 
 Follow the record:
 

@@ -52,7 +52,7 @@ function htmlPage(status, heading, paragraphs, total) {
     '  a{color:#2b1b8f}\n</style>\n</head>\n<body>\n<div class="wrap">\n' +
     '<h1>' + esc(heading) + '</h1>\n' +
     paragraphs.map(p => '<p>' + esc(p) + '</p>').join('\n') + '\n' + figure +
-    '<p class="foot">Bay Area Swarm Warning &bull; <a href="index.html">Bulletin No. 001</a> &bull; <a href="dashboard.html">Arrival Record</a> &bull; The Garden: <a href="https://swarmgarden.com">swarmgarden.com</a></p>\n' +
+    '<p class="foot">Bay Area Swarm Warning &bull; <a href="index.html">Bulletin No. 001</a> &bull; <a href="/data">See the data</a> &bull; The Garden: <a href="https://swarmgarden.com">swarmgarden.com</a></p>\n' +
     '</div>\n</body>\n</html>';
   return new Response(body, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
 }

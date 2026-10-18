@@ -49,6 +49,13 @@ export default {
       }
       return res;
     }
+    // The retired Arrival Record page (removed Oct 18, 2026): its
+    // address now redirects to the snapshot on the home page. Answered
+    // here, before the front door — a redirect is not a page view, so
+    // it is not visit-logged.
+    if (url.pathname === '/dashboard.html' || url.pathname === '/dashboard') {
+      return new Response(null, { status: 301, headers: { location: '/#record' } });
+    }
     // The public data pages (added Oct 18 2026): /data, /data/garden,
     // /data/advisory and the same-origin JSON files under /data/*.json.
     // Answered directly, like the counts and stats routes — reads of
@@ -68,9 +75,8 @@ export default {
     // The human self-report (added Oct 18 2026): this site's own
     // press endpoint. Answered directly, like the stats route — a
     // press-path failure can never reach page serving, and the
-    // endpoint's reads are not visit-logged (the Arrival Record page
-    // refreshes its figure from here every 60 seconds; a refresh is
-    // not a visit).
+    // endpoint's reads are not visit-logged (a read of the endpoint
+    // is not a visit).
     if (url.pathname === '/api/v1/human-press') {
       let res = await humanRoute(req, env, ctx);
       if (!res.headers.get('link')) {
@@ -88,8 +94,8 @@ export default {
       return res;
     }
     // The render claim (added Oct 18 2026, lens spec B-d): a short
-    // script on this site's human pages (homepage, Arrival Record)
-    // posts the page path here after the page renders; the claim is
+    // script on this site's homepage posts the page path here after
+    // the page renders; the claim is
     // kept in this site's own render_claims table and published as
     // "render-signalled". Answered directly, like the press — a
     // claim-path failure can never reach page serving, and the

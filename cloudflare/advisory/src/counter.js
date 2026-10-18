@@ -116,7 +116,7 @@ export function counterBlockHtml(c, humans) {
     '<div class="bw-comp" role="img" aria-label="' + esc(aria) + '">' + segs + '</div>' +
     '<div class="bw-comp-key">' + key + '</div>' +
     crawlerLine + fetcherLine + filesLine + humanLine +
-    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="dashboard.html">the Arrival Record</a>.</p>';
+    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="#record">the snapshot on this page</a>, and every figure as data on <a href="/data">the data shelf</a>.</p>';
 }
 
 // The Markdown-twin treatment: the same figures as plain text.
