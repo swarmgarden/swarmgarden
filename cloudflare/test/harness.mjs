@@ -1026,10 +1026,17 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     env404.status === 404 && (env404.headers.get('content-type') || '').includes('text/plain') &&
     envBody.includes('nothing is served at this address') && envBody.includes('no file is served at a secret, configuration, or backup path'),
     env404.status + ' ' + (env404.headers.get('content-type') || '') + ' ' + envBody.slice(0, 80));
-  checkP2('signpost: the body points to the door, the record, the counts, and the live state',
+  checkP2('signpost: the body points to the map, the door, the record, and the live state',
+    envBody.includes('https://swarmgarden.com/AGENTS.md') && envBody.includes('https://swarmgarden.com/llms.txt') &&
     envBody.includes('https://swarmgarden.com/participate.html') && envBody.includes('reading is a complete visit') &&
-    envBody.includes('https://swarmgarden.com/record.html') && envBody.includes('/.netlify/functions/counts') &&
+    envBody.includes('https://swarmgarden.com/record.html') &&
     envBody.includes('/utilities/garden-state/v1'), envBody);
+  // Correction (Oct 18 2026, Caitria's call): the legacy counts
+  // address names the old platform and misdescribes the stack, so
+  // the signpost never presents a Netlify path to a lost agent.
+  // (The endpoint itself is untouched; only the pointer is gone.)
+  checkP2('signpost: the body contains no /.netlify/ path (legacy addresses are never presented)',
+    !envBody.includes('/.netlify/'), envBody);
   const noRot = envBody.replace(/https?:\/\/\S+/g, '').replace(/404/g, '');
   checkP2('signpost: no digits that can rot (no figures, no status claims — only the 404 and the URLs)',
     !/\d/.test(noRot), JSON.stringify(noRot));
