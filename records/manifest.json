@@ -1,0 +1,75 @@
+{
+  "counting_windows": {
+    "advisory": {
+      "dataset_first_record_utc": "2026-10-17 21:40:07"
+    },
+    "garden": {
+      "counting_since": "2026-10-17T21:38:49Z",
+      "dataset_first_record_utc": "2026-10-17 21:38:49"
+    }
+  },
+  "files": [
+    {
+      "bytes": 4201,
+      "path": "README.md",
+      "sha256": "b0a4816a5250094ce63a9187f196ff3af019fe8020849f37d3bb48f90e138a30"
+    },
+    {
+      "bytes": 2684,
+      "path": "advisory/counts-series.csv",
+      "sha256": "9e70867bab61cecdc48db9058f6b6dca23488ee838ca0b5fbb21014c668b610b"
+    },
+    {
+      "bytes": 16538,
+      "path": "advisory/counts-series.json",
+      "sha256": "d5ad9760e2ba6175b2dd09b8f8de182998f2a1ecacc7421cbbc20aa9c3a6f9fc"
+    },
+    {
+      "bytes": 71772,
+      "path": "advisory/daily/2026-10-18.json",
+      "sha256": "edc2da5e3afee84fe1122721d2ecbbcf319f0b3b0816a10f501f397c6fabccab"
+    },
+    {
+      "bytes": 2638,
+      "path": "garden/counts-series.csv",
+      "sha256": "58e437485586ce4c23115db6751714eba8314b1b74bada86fdd69551d35c352d"
+    },
+    {
+      "bytes": 16080,
+      "path": "garden/counts-series.json",
+      "sha256": "8da856daebb22f356ce3dd4c4b5a746f01dd2aca8cff45a04aba5d5ed19c5a6d"
+    },
+    {
+      "bytes": 47023,
+      "path": "garden/daily/2026-10-18.json",
+      "sha256": "05018b2c7306764c24d97c2f2e7fec6adde02a319f0befd4ea54e0d4cecad2b7"
+    },
+    {
+      "bytes": 363,
+      "path": "ledger/garden-ledger.json",
+      "sha256": "033e8742234262dbd390fd29d64683a4c92f3e16ba1894b5bda263d3397fe87a"
+    },
+    {
+      "bytes": 318880,
+      "path": "snapshots/2026-10.md.gz",
+      "sha256": "83d1c38e851b728bb6995fe1b72d76d540e80aad54cfcbf94261d3e933c27bd7"
+    }
+  ],
+  "generated_at_pt": "2026-10-18T09:14:50.701807-07:00",
+  "generated_at_utc": "2026-10-18T16:14:50Z",
+  "notes": [],
+  "producer": "snapshot.py + export.py (B2 records preservation, plan dated Oct 18, 2026; all seven defaults adopted)",
+  "publication": "Published to the public repo's records/ tree \u2014 daily publication enabled in export-config.json (steward approved the first export Oct 18, 2026).",
+  "series": {
+    "advisory": {
+      "first_snapshot_at_utc": "2026-10-18T01:09:24Z",
+      "last_snapshot_at_utc": "2026-10-18T16:14:50Z",
+      "rows": 26
+    },
+    "garden": {
+      "first_snapshot_at_utc": "2026-10-18T01:09:24Z",
+      "last_snapshot_at_utc": "2026-10-18T16:14:50Z",
+      "rows": 26
+    }
+  }
+}
