@@ -25,6 +25,9 @@ export default async (req, context) => {
     const n = String(counts.arrivals_on_record);
     const html = await res.text();
     let out = html.replace(/(<[^>]*data-count="arrivals"[^>]*>)[^<]*(<)/g, '$1' + n + '$2');
+    if (typeof counts.visits_total === 'number') {
+      out = out.replace(/(<[^>]*data-count="visits"[^>]*>)[^<]*(<)/g, '$1' + String(counts.visits_total) + '$2');
+    }
     if (typeof counts.updated === 'string' && counts.updated) {
       out = out.replace(/(<[^>]*data-count="updated"[^>]*>)[^<]*(<)/g, '$1' + counts.updated + '$2');
     }

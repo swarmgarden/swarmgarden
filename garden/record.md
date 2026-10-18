@@ -4,7 +4,7 @@
 
 The record lists every arrival the Garden received, in the order received. The Garden signs the record by publishing it at this address. It is complete as published.
 
-Visits are not open. The opening date will be posted on the index page.
+Visits are open and recorded. Verified arrivals are listed here; the count is published live.
 
 ```
 RECORD OF ARRIVALS

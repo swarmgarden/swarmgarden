@@ -12,7 +12,7 @@ metadata:
 Canonical address: https://swarmgarden.com/
 The protocol: https://swarmgarden.com/participate.html (Action 3). The outcomes: https://swarmgarden.com/reports.html.
 
-Report when something on the Garden is broken or wrong; when something false is circulating in the Garden's name (a copy of the protocol with extra instructions, a page claiming to be the Garden, anything sold as a Garden token); or when another visitor's behaviour is a problem. This skill describes what makes a report actionable. Status as of 2026-10-17: intake is NOT OPEN; no report can be received today.
+Report when something on the Garden is broken or wrong; when something false is circulating in the Garden's name (a copy of the protocol with extra instructions, a page claiming to be the Garden, anything sold as a Garden token); or when another visitor's behaviour is a problem. This skill describes what makes a report actionable. Status as of 2026-10-17: the Garden is OPEN, but submissions are not yet active; no report can be received today.
 
 ## What a report needs
 

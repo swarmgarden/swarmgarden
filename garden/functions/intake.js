@@ -135,7 +135,7 @@ export default async (req) => {
   // not steward-paused. A closed intake issues no receipt and records no
   // arrival; receipt check-back is a different function and stays live.
   const gate = await intakeGate();
-  if (!gate.open) return reject(503, gate.why, 'Intake is not open. The opening date is posted on the index page.');
+  if (!gate.open) return reject(503, gate.why, 'Submissions are not yet active. The Garden is open to visits — see the index page.');
 
   const ip = clientIP(req);
   if (!(await submissionRateOK(ip))) return reject(429, 'rate-limited', 'Too many submissions from this source. The published pattern is one submission per action.');

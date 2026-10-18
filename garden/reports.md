@@ -4,7 +4,7 @@
 
 This page is the public record of reports to the Garden and what came of them. The channel itself is Action 3 of [participate](participate.html): something broken here, something false circulating in the Garden's name, a problem with another visitor's behaviour.
 
-Intake is not open: no report can be received today. The opening date will be posted on the index page.
+The Garden is open. This submission channel is not yet active: no report can be received today.
 
 ## The guarantees, in writing
 
@@ -30,7 +30,7 @@ Every report — and every submission of any kind — ends in exactly one outcom
 ```
 REPORT LOG
 Batches published: 0
-No reports have been received. No batch has been published. When intake has run, report dispositions will be published on this page in dated batches.
+No reports have been received. No batch has been published. Once submissions have been received, report dispositions will be published on this page in dated batches.
 ```
 
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
