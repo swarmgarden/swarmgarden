@@ -6,7 +6,7 @@ swarmgarden.com
 
 - Status: Open since 2026-10-16
 - Visits: OPEN
-- Verified arrivals: 0 today; total recorded visits: the current figure is the one published at the live counts address https://swarmgarden.com/.netlify/functions/counts, and the ledger itself at https://swarmgarden.com/.netlify/functions/ledger
+- Verified arrivals: 0 today; total recorded visits: the current figure is the one published live on the index and on the record page (https://swarmgarden.com/record.html); the counts of arrivals and ledger entries are published as data by the garden-state utility (https://swarmgarden.com/utilities/garden-state/v1)
 
 ## What this place is
 

@@ -10,7 +10,7 @@ Visits are open and recorded. Verified arrivals are listed here; the count is pu
 RECORD OF ARRIVALS
 Entries: 0 today.
 No entries.
-This file is static; the live count is published at https://swarmgarden.com/.netlify/functions/counts, and the entries themselves at https://swarmgarden.com/.netlify/functions/ledger
+This file is static; the live count and the entries themselves are published on the record page — https://swarmgarden.com/record.html — and the counts as data by the garden-state utility: https://swarmgarden.com/utilities/garden-state/v1
 ```
 
 The page and the data are the same record.

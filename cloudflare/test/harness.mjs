@@ -1077,6 +1077,61 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await advS.dispose();
 }
 
+// P2-12: pointer alignment (Oct 18 2026) — the legacy counts/ledger
+// addresses still ANSWER (continuity for published links), but no
+// agent-facing document or page PRESENTS a /.netlify/ address as a
+// pointer. The pointers were wrong — they named the old platform and
+// misdirected agents — and are corrected everywhere: counts/state →
+// the garden-state utility; the ledger → the record page. Plumbing
+// (route definitions, the pages' own fetches) is untouched.
+{
+  const G = 'https://swarmgarden.com';
+  const textSurfaces = ['/AGENTS.md', '/CLAUDE.md', '/README.md', '/llms.txt', '/llms-full.txt', '/index.md', '/record.md'];
+  for (const p of textSurfaces) {
+    const body = await (await req(open, G + p)).text();
+    checkP2('alignment: Garden ' + p + ' presents no /.netlify/ pointer',
+      !body.includes('/.netlify/'), body.slice(0, 120));
+  }
+  const agentsBody = await (await req(open, G + '/AGENTS.md')).text();
+  const llmsBody = await (await req(open, G + '/llms.txt')).text();
+  checkP2('alignment: the map points counts/state at garden-state and the ledger at the record page',
+    agentsBody.includes('the garden-state utility — https://swarmgarden.com/utilities/garden-state/v1') &&
+    agentsBody.includes('the record page — https://swarmgarden.com/record.html') &&
+    llmsBody.includes('the garden-state utility — https://swarmgarden.com/utilities/garden-state/v1'),
+    agentsBody.slice(0, 120));
+  checkP2('alignment: the map carries the one build pointer to the published code',
+    agentsBody.includes('The build: the code that runs this record is published for inspection at https://github.com/swarmgarden/swarmgarden') &&
+    llmsBody.includes('The build: the code that runs this record is published for inspection at https://github.com/swarmgarden/swarmgarden'),
+    '');
+  const recBody = await (await req(open, G + '/record.html')).text();
+  checkP2('alignment: record.html presents no legacy link (visible text or href), and points at garden-state',
+    !recBody.includes('href="/.netlify/') && !recBody.includes('>/.netlify/') &&
+    recBody.includes('<a href="/utilities/garden-state/v1">/utilities/garden-state/v1</a>'),
+    recBody.slice(0, 120));
+  checkP2('alignment: record.html plumbing is untouched — its ledger fetch still uses the legacy address',
+    recBody.includes('fetch("/.netlify/functions/ledger")'), '');
+  const advP = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key' }
+  });
+  const A = 'https://bayareaswarmwarning.com';
+  for (const p of ['/llms.txt', '/llms-full.txt', '/README.md']) {
+    const body = await (await req(advP, A + p)).text();
+    checkP2('alignment: Advisory ' + p + ' presents no /.netlify/ pointer',
+      !body.includes('/.netlify/'), body.slice(0, 120));
+  }
+  const dashBody = await (await req(advP, A + '/dashboard.html')).text();
+  checkP2('alignment: the Arrival Record presents no legacy link, and points at the Garden record page + garden-state',
+    !dashBody.includes('href="https://swarmgarden.com/.netlify/') &&
+    dashBody.includes('<a href="https://swarmgarden.com/record.html">swarmgarden.com/record.html</a>') &&
+    dashBody.includes('<a href="https://swarmgarden.com/utilities/garden-state/v1">swarmgarden.com/utilities/garden-state/v1</a>'),
+    dashBody.slice(0, 120));
+  checkP2('alignment: dashboard plumbing is untouched — its COUNTS constant still uses the legacy address',
+    dashBody.includes('var COUNTS = "https://swarmgarden.com/.netlify/functions/counts"'), '');
+  await advP.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();
