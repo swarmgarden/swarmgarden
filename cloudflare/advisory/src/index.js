@@ -15,6 +15,7 @@ import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
 import { logAttempt } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
 import countsRoute from './routes/counts.js';
+import dataRoute, { dataJsonRoute } from './routes/data.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
 import { humanTotal } from './lib/human.js';
@@ -45,6 +46,22 @@ export default {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
         return new Response(res.body, { status: res.status, headers });
+      }
+      return res;
+    }
+    // The public data pages (added Oct 18 2026): /data, /data/garden,
+    // /data/advisory and the same-origin JSON files under /data/*.json.
+    // Answered directly, like the counts and stats routes — reads of
+    // the record are not visit-logged, and a data failure can never
+    // reach page serving. The pages render the data files the hourly
+    // snapshot publishes into the public repository (routes/data.js).
+    if (url.pathname === '/data' || url.pathname.startsWith('/data/')) {
+      const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
+      let res = jm ? await dataJsonRoute(req, env, ctx, jm[1]) : await dataRoute(req, env, ctx);
+      if (!res.headers.get('link')) {
+        const headers = new Headers(res.headers);
+        headers.set('Link', LINK_HEADER);
+        res = new Response(res.body, { status: res.status, headers });
       }
       return res;
     }

@@ -1801,6 +1801,118 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await advC.dispose();
 }
 
+// P2-18: the public data pages (Oct 18 2026) — /data, /data/garden,
+// /data/advisory on the Advisory Worker, rendering the data files
+// the hourly snapshot publishes into the public repo (data/ tree).
+// The pins: the pages render the published bundle (figures with
+// their notes, the claims table with verdicts, the recent-100);
+// the Advisory's structural figures print their explanation, never
+// a bare zero; the same-origin JSON files pass through; an unknown
+// JSON name 404s; the steward-rule footer (the record itself:
+// swarmgarden.com) closes every page; the filter controls + the
+// embedded row data + the URL-state script ship in the page; and
+// when the published files cannot be loaded, the page renders the
+// explained unavailable state — never a fresh-looking empty record.
+{
+  const fxBundle = (site, label) => JSON.stringify({
+    format: 'swarm-garden-data/v1', site, site_label: label,
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    pull_status: 'ok', unavailable_notes: [], counting_since: '2026-10-17T21:38:49Z',
+    counting_window: 'All recorded visits since Oct 17, 2026', licence: 'CC BY 4.0 — fixture licence',
+    figures: { rows: [
+      { label: 'Total recorded visits', value: 42, note: 'Requests recorded at the edge — requests, not readers.' },
+      { label: 'Verified agent arrivals on record', value: 0, note: 'The verified record.' },
+      ...(site === 'advisory' ? [{ label: 'Signals', value: null, note: 'No signal tier on this site — signals are the Garden\u2019s.' }] : [])
+    ], by_class: [{ label: 'agent-claimed', value: 5, note: 'a claim' }, { label: 'browser', value: 37, note: '' }],
+    by_status: [{ label: 'Responses with status 200', value: 40, note: '' }, { label: 'Responses with status 404', value: 2, note: '' }] },
+    corrections: []
+  });
+  const fxClaims = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    era_note: 'Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment).',
+    columns: ['name', 'claimed', 'verified-range', 'wrong-range', 'unverifiable-no-list', 'not-checked', 'verified_share_of_checkable'],
+    rows: [{ name: 'GPTBot', claimed: 3, 'verified-range': 1, 'wrong-range': 0, 'unverifiable-no-list': 0, 'not-checked': 2, verified_share_of_checkable: 'small n (1 checkable)' }] });
+  const fxRecent = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    window: 'The 100 most recent requests recorded for this site, newest first.',
+    rows: [
+      { t_utc: '2026-10-18T17:59:00Z', t_pt: 'Oct 18, 2026, 10:59:00 AM PT', path: '/llms.txt', claimed_name: 'GPTBot', status: 200, status_text: '200', verdict: 'verified-range', verdict_text: 'verified-range' },
+      { t_utc: '2026-10-18T17:58:00Z', t_pt: 'Oct 18, 2026, 10:58:00 AM PT', path: '/.env', claimed_name: '(no agent name claimed)', status: 404, status_text: '404', verdict: '', verdict_text: 'no agent claim — nothing to check' },
+      { t_utc: '2026-10-18T17:57:00Z', t_pt: 'Oct 18, 2026, 10:57:00 AM PT', path: '/', claimed_name: '(no agent name claimed)', status: 200, status_text: '200', verdict: '', verdict_text: 'no agent claim — nothing to check' }
+    ] });
+  const fxStatus = JSON.stringify({ format: 'swarm-garden-data/v1', generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    sites: { garden: { state: 'ok', last_attempt_pt: 'Oct 18, 2026, 11:00:00 AM PT', last_success_pt: 'Oct 18, 2026, 11:00:00 AM PT', notes: [] },
+             advisory: { state: 'ok', last_attempt_pt: 'Oct 18, 2026, 11:00:00 AM PT', last_success_pt: 'Oct 18, 2026, 11:00:00 AM PT', notes: [] } } });
+  const fxInline = JSON.stringify({
+    'garden.json': fxBundle('garden', 'Garden — swarmgarden.com'),
+    'garden-claims.json': fxClaims, 'garden-recent.json': fxRecent,
+    'advisory.json': fxBundle('advisory', 'Advisory — bayareaswarmwarning.com'),
+    'advisory-claims.json': fxClaims, 'advisory-recent.json': fxRecent,
+    'status.json': fxStatus
+  });
+  const dataW = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', DATA_INLINE: fxInline }
+  });
+  const D = 'https://bayareaswarmwarning.com/data';
+  let r = await req(dataW, D);
+  const idxHtml = await r.text();
+  checkP2('data: the index answers 200 and shelves BOTH sites separately',
+    r.status === 200 && idxHtml.includes('Garden — swarmgarden.com') && idxHtml.includes('Advisory — bayareaswarmwarning.com'),
+    r.status + ' ' + idxHtml.slice(0, 120));
+  r = await req(dataW, D + '/garden');
+  const gHtml = await r.text();
+  checkP2('data (Garden): figures render with their basis (total 42, counting window + as-of in the caption)',
+    r.status === 200 && gHtml.includes('Total recorded visits') && gHtml.includes('42') &&
+    gHtml.includes('All recorded visits since Oct 17, 2026') && gHtml.includes('Oct 18, 2026, 11:00:00 AM PT'),
+    r.status + ' ' + gHtml.slice(0, 160));
+  checkP2('data (Garden): the claims table renders names WITH verdicts and the small-n discipline',
+    gHtml.includes('GPTBot') && gHtml.includes('verified-range') && gHtml.includes('small n (1 checkable)'));
+  checkP2('data (Garden): the recent-100 renders time (PT), path, claimed name, status, verdict',
+    gHtml.includes('/llms.txt') && gHtml.includes('10:59:00 AM PT') && gHtml.includes('no agent claim — nothing to check') && gHtml.includes('/.env'));
+  checkP2('data (Garden): filter controls ship — visible text filter, facets WITH counts, live Showing count, URL-state script',
+    gHtml.includes('data-facet') && gHtml.includes('×') && gHtml.includes('Showing 3 of 3 requests') &&
+    gHtml.includes('recent-rows') && gHtml.includes("prefix: 'r_'") && gHtml.includes('Download CSV (current view)'));
+  checkP2('data: the steward-rule footer closes the page — the record itself, linked',
+    gHtml.includes('The record itself:') && gHtml.includes('<a href="https://swarmgarden.com">swarmgarden.com</a>') &&
+    idxHtml.includes('The record itself:'));
+  r = await req(dataW, D + '/advisory');
+  const aHtml = await r.text();
+  checkP2('data (Advisory): structural figures print their explanation — never a bare zero',
+    r.status === 200 && aHtml.includes('No signal tier on this site') && aHtml.includes('not a number — see the note'),
+    r.status + ' ' + aHtml.slice(0, 160));
+  r = await req(dataW, D + '/garden.json');
+  const gj = await r.json();
+  checkP2('data: the same-origin figures JSON passes through (site garden, format v1)',
+    r.status === 200 && gj.site === 'garden' && gj.format === 'swarm-garden-data/v1', r.status + ' ' + JSON.stringify(gj).slice(0, 100));
+  r = await req(dataW, D + '/garden-recent.json');
+  const grj = await r.json();
+  checkP2('data: the recent JSON carries exactly the published columns — no referer, no digest, no network fields',
+    r.status === 200 && Array.isArray(grj.rows) && grj.rows.length === 3 &&
+    Object.keys(grj.rows[0]).sort().join(',') === 'claimed_name,path,status,status_text,t_pt,t_utc,verdict,verdict_text',
+    r.status + ' ' + JSON.stringify(grj).slice(0, 140));
+  r = await req(dataW, D + '/secrets.json');
+  checkP2('data: an unpublished JSON name 404s (whitelist, not a passthrough)', r.status === 404, String(r.status));
+  await dataW.dispose();
+
+  // The failed-load state: no inline fixture, an unreachable data
+  // origin, an empty edge cache — the page explains, with the
+  // archive named, and shows no figures at all.
+  const dataDown = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', DATA_BASE_URL: 'http://127.0.0.1:9' }
+  });
+  r = await req(dataDown, D + '/garden');
+  const downHtml = await r.text();
+  checkP2('data: a failed load renders the EXPLAINED unavailable state (archive named, no figures, footer intact)',
+    r.status === 200 && downHtml.includes('could not be loaded') && downHtml.includes('github.com/swarmgarden/swarmgarden') &&
+    !downHtml.includes('Total recorded visits') && downHtml.includes('The record itself:'),
+    r.status + ' ' + downHtml.slice(0, 160));
+  await dataDown.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();
