@@ -26,9 +26,10 @@ const pad6 = (n) => String(n).padStart(6, '0');
 export const HUMAN_BODY_BYTES = 4096;
 export const HUMAN_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
 
-// ---- the published words (identical to the Garden's, verbatim) ----
+// ---- the published words (identical to the Garden's; the gloss was
+// shortened to "(a claim)" by Caitria's ruling, Oct 18 2026) ----
 export const HUMAN_LABEL = 'Humans, self-reported';
-export const HUMAN_GLOSS = '(a claim, like every other claim here — it sorts the weather; it does not verify anyone)';
+export const HUMAN_GLOSS = '(a claim)';
 export const HUMAN_DATA_NOTE = 'One press stores the press and its time — nothing else: no name, no account, no address. A one-way fingerprint of your connection is kept for a day, only to stop repeat presses counting twice, then deleted.';
 export const humanConfirmation = (number) =>
   'Counted. You are now part of the weather: one claimed human. This proves nothing — a machine could press this button, ' +

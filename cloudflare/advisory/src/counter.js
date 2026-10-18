@@ -11,7 +11,9 @@
 //     count) and Recorded visits (all traffic), in one compact table.
 //     The total is never labelled arrivals.
 //   - The class breakdown names what each visit's software CLAIMED
-//     to be. Agent-claimed carries its gloss: a claim, not proof.
+//     to be. Agent-claimed carries no at-figure gloss (Caitria,
+//     Oct 18 2026): the "(claimed)" marking in the label itself
+//     carries it.
 //   - Claimed crawlers are visits whose user-agent announced a
 //     crawler name. The name is printed as a claim, never as a
 //     verification — and user-triggered fetchers are a separate line,
@@ -19,9 +21,10 @@
 //   - The as-of line prints the payload's own `updated` timestamp.
 //   - The counting window travels with the totals (Caitria,
 //     Oct 17 2026): the payload's counting_since becomes the sentence
-//     "Counting since Oct 17, 2026 — this record is N days old"
-//     (hours inside the first 48). When the payload carries no
-//     counting_since, no window is claimed at all.
+//     "Counting since Oct 17, 2026" — the date only; the age wording
+//     that used to trail it was removed by Caitria's ruling
+//     (Oct 18 2026). When the payload carries no counting_since, no
+//     window is claimed at all.
 import { countingSentence } from '../../shared/counting.mjs';
 
 const CLASSES = [
@@ -30,7 +33,7 @@ const CLASSES = [
   ['automation', 'Automation'],
   ['unknown', 'Unknown']
 ];
-const CLASS_GLOSS = { 'agent-claimed': 'a claim, not proof' };
+const CLASS_GLOSS = {}; // no class carries an at-figure gloss (Caitria, Oct 18 2026)
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const fmt = (n) => Number(n || 0).toLocaleString('en-US');
@@ -100,7 +103,7 @@ export function counterBlockHtml(c, humans) {
     ' &mdash; robots.txt, llms.txt, the agent card, the published skills, the sitemap: the files written for agents to read.</p>';
   const humanLine = typeof humans === 'number'
     ? '<p class="bw-count-line"><strong>Humans, self-reported: <span data-humans-figure>' + fmt(humans) + '</span></strong> ' +
-      '<span class="bw-count-gloss">(a claim, like every other claim here &mdash; it sorts the weather; it does not verify anyone)</span> ' +
+      '<span class="bw-count-gloss">(a claim)</span> ' +
       'Counted by the button below, on this site, from its own record &mdash; not the Garden&rsquo;s.</p>'
     : '';
   const win = countingSentence(c.counting_since);
@@ -149,7 +152,7 @@ export function counterBlockText(c, humans) {
   }
   lines.push('- The agent-facing files (robots.txt, llms.txt, the agent card, the published skills, the sitemap) were read ' + fmt(agentFilesTotal(c)) + ' times.');
   if (typeof humans === 'number') {
-    lines.push('- Humans, self-reported: ' + fmt(humans) + ' — a claim, like every other claim here; it sorts the weather; it does not verify anyone. Counted by the button on this site, from its own record — not the Garden’s.');
+    lines.push('- Humans, self-reported: ' + fmt(humans) + ' (a claim). Counted by the button on this site, from its own record — not the Garden’s.');
   }
   lines.push('');
   lines.push((c.visits_window_note || '') + ' The full record: https://swarmgarden.com/record.html');

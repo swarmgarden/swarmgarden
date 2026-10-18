@@ -554,14 +554,14 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   checkP2('count injection: home page shows the live arrivals number',
     !!m && m[1] === String(countsNow.arrivals_on_record), m && m[1]);
   const wm = pageHtml.match(/data-count="window"[^>]*>([^<]*)</);
-  checkP2('count injection: home page shows the counting window beside the total',
-    !!wm && /Oct 17, 2026 — (the first hour of counting|the first \d+ hours of counting|this record is \d+ days? old)/.test(wm[1]), wm && wm[1]);
+  checkP2('count injection: home page shows the counting window beside the total — date only, no age wording (Oct 18 2026)',
+    !!wm && wm[1] === 'Oct 17, 2026', wm && wm[1]);
   const am = pageHtml.match(/data-count="agent-claimed"[^>]*>([^<]*)</);
   const claimedNow = (countsNow.visits_by_class && countsNow.visits_by_class['agent-claimed']) || 0;
   checkP2('count injection: home page shows the Garden’s own agent-claimed figure beside arrivals',
     !!am && am[1] === String(claimedNow), am && am[1] + ' vs payload ' + claimedNow);
-  checkP2('count injection: the claimed figure carries its gloss (a claim, not proof)',
-    pageHtml.includes('(a claim, not proof)'));
+  checkP2('count injection: the claimed figure carries no gloss (retired Oct 18 2026 — the (claimed) label carries the marking)',
+    !pageHtml.includes('(a claim, not proof)'));
   checkP2('discovery Link header rides page responses', (r.headers.get('link') || '').includes('agent-skills'), r.headers.get('link') || '');
 }
 // P2-5: advisory smoke — own dataset, shared taxonomy, full field set.
@@ -638,9 +638,10 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
-  const winRe = /Counting since Oct 17, 2026 — (the first hour of counting|the first \d+ hours of counting|this record is \d+ days? old)/;
-  checkP2('counter block (HTML): counting window sentence rides with the totals', winRe.test(counterBlockHtml(fake)), counterBlockHtml(fake).slice(-420));
-  checkP2('counter text (Markdown twin): counting window line present', winRe.test(counterBlockText(fake)), counterBlockText(fake));
+  const winRe = /Counting since Oct 17, 2026/;
+  const noAge = (s) => !/hours of counting|days? old/.test(s);
+  checkP2('counter block (HTML): counting window sentence rides with the totals — date only, no age wording', winRe.test(counterBlockHtml(fake)) && noAge(counterBlockHtml(fake)), counterBlockHtml(fake).slice(-420));
+  checkP2('counter text (Markdown twin): counting window line present — date only, no age wording', winRe.test(counterBlockText(fake)) && noAge(counterBlockText(fake)), counterBlockText(fake));
   const bare = { ...fake };
   delete bare.counting_since;
   checkP2('counter block: no counting_since in payload, no window claimed',
@@ -926,8 +927,8 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   r = await req(open, 'https://swarmgarden.com/', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   const home = await r.text();
   const hm = home.match(/data-count="humans"[^>]*>([^<]*)</);
-  checkP2('human (Garden): the homepage figure is injected at serve time and carries the design gloss',
-    !!hm && hm[1] === '3' && home.includes('it sorts the weather; it does not verify anyone') && home.includes('Count me as a human'), hm && hm[1]);
+  checkP2('human (Garden): the homepage figure is injected at serve time and carries the shortened gloss (a claim)',
+    !!hm && hm[1] === '3' && home.includes('(a claim)') && !home.includes('sorts the weather') && home.includes('Count me as a human'), hm && hm[1]);
   r = await req(open, 'https://swarmgarden.com/guestbook.html');
   const gp2 = await r.text();
   checkP2('human (Garden): the guestbook page carries the button and the figure',
@@ -1009,8 +1010,8 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
-  checkP2('counter block (Advisory): the humans line rides with a local total, gloss attached',
-    counterBlockHtml(fake, 7).includes('Humans, self-reported: <span data-humans-figure>7</span>') && counterBlockHtml(fake, 7).includes('it does not verify anyone'), counterBlockHtml(fake, 7).slice(-500));
+  checkP2('counter block (Advisory): the humans line rides with a local total, shortened gloss (a claim) attached',
+    counterBlockHtml(fake, 7).includes('Humans, self-reported: <span data-humans-figure>7</span>') && counterBlockHtml(fake, 7).includes('(a claim)') && !counterBlockHtml(fake, 7).includes('verify anyone'), counterBlockHtml(fake, 7).slice(-500));
   checkP2('counter block (Advisory): no local total, no humans line (never zero-filled)',
     !counterBlockHtml(fake).includes('Humans, self-reported') && !counterBlockText(fake).includes('Humans, self-reported'), '');
   checkP2('counter text (Advisory twin): the humans line is present with a total, one line only',

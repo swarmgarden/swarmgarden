@@ -179,8 +179,8 @@ export async function servePage(req, env) {
 // getWindow() is likewise optional (added Oct 17 2026 with the
 // counting window): when supplied and it returns a string, that
 // string replaces the content of any <span data-count="window"> —
-// the Garden homepage's "Counting since" row, so the age of the
-// record is spliced in live beside the total it describes.
+// the Garden homepage's "Counting since" row, so the record's
+// start date is spliced in live beside the total it describes.
 // getCounterBlock() is optional (added Oct 17 2026 for the advisory
 // homepage counter): when supplied and it returns an HTML string,
 // that string replaces the inner content of any [data-counter-block]

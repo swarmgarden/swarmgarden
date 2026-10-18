@@ -117,16 +117,17 @@ export default {
         return c ? c.visits_total : null;
       },
       // The counting window beside the homepage total (Oct 17 2026):
-      // the "Counting since" row's span gets "Oct 17, 2026 — this
-      // record is N days old" (hours inside the first 48), computed
-      // from the payload's counting_since at serve time. Null when
-      // the payload carries none — the row then keeps its published
-      // start date, which is true on its own.
+      // the "Counting since" row's span gets the start date only —
+      // "Oct 17, 2026" — computed from the payload's counting_since
+      // at serve time. The age wording that used to trail the date
+      // was removed by Caitria's ruling (Oct 18 2026): the row ends
+      // at the date. Null when the payload carries none — the row
+      // then keeps its published start date, which is true on its own.
       getWindow: async () => {
         const c = await getCounts();
         if (!c) return null;
         const p = countingParts(c.counting_since);
-        return p ? p.date + ' — ' + p.age : null;
+        return p ? p.date : null;
       },
       // Agent visits (claimed) beside the verified figure (Oct 17
       // 2026, Caitria's direction): the Garden's OWN class count from
