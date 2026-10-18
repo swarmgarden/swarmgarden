@@ -1,0 +1,55 @@
+# Bay Area Swarm Warning — Worker configuration (bayareaswarmwarning.com)
+# Phase 1 port: NOT deployed. No routes attached until the Phase 5
+# cutover; staging runs on the workers.dev address (Phase 4).
+name = "bay-area-swarm-warning"
+main = "src/index.js"
+compatibility_date = "2025-09-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Production domains (Phase 5 cutover, Oct 17 2026 — Caitria's GO:
+# "switch when ready"). Custom domains attach this Worker to the
+# bayareaswarmwarning.com zone; the workers.dev address keeps working.
+routes = [
+  { pattern = "bayareaswarmwarning.com", custom_domain = true },
+  { pattern = "www.bayareaswarmwarning.com", custom_domain = true },
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+# The front door (logging, negotiation, count injection) must see EVERY
+# request — without this, Workers Assets serves file matches directly
+# and the Worker never runs (the Netlify edge functions ran on all).
+run_worker_first = true
+
+# This site holds no record stores in the plan; this database exists
+# solely as the plan-sanctioned visit-record fallback (Design B) if
+# Analytics Engine limits bite — a SEPARATE database from the
+# Garden's, so the two sites' numbers never merge. Placeholder id
+# until provisioning: wrangler d1 create bay-area-swarm-warning, then
+# wrangler d1 execute bay-area-swarm-warning --file=schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "bay-area-swarm-warning"
+database_id = "REDACTED"
+
+# Advisory visit records: this site's OWN Analytics Engine dataset
+# (plan amendment, Oct 17 2026 — traffic, referrers, geography, and
+# the human/automation classification with its basis; a private report
+# surface is the stats route).
+[[analytics_engine_datasets]]
+binding = "VISITS"
+dataset = "advisory_visits"
+
+[vars]
+SITE_HOST = "bayareaswarmwarning.com"
+AE_DATASET = "advisory_visits"
+# COUNTS_ORIGIN — where arrivals are read from; defaults to
+# https://swarmgarden.com. The staging override (the Garden's
+# workers.dev address) was removed at the Phase 5 cutover, Oct 17 2026,
+# so the production default applies.
+# AE_ACCOUNT_ID is set at provisioning.
+
+# SECRETS — names only, set with `wrangler secret put`:
+#   STATS_KEY     — gates this site's dashboard route
+#   AE_API_TOKEN  — read-only Analytics Engine token for dashboard reads
