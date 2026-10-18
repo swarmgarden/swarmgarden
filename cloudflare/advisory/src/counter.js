@@ -65,7 +65,12 @@ function agentFilesTotal(c) {
 
 // The block's inner HTML (the published page carries the wrapper and
 // the no-numbers fallback; this replaces the fallback at serve time).
-export function counterBlockHtml(c) {
+// `humans` is THIS site's own human self-report total (the Advisory's
+// own press count, read from its own D1 by the caller — never from
+// the Garden payload): when it is a number, the block carries the
+// "Humans, self-reported" line with its gloss; when it is null (the
+// local read failed), the line is absent — never zero-filled.
+export function counterBlockHtml(c, humans) {
   const rows = classRows(c);
   const segs = rows.filter(r => r.v > 0)
     .map(r => '<span class="bw-seg seg-' + r.key + '" style="flex:' + r.v + ' 1 0" aria-hidden="true"></span>')
@@ -92,6 +97,11 @@ export function counterBlockHtml(c) {
   const files = agentFilesTotal(c);
   const filesLine = '<p class="bw-count-line"><strong>The agent-facing files were read ' + fmt(files) + (files === 1 ? ' time' : ' times') + '</strong>' +
     ' &mdash; robots.txt, llms.txt, the agent card, the published skills, the sitemap: the files written for agents to read.</p>';
+  const humanLine = typeof humans === 'number'
+    ? '<p class="bw-count-line"><strong>Humans, self-reported: <span data-humans-figure>' + fmt(humans) + '</span></strong> ' +
+      '<span class="bw-count-gloss">(a claim, like every other claim here &mdash; it sorts the weather; it does not verify anyone)</span> ' +
+      'Counted by the button below, on this site, from its own record &mdash; not the Garden&rsquo;s.</p>'
+    : '';
   const win = countingSentence(c.counting_since);
   return '' +
     '<h3>The count &mdash; live from the Garden record</h3>' +
@@ -101,12 +111,15 @@ export function counterBlockHtml(c) {
     '</div>' +
     '<div class="bw-comp" role="img" aria-label="' + esc(aria) + '">' + segs + '</div>' +
     '<div class="bw-comp-key">' + key + '</div>' +
-    crawlerLine + fetcherLine + filesLine +
+    crawlerLine + fetcherLine + filesLine + humanLine +
     '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="dashboard.html">the Arrival Record</a>.</p>';
 }
 
 // The Markdown-twin treatment: the same figures as plain text.
-export function counterBlockText(c) {
+// `humans` (this site's own press total) travels the same way as in
+// the HTML block: present as one line when it is a number, absent
+// when the local read failed.
+export function counterBlockText(c, humans) {
   const rows = classRows(c);
   const breakdown = rows.map(r => r.label + ' ' + fmt(r.v) + (CLASS_GLOSS[r.key] ? ' (' + CLASS_GLOSS[r.key] + ')' : '')).join(' · ');
   const crawlers = c.crawlers_claimed || { total: 0, by_name: {} };
@@ -134,6 +147,9 @@ export function counterBlockText(c) {
     lines.push('- Fetcher visits: ' + fmt(fetchers.total) + (fetcherNames ? ' — ' + fetcherNames : '') + '. A fetcher acts on a specific person\u2019s request, so it is counted apart from crawlers.');
   }
   lines.push('- The agent-facing files (robots.txt, llms.txt, the agent card, the published skills, the sitemap) were read ' + fmt(agentFilesTotal(c)) + ' times.');
+  if (typeof humans === 'number') {
+    lines.push('- Humans, self-reported: ' + fmt(humans) + ' — a claim, like every other claim here; it sorts the weather; it does not verify anyone. Counted by the button on this site, from its own record — not the Garden’s.');
+  }
   lines.push('');
   lines.push((c.visits_window_note || '') + ' The full record: https://swarmgarden.com/record.html');
   return lines.join('\n');

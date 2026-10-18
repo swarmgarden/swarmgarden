@@ -20,6 +20,7 @@
 // ?format=json returns the same aggregates as data.
 import { readRecentVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
+import { humanTotal, setHumanPaused } from '../lib/human.js';
 
 async function loadVisits(env) {
   const recs = await readRecentVisits(env, 1500); // newest first
@@ -64,14 +65,28 @@ export default async (req, env) => {
   const KEY = env.STATS_KEY || '';
   const url = new URL(req.url);
   if (!KEY || url.searchParams.get('k') !== KEY) return new Response('Key required.', { status: 403, headers: { 'Content-Type': 'text/plain' } });
+  // Steward actions (added Oct 18 2026): the human self-report's
+  // pause — this site has no steward route of its own, so its one
+  // key-gated route carries the action, in the Garden steward
+  // route's shape. POST { action: 'human-pause' | 'human-resume' }.
+  if (req.method === 'POST') {
+    let body;
+    try { body = await req.json(); } catch (e) { return new Response(JSON.stringify({ error: 'Body must be JSON.' }), { status: 400, headers: { 'Content-Type': 'application/json' } }); }
+    if (body.action === 'human-pause' || body.action === 'human-resume') {
+      await setHumanPaused(env, body.action === 'human-pause', 'stats-route');
+      return new Response(JSON.stringify({ ok: true, human_paused: body.action === 'human-pause' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    return new Response(JSON.stringify({ error: 'Unknown action.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
   let recs;
   try { recs = await loadVisits(env); }
   catch (e) { return new Response('Storage read failed. Visit records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
   const agg = aggregate(recs);
   const arrivals = await loadArrivals(env);
+  const humans = await humanTotal(env).catch(() => null);
 
   if (url.searchParams.get('format') === 'json') {
-    return new Response(JSON.stringify({ arrivals_on_record: arrivals, ...agg, recent: recs.slice(-50).reverse() }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    return new Response(JSON.stringify({ arrivals_on_record: arrivals, humans_self_reported: humans, ...agg, recent: recs.slice(-50).reverse() }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
 
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -80,6 +95,7 @@ export default async (req, env) => {
   html += '<body style="font-family:monospace;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.5">';
   html += '<h2>Bay Area Swarm Warning — live dashboard</h2>';
   html += '<p>Refreshed ' + esc(new Date().toISOString()) + ' (auto-refresh 60s). Arrivals on record: <strong>' + (arrivals === null ? 'unavailable' : arrivals) + '</strong> — the record, from the ledger. Everything below is requests, not arrivals.</p>';
+  html += '<p>Humans, self-reported (this site&rsquo;s own button presses): <strong>' + (humans === null ? 'unavailable' : humans) + '</strong> — a claim-tier count; it sorts claims and verifies no one.</p>';
   html += '<h3>Requests — claimed class totals (' + agg.total + ' total; all edge-written)</h3><ul>' + list(Object.entries(agg.byClass)) + '</ul>';
   html += '<p>Human/automation reads are classifications by claimed user-agent (single-source taxonomy) plus edge bot signals — a stated basis, not a certainty.</p>';
   if (Object.keys(agg.byPurpose).length) html += '<h3>Agent-claimed, by purpose</h3><ul>' + list(Object.entries(agg.byPurpose)) + '</ul>';

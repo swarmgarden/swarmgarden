@@ -44,6 +44,13 @@ dataset = "advisory_visits"
 [vars]
 SITE_HOST = "bayareaswarmwarning.com"
 AE_DATASET = "advisory_visits"
+# The human self-report button (added Oct 18 2026, Caitria's
+# ruling): like the Garden's, HUMAN_OPEN is set HERE, in the file —
+# opening the button is the commission, so the value travels with
+# the build. Kill switch: set this to anything but "true" and
+# redeploy, or pause the count from the keyed stats route (POST
+# action human-pause); the published figure stays up either way.
+HUMAN_OPEN = "true"
 # COUNTS_ORIGIN — where arrivals are read from; defaults to
 # https://swarmgarden.com. The staging override (the Garden's
 # workers.dev address) was removed at the Phase 5 cutover, Oct 17 2026,

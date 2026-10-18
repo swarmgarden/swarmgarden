@@ -192,7 +192,12 @@ export async function servePage(req, env) {
 // number, that number (the counts payload's visits_by_class
 // agent-claimed count, from the serving Worker's own visit store)
 // replaces the content of any <span data-count="agent-claimed">.
-export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock, getWindow, getAgentClaimed) {
+// getHumans() is likewise optional (added Oct 18 2026, the human
+// self-report figure): when supplied and it returns a number, that
+// number (the counts payload's humans_total — the serving Worker's
+// own press count) replaces the content of any
+// <span data-count="humans">.
+export async function injectCounts(res, getArrivals, getUpdated, getVisits, getCounterBlock, getWindow, getAgentClaimed, getHumans) {
   try {
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return res;
@@ -249,6 +254,14 @@ export async function injectCounts(res, getArrivals, getUpdated, getVisits, getC
         });
       }
     }
+    if (typeof getHumans === 'function') {
+      const h = await getHumans();
+      if (typeof h === 'number') {
+        rw.on('span[data-count="humans"]', {
+          element(el) { el.setInnerContent(String(h)); }
+        });
+      }
+    }
     return rw.transform(new Response(res.body, { status: res.status, headers }));
   } catch (e) {
     return res;
@@ -292,7 +305,7 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = new Response(out.body, { status: out.status, headers });
   }
   if (req.method === 'GET' && opts && opts.getArrivals) {
-    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock, opts.getWindow, opts.getAgentClaimed);
+    out = await injectCounts(out, opts.getArrivals, opts.getUpdated, opts.getVisits, opts.getCounterBlock, opts.getWindow, opts.getAgentClaimed, opts.getHumans);
   }
   if (req.method === 'GET' && opts && typeof opts.getCounterText === 'function') {
     out = await injectCounterText(out, opts.getCounterText);

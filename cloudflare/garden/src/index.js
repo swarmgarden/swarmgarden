@@ -25,6 +25,7 @@ import utilitiesRoute from './routes/utilities.js';
 import notesRoute from './routes/notes.js';
 import guestbookStewardRoute from './routes/guestbook.js';
 import { challengeRoute, signalRoute } from './routes/signal.js';
+import humanRoute from './routes/human.js';
 export { Sequencer } from './lib/sequencer.js';
 
 const SITE_HOST = 'swarmgarden.com';
@@ -43,6 +44,10 @@ function route(pathname) {
   // channel and stays live on its own gate (SIGNAL_OPEN).
   if (pathname === '/api/v1/signal/challenge') return challengeRoute;
   if (pathname === '/api/v1/signal') return signalRoute;
+  // The human self-report (added Oct 18 2026): likewise matched
+  // BEFORE the generic /api/v1/ intake branch — a press is not an
+  // intake channel and stands on its own gate (HUMAN_OPEN).
+  if (pathname === '/api/v1/human-press') return humanRoute;
   if (pathname === '/.netlify/functions/guestbook') return guestbookStewardRoute;
   if (pathname.startsWith('/api/v1/receipts/') || pathname === '/api/v1/receipts') return receiptsRoute;
   if (pathname.startsWith('/receipts/')) return receiptsRoute;
@@ -130,6 +135,15 @@ export default {
         if (!c || !c.visits_by_class) return null;
         const v = c.visits_by_class['agent-claimed'];
         return typeof v === 'number' ? v : 0;
+      },
+      // Humans, self-reported (Oct 18 2026): the press count from the
+      // same payload — this Worker's own D1 press table only, so the
+      // figure is swarmgarden.com's alone. A failed payload yields
+      // null and the row keeps its published fallback text, like
+      // every other row.
+      getHumans: async () => {
+        const c = await getCounts();
+        return c && typeof c.humans_total === 'number' ? c.humans_total : null;
       }
     });
   }

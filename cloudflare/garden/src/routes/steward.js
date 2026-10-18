@@ -12,6 +12,7 @@
 // GET: the quarantine queue (every receipt, with its stored submission).
 import { JSON_HEADERS, STATES, setIntakePaused, listReceipts, loadReceipt, saveReceipt, appendLedger, saveBrief } from '../lib/garden.js';
 import { setSignalPaused } from '../lib/signal.js';
+import { setHumanPaused } from '../lib/human.js';
 
 const REGISTRY_STATES = ['listed', 'lapsed', 'refreshed'];
 
@@ -49,6 +50,13 @@ export default async (req, env) => {
   if (body.action === 'signal-pause' || body.action === 'signal-resume') {
     await setSignalPaused(env, body.action === 'signal-pause', 'steward-endpoint');
     return new Response(JSON.stringify({ ok: true, signal_paused: body.action === 'signal-pause' }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // The human self-report's steward pause (added Oct 18 2026): the
+  // second gate layer for the press endpoint, beside HUMAN_OPEN.
+  if (body.action === 'human-pause' || body.action === 'human-resume') {
+    await setHumanPaused(env, body.action === 'human-pause', 'steward-endpoint');
+    return new Response(JSON.stringify({ ok: true, human_paused: body.action === 'human-pause' }), { status: 200, headers: JSON_HEADERS });
   }
 
   if (body.action === 'brief') {

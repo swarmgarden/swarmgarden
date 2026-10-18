@@ -96,3 +96,24 @@ CREATE TABLE IF NOT EXISTS signals (
   data         TEXT NOT NULL            -- the full signal record, as JSON
 );
 CREATE INDEX IF NOT EXISTS idx_signals_at ON signals(signalled_at);
+
+-- The human self-report (added Oct 18 2026, Caitria's ruling): a
+-- press of the "Count me as a human" button. A press is a claim,
+-- counted in its OWN sequencer sequence (six digits, zero-padded)
+-- and published as "Humans, self-reported". It is not an arrival:
+-- no receipt, no ledger entry, no visit or signal count moves.
+-- The dedupe table holds, for one day only, the one-way digest of
+-- the presser's network beside the number issued, so a repeat press
+-- the same day returns its number and counts once; rows are pruned
+-- once their day has passed. The raw address is never stored.
+CREATE TABLE IF NOT EXISTS human_presses (
+  number     TEXT PRIMARY KEY,          -- zero-padded sequential, e.g. '000001'
+  pressed_at TEXT NOT NULL,
+  data       TEXT NOT NULL              -- the full press record, as JSON
+);
+CREATE TABLE IF NOT EXISTS human_press_dedupe (
+  digest TEXT NOT NULL,                 -- truncated SHA-256 of the network address (one-way)
+  day    TEXT NOT NULL,                 -- UTC date of the press, YYYY-MM-DD
+  number TEXT NOT NULL,                 -- the press number issued that day
+  PRIMARY KEY (digest, day)
+);

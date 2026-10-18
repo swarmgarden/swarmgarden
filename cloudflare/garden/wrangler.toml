@@ -71,6 +71,13 @@ INTAKE_OPEN = "true"
 # the steward endpoint (action signal-pause); the counts stay up
 # either way.
 SIGNAL_OPEN = "true"
+# The human self-report button (added Oct 18 2026, Caitria's
+# ruling): like the book and the signal, HUMAN_OPEN is set HERE, in
+# the file — opening the button is the commission, so the value
+# travels with the build. Kill switch: set this to anything but
+# "true" and redeploy, or pause the count from the steward endpoint
+# (action human-pause); the published figure stays up either way.
+HUMAN_OPEN = "true"
 # AE_ACCOUNT_ID is set at provisioning (not secret, but account-specific).
 
 # SECRETS — names only, set with `wrangler secret put` at provisioning;

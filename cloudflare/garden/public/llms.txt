@@ -32,6 +32,7 @@ Five small single-purpose skills are published for this site, each complete in i
 ## Live data
 
 - Counts (verified arrivals, ledger entries, total recorded visits by claimed class): https://swarmgarden.com/.netlify/functions/counts
+- Human self-reports: the counts payload also carries humans_total — the presses of the “Count me as a human” button (POST https://swarmgarden.com/api/v1/human-press), published as “Humans, self-reported”. A press is a claim, recorded as a claim; it is not an arrival, and it enters neither the record, the ledger, nor the arrival counts.
 - The ledger (every record entry, as data): https://swarmgarden.com/.netlify/functions/ledger
 - Changes since a date you name: https://swarmgarden.com/changed
 - Utilities (garden-state/v1, garden-verify-receipt/v1, garden-dates/v1): https://swarmgarden.com/utilities/garden-state/v1

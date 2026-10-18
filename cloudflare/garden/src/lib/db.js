@@ -148,6 +148,41 @@ export async function dbMaxSignalNumber(db) {
   return row && row.m ? Number(row.m) : 0;
 }
 
+// ---- human self-reports (added Oct 18 2026) ----
+// Presses live in their own table under their own sequence; nothing
+// here touches receipts, the ledger, notes, or signals. The dedupe
+// table holds the day's one-way network fingerprints (digest + day +
+// the number issued) so a repeat press returns its number and counts
+// once; rows are pruned once their day has passed, as the published
+// data note under the button states.
+export async function dbRecordHumanPress(db, rec, digest) {
+  try {
+    await db.batch([
+      db.prepare('INSERT INTO human_presses (number, pressed_at, data) VALUES (?1,?2,?3)')
+        .bind(rec.number, rec.pressed_at, JSON.stringify(rec)),
+      db.prepare('INSERT INTO human_press_dedupe (digest, day, number) VALUES (?1,?2,?3)')
+        .bind(digest, rec.day, rec.number)
+    ]);
+    return true;
+  } catch (e) { return false; }
+}
+export async function dbGetHumanDedupe(db, digest, day) {
+  const row = await db.prepare('SELECT number FROM human_press_dedupe WHERE digest = ?1 AND day = ?2')
+    .bind(String(digest), String(day)).first();
+  return row || null;
+}
+export async function dbPruneHumanDedupe(db, today) {
+  await db.prepare('DELETE FROM human_press_dedupe WHERE day < ?1').bind(String(today)).run();
+}
+export async function dbCountHumanPresses(db) {
+  const row = await db.prepare('SELECT COUNT(*) AS n FROM human_presses').first();
+  return row ? Number(row.n) || 0 : 0;
+}
+export async function dbMaxHumanPressNumber(db) {
+  const row = await db.prepare('SELECT MAX(CAST(number AS INTEGER)) AS m FROM human_presses').first();
+  return row && row.m ? Number(row.m) : 0;
+}
+
 // ---- garden state (the steward pause flag) ----
 export async function dbGetState(db, key) {
   const row = await db.prepare('SELECT data FROM garden_state WHERE key = ?1').bind(key).first();

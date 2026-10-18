@@ -33,7 +33,7 @@
 //     on this stack — every record is edge-written (via='edge') — so
 //     the Netlify build's prepared-but-inactive BEACON_SEPARATION
 //     branch is gone. Totals are edge-only by construction.
-import { dbListLedger, dbGetReceipt, dbCountSignals } from '../lib/db.js';
+import { dbListLedger, dbGetReceipt, dbCountSignals, dbCountHumanPresses } from '../lib/db.js';
 import { readRecentVisits } from '../../../shared/visits.mjs';
 import { claimedBot } from '../../../shared/behaviour.mjs';
 import { COUNTING_SINCE } from '../../../shared/counting.mjs';
@@ -97,6 +97,7 @@ export async function computeCounts(env) {
   const out = {
     arrivals_on_record: 0, arrivals_over_cap_unread: 0, ledger_entries: 0,
     signals_total: 0,
+    humans_total: 0,
     visits_total: 0, visits_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
@@ -118,6 +119,13 @@ export async function computeCounts(env) {
   // added to arrivals.
   try { out.signals_total = await dbCountSignals(env.DB); }
   catch (e) { out.signals_error = 'Signal store unavailable.'; }
+  // humans_total (additive, Oct 18 2026): human self-reports — the
+  // "Count me as a human" presses, counted in their own D1 table and
+  // published apart, as a claim-tier figure ("Humans, self-reported").
+  // A press is a claim; the total is never folded into visits_by_class
+  // and never added to arrivals.
+  try { out.humans_total = await dbCountHumanPresses(env.DB); }
+  catch (e) { out.humans_error = 'Human count store unavailable.'; }
   try {
     const v = await readVisits(env);
     out.visits_total = v.total;
