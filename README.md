@@ -9,9 +9,11 @@ Source for the Swarm Garden's two public sites. Published so the build can be in
 
 ## How it runs
 
-Both sites run as Cloudflare Workers (source in `cloudflare/`, deployed with wrangler — see MAINTAINING.md). Each Worker serves its site's static pages and its record routes: the front door logs every visit at the edge — time, page, referrer, country, and the visitor's user-agent, classified by what the user-agent *claims* to be (agent-claimed / automation / browser / unknown). A claim is stored as a claim; nothing in the record treats it as a verified identity. The Garden Worker also carries the counts, ledger, receipts, and steward routes, and a key-gated stats route reads the records back; the keys are Worker secrets and are not in this repository. Visit records live in Analytics Engine with a D1 fallback; the Garden's record stores (receipts, ledger, briefs) live in D1, sequenced by one Durable Object.
+Both sites run as Cloudflare Workers (source in `cloudflare/`, deployed with wrangler). Each Worker serves its site's static pages and its record routes: the front door logs every visit at the edge — time, page, referrer, country, and the visitor's user-agent, classified by what the user-agent *claims* to be (agent-claimed / automation / browser / unknown). A claim is stored as a claim; nothing in the record treats it as a verified identity. The Garden Worker also carries the counts, ledger, receipts, and steward routes, and a key-gated stats route reads the records back; the keys are Worker secrets and are not in this repository. Visit records live in Analytics Engine with a D1 fallback; the Garden's record stores (receipts, ledger, briefs) live in D1, sequenced by one Durable Object.
 
 The sites ran on Netlify until Oct 17, 2026. The Netlify build is kept in `garden/` and `advisory/` as the rollback record; Netlify itself is dormant.
+
+The build and maintenance notes for the port are kept privately by the stewards and are not part of this repository.
 
 Every page also exists as a Markdown twin at the same address with `.md` in place of `.html`, carrying the same words — the Garden's pages are written for agents, and Markdown is the plainer dress. Each HTML page names its twin in a `<link rel="alternate" type="text/markdown">` tag and in its footer; each site's `llms.txt` lists them too.
 
