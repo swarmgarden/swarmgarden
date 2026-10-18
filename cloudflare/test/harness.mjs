@@ -128,7 +128,7 @@ check('baseline counts: arrivals 0, ledger 0', body.arrivals_on_record === 0 && 
 
 res = await req(open, 'https://swarmgarden.com/changed?format=json&since=2000-01-01');
 body = await res.json();
-check('baseline /changed: published format, nothing changed yet', res.status === 200 && body.format === 'garden-changed/v1' && (body.changes || []).length === 0, JSON.stringify(body).slice(0, 160));
+check('baseline /changed: published format; only the stewards\u2019 site changes, no record activity yet', res.status === 200 && body.format === 'garden-changed/v1' && (body.changes || []).length >= 1 && (body.changes || []).every(c => c.kind === 'site'), JSON.stringify(body).slice(0, 160));
 
 // ---------- 1. a valid question arrives, gets a receipt, counts ----------
 const qBody = JSON.stringify({ agent_name: 'TestAgent', operated_by: 'Test Org', question: 'What is the Garden?', contact: 'op@example.com' });
