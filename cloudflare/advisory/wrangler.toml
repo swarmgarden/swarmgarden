@@ -41,6 +41,14 @@ database_id = "REDACTED"
 binding = "VISITS"
 dataset = "advisory_visits"
 
+# Asset-companion records (added Oct 18 2026, lens spec B-a): page
+# sub-requests (.css/.js/.ico) land in this SEPARATE dataset, so the
+# visit totals above can never move because a page rendered. The
+# Garden has its own asset dataset; the two never merge.
+[[analytics_engine_datasets]]
+binding = "ASSET_VISITS"
+dataset = "advisory_asset_visits"
+
 [vars]
 SITE_HOST = "bayareaswarmwarning.com"
 AE_DATASET = "advisory_visits"

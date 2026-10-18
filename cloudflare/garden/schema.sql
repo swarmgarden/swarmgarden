@@ -117,3 +117,25 @@ CREATE TABLE IF NOT EXISTS human_press_dedupe (
   number TEXT NOT NULL,                 -- the press number issued that day
   PRIMARY KEY (digest, day)
 );
+
+-- Refused-POST attempts (added Oct 18 2026, lens spec B-b): the knock
+-- record. One row per REFUSED non-GET/HEAD request to a published
+-- channel (intake channels, notes, signal, human-press), plus
+-- unrouted POSTs answered 404 (channel 'unrouted'). Successful POSTs
+-- are never written — each channel counts its own successes.
+-- Request bodies are never stored; no address is stored. Written by
+-- shared/attempts.mjs from the routers; read by the keyed stats page.
+CREATE TABLE IF NOT EXISTS api_attempts (
+  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  t       TEXT NOT NULL,                -- ISO timestamp of the attempt
+  route   TEXT NOT NULL,                -- the path as called
+  channel TEXT NOT NULL,                -- answers|questions|reports|registry|notes|signal|human-press|intake-other|unrouted
+  method  TEXT NOT NULL,
+  status  INTEGER NOT NULL,             -- the HTTP status returned
+  code    TEXT NOT NULL DEFAULT '',     -- refusal code from the response JSON, best-effort
+  cls     TEXT NOT NULL DEFAULT '',     -- the UA's claimed class (shared taxonomy)
+  cname   TEXT NOT NULL DEFAULT '',     -- the UA's claimed dictionary name, if any
+  country TEXT NOT NULL DEFAULT '',     -- edge facts, as on the visit record
+  asn     TEXT NOT NULL DEFAULT '',
+  as_org  TEXT NOT NULL DEFAULT ''
+);

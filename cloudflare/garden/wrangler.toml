@@ -54,6 +54,14 @@ new_sqlite_classes = ["Sequencer"]
 binding = "VISITS"
 dataset = "garden_visits"
 
+# Asset-companion records (added Oct 18 2026, lens spec B-a): page
+# sub-requests (.css/.js/.ico) land in this SEPARATE dataset, so the
+# visit totals above can never move because a page rendered. The
+# Advisory has its own asset dataset; the two never merge.
+[[analytics_engine_datasets]]
+binding = "ASSET_VISITS"
+dataset = "garden_asset_visits"
+
 [vars]
 SITE_HOST = "swarmgarden.com"
 AE_DATASET = "garden_visits"

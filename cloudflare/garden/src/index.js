@@ -10,8 +10,12 @@
 //   /.netlify/functions/visit — the unauthenticated beacon write path
 //   is retired (plan Decision 7). Visit records are written by the
 //   edge (front door) only. A POST there falls through to the assets
-//   and 404s, like any other unpublished path.
+//   and 404s, like any other unpublished path — and, since Oct 18
+//   2026 (lens spec B-b), leaves one row in the D1 api_attempts table
+//   (channel 'unrouted'): refused POSTs are counted, bodies never
+//   stored. The same wrap counts refusals on every routed channel.
 import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
+import { channelForPath, logAttempt } from '../../shared/attempts.mjs';
 import { countingParts } from '../../shared/counting.mjs';
 import { computeCounts } from './routes/counts.js';
 import countsRoute from './routes/counts.js';
@@ -85,10 +89,26 @@ export default {
       // utilities are protocol reads in the record).
       if (req.method === 'GET' || req.method === 'HEAD') {
         res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
+      } else {
+        // Refused-POST attempt counting (lens spec B-b): a refusal on
+        // a published channel writes one api_attempts row; a success
+        // writes none (the channel counts its own). Steward routes
+        // map to no channel and are not counted.
+        const channel = channelForPath(url.pathname);
+        if (channel) {
+          const w = logAttempt(env, req, res, channel);
+          if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
+        }
       }
       return res;
     }
     res = await servePage(req, env);
+    // Unrouted POSTs (lens spec B-b): a non-GET/HEAD request with no
+    // route, answered 404 by the page branch, is a knock too.
+    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status === 404) {
+      const w = logAttempt(env, req, res, 'unrouted');
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
+    }
     // The signpost 404 (Oct 18 2026): a page-branch 404 keeps its
     // status — and its visit record — but its body points back to
     // the door and the record (lib/signpost.js). Route responses

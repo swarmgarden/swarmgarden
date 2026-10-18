@@ -10,6 +10,7 @@
 // tokens) is not carried over. The unauthenticated beacon write path
 // is not carried over either: the edge is the only writer.
 import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
+import { logAttempt } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
 import humanRoute from './routes/human.js';
 import { humanTotal } from './lib/human.js';
@@ -36,15 +37,28 @@ export default {
     // refreshes its figure from here every 60 seconds; a refresh is
     // not a visit).
     if (url.pathname === '/api/v1/human-press') {
-      const res = await humanRoute(req, env, ctx);
+      let res = await humanRoute(req, env, ctx);
       if (!res.headers.get('link')) {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
-        return new Response(res.body, { status: res.status, headers });
+        res = new Response(res.body, { status: res.status, headers });
+      }
+      // Refused-POST attempt counting (lens spec B-b): a refused
+      // press writes one row in this site's own api_attempts table;
+      // a counted press writes none (the press table counts it).
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        const w = logAttempt(env, req, res, 'human-press');
+        if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
       }
       return res;
     }
     const res = await servePage(req, env);
+    // Unrouted POSTs (lens spec B-b): a non-GET/HEAD request with no
+    // route, answered 404 by the page branch, is a knock too.
+    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status === 404) {
+      const w = logAttempt(env, req, res, 'unrouted');
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
+    }
     // The Garden's published counts, fetched once per page serve; the
     // front-door callbacks (arrivals spans, the homepage counter block
     // and its Markdown-twin text) all read the same result. A failed

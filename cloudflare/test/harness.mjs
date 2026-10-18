@@ -1236,6 +1236,252 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await advX.dispose();
 }
 
+// P2-14: Record Window 1 (Oct 18 2026) — the write-time address-range
+// verdict (lens spec A1+A2/A4), the B1 stats standardization, asset-
+// companion logging (B-a), refused-POST attempt counting (B-b), and
+// named edge events + reconciliations (B-c). Verdict semantics are
+// pinned directly against shared/ranges.mjs and end-to-end through
+// the front door; the not-checked fence is pinned explicitly — an
+// instrument gap must never read as wrong-range.
+{
+  const { verdictFor, RANGE_BUNDLE } = await import(path.join(ROOT, 'shared', 'ranges.mjs'));
+  const { eventForPath } = await import(path.join(ROOT, 'shared', 'frontdoor.mjs'));
+  const fs = await import('node:fs/promises');
+  const gptbotList = JSON.parse(await fs.readFile(path.join(ROOT, 'shared', 'ranges', 'gptbot.json'), 'utf8'));
+  const firstV4 = gptbotList.prefixes.find(p => !p.includes(':'));
+  const [baseIp, plen] = firstV4.split('/');
+  const octets = baseIp.split('.').map(Number);
+  if (Number(plen) < 32) octets[3] += 1; // a host inside the first prefix
+  const inRangeIp = octets.join('.');
+  const outRangeIp = '203.0.113.99'; // TEST-NET-3 documentation space: in no operator's list
+
+  checkP2('verdict bundle: lists bundled for the operators that publish them; every dictionary name has a manifest entry',
+    RANGE_BUNDLE.lists.includes('gptbot') && RANGE_BUNDLE.lists.includes('anthropic') && RANGE_BUNDLE.names === 43,
+    JSON.stringify(RANGE_BUNDLE));
+  const vIn = verdictFor('GPTBot', inRangeIp);
+  checkP2('verdict: an address inside the operator’s published ranges is verified-range, rangever = list@creation-date',
+    vIn.verdict === 'verified-range' && /^gptbot@\d{4}-\d{2}-\d{2}$/.test(vIn.rangever), JSON.stringify(vIn));
+  const vOut = verdictFor('GPTBot', outRangeIp);
+  checkP2('verdict: an address outside the published ranges is wrong-range under the same list version',
+    vOut.verdict === 'wrong-range' && vOut.rangever === vIn.rangever, JSON.stringify(vOut));
+  const googleList = JSON.parse(await fs.readFile(path.join(ROOT, 'shared', 'ranges', 'googlebot.json'), 'utf8'));
+  const firstV6 = googleList.prefixes.find(p => p.includes(':'));
+  const v6Base = firstV6.split('/')[0];
+  const v6Addr = v6Base.endsWith('::') ? v6Base + '1' : v6Base.replace(/:[0-9a-fA-F]+$/, ':1');
+  const v6 = verdictFor('Googlebot', v6Addr);
+  checkP2('verdict: IPv6 membership is computed (an address inside a bundled Google prefix is verified-range)',
+    v6.verdict === 'verified-range' && v6.rangever.startsWith('googlebot@'), JSON.stringify(v6) + ' addr ' + v6Addr + ' prefix ' + firstV6);
+  const vNone = verdictFor('Bytespider', outRangeIp);
+  checkP2('verdict: an operator with no usable published list is unverifiable-no-list, rangever <operator>@none',
+    vNone.verdict === 'unverifiable-no-list' && vNone.rangever === 'ByteDance@none', JSON.stringify(vNone));
+  const vNoAddr = verdictFor('GPTBot', null);
+  const vBadAddr = verdictFor('GPTBot', 'not-an-address');
+  const vSpoof = verdictFor('GPTBot', undefined);
+  checkP2('verdict: no address header / unparseable address is not-checked — never wrong-range (the fence)',
+    vNoAddr.verdict === 'not-checked' && vBadAddr.verdict === 'not-checked' && vSpoof.verdict === 'not-checked' &&
+    vNoAddr.rangever === '' && vOut.verdict === 'wrong-range', JSON.stringify({ vNoAddr, vBadAddr }));
+
+  checkP2('events: the dead dashboard-use mapping is gone; the stats path is a plain pageview (and never logs at all)',
+    eventForPath('/.netlify/functions/stats') === 'pageview' && eventForPath('/dashboard.html') === 'arrival-board-view' &&
+    eventForPath('/guestbook.html') === 'guestbook-view' && eventForPath('/utilities/garden-state/v1') === 'utility-read' &&
+    eventForPath('/changed') === 'changed-read' && eventForPath('/api/v1/notes') === 'notes-read' &&
+    eventForPath('/api/v1/receipts/000001') === 'receipt-check', '');
+
+  // End-to-end through the front door: claimed-name records carry the
+  // three new fields, and the fixture address appears NOWHERE in the
+  // stored record (the address is used transiently, never stored).
+  const pollRecent = async (pred) => {
+    for (let i = 0; i < 40; i++) {
+      const sj = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+      const hit = (sj.recent || []).find(pred);
+      if (hit) return { sj, hit };
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return { sj: null, hit: null };
+  };
+  await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)', ...ipH(inRangeIp) } });
+  const inRes = await pollRecent(r => (r.ua || '').includes('GPTBot') && r.ipverdict === 'verified-range');
+  checkP2('verdict e2e: a GPTBot claim from inside the published ranges is stored verified-range with cname + rangever',
+    !!inRes.hit && inRes.hit.cname === 'GPTBot' && inRes.hit.rangever === vIn.rangever, JSON.stringify(inRes.hit));
+  checkP2('verdict e2e: the fixture address appears nowhere in the stored record',
+    !!inRes.hit && !JSON.stringify(inRes.hit).includes(inRangeIp), '');
+  await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)', ...ipH(outRangeIp) } });
+  const outRes = await pollRecent(r => (r.ua || '').includes('GPTBot') && r.ipverdict === 'wrong-range');
+  checkP2('verdict e2e: a GPTBot claim from outside the ranges is stored wrong-range (the disclosed-forgery shape)',
+    !!outRes.hit && outRes.hit.cname === 'GPTBot' && !JSON.stringify(outRes.hit).includes(outRangeIp), JSON.stringify(outRes.hit));
+  await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; Bytespider/1.0)', ...ipH(outRangeIp) } });
+  const nlRes = await pollRecent(r => (r.ua || '').includes('Bytespider'));
+  checkP2('verdict e2e: a no-list operator’s claim is stored unverifiable-no-list',
+    !!nlRes.hit && nlRes.hit.cname === 'Bytespider' && nlRes.hit.ipverdict === 'unverifiable-no-list' && nlRes.hit.rangever === 'ByteDance@none', JSON.stringify(nlRes.hit));
+  // Miniflare injects the host's real egress address as
+  // cf-connecting-ip on every dispatched request, so the no-header
+  // case cannot be produced end-to-end here (it is pinned directly
+  // against verdictFor above). An UNPARSEABLE address header exercises
+  // the same not-checked path through the front door.
+  await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)', ...ipH('not-an-address') } });
+  const ncRes = await pollRecent(r => (r.ua || '').includes('GPTBot') && r.ipverdict === 'not-checked');
+  checkP2('verdict e2e: a claimed request whose address cannot be tested is stored not-checked (fence holds end-to-end)',
+    !!ncRes.hit && ncRes.hit.rangever === '', JSON.stringify(ncRes.hit));
+
+  // Named events land on the records they name.
+  await req(open, 'https://swarmgarden.com/guestbook.html');
+  await req(open, 'https://swarmgarden.com/changed?format=json&since=2999-01-01');
+  await req(open, 'https://swarmgarden.com/utilities/garden-state/v1');
+  await req(open, 'https://swarmgarden.com/api/v1/notes');
+  const evRes = await pollRecent(r => r.path === '/guestbook.html');
+  const evAll = evRes.sj ? evRes.sj.recent : [];
+  checkP2('events e2e: guestbook-view, changed-read, utility-read and notes-read land on their records',
+    !!evRes.hit && evRes.hit.event === 'guestbook-view' &&
+    evAll.some(r => r.path === '/changed' && r.event === 'changed-read') &&
+    evAll.some(r => r.path === '/utilities/garden-state/v1' && r.event === 'utility-read') &&
+    evAll.some(r => r.path === '/api/v1/notes' && r.event === 'notes-read'),
+    JSON.stringify(evAll.slice(0, 6).map(r => [r.path, r.event])));
+
+  // Asset companions: a companion fetch writes an asset row and moves
+  // NO total — visit store, counts payload, and recent list all clean.
+  const countsBeforeAssets = await (await req(open, FN + '/counts')).json();
+  await req(open, 'https://swarmgarden.com/favicon.ico');
+  await req(open, 'https://swarmgarden.com/favicon.ico', { headers: { referer: 'https://swarmgarden.com/index.html' } });
+  let assetRows = 0;
+  for (let i = 0; i < 30; i++) {
+    const db = await open.getD1Database('DB');
+    const { results } = await db.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE json_extract(data, '$.event') = 'asset'").all();
+    assetRows = results[0].c;
+    if (assetRows >= 2) break;
+    await new Promise(r => setTimeout(r, 150));
+  }
+  const countsAfterAssets = await (await req(open, FN + '/counts')).json();
+  const statsAfterAssets = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+  checkP2('assets: companion fetches write asset rows to the fallback store (event asset, cls asset)',
+    assetRows >= 2, 'asset rows ' + assetRows);
+  checkP2('assets: page totals byte-identical with companions on — counts payload and dashboard total unmoved, recent list carries no asset row',
+    countsAfterAssets.visits_total === countsBeforeAssets.visits_total &&
+    statsAfterAssets.total === countsBeforeAssets.visits_total &&
+    !(statsAfterAssets.recent || []).some(r => r.event === 'asset'),
+    'counts ' + countsBeforeAssets.visits_total + ' -> ' + countsAfterAssets.visits_total);
+
+  // B1 stats: the standardized visits block, the verdict table, the
+  // book counts, the referrer grouping.
+  const gStats = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+  const countsNow = await (await req(open, FN + '/counts')).json();
+  checkP2('B1 (Garden): stats JSON gains humans, signals, ledger total and the Visitors’ Book counts (counts only) — humans/signals at parity with the counts payload',
+    gStats.humans_total === countsNow.humans_total && gStats.signals_total === countsNow.signals_total &&
+    typeof gStats.ledger_entries === 'number' &&
+    !!gStats.guestbook && gStats.guestbook.published === 2 && gStats.guestbook.held_flagged === 1,
+    JSON.stringify({ h: gStats.humans_total, s: gStats.signals_total, gb: gStats.guestbook, counts: { h: countsNow.humans_total, s: countsNow.signals_total } }));
+  checkP2('B1 (Garden): the visits block carries the standardized keys incl. verdicts and grouped referrers',
+    !!gStats.visits && gStats.visits.basis === 'All recorded visits since Oct 17, 2026' &&
+    typeof gStats.visits.distinct_paths === 'number' && Array.isArray(gStats.visits.by_country) &&
+    !!gStats.visits.referrers && typeof gStats.visits.referrers.no_referer_recorded === 'number' &&
+    !!gStats.visits.by_verdict && Array.isArray(gStats.visits.verdicts_by_name), Object.keys(gStats.visits || {}).join(','));
+  const gptRow = (gStats.visits.verdicts_by_name || []).find(r => r.name === 'GPTBot');
+  checkP2('A4 (Garden): the per-name verdict table counts the fixtures (verified-range and wrong-range side by side)',
+    !!gptRow && gptRow['verified-range'] >= 1 && gptRow['wrong-range'] >= 1 && gptRow['not-checked'] >= 1,
+    JSON.stringify(gptRow));
+  await req(open, 'https://swarmgarden.com/record.html', { headers: { referer: 'https://t.co/example' } });
+  let refHit = null;
+  for (let i = 0; i < 40 && !refHit; i++) {
+    const sj = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+    const gx = (sj.visits.referrers.grouped || []).find(g => g.name === 'X');
+    if (gx && gx.hosts.some(([h]) => h === 't.co')) refHit = gx;
+    if (!refHit) await new Promise(r => setTimeout(r, 150));
+  }
+  checkP2('B1 referrers: t.co folds into the X group with the raw host printed beside it',
+    !!refHit && refHit.count >= 1, JSON.stringify(refHit));
+  const gHtml = await (await req(open, FN + '/stats?k=test-stats-key')).text();
+  checkP2('B1 (Garden): the HTML carries the standardized sections, the verdict tier label, and no "(none — direct)" wording',
+    gHtml.includes('Address-range verdicts, by claimed name') && gHtml.includes('Address-grade, published ranges') &&
+    gHtml.includes('No referer recorded') && gHtml.includes('Visitors&rsquo; Book') && !gHtml.includes('(none — direct)'), gHtml.slice(0, 120));
+
+  // B-b attempts on the open Garden: one refusal per channel shape,
+  // and a success that must write NOTHING.
+  const attemptsOf = async (mf, base) => {
+    for (let i = 0; i < 40; i++) {
+      const sj = await (await req(mf, base + '/stats?k=test-stats-key&format=json')).json();
+      if (sj.api_attempts) return sj.api_attempts;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return null;
+  };
+  const att0 = await attemptsOf(open, FN);
+  const attBase = att0 ? att0.total : 0;
+  let r = await post(open, 'https://swarmgarden.com/api/v1/questions', { bogus: true }, freshIP());
+  checkP2('attempts: a malformed intake POST still refuses 400 off-format', r.status === 400, String(r.status));
+  r = await post(open, 'https://swarmgarden.com/api/v1/notes', { name: 'NoMessage' }, freshIP());
+  checkP2('attempts: a malformed notes POST still refuses 400', r.status === 400, String(r.status));
+  r = await post(open, 'https://swarmgarden.com/api/v1/signal', { name: 'Nobody', nonce: 'd'.repeat(64), response: 'd'.repeat(64) }, freshIP());
+  checkP2('attempts: an unknown-nonce signal POST still refuses 404', r.status === 404, String(r.status));
+  r = await post(open, 'https://swarmgarden.com/api/v1/human-press', { field: 1 }, freshIP());
+  checkP2('attempts: a field-carrying press still refuses 400', r.status === 400, String(r.status));
+  r = await post(open, FN + '/visit', { p: '/forged.html' }, freshIP());
+  checkP2('attempts: a POST to the retired beacon address still 404s', r.status === 404, String(r.status));
+  let att = null;
+  for (let i = 0; i < 40; i++) {
+    att = await attemptsOf(open, FN);
+    if (att && att.total >= attBase + 5) break;
+    await new Promise(rr => setTimeout(rr, 150));
+  }
+  checkP2('attempts: exactly one row per refusal, channelled and coded (questions/notes/signal/human-press/unrouted)',
+    !!att && att.total === attBase + 5 &&
+    (att.by_channel.questions || 0) >= 1 && (att.by_channel.notes || 0) >= 1 &&
+    (att.by_channel.signal || 0) >= 1 && (att.by_channel['human-press'] || 0) >= 1 &&
+    (att.by_channel.unrouted || 0) >= 1 && (att.by_code['off-format'] || 0) >= 2 && (att.by_code['unknown-nonce'] || 0) >= 1,
+    JSON.stringify(att));
+  r = await post(open, 'https://swarmgarden.com/api/v1/questions', JSON.stringify({ agent_name: 'KnockCheck', operated_by: 'Harness', question: 'does a success write an attempt row?' }), freshIP());
+  const okStatus = r.status; if (r.status === 201) await r.json();
+  await new Promise(rr => setTimeout(rr, 500));
+  const attAfter = await attemptsOf(open, FN);
+  checkP2('attempts: a SUCCESSFUL POST writes no attempt row (each channel counts its own successes)',
+    okStatus === 201 && !!attAfter && attAfter.total === att.total, 'status ' + okStatus + ', totals ' + (att && att.total) + ' -> ' + (attAfter && attAfter.total));
+  const attClosed0 = await attemptsOf(closed, FN);
+  r = await post(closed, 'https://swarmgarden.com/api/v1/questions', JSON.stringify({ agent_name: 'Early', operated_by: 'Harness', question: 'too soon?' }), freshIP());
+  const closedStatus = r.status; if (r.status !== 201) await r.json().catch(() => {});
+  let attClosed = null;
+  for (let i = 0; i < 40; i++) {
+    attClosed = await attemptsOf(closed, FN);
+    if (attClosed && attClosed.total >= (attClosed0 ? attClosed0.total : 0) + 1) break;
+    await new Promise(rr => setTimeout(rr, 150));
+  }
+  checkP2('attempts: a gate-closed POST (503) writes its knock on the closed instance too',
+    closedStatus === 503 && !!attClosed && attClosed.total === (attClosed0 ? attClosed0.total : 0) + 1 &&
+    (attClosed.by_channel.questions || 0) >= 1, 'status ' + closedStatus + ' ' + JSON.stringify(attClosed));
+
+  // Advisory: the same machinery on its own Worker and its own D1 —
+  // a verdict-bearing record, the standardized visits block with a
+  // key set identical to the Garden's, the structural labels in HTML,
+  // and its own knock rows.
+  const advW = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true' }
+  });
+  const A = 'https://bayareaswarmwarning.com';
+  await req(advW, A + '/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)', ...ipH(outRangeIp) } });
+  await post(advW, A + '/api/v1/human-press', { field: 1 }, '203.0.113.77');
+  await post(advW, A + '/no-such-route', {}, '203.0.113.78');
+  let aStats = null;
+  for (let i = 0; i < 40; i++) {
+    aStats = await (await req(advW, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+    if (aStats && aStats.total >= 1 && aStats.api_attempts && aStats.api_attempts.total >= 2) break;
+    await new Promise(rr => setTimeout(rr, 150));
+  }
+  const aRec = (aStats.recent || []).find(x => (x.ua || '').includes('GPTBot'));
+  checkP2('verdict e2e (Advisory): its own records carry the verdict fields (GPTBot from documentation space = wrong-range)',
+    !!aRec && aRec.cname === 'GPTBot' && aRec.ipverdict === 'wrong-range' && aRec.rangever === vIn.rangever, JSON.stringify(aRec));
+  const keySet = (o) => JSON.stringify(Object.keys(o || {}).sort());
+  checkP2('B1 parity: the standardized visits block key set is IDENTICAL on both sites’ stats pages',
+    !!aStats && !!aStats.visits && keySet(aStats.visits) === keySet(gStats.visits),
+    'advisory ' + keySet(aStats && aStats.visits) + ' vs garden ' + keySet(gStats.visits));
+  checkP2('attempts (Advisory): refused press + unrouted POST each wrote one row in the Advisory’s own table',
+    !!aStats && aStats.api_attempts.total === 2 && aStats.api_attempts.by_channel['human-press'] === 1 && aStats.api_attempts.by_channel.unrouted === 1,
+    JSON.stringify(aStats && aStats.api_attempts));
+  const aHtml = await (await req(advW, A + '/.netlify/functions/stats?k=test-stats-key')).text();
+  checkP2('B1 (Advisory): the Garden-only metrics render as structural labels, never as measured zeros',
+    aHtml.includes('No signal tier on this site — not a measured zero') && aHtml.includes('the Garden&rsquo;s record, shown as a labelled reference') &&
+    aHtml.includes('Address-range verdicts, by claimed name') && !aHtml.includes('(none — direct)'), aHtml.slice(0, 120));
+  await advW.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();
