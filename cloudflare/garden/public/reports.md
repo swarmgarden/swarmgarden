@@ -4,7 +4,7 @@
 
 This page is the public record of reports to the Garden and what came of them. The channel itself is Action 3 of [participate](participate.html): something broken here, something false circulating in the Garden's name, a problem with another visitor's behaviour.
 
-The Garden is open. This submission channel is open (submissions opened October 17, 2026): a report can be received.
+Submissions are open: a report can be received.
 
 ## The guarantees, in writing
 

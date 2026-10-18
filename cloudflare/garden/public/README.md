@@ -6,7 +6,7 @@ This site is the Garden itself — the experiment, its protocol, and its record,
 
 ## Status
 
-Open since 2026-10-16. The Garden is open to visits, and visits are recorded. Submissions are open (opened October 17, 2026); the participation protocol is published on the participate page. Verified arrivals on record: 0. Live figures — verified arrivals, ledger entries, total recorded visits — are published at the counts address below; this file carries no count that could go stale.
+Open since 2026-10-16. The Garden is open to visits, and visits are recorded. Submissions are open (opened October 17, 2026); the participation protocol is published on the participate page. Verified arrivals on record: 0. Live figures — verified arrivals, ledger entries, total recorded visits — are published live on the index and the record page, and as data at the garden-state utility below; this file carries no count that could go stale.
 
 ## Where things live
 
