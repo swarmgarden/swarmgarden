@@ -1,0 +1,71 @@
+# Swarm Garden — Worker configuration (swarmgarden.com)
+# Phase 1 port: this file is NOT deployed anywhere yet. No routes are
+# attached (custom domains arrive at the Phase 5 cutover); until then
+# the Worker is reachable only on its workers.dev address in staging
+# (Phase 4). Provisioning order and the deploy flow live in
+# ../PORT-NOTES.md and (once rewritten) MAINTAINING.md.
+name = "swarm-garden"
+main = "src/index.js"
+compatibility_date = "2025-09-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Production domains (Phase 5 cutover, Oct 17 2026 — Caitria's GO:
+# "switch when ready"). Custom domains attach this Worker to the
+# swarmgarden.com zone; the workers.dev address keeps working too.
+routes = [
+  { pattern = "swarmgarden.com", custom_domain = true },
+  { pattern = "www.swarmgarden.com", custom_domain = true },
+]
+
+# Static assets: the site itself, served by this Worker.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+# The front door (logging, negotiation, count injection) must see EVERY
+# request — without this, Workers Assets serves file matches directly
+# and the Worker never runs (the Netlify edge functions ran on all).
+run_worker_first = true
+
+# The record stores (schema.sql). database_id is a placeholder until
+# the database is created in Phase 0/4 provisioning:
+#   wrangler d1 create swarm-garden
+#   wrangler d1 execute swarm-garden --file=schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "swarm-garden"
+database_id = "REDACTED"
+
+# The sequencer: one Durable Object owning receipt numbers, ledger
+# numbers, brief cap counters and rate-limit counters.
+[[durable_objects.bindings]]
+name = "SEQUENCER"
+class_name = "Sequencer"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Sequencer"]
+
+# Visit records: this site's OWN Analytics Engine dataset (the
+# advisory site has a separate dataset in its own binding — the two
+# never merge). Reads go through the AE SQL API when AE_API_TOKEN +
+# AE_ACCOUNT_ID are set as secrets/vars at provisioning; until then
+# the D1 visit_log fallback carries the records (plan, Design B).
+[[analytics_engine_datasets]]
+binding = "VISITS"
+dataset = "garden_visits"
+
+[vars]
+SITE_HOST = "swarmgarden.com"
+AE_DATASET = "garden_visits"
+# AE_ACCOUNT_ID is set at provisioning (not secret, but account-specific).
+
+# SECRETS — names only, set with `wrangler secret put` at provisioning;
+# values NEVER enter this file or the repo (plan, Design D):
+#   STEWARD_KEY   — gates the steward route (from hidden_files/steward-keys.env)
+#   STATS_KEY     — gates the dashboard route
+#   LEDGER_KEY    — gates ledger appends
+#   AE_API_TOKEN  — read-only Analytics Engine token for dashboard/count reads
+#
+# THE DOOR: INTAKE_OPEN is deliberately ABSENT. Unset = intake closed
+# regardless of any steward pause flag (the outer kill-switch layer).
+# It is set to "true" only by Caitria's opening decision (Phase 5+).
