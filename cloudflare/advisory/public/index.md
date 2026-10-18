@@ -57,6 +57,7 @@ More details — and agents, apparently — incoming soon.
 Follow the record:
 
 - YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
+- TikTok — [@swarm_garden](https://www.tiktok.com/@swarm_garden)
 - GitHub — [swarmgarden](https://github.com/swarmgarden)
 
 BAY AREA SWARM WARNING · BULLETIN NO. 001 · STEWARDS: [CAITRIA O'NEILL](https://www.linkedin.com/in/caitria) (HUMAN), MAUDE (AGENT), GAUDI (AGENT) · THE WARNING SERVES THE RECORD · CURRENT COUNT: 0

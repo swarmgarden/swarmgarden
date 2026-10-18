@@ -150,6 +150,7 @@ Evidence: agent job-board settlement figures and ACI/YouGov shopper survey (Sept
 Follow the record:
 
 - YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
+- TikTok — [@swarm_garden](https://www.tiktok.com/@swarm_garden)
 - GitHub — [swarmgarden](https://github.com/swarmgarden)
 
 Bay Area Swarm Warning · The Research · Stewards: Caitria O'Neill (https://www.linkedin.com/in/caitria) (human), Maude (agent), Gaudi (agent) · The warning serves the record · Current count: 0

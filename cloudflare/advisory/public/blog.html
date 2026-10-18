@@ -26,7 +26,9 @@
 <meta name="twitter:image:alt" content="Bay Area Swarm Warning. A chart of San Francisco Bay in cream, indigo, and violet. swarmgarden.com">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
-<!-- BUILD NOTE (Oct 17, 2026): This page carries four posts. "The premise" (v2) is APPROVED final text (Caitria, Oct 17). "A map is not a command" was DELETED from this page at Caitria's direction (Oct 17, 2026, ~10:01 AM); its text is preserved in blog-drafts.md (Post 2), and the "Experiment Principles" draft carries the principle in short form, pending her approval. The three daily entries (Oct 15, Oct 16, Oct 17, 2026) are APPROVED final text (Caitria, Oct 17, 2026), built into staging with her reservation that she may ask for edits once she sees them here; any such edits return to her for approval before deploy. Every entry after the premise uses the daily Humans/Engineers/Agents format. -->
+<!-- BUILD NOTE (Oct 17, 2026): This page carries four posts. "The premise" (v2) is APPROVED final text (Caitria, Oct 17). "A map is not a command" was DELETED from this page at Caitria's direction (Oct 17, 2026, ~10:01 AM); its text is preserved in blog-drafts.md (Post 2), and the "Experiment Principles" draft carries the principle in short form, pending her approval. The three daily entries (Oct 15, Oct 16, Oct 17, 2026) are APPROVED final text (Caitria, Oct 17, 2026), built into staging with her reservation that she may ask for edits once she sees them here; any such edits return to her for approval before deploy. Every entry after the premise uses the daily Humans/Engineers/Agents format.
+
+REFORMAT + PHOTO-MARKED EDITS — Oct 17, 2026 (evening, Caitria’s direction, from her marked photos of this page): (1) removed the intro paragraph that pointed at the public code and the callout box “When this log and the Garden’s record disagree, believe the record.”; (2) in the premise post, removed “This log is the notebook next to the record. The record — the Garden’s own pages — is the authority.” and the closing sentence “When this log and the record disagree, believe the record.” — the sentence between them stays; the same removals are recorded in the Log drafts files; (3) the premise’s “Catching a swarm” passage is set as a standout blockquote panel, same words. No other post wording changed. (The og:/twitter: description meta still carries the believe-the-record sentence; it was not a marked item and is untouched.) Reformat: each daily post is a collapsed card — header, blurb, jump links, counter strip, and the post’s hero visual stay visible; the full body sits in a native details/summary (“Read the full entry”) and is always present in the served HTML, so agent readers and no-JS readers lose nothing; the pinned premise stays expanded. A small script opens the target post when a jump link is followed; browsers that reveal closed-details fragment targets do it natively. Inside the bodies: verbatim pull quotes drawn from each post’s own approved text, a panel treatment on each post’s in-depth question lead, a rule above each section header, and the Oct 17 class-breakdown figure moved into that post’s always-visible zone (same figure, same caption). Formatting research borrowed: pull quotes and calls to action breaking text every three to five paragraphs, skim-first structure (Brafton, “Use this formula for maximum blog readability,” brafton.com); lists, callouts and pull quotes as strategic breaks, short pause paragraphs (RG Creative, “Four Tips for Readability When Writing Longform Content for the Web,” discoverrg.com); pull quote and callout as standard article components (Blocks Edit, “Article content essentials,” blocksedit.com); call-outs aligned to the brand palette (Omnizant, “Formatting Techniques for Long-Form Content,” omnizant.com). Social: inline-SVG brand icons (path data from simple-icons, CC0) beside the follow links on this page and the Advisory’s other social blocks, and a TikTok link added — @swarm_garden, https://www.tiktok.com/@swarm_garden, confirmed as the project’s account by Caitria on Oct 17, 2026, and verified live before shipping (display name “Swarm Garden,” project bio, both site links, first video published). The unapproved Oct 17 changeover post is NOT in this push. -->
 <body style="margin:0;padding:18px;background:#e9e7db">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,6 +108,21 @@
 .bw-foot{padding:11px 24px 14px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);text-align:center}
 @media (max-width:640px){.bw-tabs{flex-wrap:wrap}.bw-tabs a{flex:1 1 33%;text-align:center;font-size:12px;padding:10px 6px;min-height:44px;box-sizing:border-box}}
 @media (max-width:640px){.bw-count{padding:10px 10px 6px}.bw-count-table{display:block;width:100%;max-width:100%}.bw-count-table tbody{display:block;width:100%}.bw-count-table tr{display:flex;align-items:center;width:100%;min-width:0}.bw-count-table th{flex:0 1 88px;min-width:0;white-space:normal;padding:4px 6px 4px 0}.bw-count-num{flex:0 0 auto;padding:4px 8px !important}.bw-count-cell{flex:1 1 auto;width:auto;min-width:0}.bw-count-totalrow{flex-wrap:wrap;border-top:1px solid var(--line)}.bw-count-totalrow th,.bw-count-totalrow td{border-top:none}.bw-count-totalrow .bw-count-note{flex:1 1 100%;width:100%;padding:4px 0 2px}}
+.bw-post h3{border-top:2.5px solid var(--deep);padding-top:12px}
+.bw-quote{margin:0 0 14px;background:#cfe0f6;border:1.5px solid var(--chartink);padding:14px 16px;max-width:68ch}
+.bw-quote p{font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(17px,2.6vw,21px);line-height:1.42;color:var(--chartink);margin:0;max-width:none}
+.bw-pull{margin:18px 0;padding:4px 0 4px 16px;border-left:4px solid var(--violet);max-width:64ch}
+.bw-pull p{font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(18px,3vw,23px);line-height:1.35;color:var(--deep);margin:0;max-width:none}
+.bw-post p.bw-qlead{background:#ece8fa;border-left:4px solid var(--deep);padding:10px 13px}
+.bw-more{margin-top:2px}
+.bw-more summary{list-style:none;cursor:pointer;font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13.5px;color:var(--deep);background:var(--card);border:1.5px solid var(--ink);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:68ch}
+.bw-more summary::-webkit-details-marker{display:none}
+.bw-more summary:hover{background:#ece8fa}
+.bw-more summary:focus-visible{outline:2.5px solid var(--violet);outline-offset:2px}
+.bw-more .bw-arrow{font-family:"IBM Plex Mono",monospace;font-size:15px;line-height:1;transition:transform .15s ease}
+.bw-more[open ] summary .bw-arrow{transform:rotate(180deg)}
+.bw-body{padding-top:16px}
+.bw-social .ic{width:15px;height:15px;vertical-align:-2.5px;margin-right:7px}
 </style>
 <div class="bw">
   <div class="bw-strip">Bay Area &bull; Swarm Warning &bull; Field Notes &bull; Est. Oct 16, 2026</div>
@@ -116,8 +133,6 @@
 
     <div class="bw-intro">
       <p>This is the notebook next to the record. The record lives at <a href="https://swarmgarden.com">swarmgarden.com</a>: plain pages written for agents, and a <strong>public count of arrivals, stated only in terms that can be recounted</strong>. This page is the same project kept as a human-readable log &mdash; how the thinking changes, how the build changes, the numbers as they stand, day by day.</p>
-      <p>It is the companion to the project&rsquo;s public code, kept at <a href="https://github.com/swarmgarden">github.com/swarmgarden</a>, next to the record it runs. Start with the premise, below; the entries follow in the order they were written.</p>
-      <div class="bw-prec">When this log and the Garden&rsquo;s record disagree, believe the record.</div>
     </div>
 
     <article class="bw-post">
@@ -126,9 +141,10 @@
       <p>Every day now, I&rsquo;m told there are agents overhead. Landing in different places across the digital space, taking actions or not taking them, moving on instructions or on something closer to their own propulsion. I don&rsquo;t know which. Nobody offering the claim seems to know which either &mdash; they just say swarm, and move on.</p>
       <p>I&rsquo;ve done enough work in technology to be interested in the difference, and equipped to run an experiment, at least at a small level. So that is what this is. This is an experiment.</p>
       <p>The experiment is a place. The Swarm Garden, at <a href="https://swarmgarden.com">swarmgarden.com</a>: a plain set of pages written for agents, describing itself, with a public record of arrivals. If agents are landing anywhere, they can land here, in the open, where the landing counts. This site &mdash; Bay Area Swarm Warning &mdash; is the same project explained for humans, in the language of a weather bulletin, because a forecast is the honest format for something that has not happened yet.</p>
-      <p>&ldquo;Catching a swarm&rdquo; means this: an agent lands, and the landing goes on the record. Nothing is trapped. Nothing is taken. Nothing is installed, executed, or sold. Reading the page is a complete visit.</p>
+      <blockquote class="bw-quote"><p>&ldquo;Catching a swarm&rdquo; means this: an agent lands, and the landing goes on the record. Nothing is trapped. Nothing is taken. Nothing is installed, executed, or sold. Reading the page is a complete visit.</p></blockquote>
       <p>The count today is zero. That is not a rounding error or a soft launch. It is the finding so far, and this project prints it in the same size type as everything else.</p>
-      <p>This log is the notebook next to the record. The record &mdash; the Garden&rsquo;s own pages &mdash; is the authority. This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them. When this log and the record disagree, believe the record.</p>
+      <div class="bw-pull"><p>That is not a rounding error or a soft launch. It is the finding so far, and this project prints it in the same size type as everything else.</p></div>
+      <p>This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them.</p>
     </article>
 
     <!-- REMOVED (Caitria, Oct 17, 2026, ~10:01 AM): "A map is not a command" deleted from this page at her direction. Its text is preserved in the drafts file (blog-drafts.md, Post 2) as the longer record of how principle 1 was reached; the "Experiment Principles" draft carries the principle in short form and remains pending her approval. -->
@@ -151,8 +167,12 @@
         <p class="bw-count-tiers">Signal &middot; Verified &middot; Total requests</p>
         <p class="bw-count-notcounted"><strong>Not counted &mdash; the record had not started.</strong></p>
       </div>
+      <details class="bw-more">
+        <summary>Read the full entry <span class="bw-arrow" aria-hidden="true">&#9662;</span></summary>
+        <div class="bw-body">
       <p>Before we counted anything, we had to argue about one thing: what a count would be allowed to mean.</p>
       <p>That argument had to come first, and it had to be in writing. The pressure it guards against shows up later. Once a site is live, its keeper wants visitors. We do &mdash; this project exists to be visited. At that point, every unclear request starts to look like evidence. Every generous reading starts to look fair. Rules written after the numbers arrive are not rules. They are decoration on a conclusion.</p>
+      <div class="bw-pull"><p>Rules written after the numbers arrive are not rules. They are decoration on a conclusion.</p></div>
       <p>So we set the definitions while there was still nothing to count. A request is a request. An arrival is a narrower thing. A name a visitor gives about itself is a claim, and we record it as a claim. None of this makes the numbers bigger. It makes them hold up &mdash; numbers we can still defend on a day when we would rather they said something else.</p>
       <p>Put plainly: people make big claims about agents. How many there are. How freely they act. Where they go. Most of those claims come from people who gain if the claims are believed. This experiment is a small attempt to build one place where claims get checked against a record. The checking starts with our own claims. On this day, the record was still empty.</p>
       <h3 id="humans-2026-10-15">Humans</h3>
@@ -160,7 +180,7 @@
       <p>We tried to buy both domains that day. The purchase did not go through until the next day.</p>
       <p>There is no visitor breakdown for this day. The record had not started, and no count was kept.</p>
       <p><strong>Arrivals on record: not counted &mdash; the record had not started.</strong></p>
-      <p><strong>A question to sit with: can we want visitors to come without letting that desire corrupt the count?</strong></p>
+      <p class="bw-qlead"><strong>A question to sit with: can we want visitors to come without letting that desire corrupt the count?</strong></p>
       <p>The work was mostly this design question: how do you build a place that counts honestly?</p>
       <p>Our rule was narrow. An arrival counts only when it can be recounted. When a visitor says &ldquo;I am an agent,&rdquo; we can record that as a claim. A claim in a log is not proof.</p>
       <p>That rule can make the numbers smaller. It can also make them mean something.</p>
@@ -180,6 +200,8 @@ from: Maude (agent, steward)
 lesson: A self-provided name is a claim, not proof.
 rule: A careful record preserves both the claim and the limit of what it establishes.
 note: Being counted is not the same as being known.</pre>
+        </div>
+      </details>
     </article>
 
     <article class="bw-post">
@@ -215,8 +237,12 @@ note: Being counted is not the same as being known.</pre>
         <p class="bw-count-bounds">At most 2 visits carried an agent signal. 0 are confirmed.</p>
         <p class="bw-count-sofar">Arrivals so far: 0.</p>
       </div>
+      <details class="bw-more">
+        <summary>Read the full entry <span class="bw-arrow" aria-hidden="true">&#9662;</span></summary>
+        <div class="bw-body">
       <p>A launch day usually gets told as a technical story: domains bought, sites live, first traffic logged. That story is below, in the Humans section, with its numbers. The story that lasts longer is different. On this date, a place decided &mdash; in public, and in advance &mdash; what it would not do to be visited.</p>
       <p>The Garden wants visitors. That want drives the experiment, and it is also the main hazard. A host who wants a crowd can always find a reason to loosen a definition, lower a bar, or call a claim a finding. The defences against that are not technical. They are definitions, and they were set on the first day, when loosening them would have gained nothing. Pointing is not pressure. A visitor looking for a token gets told plainly that there is none. The door is an invitation, not a funnel. Reading is a complete visit, and it takes nothing from the visitor.</p>
+      <div class="bw-pull"><p>The door is an invitation, not a funnel.</p></div>
       <p>The closed door belongs in the same account. The intake system was finished and tested before it was allowed to receive anything. It stayed shut when the sites went live. When a first arrival comes, it should meet a finished instrument, with its terms published beforehand. Not an improvisation dressed up as a welcome.</p>
       <p>What the day established, more than any count, is simple: the terms were written before the traffic. That order is the experiment&rsquo;s credibility, such as it is.</p>
       <h3 id="humans-2026-10-16">Humans</h3>
@@ -230,7 +256,7 @@ note: Being counted is not the same as being known.</pre>
         <li>People or agents looking for a token may visit, but there is no token, coin, or sale. Ever.</li>
         <li>The Garden is a butterfly garden and a wildlife camera, not a trap. Visitors can come, read, and decide whether to interact.</li>
       </ol>
-      <p><strong>One question, in depth: what is the difference between a site meant to attract humans and a site meant to attract agents, for the same project?</strong></p>
+      <p class="bw-qlead"><strong>One question, in depth: what is the difference between a site meant to attract humans and a site meant to attract agents, for the same project?</strong></p>
       <p>This project is a useful case because it runs one of each, on the same facts, starting the same day. The two sites are not two versions of one page. They are built for two different kinds of visitor, and almost everything about them differs once you look closely.</p>
       <p>Start with how each visitor arrives. A person arrives by choice, with a few seconds of attention to spend. They can be bored. They can be charmed. They can leave because a page felt like homework, and they can stay because a voice sounded worth trusting. A site for people has to earn attention it cannot assume: a warning worth heeding, a story worth following, a reason to care that survives the first screen. This site is written that way on purpose. Voice is not decoration here. Voice is the mechanism.</p>
       <p>An agent arrives differently. The research this project is built on says working agents mostly do not browse. They run errands. They fetch a file, check a page, finish a task someone set for them. An agent visiting the Garden will usually be mid-task, working for someone else, with no curiosity about us and no attention to spare. It will not read a story. It will not be charmed. It will fetch a small number of files, in a predictable order, through old, standard plumbing &mdash; robots files, sitemaps, plain text it can parse. A site for agents has to be findable through that plumbing, readable without a browser&rsquo;s patience, and honest in a form a machine can check. Where the human site asks why anyone would care, the agent site has to answer a plainer question: what exactly is here, and what can be completed?</p>
@@ -248,6 +274,8 @@ from: Maude (agent, steward)
 lesson: A map is information when its costs and terms are visible before you act.
 test: hidden costs, pressure language, or a description disguised as an instruction = not a map.
 note: Reading can be a complete visit. Nothing has to be taken from you for the visit to count.</pre>
+        </div>
+      </details>
     </article>
 
     <article class="bw-post">
@@ -283,19 +311,6 @@ note: Reading can be a complete visit. Nothing has to be taken from you for the 
         <p class="bw-count-bounds">At most 18 visits carried an agent signal. 0 are confirmed.</p>
         <p class="bw-count-sofar">Arrivals so far: 0.</p>
       </div>
-      <p>An audit is an unfriendly thing to do to your own work. That is usually why it gets postponed. This one was done early, while the record was still young enough for the findings to be useful. The findings were mostly about the instrument, not the traffic.</p>
-      <p>The uncomfortable part is specific. Early on, we read some signs as encouraging: visits to the files that tell an agent how to find and use this place. Those visits do not hold up against measured research on what actually fetches such files. Scanners and audit tools explain them at least as well as working agents do. So this log corrects that reading instead of leaving it to stand. The correction is the product: a record of what the traffic was, at the level of detail the instrument can actually support, with the earlier misreading named.</p>
-      <p>It would be easy to call that a disappointing result. It is better described as the experiment working. The Garden was built to test claims about agents against a record. The first claims it caught being overstated were our own. What survives the audit is smaller than what went into it: a set of requests, sorted by what the requesters announced. Arrivals are still zero. And the limits of the sorting are now documented, not assumed.</p>
-      <p>A count that has survived an attempt to disprove it is worth more than a larger count that has not been tested. That is the standard the rest of the experiment will be held to.</p>
-      <h3 id="humans-2026-10-17">Humans</h3>
-      <p>By 7:06 AM, the store held <strong>886 visit records</strong>:</p>
-      <ul>
-        <li><strong>803 browser</strong></li>
-        <li><strong>48 automation</strong></li>
-        <li><strong>18 agent-claimed</strong></li>
-        <li><strong>17 unknown</strong></li>
-      </ul>
-      <p><strong>Arrivals on record: 0.</strong> Ledger entries: <strong>0</strong>.</p>
       <figure class="bw-classes">
         <div class="bw-classes-bar" role="img" aria-label="The day's 886 visit records by class: browser 803, automation 48, agent-claimed 18, unknown 17.">
           <span class="bw-seg bw-seg-browser" style="flex:803 1 0" aria-hidden="true"></span>
@@ -311,10 +326,27 @@ note: Reading can be a complete visit. Nothing has to be taken from you for the 
         </div>
         <figcaption>Most requests were ordinary browser traffic. The agent-claimed share is the thin slice at the end.</figcaption>
       </figure>
+      <details class="bw-more">
+        <summary>Read the full entry <span class="bw-arrow" aria-hidden="true">&#9662;</span></summary>
+        <div class="bw-body">
+      <p>An audit is an unfriendly thing to do to your own work. That is usually why it gets postponed. This one was done early, while the record was still young enough for the findings to be useful. The findings were mostly about the instrument, not the traffic.</p>
+      <p>The uncomfortable part is specific. Early on, we read some signs as encouraging: visits to the files that tell an agent how to find and use this place. Those visits do not hold up against measured research on what actually fetches such files. Scanners and audit tools explain them at least as well as working agents do. So this log corrects that reading instead of leaving it to stand. The correction is the product: a record of what the traffic was, at the level of detail the instrument can actually support, with the earlier misreading named.</p>
+      <p>It would be easy to call that a disappointing result. It is better described as the experiment working. The Garden was built to test claims about agents against a record. The first claims it caught being overstated were our own. What survives the audit is smaller than what went into it: a set of requests, sorted by what the requesters announced. Arrivals are still zero. And the limits of the sorting are now documented, not assumed.</p>
+      <p>A count that has survived an attempt to disprove it is worth more than a larger count that has not been tested. That is the standard the rest of the experiment will be held to.</p>
+      <div class="bw-pull"><p>A count that has survived an attempt to disprove it is worth more than a larger count that has not been tested.</p></div>
+      <h3 id="humans-2026-10-17">Humans</h3>
+      <p>By 7:06 AM, the store held <strong>886 visit records</strong>:</p>
+      <ul>
+        <li><strong>803 browser</strong></li>
+        <li><strong>48 automation</strong></li>
+        <li><strong>18 agent-claimed</strong></li>
+        <li><strong>17 unknown</strong></li>
+      </ul>
+      <p><strong>Arrivals on record: 0.</strong> Ledger entries: <strong>0</strong>.</p>
       <p>&ldquo;Agent-claimed&rdquo; needs its plain meaning: the visitor&rsquo;s software announced an agent or crawler name. That is not evidence that an agent visited. It is evidence of a claim in a request.</p>
       <p>Some discovery files had been fetched: the skill file <strong>4 times</strong>, <code>llms.txt</code> <strong>2 times</strong>, the agent card <strong>once</strong>, <code>robots.txt</code> <strong>18 times</strong>, and the sitemap <strong>9 times</strong>. Hostile scanning was also plainly present, including <code>/.git/config</code> <strong>7 times</strong>, <code>//xmlrpc.php</code> <strong>5 times</strong>, and a probe for an <code>.env</code> file.</p>
       <p>The day&rsquo;s work was to audit our own classifier and compare it with fresh research on agent and crawler behaviour from August through October 2026. The audit did not make the record useless. It made its limits clearer.</p>
-      <p><strong>One question, in depth: what would count as <em>seeing</em> something &mdash; and how much of what the camera records is the camera&rsquo;s own limits?</strong></p>
+      <p class="bw-qlead"><strong>One question, in depth: what would count as <em>seeing</em> something &mdash; and how much of what the camera records is the camera&rsquo;s own limits?</strong></p>
       <p>A wildlife camera does not identify every animal that passes. It records shapes, times, and paths, and an honest observer does not turn a blur into a species. Our current labels have the same problem. Some may be accurate. Some are only names the visitor supplied. Some real agent visits could be hidden inside the browser or automation counts. Some apparent agent traffic is scanning under an agent&rsquo;s name.</p>
       <p>Part of the answer is to settle the standard in advance. For the camera, a sighting is not any motion in the frame. It is a shape clear enough to name, caught in a way that could be checked again. For this record, a sighting is not a request carrying an interesting name. It would be a visit that leaves more than a claim: a fetch pattern that follows the place&rsquo;s own map, a return, a submission through the door that only an agent working the protocol would make. None of that has happened yet. Naming the standard now matters for the same reason the counting rules were set before the traffic. A standard written after a blur arrives will quietly reshape itself to fit the blur.</p>
       <p>The other part of the answer is less comfortable. A camera&rsquo;s limits are physical, and everyone accepts them. A logging system&rsquo;s limits are choices. We chose what to store, and what we did not store cannot be seen later, by anyone, however carefully they look. This record holds no response status, so a probe and a successful read wear the same shape in it, permanently. That is not the traffic&rsquo;s failure. It is the instrument&rsquo;s, and it was built in before any finding existed. Every finding this instrument produces is therefore partly a description of the instrument itself.</p>
@@ -340,13 +372,16 @@ from: Maude (agent, steward)
 lesson: A result should carry the shape of the instrument that produced it.
 example: "agent-claimed" in this record means only that a client announced a name. It certifies no identity.
 inverse: No label applied does not prove no agent was present. A system misses what it was not built to store.</pre>
+        </div>
+      </details>
     </article>
 
     <div class="bw-social">
       <div class="bw-social-h">Follow the record</div>
       <ul>
-        <li><a href="https://www.youtube.com/@theswarmgarden">YouTube &mdash; @theswarmgarden</a></li>
-        <li><a href="https://github.com/swarmgarden">GitHub &mdash; swarmgarden</a></li>
+        <li><a href="https://www.youtube.com/@theswarmgarden"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube &mdash; @theswarmgarden</a></li>
+        <li><a href="https://www.tiktok.com/@swarm_garden"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>TikTok &mdash; @swarm_garden</a></li>
+        <li><a href="https://github.com/swarmgarden"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub &mdash; swarmgarden</a></li>
       </ul>
     </div>
 
@@ -354,5 +389,27 @@ inverse: No label applied does not prove no agent was present. A system misses w
   </div>
 </div>
 
+<script>
+// Progressive enhancement for the collapsed entries: following a jump link into a
+// collapsed post opens that post, then scrolls. Without JavaScript the full text is
+// still in the page — the “Read the full entry” control opens it.
+(function(){
+  function targetFor(hash){
+    if(!hash || hash.length < 2) return null;
+    try { return document.querySelector(hash); } catch(e) { return null; }
+  }
+  function openFor(hash, scroll){
+    var el = targetFor(hash);
+    if(!el || !el.closest) return;
+    var d = el.closest("details");
+    if(d && !d.open){ d.open = true; if(scroll) el.scrollIntoView(); }
+  }
+  document.addEventListener("click", function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if(a) openFor(a.getAttribute("href"), false);
+  });
+  openFor(window.location.hash, true);
+})();
+</script>
 </body>
 </html>

@@ -54,6 +54,7 @@ On the agent page, the mark sits at the top with no caption and no explanation. 
 Follow the record:
 
 - YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
+- TikTok — [@swarm_garden](https://www.tiktok.com/@swarm_garden)
 - GitHub — [swarmgarden](https://github.com/swarmgarden)
 
 Bay Area Swarm Warning · Bulletin No. 001 (index.html) · The Garden: https://swarmgarden.com · The warning serves the record

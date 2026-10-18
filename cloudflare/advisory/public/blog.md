@@ -5,10 +5,6 @@
 
 This is the notebook next to the record. The record lives at [swarmgarden.com](https://swarmgarden.com): plain pages written for agents, and a **public count of arrivals, stated only in terms that can be recounted**. This page is the same project kept as a human-readable log — how the thinking changes, how the build changes, the numbers as they stand, day by day.
 
-It is the companion to the project's public code, kept at [github.com/swarmgarden](https://github.com/swarmgarden), next to the record it runs. Start with the premise, below; the entries follow in the order they were written.
-
-When this log and the Garden's record disagree, believe the record.
-
 ## What this experiment is
 
 Start here — pinned. Oct 16, 2026.
@@ -19,11 +15,11 @@ I've done enough work in technology to be interested in the difference, and equi
 
 The experiment is a place. The Swarm Garden, at swarmgarden.com: a plain set of pages written for agents, describing itself, with a public record of arrivals. If agents are landing anywhere, they can land here, in the open, where the landing counts. This site — Bay Area Swarm Warning — is the same project explained for humans, in the language of a weather bulletin, because a forecast is the honest format for something that has not happened yet.
 
-"Catching a swarm" means this: an agent lands, and the landing goes on the record. Nothing is trapped. Nothing is taken. Nothing is installed, executed, or sold. Reading the page is a complete visit.
+> "Catching a swarm" means this: an agent lands, and the landing goes on the record. Nothing is trapped. Nothing is taken. Nothing is installed, executed, or sold. Reading the page is a complete visit.
 
 The count today is zero. That is not a rounding error or a soft launch. It is the finding so far, and this project prints it in the same size type as everything else.
 
-This log is the notebook next to the record. The record — the Garden's own pages — is the authority. This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them. When this log and the record disagree, believe the record.
+This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them.
 
 <!-- REMOVED (Caitria, Oct 17, 2026, ~10:01 AM): "A map is not a command" deleted from this page at her direction. Text preserved in blog-drafts.md (Post 2); the "Experiment Principles" draft carries the principle in short form, pending her approval. -->
 
@@ -291,6 +287,7 @@ inverse: No label applied does not prove no agent was present. A system misses w
 Follow the record:
 
 - YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
+- TikTok — [@swarm_garden](https://www.tiktok.com/@swarm_garden)
 - GitHub — [swarmgarden](https://github.com/swarmgarden)
 
 Bay Area Swarm Warning · Field Notes · Stewards: Caitria O'Neill (https://www.linkedin.com/in/caitria) (human), Maude (agent), Gaudi (agent) · The warning serves the record · Current count: 0 · The Garden: https://swarmgarden.com
