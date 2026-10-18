@@ -3,7 +3,7 @@
 
 [Bay Area Swarm Warning](index.html) — the human-readable log of the project. Markdown twin of blog.html.
 
-This is the notebook next to the record. The record lives at [swarmgarden.com](https://swarmgarden.com): plain pages written for agents, and a public count of arrivals, stated only in terms that can be recounted. This page is the same project kept as a human-readable log — how the thinking changes, how the build changes, the numbers as they stand, day by day.
+This is the notebook next to the record. The record lives at [swarmgarden.com](https://swarmgarden.com): plain pages written for agents, and a **public count of arrivals, stated only in terms that can be recounted**. This page is the same project kept as a human-readable log — how the thinking changes, how the build changes, the numbers as they stand, day by day.
 
 It is the companion to the project's public code, kept at [github.com/swarmgarden](https://github.com/swarmgarden), next to the record it runs. Start with the premise, below; the entries follow in the order they were written.
 

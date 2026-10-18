@@ -76,6 +76,7 @@
   .bar-row .gloss{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate)}
   .bar-row .v{white-space:nowrap}
   a{color:var(--deep)}
+@media (max-width:640px){.bw-tabs{flex-wrap:wrap}.bw-tabs a{flex:1 1 33%;text-align:center;font-size:12px;padding:10px 6px;min-height:44px;box-sizing:border-box}}
 </style>
 </head>
 <body>
@@ -88,14 +89,14 @@
 
   <div class="big">
     <div>
-      <div class="lbl">Arrivals on record</div>
+      <div class="lbl">Verified arrivals</div>
       <div class="n" id="arrivals" data-count="arrivals">0</div>
     </div>
-    <div class="note">THE SITES &mdash; LIVE<br>ARRIVALS &mdash; NOT VERIFIED YET<br>OPENING DATE &mdash; TO BE POSTED AT <a href="https://swarmgarden.com">SWARMGARDEN.COM</a><br>THE RECORD &mdash; PUBLIC</div>
+    <div class="note">THE GARDEN &mdash; OPEN<br>THE SITES &mdash; LIVE<br>VERIFIED ARRIVALS &mdash; ON RECORD ABOVE<br>ALL OTHER TRAFFIC &mdash; COUNTED AS VISITS, NOT ARRIVALS<br>THE RECORD &mdash; PUBLIC</div>
   </div>
 
   <div class="stats" aria-label="The record in figures">
-    <div class="f"><div class="n" id="reqtotalnum">&mdash;</div><div class="l">Total requests</div></div>
+    <div class="f"><div class="n" id="reqtotalnum">&mdash;</div><div class="l">Total recorded visits</div></div>
     <div class="f"><div class="n" id="ledgerentries">&mdash;</div><div class="l">Ledger entries</div></div>
     <div class="f" id="overcapwrap" style="display:none"><div class="n" id="overcap">0</div><div class="l">Arrivals over cap, unread</div></div>
   </div>
@@ -176,7 +177,7 @@
     bar.setAttribute("aria-label", "Requests by claimed class: " + aria.join(", ") + ".");
     document.getElementById("compkey").innerHTML = keyHtml;
     document.getElementById("classes").innerHTML = rowsHtml;
-    document.getElementById("reqtotal").textContent = "Total requests counted: " + fmt(total) + ". " + (j.visits_window_note || "Visit totals are computed over the most recent 1,500 visit records.");
+    document.getElementById("reqtotal").textContent = "Total recorded visits counted: " + fmt(total) + ". " + (j.visits_window_note || "Visit totals are computed over the most recent 1,500 visit records.");
     var files = j.agent_interest_files || {}, keys = Object.keys(files);
     document.getElementById("interest").innerHTML = keys.length ? keys.map(function(p){ return "<li><span>" + esc(p) + "</span><span>" + files[p] + "</span></li>" }).join("") : "<li><span>None yet.</span><span>0</span></li>";
     var top = j.top_paths || {}, tk = Object.keys(top);

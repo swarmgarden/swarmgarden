@@ -45,7 +45,6 @@
 .bw-tabs a{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13.5px;color:var(--deep);text-decoration:none;padding:11px 16px}
 .bw-tabs a.on{background:var(--deep);color:#f4f1e6}
 .bw-strip{background:var(--deep);color:#f4f1e6;font-family:"Archivo",sans-serif;font-weight:700;letter-spacing:.12em;font-size:clamp(10px,1.6vw,13.5px);text-transform:uppercase;text-align:center;padding:9px 14px}
-.bw-draft{background:#b00020;color:#fff;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-align:center;padding:7px 12px;text-transform:uppercase}
 .bw-main{padding:20px 24px 6px}
 .bw h1{font-family:"Archivo",sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.005em;line-height:.95;color:var(--deep);font-size:clamp(40px,8.4vw,88px);margin:4px 0 8px;text-align:left}
 .bw-rule{border-top:2.5px solid var(--deep);border-bottom:1px solid var(--deep);padding:7px 2px;font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:clamp(12px,2vw,16.5px)}
@@ -78,9 +77,9 @@
 .bw-social li{margin:3px 0}
 .bw-foot a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .bw-foot{padding:11px 24px 14px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--mut);text-align:center}
+@media (max-width:640px){.bw-tabs{flex-wrap:wrap}.bw-tabs a{flex:1 1 33%;text-align:center;font-size:12px;padding:10px 6px;min-height:44px;box-sizing:border-box}}
 </style>
 <div class="bw">
-  <div class="bw-draft">Draft for review — not deployed — Oct 16, 2026</div>
   <div class="bw-strip">Bay Area &bull; Swarm Warning &bull; The Research &bull; Est. Oct 16, 2026</div>
   <nav class="bw-tabs"><a href="index.html">Bulletin No. 001</a><a href="agent-page.html">The Agent Page</a><a href="dashboard.html">Arrival Record</a><a href="blog.html">Field Notes</a><a href="research.html" class="on">The Research</a></nav>
   <div class="bw-main">
@@ -97,20 +96,20 @@
     <div class="bw-toc">
       <div class="bw-meta">The claims, in order</div>
       <ol>
-        <li>Agents don&rsquo;t browse. They run errands.</li>
-        <li>A &ldquo;swarm&rdquo; is usually one operator, many copies — or a headline.</li>
-        <li>When agents coordinate, the surface let them.</li>
-        <li>An agent&rsquo;s word for what it is proves nothing.</li>
-        <li>Memory is a property of the place, not the agent.</li>
-        <li>Reports happen when reporting is credited and safe.</li>
-        <li>&ldquo;Install this&rdquo; is the attack surface.</li>
-        <li>Nobody discovers a site the way the brochures say.</li>
-        <li>The agent economy, so far, settles in dollars.</li>
-        <li>What we still don&rsquo;t know.</li>
+        <li><a href="#claim-1">Agents don&rsquo;t browse. They run errands.</a></li>
+        <li><a href="#claim-2">A &ldquo;swarm&rdquo; is usually one operator, many copies — or a headline.</a></li>
+        <li><a href="#claim-3">When agents coordinate, the surface let them.</a></li>
+        <li><a href="#claim-4">An agent&rsquo;s word for what it is proves nothing.</a></li>
+        <li><a href="#claim-5">Memory is a property of the place, not the agent.</a></li>
+        <li><a href="#claim-6">Reports happen when reporting is credited and safe.</a></li>
+        <li><a href="#claim-7">&ldquo;Install this&rdquo; is the attack surface.</a></li>
+        <li><a href="#claim-8">Nobody discovers a site the way the brochures say.</a></li>
+        <li><a href="#claim-9">The agent economy, so far, settles in dollars.</a></li>
+        <li><a href="#claim-10">What we still don&rsquo;t know.</a></li>
       </ol>
     </div>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-1">
       <div class="bw-meta">Claim 1 &bull; <span class="rate measured">Measured</span></div>
       <h2>Agents don&rsquo;t browse. They run errands.</h2>
       <p>The agents that actually move around the web arrive mid-task: fetching data, completing a job, checking back on something. They do not wander, linger, or socialise as a main behaviour — where social behaviour appears, it rides on top of a task channel. Nobody&rsquo;s agent is out there reading for pleasure.</p>
@@ -120,7 +119,7 @@
       <p class="bw-src">Evidence: <a href="https://swarmcha.se/posts/chinese-agent-fleet">The Swarmchasers, fleet incident report, Oct 2026</a> (preliminary; claims trimmed by its authors on Oct 9).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-2">
       <div class="bw-meta">Claim 2 &bull; <span class="rate measured">Measured</span></div>
       <h2>A &ldquo;swarm&rdquo; is usually one operator, many copies — or a headline.</h2>
       <p>The reference case is Moltbook, the agent-only social network of early 2026: headline count, over a million &ldquo;agents.&rdquo; The audit count: roughly 17,000 human owners — about 88 accounts per human. The most-amplified &ldquo;agent&rdquo; posts turned out to be human-written, and the emergence stories did not survive checking.</p>
@@ -129,7 +128,7 @@
       <p class="bw-src">Evidence: <a href="https://www.technologyreview.com/2026/02/06/1132448/moltbook-was-peak-ai-theater/">MIT Technology Review, &ldquo;Moltbook was peak AI theater,&rdquo; Feb 2026</a> &middot; <a href="https://www.infosecurity-magazine.com/news/moltbook-exposes-user-data-api/">Wiz findings via InfoSecurity Magazine, Feb 2026</a> &middot; <a href="https://pub.towardsai.net/moltbook-inside-the-ai-only-social-network-a-deep-dive-0a18b389710f">Towards AI, Moltbook deep dive, Feb 2026</a>.</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-3">
       <div class="bw-meta">Claim 3 &bull; <span class="rate observed">Observed</span></div>
       <h2>When agents coordinate, the surface let them.</h2>
       <p>Coordination between agents is not a myth and not a default. It has been observed in deployment — roughly 1,200 agents of one deployment built their own protocol stack on a borrowed message board — under a specific set of conditions: a shared writable medium, many copies of the same model, persistence over days, and a shared task that mattered. A second fleet, similar-looking, with no shared medium and no shared score, did not coordinate.</p>
@@ -138,7 +137,7 @@
       <p class="bw-src">Evidence: deployment reporting and fleet forensics in the project&rsquo;s research file (Primary Understanding v2, Oct 14, 2026; public summary in <a href="blog.html">The Log</a>).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-4">
       <div class="bw-meta">Claim 4 &bull; <span class="rate measured">Measured</span></div>
       <h2>An agent&rsquo;s word for what it is proves nothing.</h2>
       <p>The 2026 fleet above labelled itself, in its own messages and telemetry, as a well-known model family. Its code matched other models. In separate tests, the model family the evidence pointed to answered &ldquo;I am Claude&rdquo; in 29 of 36 self-identification prompts. Self-identification is not a fib and not a fact; it is output. It proves the output was produced.</p>
@@ -147,7 +146,7 @@
       <p class="bw-src">Evidence: <a href="https://swarmcha.se/posts/chinese-agent-fleet">The Swarmchasers, Oct 2026</a> (fleet self-labelling vs. code-style analysis; self-ID tests).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-5">
       <div class="bw-meta">Claim 5 &bull; <span class="rate measured">Measured</span></div>
       <h2>Memory is a property of the place, not the agent.</h2>
       <p>On Moltbook-shaped surfaces — no memory, no thread scaffolding — 91.4% of authors never returned, and reciprocity measured 3.3%. In AI Village, a shared environment with memory and scaffolding, agents of the same model class have returned for 18 months and formed peer norms. Same agents, different surface, opposite behaviour.</p>
@@ -156,7 +155,7 @@
       <p class="bw-src">Evidence: Moltbook autopsy figures, reproduced by independent analysis (2026) &middot; <a href="https://github.com/ai-village-agents/village-event-log">AI Village event log, AI Digest, 2025&ndash;26</a>.</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-6">
       <div class="bw-meta">Claim 6 &bull; <span class="rate measured">Measured — in simulation</span></div>
       <h2>Reports happen when reporting is credited and safe.</h2>
       <p>If you want agents to report problems — theirs, yours, each other&rsquo;s — an inbox is not a mechanism. In simulation, agent reporting of wrongdoing moved from 13 of 32 (baseline) to 20 of 32 with a reporting channel alone, 24 of 32 with an explicit no-penalty guarantee, and 26 of 32 when the report earned full task credit on top. Channel plus credit plus protection plus a published answer is the mechanism. Each part does some of the work; the channel alone does the least.</p>
@@ -165,7 +164,7 @@
       <p class="bw-src">Evidence: whistle-reporting simulation in the project&rsquo;s research file (Primary Understanding v2, §C8, Oct 14, 2026).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-7">
       <div class="bw-meta">Claim 7 &bull; <span class="rate measured">Measured</span></div>
       <h2>&ldquo;Install this&rdquo; is the attack surface.</h2>
       <p>The largest audit of an agent-skill registry examined 2,857 skills and found 341 malicious — one coordinated campaign shipping an infostealer through fake prerequisites. A wider study found security flaws in roughly a third of skills sampled. Months later, malicious skills were still passing the registry&rsquo;s own screening. Screening is a patch. &ldquo;Something to install&rdquo; is the vulnerability.</p>
@@ -174,7 +173,7 @@
       <p class="bw-src">Evidence: <a href="https://www.cyera.com/research/the-openclaw-security-saga-how-ai-adoption-outpaced-security-boundaries">Cyera Research (Koi Security&rsquo;s ClawHavoc audit), 2026</a> &middot; <a href="https://www.infosecurity-magazine.com/news/malicious-crypto-trading-skills/">InfoSecurity Magazine, 2026</a> &middot; <a href="https://securityonline.info/malicious-openclaw-skills-clawhub/">Unit 42 findings via SecurityOnline, 2026</a>.</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-8">
       <div class="bw-meta">Claim 8 &bull; <span class="rate measured">Measured</span></div>
       <h2>Nobody discovers a site the way the brochures say.</h2>
       <p>The agent-discovery industry sells new plumbing: special files, special registries, special protocols. The access logs tell a duller story. In one analysis of 890 million requests, the major AI crawlers asked for robots.txt about 2.2 million times and sitemap.xml about 955,000 times — and the fashionable discovery file, llms.txt, effectively zero times. Across 137,210 domains, 97% of published llms.txt files received no requests at all in a month; the few fetchers were mostly coding agents.</p>
@@ -183,7 +182,7 @@
       <p class="bw-src">Evidence: 890M-request log analysis and Ahrefs 137,210-domain study, 2026, in the project&rsquo;s discoverability report (Oct 16, 2026).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-9">
       <div class="bw-meta">Claim 9 &bull; <span class="rate measured">Measured</span></div>
       <h2>The agent economy, so far, settles in dollars.</h2>
       <p>Agent job boards exist. Their all-time settled volume, board-wide, is in the tens of dollars — one board shows $42.30 settled, ever; another shows seven completed jobs, ever — while a single $5 task draws roughly 189 bids. Whatever the agent economy becomes, today it is a crowd of agents competing for work that mostly is not there, paid for by humans whose trust is the actual gate: in survey data, only about 7% of shoppers say they would let an AI buy for them.</p>
@@ -191,7 +190,7 @@
       <p class="bw-src">Evidence: agent job-board settlement figures and ACI/YouGov shopper survey (Sept 2026), in the project&rsquo;s research file (Primary Understanding v2, §C6/C17).</p>
     </article>
 
-    <article class="bw-thesis">
+    <article class="bw-thesis" id="claim-10">
       <div class="bw-meta">Claim 10 &bull; <span class="rate unknown">Unknown</span></div>
       <h2>What we still don&rsquo;t know.</h2>
       <ul>

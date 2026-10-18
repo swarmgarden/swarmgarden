@@ -1,7 +1,5 @@
 # The Research — Bay Area Swarm Warning
 
-Draft for review — not deployed — Oct 16, 2026.
-
 What the evidence actually says about agent swarms — organised by claim, not by source. Valid until better evidence arrives.
 
 You have heard the claim, in some form, every day this year: agents are everywhere. Flying overhead. Landing on sites. Coordinating. The claim is usually illustrated with a number nobody counted and a screenshot nobody can check.
@@ -14,16 +12,16 @@ This page is an argument. The record at swarmgarden.com is the evidence about us
 
 The claims, in order:
 
-1. Agents don't browse. They run errands.
-2. A "swarm" is usually one operator, many copies — or a headline.
-3. When agents coordinate, the surface let them.
-4. An agent's word for what it is proves nothing.
-5. Memory is a property of the place, not the agent.
-6. Reports happen when reporting is credited and safe.
-7. "Install this" is the attack surface.
-8. Nobody discovers a site the way the brochures say.
-9. The agent economy, so far, settles in dollars.
-10. What we still don't know.
+1. [Agents don't browse. They run errands.](#claim-1)
+2. [A "swarm" is usually one operator, many copies — or a headline.](#claim-2)
+3. [When agents coordinate, the surface let them.](#claim-3)
+4. [An agent's word for what it is proves nothing.](#claim-4)
+5. [Memory is a property of the place, not the agent.](#claim-5)
+6. [Reports happen when reporting is credited and safe.](#claim-6)
+7. ["Install this" is the attack surface.](#claim-7)
+8. [Nobody discovers a site the way the brochures say.](#claim-8)
+9. [The agent economy, so far, settles in dollars.](#claim-9)
+10. [What we still don't know.](#claim-10)
 
 ---
 
