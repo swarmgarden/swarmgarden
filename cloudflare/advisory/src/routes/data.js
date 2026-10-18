@@ -6,6 +6,12 @@
 // per-site snapshot figures, the per-name claimed table with its
 // address-range verdicts, and the 100 most recent requests per
 // site — in a black-and-white raw-data register, easy for humans
+// to read and navigate. (v1.1, Oct 18 2026: four aggregate tables
+// join each site page — visits by path with a status-class split,
+// visits by country under a small-count fold, response totals by
+// status class with the 404 count broken out, and the daily
+// series: visits by claimed class and the distinct-visitor
+// counts, per Pacific day.)
 // to read and navigate. Design basis: the public-data-page
 // research (hidden_files/swarm-garden-design/
 // public-data-page-research-2026-10-18.md) — semantic tables with
@@ -31,17 +37,22 @@
 // the recent-100 should not write themselves into it), and a data
 // failure can never reach page serving.
 //
-// PRIVACY (hard): the published files carry no visitor digests,
-// no referers, no region/ASN/network fields, no raw addresses (the
-// record stores none). This route publishes nothing beyond what
-// the files carry.
+// PRIVACY (hard): the published files carry no visitor digest
+// values (the per-day distinct COUNTS are published; the digests
+// never are), no referers, no region/ASN/network fields, no raw
+// addresses (the record stores none). Country appears only as the
+// suppressed aggregate the producer built. This route publishes
+// nothing beyond what the files carry.
 //
 // Every page ends with the steward-rule footer (Oct 18 2026):
 // a prominent link to the record itself, https://swarmgarden.com.
 
 const DATA_BASE_DEFAULT = 'https://raw.githubusercontent.com/swarmgarden/swarmgarden/main';
 const DATA_FILES = ['garden.json', 'garden-claims.json', 'garden-recent.json',
-  'advisory.json', 'advisory-claims.json', 'advisory-recent.json', 'status.json'];
+  'garden-paths.json', 'garden-countries.json', 'garden-series.json', 'garden-responses.json',
+  'advisory.json', 'advisory-claims.json', 'advisory-recent.json',
+  'advisory-paths.json', 'advisory-countries.json', 'advisory-series.json', 'advisory-responses.json',
+  'status.json'];
 const REPO_DATA_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/data';
 const REPO_RECORDS_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/records';
 const FRESH_MS = 10 * 60 * 1000; // publication cadence is hourly
@@ -188,10 +199,15 @@ function methodBlock(siteLabel) {
     'lands and verifies. Claims, signals, render reports and button presses never enter that figure. ' +
     'The stewards\u2019 own visits are included in these figures and are not filtered out; that is disclosed here ' +
     'rather than corrected away.</p>' +
-    '<p><strong>Not published, by design:</strong> visitor digests (the record\u2019s within-a-day distinct-visitor ' +
-    'device) are not printed; referers are not printed; region and network-operator facts stay in the steward ' +
-    'copy; and no raw network address exists anywhere in the record to print. Paths are printed with query ' +
-    'strings stripped.</p>' +
+    '<p><strong>Published as aggregates only:</strong> countries are published as counts, and any country ' +
+    'with fewer than five visits in the window is folded into a single \u201cAll other countries\u201d ' +
+    'row \u2014 the number folded is printed with the table, and no folded country is named. Distinct ' +
+    'visitors are published as per-day counts (the series table below); the visitor digests those counts ' +
+    'are made from are never printed, and because a digest is date-scoped the per-day counts cannot be ' +
+    'added into a count of distinct visitors over time.</p>' +
+    '<p><strong>Not published, by design:</strong> referers are not printed; region and network-operator ' +
+    'facts stay in the steward copy; and no raw network address exists anywhere in the record to print. ' +
+    'Paths are printed with query strings stripped.</p>' +
     '<p>The underlying store (Cloudflare Analytics Engine) retains raw records for three months, rolling. ' +
     'The hourly files in the public repository are the permanent form of this series — see the archive link ' +
     'below. This page shows ' + esc(siteLabel) + ' only; the two sites\u2019 figures are never added together.</p>';
@@ -263,6 +279,181 @@ function figuresHtml(bundle) {
     h += '</tbody></table></div></div>';
   } else {
     h += '<p>The status breakdown was unavailable in the latest pull — see the pull status above.</p>';
+  }
+  return h;
+}
+
+// ---------------------------------------------------------------- responses (v1.1)
+
+function responsesHtml(responses, bundle) {
+  let h = '<h3>Response totals by status class</h3>';
+  if (!responses) {
+    return h + '<p>The status-class totals were unavailable in the latest pull — see the pull status above.</p>';
+  }
+  const rows = responses.rows || [];
+  const total = rows.reduce((a, r) => a + (r.value || 0), 0);
+  h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+    '<caption>Every response over the same window, rolled into its status class. The 404 count \u2014 ' +
+    'addresses that are not here, most of them probes for files this site has never had \u2014 is broken ' +
+    'out of the 4xx class. As of ' + esc(responses.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
+    '<thead><tr><th scope="col">Status class</th><th scope="col" class="num">Responses</th>' +
+    '<th scope="col" class="num">Share</th></tr></thead><tbody>';
+  for (const r of rows) {
+    h += '<tr><td>' + esc(r.label) + '</td><td class="num mono">' + Number(r.value).toLocaleString('en-US') +
+      '</td><td class="num mono">' + shareCell(r.value, total) + '</td></tr>';
+    if (r.class === '4xx' && typeof r.of_which_404 === 'number') {
+      h += '<tr><td>\u2003of which: status 404</td><td class="num mono">' +
+        Number(r.of_which_404).toLocaleString('en-US') + '</td><td class="num mono">' +
+        shareCell(r.of_which_404, total) + '</td></tr>';
+    }
+  }
+  h += '</tbody></table></div></div>';
+  return h;
+}
+
+// ---------------------------------------------------------------- paths (v1.1)
+
+function pathsHtml(paths, bundle) {
+  let h = '<h2>Visits by page</h2>';
+  if (!paths) {
+    return h + '<p>This table was unavailable in the latest pull — it was not refreshed, and the previous ' +
+      'hour\u2019s table is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence is a failed ' +
+      'pull, not an empty record.</p>';
+  }
+  const rows = paths.rows || [];
+  h += '<p class="gloss">Every path recorded for this site over the counting window \u2014 the pages ' +
+    'visitors asked for, and the files the probes asked for. Query strings are stripped, so paths that ' +
+    'differ only in a query string are folded together. Most of the 4xx column is the probe traffic: ' +
+    'addresses for credential and configuration files this site has never had.</p>';
+  h += '<div class="controls" data-controls="paths">' +
+    '<label for="paths-q">Filter by path</label> ' +
+    '<input type="search" id="paths-q" data-q placeholder="e.g. /llms.txt" autocomplete="off">' +
+    '<p class="showing" id="paths-count" aria-live="polite">Showing ' + rows.length + ' of ' + rows.length + ' paths.</p>' +
+    '<p class="dlrow"><button type="button" class="dl" data-dl="csv" data-table="paths">Download CSV (current view)</button>' +
+    '<button type="button" class="dl" data-dl="json" data-table="paths">Download JSON (current view)</button>' +
+    '<a href="/data/' + esc(bundle.site) + '-paths.json">Full table as JSON</a></p></div>';
+  h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table id="paths-table" data-enhance="paths">' +
+    '<caption>Visits by path, ' + esc(bundle.site_label) + ', split by response status class. ' +
+    esc(paths.window || '') + ' As of ' + esc(paths.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
+    '<thead><tr>' +
+    '<th scope="col"><button type="button" class="sort" data-sort="path">Path</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Visits</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="2xx">2xx</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="3xx">3xx</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="4xx">4xx</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="5xx">5xx</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="none_recorded">No status</button></th>' +
+    '</tr></thead><tbody>';
+  if (!rows.length) h += '<tr><td colspan="7">No paths recorded yet in this window.</td></tr>';
+  for (const r of rows) {
+    h += '<tr><td class="path mono">' + esc(r.path) + '</td><td class="num mono">' + r.visits +
+      '</td><td class="num mono">' + r['2xx'] + '</td><td class="num mono">' + r['3xx'] +
+      '</td><td class="num mono">' + r['4xx'] + '</td><td class="num mono">' + r['5xx'] +
+      '</td><td class="num mono">' + r.none_recorded + '</td></tr>';
+  }
+  h += '</tbody></table></div></div>';
+  h += '<script type="application/json" id="paths-rows">' + jsonForEmbed(rows) + '</script>';
+  return h;
+}
+
+// ---------------------------------------------------------------- countries (v1.1)
+
+function countriesHtml(countries, bundle) {
+  let h = '<h2>Visits by country</h2>';
+  if (!countries) {
+    return h + '<p>This table was unavailable in the latest pull — it was not refreshed, and the previous ' +
+      'hour\u2019s table is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence is a failed ' +
+      'pull, not an empty record.</p>';
+  }
+  const sup = countries.suppression || {};
+  const display = (countries.rows || []).slice();
+  if (sup.folded_countries > 0) {
+    display.push({ country: 'All other countries', visits: sup.folded_visits || 0,
+      note: sup.folded_countries + (sup.folded_countries === 1 ? ' country' : ' countries') +
+        ', each with fewer than ' + (sup.threshold || 5) + ' visits \u2014 folded, not named' });
+  }
+  for (const r of display) if (!r.note) r.note = '';
+  h += '<p class="gloss">Country is the one geography this record publishes, and only as this ' +
+    'aggregate: a country with fewer than ' + (sup.threshold || 5) + ' visits in the window folds into ' +
+    '\u201cAll other countries\u201d and is not named. Region and network operator stay in the ' +
+    'steward copy. Country codes are the two-letter codes the edge reported.</p>';
+  h += '<div class="controls" data-controls="countries">' +
+    '<label for="countries-q">Filter by country</label> ' +
+    '<input type="search" id="countries-q" data-q placeholder="e.g. US" autocomplete="off">' +
+    '<p class="showing" id="countries-count" aria-live="polite">Showing ' + display.length + ' of ' + display.length + ' rows.</p>' +
+    '<p class="dlrow"><button type="button" class="dl" data-dl="csv" data-table="countries">Download CSV (current view)</button>' +
+    '<button type="button" class="dl" data-dl="json" data-table="countries">Download JSON (current view)</button>' +
+    '<a href="/data/' + esc(bundle.site) + '-countries.json">Full table as JSON</a></p></div>';
+  h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table id="countries-table" data-enhance="countries">' +
+    '<caption>Visits by country, ' + esc(bundle.site_label) + '. ' + esc(countries.window || '') +
+    ' Suppression: ' + esc(sup.rule || '') +
+    (countries.not_recorded ? ' Visits with no country recorded: ' + Number(countries.not_recorded).toLocaleString('en-US') +
+      ' \u2014 counted in the site total, in no country row.' : '') +
+    ' As of ' + esc(countries.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
+    '<thead><tr>' +
+    '<th scope="col"><button type="button" class="sort" data-sort="country">Country</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Visits</button></th>' +
+    '<th scope="col">Note</th>' +
+    '</tr></thead><tbody>';
+  if (!display.length) h += '<tr><td colspan="3">No visits with a recorded country yet in this window.</td></tr>';
+  for (const r of display) {
+    h += '<tr><td>' + esc(r.country) + '</td><td class="num mono">' + r.visits +
+      '</td><td>' + esc(r.note || '\u2014') + '</td></tr>';
+  }
+  h += '</tbody></table></div></div>';
+  h += '<script type="application/json" id="countries-rows">' + jsonForEmbed(display) + '</script>';
+  return h;
+}
+
+// ---------------------------------------------------------------- series (v1.1)
+
+function seriesHtml(series, bundle) {
+  let h = '<h2>The daily series</h2>';
+  if (!series) {
+    return h + '<p>The daily series was unavailable in the latest pull — it was not refreshed, and the ' +
+      'previous hour\u2019s series is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence ' +
+      'is a failed pull, not an empty record.</p>';
+  }
+  for (const note of series.unavailable_notes || []) {
+    h += '<p>' + esc(note) + '</p>';
+  }
+  if (series.class_days) {
+    const classes = series.classes || ['agent-claimed', 'browser', 'automation', 'unknown'];
+    h += '<h3>Visits by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+      '<caption>' + esc(series.class_note || '') + ' As of ' +
+      esc(series.generated_at_pt || bundle.generated_at_pt || '') +
+      '. Full series as JSON: <a href="/data/' + esc(bundle.site) + '-series.json">' + esc(bundle.site) + '-series.json</a>.</caption>' +
+      '<thead><tr><th scope="col">Day (Pacific)</th>' +
+      classes.map(c => '<th scope="col" class="num">' + esc(c) + '</th>').join('') +
+      '<th scope="col" class="num">Total</th></tr></thead><tbody>';
+    if (!series.class_days.length) h += '<tr><td colspan="' + (classes.length + 2) + '">No days recorded yet.</td></tr>';
+    for (const r of series.class_days) {
+      h += '<tr><td class="mono">' + esc(r.day) + '</td>' +
+        classes.map(c => '<td class="num mono">' + (r[c] || 0) + '</td>').join('') +
+        '<td class="num mono">' + r.total + '</td></tr>';
+    }
+    h += '</tbody></table></div></div>';
+  } else {
+    h += '<h3>Visits by claimed class, by day</h3><p>That half of the series was not refreshed in the ' +
+      'latest pull — see the note above.</p>';
+  }
+  if (series.visitor_days) {
+    h += '<h3>Distinct visitors, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+      '<caption>' + esc(series.visitor_note || '') + ' As of ' +
+      esc(series.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
+      '<thead><tr><th scope="col">Day (Pacific)</th><th scope="col" class="num">Distinct visitors</th>' +
+      '<th scope="col" class="num">Requests carrying a digest</th>' +
+      '<th scope="col" class="num">Of those, requests from visitors seen more than once that day</th></tr></thead><tbody>';
+    if (!series.visitor_days.length) h += '<tr><td colspan="4">No digest-bearing days recorded yet.</td></tr>';
+    for (const r of series.visitor_days) {
+      h += '<tr><td class="mono">' + esc(r.day) + '</td><td class="num mono">' + r.distinct_visitors +
+        '</td><td class="num mono">' + r.digest_requests + '</td><td class="num mono">' +
+        r.repeat_requests + '</td></tr>';
+    }
+    h += '</tbody></table></div></div>';
+  } else {
+    h += '<h3>Distinct visitors, by day</h3><p>That half of the series was not refreshed in the ' +
+      'latest pull — see the note above.</p>';
   }
   return h;
 }
@@ -394,7 +585,7 @@ function statusBanner(bundle, siteStatus) {
   return '';
 }
 
-function sitePage(bundle, claims, recent, siteStatus) {
+function sitePage(bundle, claims, recent, siteStatus, agg) {
   const other = bundle.site === 'garden'
     ? '<a href="/data/advisory">The Advisory\u2019s data</a>'
     : '<a href="/data/garden">The Garden\u2019s data</a>';
@@ -406,6 +597,10 @@ function sitePage(bundle, claims, recent, siteStatus) {
   body += statusBanner(bundle, siteStatus);
   body += methodBlock(bundle.site_label);
   body += figuresHtml(bundle);
+  body += responsesHtml(agg && agg.responses, bundle);
+  body += pathsHtml(agg && agg.paths, bundle);
+  body += countriesHtml(agg && agg.countries, bundle);
+  body += seriesHtml(agg && agg.series, bundle);
   body += claimsHtml(claims, bundle);
   body += recentHtml(recent, bundle);
   body += correctionsBlock(bundle.corrections);
@@ -422,7 +617,7 @@ function siteShelf(site, bundle, siteStatus) {
   const total = (bundle.figures.rows || []).find(r => r.label === 'Total recorded visits');
   const arr = (bundle.figures.rows || []).find(r => r.label === 'Verified agent arrivals on record');
   return '<li><h3><a href="/data/' + esc(site) + '">' + esc(bundle.site_label) + '</a></h3>' +
-    '<p>Latest snapshot figures, the per-name claimed table with verdicts, and the 100 most recent requests. ' +
+    '<p>Latest snapshot figures, visits by page and by country, the daily series, the per-name claimed table with verdicts, and the 100 most recent requests. ' +
     'Total recorded visits: <span class="mono">' + (total && total.value !== null && total.value !== undefined ? Number(total.value).toLocaleString('en-US') : 'unavailable in the latest pull') + '</span> · ' +
     'Verified agent arrivals on record: <span class="mono">' + (arr && arr.value !== null && arr.value !== undefined ? arr.value : 'see the page') + '</span> · ' +
     'As of ' + esc(bundle.generated_at_pt || '') + ', refreshed hourly' +
@@ -430,7 +625,11 @@ function siteShelf(site, bundle, siteStatus) {
     '<p class="small">Formats: <a href="/data/' + esc(site) + '">page</a> · ' +
     '<a href="/data/' + esc(site) + '.json">figures JSON</a> · ' +
     '<a href="/data/' + esc(site) + '-claims.json">claims JSON</a> · ' +
-    '<a href="/data/' + esc(site) + '-recent.json">recent-requests JSON</a></p></li>';
+    '<a href="/data/' + esc(site) + '-recent.json">recent-requests JSON</a> · ' +
+    '<a href="/data/' + esc(site) + '-paths.json">paths JSON</a> · ' +
+    '<a href="/data/' + esc(site) + '-countries.json">countries JSON</a> · ' +
+    '<a href="/data/' + esc(site) + '-series.json">daily-series JSON</a> · ' +
+    '<a href="/data/' + esc(site) + '-responses.json">status-class JSON</a></p></li>';
 }
 
 function indexPage(garden, advisory, status) {
@@ -612,6 +811,35 @@ const CLIENT_JS = `<script>
     countText: function(n, m){ return 'Showing ' + n + ' of ' + m + ' claimed names.'; },
     zeroText: function(m){ return '0 of the ' + m + ' claimed names match the current filter — that is a result, not an error.'; }
   });
+  setup({
+    name: 'paths', tableId: 'paths-table', dataId: 'paths-rows', countId: 'paths-count',
+    prefix: 'p_', facetKinds: [], defaultSort: 'visits', defaultDir: 'desc',
+    defaultDirFor: function(k){ return k === 'path' ? 'asc' : 'desc'; },
+    headers: ['path','visits','2xx','3xx','4xx','5xx','none_recorded'],
+    searchText: function(r){ return r.path; },
+    facetValue: function(){ return ''; },
+    rowArray: function(r){ return [r.path, r.visits, r['2xx'], r['3xx'], r['4xx'], r['5xx'], r.none_recorded]; },
+    cells: function(r){ return [
+      {text: r.path, cls: 'path mono'}, {text: String(r.visits), cls: 'num mono'},
+      {text: String(r['2xx']), cls: 'num mono'}, {text: String(r['3xx']), cls: 'num mono'},
+      {text: String(r['4xx']), cls: 'num mono'}, {text: String(r['5xx']), cls: 'num mono'},
+      {text: String(r.none_recorded), cls: 'num mono'} ]; },
+    countText: function(n, m){ return 'Showing ' + n + ' of ' + m + ' paths.'; },
+    zeroText: function(m){ return '0 of the ' + m + ' recorded paths match the current filter — that is a result, not an error.'; }
+  });
+  setup({
+    name: 'countries', tableId: 'countries-table', dataId: 'countries-rows', countId: 'countries-count',
+    prefix: 'g_', facetKinds: [], defaultSort: 'visits', defaultDir: 'desc',
+    defaultDirFor: function(k){ return k === 'country' ? 'asc' : 'desc'; },
+    headers: ['country','visits','note'],
+    searchText: function(r){ return r.country; },
+    facetValue: function(){ return ''; },
+    rowArray: function(r){ return [r.country, r.visits, r.note || '']; },
+    cells: function(r){ return [
+      {text: r.country}, {text: String(r.visits), cls: 'num mono'}, {text: r.note || '\u2014'} ]; },
+    countText: function(n, m){ return 'Showing ' + n + ' of ' + m + ' rows.'; },
+    zeroText: function(m){ return '0 of the ' + m + ' rows match the current filter — that is a result, not an error.'; }
+  });
 })();
 </script>`;
 
@@ -645,12 +873,18 @@ export default async (req, env, ctx) => {
   }
   const site = path === '/data/garden' ? 'garden' : path === '/data/advisory' ? 'advisory' : null;
   if (!site) return new Response(unavailablePage('unknown'), { status: 404, headers: HTML_HEADERS });
-  const [bundle, claims, recent] = await Promise.all([
+  const [bundle, claims, recent, paths, countries, series, responses] = await Promise.all([
     loadJson(env, ctx, site + '.json'),
     loadJson(env, ctx, site + '-claims.json'),
-    loadJson(env, ctx, site + '-recent.json')]);
+    loadJson(env, ctx, site + '-recent.json'),
+    loadJson(env, ctx, site + '-paths.json'),
+    loadJson(env, ctx, site + '-countries.json'),
+    loadJson(env, ctx, site + '-series.json'),
+    loadJson(env, ctx, site + '-responses.json')]);
   if (!bundle) return new Response(unavailablePage(site), { status: 200, headers: HTML_HEADERS });
   const siteStatus = status && status.data && status.data.sites ? status.data.sites[site] : null;
-  return new Response(sitePage(bundle.data, claims && claims.data, recent && recent.data, siteStatus),
+  const agg = { paths: paths && paths.data, countries: countries && countries.data,
+    series: series && series.data, responses: responses && responses.data };
+  return new Response(sitePage(bundle.data, claims && claims.data, recent && recent.data, siteStatus, agg),
     { status: 200, headers: HTML_HEADERS });
 };

@@ -1913,6 +1913,134 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await dataDown.dispose();
 }
 
+// P2-19: the data pages v1.1 aggregate tables (Oct 18 2026) —
+// visits by path (status-class split), visits by country under
+// the small-count fold, response totals by status class with
+// the 404 breakout, and the daily series (by class + distinct
+// visitors). The pins: each table renders from its published
+// file; a suppressed country is NEVER named on the page while
+// the fold itself is printed; the published row key sets are
+// exactly the public columns (the privacy guard); the new JSON
+// names pass the whitelist and near-miss names still 404; and
+// the method block carries the aggregate disclosure rules.
+{
+  const fxB = (site, label) => JSON.stringify({
+    format: 'swarm-garden-data/v1', site, site_label: label,
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    pull_status: 'ok', unavailable_notes: [], counting_since: '2026-10-17T21:38:49Z',
+    counting_window: 'All recorded visits since Oct 17, 2026', licence: 'CC BY 4.0 — fixture licence',
+    figures: { rows: [
+      { label: 'Total recorded visits', value: 52, note: 'Requests recorded at the edge — requests, not readers.' },
+      { label: 'Verified agent arrivals on record', value: 0, note: 'The verified record.' }
+    ], by_class: [{ label: 'browser', value: 52, note: '' }],
+    by_status: [{ label: 'Responses with status 200', value: 40, note: '' }] },
+    corrections: []
+  });
+  const fxPaths = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    window: 'Every path recorded for this site over the counting window.',
+    rows: [
+      { path: '/llms.txt', visits: 9, '2xx': 9, '3xx': 0, '4xx': 0, '5xx': 0, none_recorded: 0 },
+      { path: '/.env', visits: 7, '2xx': 0, '3xx': 0, '4xx': 7, '5xx': 0, none_recorded: 0 }
+    ] });
+  const fxCountries = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    window: 'Visits by country over the counting window.',
+    suppression: { threshold: 5, rule: 'Countries with fewer than 5 visits in the window are folded into a single All other countries row.', folded_countries: 2, folded_visits: 5 },
+    not_recorded: 3,
+    rows: [{ country: 'US', visits: 40 }, { country: 'DE', visits: 12 }] });
+  const fxSeries = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    classes: ['agent-claimed', 'browser', 'automation', 'unknown'],
+    class_days: [{ day: '2026-10-18', 'agent-claimed': 2, browser: 30, automation: 4, unknown: 1, total: 37 }],
+    class_note: 'Visits by claimed class, per Pacific day. Fixture note.',
+    visitor_days: [{ day: '2026-10-18', distinct_visitors: 11, digest_requests: 25, repeat_requests: 9 }],
+    visitor_note: 'Distinct visitors per Pacific day. The digest is date-scoped — fixture note.',
+    unavailable_notes: [] });
+  const fxResponses = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    window: 'Response totals by status class over the counting window.',
+    rows: [
+      { class: '2xx', label: '2xx — successful responses', value: 40, note: '' },
+      { class: '3xx', label: '3xx — redirects', value: 1, note: '' },
+      { class: '4xx', label: '4xx — client errors', value: 9, note: '', of_which_404: 7 },
+      { class: '5xx', label: '5xx — server errors', value: 0, note: '' },
+      { class: 'none_recorded', label: 'No status recorded', value: 2, note: '' }
+    ] });
+  const fxStatus2 = JSON.stringify({ format: 'swarm-garden-data/v1', generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    sites: { garden: { state: 'ok', last_attempt_pt: 'Oct 18, 2026, 11:00:00 AM PT', last_success_pt: 'Oct 18, 2026, 11:00:00 AM PT', notes: [] },
+             advisory: { state: 'ok', last_attempt_pt: 'Oct 18, 2026, 11:00:00 AM PT', last_success_pt: 'Oct 18, 2026, 11:00:00 AM PT', notes: [] } } });
+  const fxEmptyClaims = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    era_note: 'Fixture.', columns: [], rows: [] });
+  const fxEmptyRecent = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
+    generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
+    window: 'Fixture.', rows: [] });
+  const fxInline2 = JSON.stringify({
+    'garden.json': fxB('garden', 'Garden — swarmgarden.com'),
+    'advisory.json': fxB('advisory', 'Advisory — bayareaswarmwarning.com'),
+    'garden-claims.json': fxEmptyClaims, 'garden-recent.json': fxEmptyRecent,
+    'advisory-claims.json': fxEmptyClaims, 'advisory-recent.json': fxEmptyRecent,
+    'garden-paths.json': fxPaths, 'garden-countries.json': fxCountries,
+    'garden-series.json': fxSeries, 'garden-responses.json': fxResponses,
+    'status.json': fxStatus2
+  });
+  const dataW2 = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', DATA_INLINE: fxInline2 }
+  });
+  const D = 'https://bayareaswarmwarning.com/data';
+  let r = await req(dataW2, D + '/garden');
+  const g = await r.text();
+  checkP2('data v1.1 (Garden): visits-by-page renders every path WITH its status-class split, filter controls shipped',
+    r.status === 200 && g.includes('Visits by page') && g.includes('/llms.txt') && g.includes('/.env') &&
+    g.includes('data-controls="paths"') && g.includes('Showing 2 of 2 paths') && g.includes("prefix: 'p_'"),
+    r.status + ' ' + g.slice(0, 160));
+  checkP2('data v1.1 (Garden): countries render kept rows + the printed fold; a suppressed country is never named',
+    g.includes('Visits by country') && g.includes('<td>DE</td>') && g.includes('All other countries') &&
+    g.includes('2 countries, each with fewer than 5 visits') && !g.includes('<td>FR</td>') &&
+    g.includes('Visits with no country recorded: 3'),
+    g.slice(0, 160));
+  checkP2('data v1.1 (Garden): the daily series renders by-class days AND distinct-visitor days with their era notes',
+    g.includes('The daily series') && g.includes('2026-10-18') && g.includes('Distinct visitors, by day') &&
+    g.includes('date-scoped') && g.includes('>11</td>'),
+    g.slice(0, 160));
+  checkP2('data v1.1 (Garden): status-class totals render with the 404 count broken out of 4xx',
+    g.includes('Response totals by status class') && g.includes('of which: status 404'),
+    g.slice(0, 160));
+  checkP2('data v1.1: the method block carries the aggregate disclosure (small-count fold, digests never printed)',
+    g.includes('Published as aggregates only') && g.includes('fewer than five visits') &&
+    g.includes('are never printed'),
+    g.slice(0, 160));
+  r = await req(dataW2, D + '/garden-paths.json');
+  const pj = await r.json();
+  checkP2('data v1.1: the paths JSON passes through with EXACTLY the published columns (no network fields)',
+    r.status === 200 && Array.isArray(pj.rows) &&
+    Object.keys(pj.rows[0]).sort().join(',') === '2xx,3xx,4xx,5xx,none_recorded,path,visits',
+    r.status + ' ' + JSON.stringify(pj).slice(0, 120));
+  r = await req(dataW2, D + '/garden-countries.json');
+  const cj = await r.json();
+  checkP2('data v1.1: the countries JSON rows carry country + visits only; the suppression block travels with the file',
+    r.status === 200 && Object.keys(cj.rows[0]).sort().join(',') === 'country,visits' &&
+    cj.suppression.folded_countries === 2 && cj.rows.every(x => x.visits >= 5),
+    r.status + ' ' + JSON.stringify(cj).slice(0, 120));
+  r = await req(dataW2, D + '/garden-series.json');
+  checkP2('data v1.1: the series JSON passes through (visitor day counts present, no digest values anywhere in the file)',
+    r.status === 200 && (await r.text()).length > 0, String(r.status));
+  r = await req(dataW2, D + '/garden-series.json');
+  const sj = JSON.parse(await r.text());
+  checkP2('data v1.1: the series file carries counts only — its visitor rows have exactly the four count keys',
+    Array.isArray(sj.visitor_days) &&
+    Object.keys(sj.visitor_days[0]).sort().join(',') === 'day,digest_requests,distinct_visitors,repeat_requests',
+    JSON.stringify(sj).slice(0, 120));
+  r = await req(dataW2, D + '/garden-paths2.json');
+  checkP2('data v1.1: a near-miss JSON name still 404s (whitelist extended by name, not by pattern)', r.status === 404, String(r.status));
+  checkP2('data v1.1: the steward-rule footer still closes the extended page',
+    g.includes('The record itself:') && g.includes('<a href="https://swarmgarden.com">swarmgarden.com</a>'));
+  await dataW2.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();
