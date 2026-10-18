@@ -1729,6 +1729,78 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await req(open, FN + '/steward', { method: 'POST', headers: { 'content-type': 'application/json', 'x-steward-key': 'test-steward-key' }, body: JSON.stringify({ action: 'render-resume' }) });
 }
 
+// P2-17: the Advisory's own public counts (Oct 18 2026, repair) —
+// /.netlify/functions/counts on bayareaswarmwarning.com answered 404
+// for the site's whole life: the route was never registered (every
+// committed advisory index.js routes only stats / human-press /
+// render-claim; its one "functions/counts" mention fetches the
+// GARDEN's payload). The pins below fix the restored route's
+// contract: the Garden's byte-shape with this site's own values —
+// visit totals equal an independent aggregate over THIS store,
+// counting_since is THIS dataset's start, the Garden-only fields
+// ride as structural zeros with their explanatory keys (never bare
+// measured zeros), and humans_total is this site's own press count.
+{
+  const advC = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true' }
+  });
+  const AC = 'https://bayareaswarmwarning.com/.netlify/functions/counts';
+  const storeAggC = async (mf) => {
+    const db = await mf.getD1Database('DB');
+    const { results } = await db.prepare('SELECT data FROM visit_log').all();
+    const byClass = {}; let total = 0;
+    for (const row of results || []) {
+      let r; try { r = JSON.parse(row.data); } catch (e) { continue; }
+      total++;
+      byClass[r.cls] = (byClass[r.cls] || 0) + 1;
+    }
+    return { total, byClass };
+  };
+  const sameMapC = (a, b) => {
+    const ka = Object.keys(a || {}).sort(), kb = Object.keys(b || {}).sort();
+    return JSON.stringify(ka) === JSON.stringify(kb) && ka.every(k => a[k] === b[k]);
+  };
+  await req(advC, 'https://bayareaswarmwarning.com/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advC, 'https://bayareaswarmwarning.com/dashboard.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advC, 'https://bayareaswarmwarning.com/index.html', { headers: { 'user-agent': 'curl/8.0' } });
+  await post(advC, 'https://bayareaswarmwarning.com/api/v1/human-press', {}, '203.0.113.71');
+  let aCounts = null, aExp = null;
+  for (let i = 0; i < 40; i++) {
+    aExp = await storeAggC(advC);
+    const rr = await req(advC, AC);
+    if (rr.status === 200) aCounts = await rr.json();
+    if (aCounts && aCounts.visits_total === aExp.total && aExp.total >= 3) break;
+    await new Promise(r => setTimeout(r, 150));
+  }
+  checkP2('advisory counts: the route answers 200 (it 404d for the site\u2019s whole life)',
+    !!aCounts, 'payload ' + JSON.stringify(aCounts).slice(0, 120));
+  checkP2('advisory counts: visits_total + by_class equal an independent aggregate over THIS site\u2019s store',
+    !!aCounts && aCounts.visits_total === aExp.total && sameMapC(aCounts.visits_by_class, aExp.byClass),
+    'endpoint ' + (aCounts && aCounts.visits_total) + ' vs store ' + (aExp && aExp.total));
+  checkP2('advisory counts: counting_since is THIS dataset\u2019s start (2026-10-17T21:40:07Z), not the Garden\u2019s',
+    !!aCounts && aCounts.counting_since === '2026-10-17T21:40:07Z',
+    aCounts && aCounts.counting_since);
+  checkP2('advisory counts: byte-shape parity with the Garden payload (every Garden key present)',
+    !!aCounts && ['arrivals_on_record', 'arrivals_over_cap_unread', 'ledger_entries', 'signals_total', 'humans_total', 'visits_total', 'visits_by_class', 'crawlers_claimed', 'fetchers_claimed', 'visits_window_records', 'visits_window_note', 'counting_since', 'updated', 'top_paths', 'agent_interest_files'].every(k => k in aCounts),
+    aCounts && Object.keys(aCounts).join(','));
+  checkP2('advisory counts: the Garden-only fields are structural — zero WITH their explanatory keys, never bare zeros',
+    !!aCounts && aCounts.ledger_entries === 0 && typeof aCounts.ledger_error === 'string' &&
+    aCounts.signals_total === 0 && typeof aCounts.signals_error === 'string',
+    aCounts && JSON.stringify({ ledger_error: aCounts.ledger_error, signals_error: aCounts.signals_error }));
+  checkP2('advisory counts: humans_total is this site\u2019s own press count',
+    !!aCounts && aCounts.humans_total === 1, aCounts && String(aCounts.humans_total));
+  checkP2('advisory counts: the stated basis matches the arithmetic (records = total; full-dataset note)',
+    !!aCounts && aCounts.visits_window_records === aCounts.visits_total &&
+    aCounts.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    aCounts && JSON.stringify({ records: aCounts.visits_window_records, total: aCounts.visits_total }));
+  checkP2('advisory counts: arrivals is a number read as the Garden reference (0 in the fixture era)',
+    !!aCounts && typeof aCounts.arrivals_on_record === 'number',
+    aCounts && String(aCounts.arrivals_on_record));
+  await advC.dispose();
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();

@@ -2,8 +2,10 @@
 // Serves the static site (Workers Assets), the shared front-door logic
 // (negotiation, count injection from the Garden's public counts,
 // edge-only request logging into THIS site's own Analytics Engine
-// dataset), and the one function route: the key-gated dashboard at
-// /.netlify/functions/stats.
+// dataset), and the function routes: the key-gated dashboard at
+// /.netlify/functions/stats and this site's own public counts at
+// /.netlify/functions/counts (added Oct 18 2026 — see
+// routes/counts.js for why the address answered 404 until then).
 // The visit writer here classifies with the shared single-source
 // taxonomy — the stale hand-copied classifier in the Netlify build
 // (with its forged-by-definition google-extended/applebot-extended
@@ -12,6 +14,7 @@
 import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
 import { logAttempt } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
+import countsRoute from './routes/counts.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
 import { humanTotal } from './lib/human.js';
@@ -24,6 +27,20 @@ export default {
     const url = new URL(req.url);
     if (url.pathname === '/.netlify/functions/stats') {
       const res = await statsRoute(req, env, ctx);
+      if (!res.headers.get('link')) {
+        const headers = new Headers(res.headers);
+        headers.set('Link', LINK_HEADER);
+        return new Response(res.body, { status: res.status, headers });
+      }
+      return res;
+    }
+    // This site's own public counts (added Oct 18 2026): the same
+    // published address shape as the Garden's, carrying this site's
+    // own figures (routes/counts.js). Answered directly, like the
+    // stats route — a counts failure can never reach page serving,
+    // and the route's reads are not visit-logged.
+    if (url.pathname === '/.netlify/functions/counts') {
+      const res = await countsRoute(req, env, ctx);
       if (!res.headers.get('link')) {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
