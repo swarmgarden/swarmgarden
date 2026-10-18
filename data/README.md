@@ -25,6 +25,20 @@ figures, never composited into one number:
 - `garden-recent.json` / `advisory-recent.json` — the 100 most
   recent requests per site: time, path (query-stripped), claimed
   name, response status, verdict where one exists.
+- `garden-paths.json` / `advisory-paths.json` — every recorded
+  path per site over the counting window (query-stripped, folded),
+  with visits split by response status class.
+- `garden-countries.json` / `advisory-countries.json` — visits by
+  country. Country is the only geography published, and only as an
+  aggregate: countries with fewer than 5 visits in the window fold
+  into a single "All other countries" row, and the fold is printed
+  in the file.
+- `garden-series.json` / `advisory-series.json` — the daily
+  series: visits by claimed class per Pacific day, and distinct
+  visitors per Pacific day (counts only — see the privacy note).
+- `garden-responses.json` / `advisory-responses.json` — response
+  totals by status class (2xx/3xx/4xx/5xx/none), with the 404
+  count broken out of the 4xx class.
 - `status.json` — per-site pull state: last attempt, last success.
   When an hourly pull fails, the previous bundle stays published
   under its own older as-of and this file records the failure — a
@@ -40,9 +54,14 @@ figures, never composited into one number:
   address fell inside the ranges its claimed operator publishes.
   The address itself is never stored and never appears here.
 - **Privacy:** no raw IP address exists in these records; no
-  referers, no visitor digests, and no region or network-operator
-  fields are published. The stewards' own visits are included and
-  disclosed, not filtered out.
+  referers, no visitor digest values, and no region or
+  network-operator fields are published. The distinct-visitor
+  series publishes per-day counts only: a digest is date-scoped
+  (a one-way HMAC over date, address, and user-agent), so a day's
+  count is that day's distinct visitors and the days cannot be
+  added into a distinct-visitor total. Country publishes only as
+  the folded aggregate described above. The stewards' own visits
+  are included and disclosed, not filtered out.
 - Counting windows: the Garden's opens 2026-10-17T21:38:49Z, the
   Advisory's 2026-10-17T21:40:07Z. Every total is cumulative over
   its own site's window.
