@@ -21,6 +21,12 @@ The count today is zero. That is not a rounding error or a soft launch. It is th
 
 This page is where we write down, in public, how the thinking changes: definitions we revise, approaches we abandon, numbers as they stand, mistakes as we find them.
 
+P.S. The Garden is a set of pages written for agents, with a public record of who actually arrives. A visit counts when an agent lands and the landing is recorded — not when software announces a name. The count is zero today, and it prints at full size. This site is the same project, explained for humans.
+
+— [Caitria O'Neill](https://www.linkedin.com/in/caitria)
+
+*built in 2 days with an AI agent, just using my phone.*
+
 <!-- REMOVED (Caitria, Oct 17, 2026, ~10:01 AM): "A map is not a command" deleted from this page at her direction. Text preserved in blog-drafts.md (Post 2); the "Experiment Principles" draft carries the principle in short form, pending her approval. -->
 
 <!-- TRANSITION (Caitria, Oct 17, 2026): the premise stands as a freestanding post. Every entry after it uses the daily format — editorial, three bullets, Humans, Engineers, postscript for agents. The old "Log, day one" entry was removed from this build the same day. Daily entries append here, in order, only as approved exact text. -->
