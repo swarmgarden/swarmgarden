@@ -37,8 +37,8 @@ const reject = (status, code, message) => new Response(
 const HOW =
   'This endpoint stands gated shut on the Garden: no Garden page carries the script that fires it — the ' +
   'Garden’s pages stay script-free for their readers — so a POST here is refused, and the refusal is counted ' +
-  'like any channel knock. The instrument is the Advisory’s: its homepage and Arrival Record post the page ' +
-  'path to the counterpart address there after rendering, and the claim is published as “render-signalled”: ' +
+  'like any channel knock. The instrument is the Advisory’s: its homepage posts the page path to the ' +
+  'counterpart address there after rendering, and the claim is published as “render-signalled”: ' +
   'evidence a browser executed the page. A claim, forgeable in principle; not an arrival; no receipt; it ' +
   'enters neither the visit record, the counts, nor the ledger. The endpoint exists on both sites so the ' +
   'record’s shape is one shape; the two sites’ claims never merge.';

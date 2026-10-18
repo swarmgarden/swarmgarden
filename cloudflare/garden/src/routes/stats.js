@@ -170,7 +170,7 @@ export default async (req, env) => {
 
   // ---- Render-signalled (B-d read; the instrument is the Advisory's) ----
   html += '<h3>Render-signalled — pages reporting a render (claims)</h3>';
-  html += '<p>No page on the Garden fires this signal: the Garden&rsquo;s pages stay script-free for their readers, and the endpoint (POST /api/v1/render-claim) stands gated shut on this site. The instrument is the Advisory&rsquo;s — its homepage and Arrival Record report a render, published there as &ldquo;render-signalled&rdquo;: evidence a browser executed the page; a claim, never an arrival. This site&rsquo;s own table stands below; while the gate is shut it is empty by structure, not by measurement.</p>';
+  html += '<p>No page on the Garden fires this signal: the Garden&rsquo;s pages stay script-free for their readers, and the endpoint (POST /api/v1/render-claim) stands gated shut on this site. The instrument is the Advisory&rsquo;s — its homepage reports a render, published there as &ldquo;render-signalled&rdquo;: evidence a browser executed the page; a claim, never an arrival. This site&rsquo;s own table stands below; while the gate is shut it is empty by structure, not by measurement.</p>';
   if (renders === null) html += '<p>Unavailable.</p>';
   else if (!renders.total) html += '<p>None recorded — the gate is shut and no Garden page fires the signal.</p>';
   else {
