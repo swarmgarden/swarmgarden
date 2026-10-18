@@ -573,7 +573,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   });
   const A = 'https://bayareaswarmwarning.com';
   await req(adv, A + '/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
-  await req(adv, A + '/dashboard.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(adv, A + '/blog.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   await req(adv, A + '/index.html', { headers: { 'user-agent': 'Google-Extended/1.0' } });
   let aj = null;
   for (let i = 0; i < 30; i++) {
@@ -582,10 +582,10 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     await new Promise(r => setTimeout(r, 150));
   }
   const recs = (aj && aj.recent) || [];
-  const board = recs.find(r => r.path === '/dashboard.html');
+  const board = recs.find(r => r.path === '/blog.html');
   const forged = recs.find(r => (r.ua || '').includes('Google-Extended'));
   checkP2('advisory: page fetches logged in its OWN dataset with named events',
-    !!aj && aj.total >= 3 && !!board && board.event === 'arrival-board-view', JSON.stringify(aj && aj.byEvent));
+    !!aj && aj.total >= 3 && !!board && board.event === 'pageview', JSON.stringify(aj && aj.byEvent));
   checkP2('advisory: full field set on records (status, method, md, bot-auth, country field)',
     recs.length > 0 && recs.every(r => 'status' in r && 'method' in r && 'md' in r && 'ba' in r && 'country' in r), JSON.stringify(recs[0]).slice(0, 200));
   checkP2('advisory: Google-Extended UA is NOT agent-claimed under the single-source taxonomy (stale classifier retired)',
@@ -1125,14 +1125,13 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     checkP2('alignment: Advisory ' + p + ' presents no /.netlify/ pointer',
       !body.includes('/.netlify/'), body.slice(0, 120));
   }
-  const dashBody = await (await req(advP, A + '/dashboard.html')).text();
-  checkP2('alignment: the Arrival Record presents no legacy link, and points at the Garden record page + garden-state',
-    !dashBody.includes('href="https://swarmgarden.com/.netlify/') &&
-    dashBody.includes('<a href="https://swarmgarden.com/record.html">swarmgarden.com/record.html</a>') &&
-    dashBody.includes('<a href="https://swarmgarden.com/utilities/garden-state/v1">swarmgarden.com/utilities/garden-state/v1</a>'),
-    dashBody.slice(0, 120));
-  checkP2('alignment: dashboard plumbing is untouched — its COUNTS constant still uses the legacy address',
-    dashBody.includes('var COUNTS = "https://swarmgarden.com/.netlify/functions/counts"'), '');
+  const dashRes = await req(advP, A + '/dashboard.html', { redirect: 'manual' });
+  const dashLoc = dashRes.headers.get('location') || '';
+  checkP2('alignment: the retired Arrival Record address redirects to the home snapshot',
+    dashRes.status === 301 && dashLoc.endsWith('/#record'), dashRes.status + ' ' + dashLoc);
+  const homeBody = await (await req(advP, A + '/index.html')).text();
+  checkP2('alignment: the home page presents no dashboard link, and its strip points at the data shelf',
+    !homeBody.includes('dashboard.html') && homeBody.includes('href="/data">See the data'), homeBody.slice(0, 120));
   await advP.dispose();
 }
 
@@ -1221,7 +1220,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   });
   const AX = 'https://bayareaswarmwarning.com';
   await req(advX, AX + '/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
-  await req(advX, AX + '/dashboard.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advX, AX + '/blog.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   await req(advX, AX + '/index.html', { headers: { 'user-agent': 'curl/8.0' } });
   let aStats = null, aExpected = null;
   for (let i = 0; i < 40; i++) {
@@ -1618,7 +1617,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   let rj = await r.json();
   checkP2('render: a beacon-shaped POST (text body = the path) records a claim', r.status === 201 && rj.recorded === true && rj.event === 'render-claim' && rj.published_as === 'render-signalled' && rj.claims_total === 1, r.status + ' ' + JSON.stringify(rj));
   // The JSON shape records too.
-  r = await post(renAdv, A, '192.0.2.70', JSON.stringify({ path: '/dashboard.html' }), 'application/json');
+  r = await post(renAdv, A, '192.0.2.70', JSON.stringify({ path: '/index.html' }), 'application/json');
   rj = await r.json();
   checkP2('render: a JSON claim {"path": ...} records', r.status === 201 && rj.claims_total === 2, r.status + ' ' + JSON.stringify(rj));
   // One field only — anything else is refused (fresh networks, so
@@ -1645,16 +1644,17 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   // nothing — only an executed script fires — and the served
   // pages carry the script.
   const homeHtml = await (await req(renAdv, A + '/')).text();
-  const dashHtml = await (await req(renAdv, A + '/dashboard.html')).text();
+  const blogHtml = await (await req(renAdv, A + '/blog.html')).text();
+  const dashRes = await req(renAdv, A + '/dashboard.html', { redirect: 'manual' });
   const howAfter = await howJson(renAdv, A);
   checkP2('render: plain page fetches record no claim (only an executed page fires)', howAfter.claims_total === 2, 'total ' + howAfter.claims_total);
-  checkP2('render: the Advisory homepage and Arrival Record carry the firing script',
-    homeHtml.includes('sendBeacon') && homeHtml.includes('/api/v1/render-claim') && dashHtml.includes('/api/v1/render-claim'));
+  checkP2('render: the Advisory homepage alone carries the firing script; the retired board address redirects',
+    homeHtml.includes('sendBeacon') && homeHtml.includes('/api/v1/render-claim') && !blogHtml.includes('/api/v1/render-claim') && dashRes.status === 301);
 
   // The keyed stats page carries the figure, under its ruled name.
   const aStats = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
   checkP2('render: stats JSON carries render_claims (total + by page)',
-    !!aStats.render_claims && aStats.render_claims.total === 2 && aStats.render_claims.by_path['/index.html'] === 1 && aStats.render_claims.by_path['/dashboard.html'] === 1,
+    !!aStats.render_claims && aStats.render_claims.total === 2 && aStats.render_claims.by_path['/index.html'] === 2,
     JSON.stringify(aStats.render_claims));
   const aStatsHtml = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key')).text();
   checkP2('render: stats HTML publishes the figure as Render-signalled, with its documented limit',
@@ -1763,7 +1763,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     return JSON.stringify(ka) === JSON.stringify(kb) && ka.every(k => a[k] === b[k]);
   };
   await req(advC, 'https://bayareaswarmwarning.com/index.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
-  await req(advC, 'https://bayareaswarmwarning.com/dashboard.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
+  await req(advC, 'https://bayareaswarmwarning.com/blog.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   await req(advC, 'https://bayareaswarmwarning.com/index.html', { headers: { 'user-agent': 'curl/8.0' } });
   await post(advC, 'https://bayareaswarmwarning.com/api/v1/human-press', {}, '203.0.113.71');
   let aCounts = null, aExp = null;
