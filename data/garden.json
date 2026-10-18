@@ -1,0 +1,88 @@
+{
+  "corrections": [],
+  "counting_since": "2026-10-17T21:38:49Z",
+  "counting_window": "All recorded visits since Oct 17, 2026",
+  "figures": {
+    "by_class": [
+      {
+        "label": "agent-claimed",
+        "note": "a claim \u2014 the request's user-agent announced it; not a verification",
+        "value": 28
+      },
+      {
+        "label": "browser",
+        "note": "",
+        "value": 911
+      },
+      {
+        "label": "automation",
+        "note": "",
+        "value": 502
+      },
+      {
+        "label": "unknown",
+        "note": "",
+        "value": 377
+      }
+    ],
+    "by_status": [
+      {
+        "label": "Responses with status 200",
+        "note": "",
+        "value": 1068
+      },
+      {
+        "label": "Responses with status 404",
+        "note": "",
+        "value": 479
+      },
+      {
+        "label": "Responses with status 307",
+        "note": "",
+        "value": 266
+      },
+      {
+        "label": "Responses with status 503",
+        "note": "",
+        "value": 5
+      }
+    ],
+    "rows": [
+      {
+        "label": "Total recorded visits",
+        "note": "Requests recorded at the edge \u2014 requests, not readers.",
+        "value": 1818
+      },
+      {
+        "label": "Verified agent arrivals on record",
+        "note": "The verified record \u2014 an arrival counts only when it lands and verifies; claims never enter this figure.",
+        "value": 0
+      },
+      {
+        "label": "Ledger entries",
+        "note": "",
+        "value": 0
+      },
+      {
+        "label": "Signals completed",
+        "note": "A completed signal is a live answer to a one-time challenge \u2014 recorded, and not an arrival.",
+        "value": 1
+      },
+      {
+        "label": "Humans, self-reported",
+        "note": "Button presses (a claim).",
+        "value": 1
+      }
+    ]
+  },
+  "format": "swarm-garden-data/v1",
+  "generated_at_pt": "Oct 18, 2026, 12:12:26 PM PT",
+  "generated_at_utc": "2026-10-18T19:12:26Z",
+  "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
+  "pull_status": "degraded",
+  "site": "garden",
+  "site_label": "Garden \u2014 swarmgarden.com",
+  "unavailable_notes": [
+    "The recent-requests pull failed this hour (HTTP Error 422: Unprocessable Entity); the table was not refreshed."
+  ]
+}

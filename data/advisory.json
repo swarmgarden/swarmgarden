@@ -1,0 +1,83 @@
+{
+  "corrections": [],
+  "counting_since": "2026-10-17T21:40:07Z",
+  "counting_window": "All recorded visits since Oct 17, 2026",
+  "figures": {
+    "by_class": [
+      {
+        "label": "agent-claimed",
+        "note": "a claim \u2014 the request's user-agent announced it; not a verification",
+        "value": 26
+      },
+      {
+        "label": "browser",
+        "note": "",
+        "value": 1971
+      },
+      {
+        "label": "automation",
+        "note": "",
+        "value": 383
+      },
+      {
+        "label": "unknown",
+        "note": "",
+        "value": 537
+      }
+    ],
+    "by_status": [
+      {
+        "label": "Responses with status 404",
+        "note": "",
+        "value": 1555
+      },
+      {
+        "label": "Responses with status 200",
+        "note": "",
+        "value": 1060
+      },
+      {
+        "label": "Responses with status 307",
+        "note": "",
+        "value": 302
+      }
+    ],
+    "rows": [
+      {
+        "label": "Total recorded visits",
+        "note": "Requests recorded at the edge \u2014 requests, not readers.",
+        "value": 2917
+      },
+      {
+        "label": "Verified agent arrivals on record",
+        "note": "The Garden's record, shown as a labelled reference \u2014 this site keeps no arrival ledger of its own.",
+        "value": 0
+      },
+      {
+        "label": "Humans, self-reported",
+        "note": "This site's own button presses (a claim).",
+        "value": 2
+      },
+      {
+        "label": "Ledger entries",
+        "note": "No ledger on this site \u2014 the ledger is the Garden's.",
+        "value": null
+      },
+      {
+        "label": "Signals",
+        "note": "No signal tier on this site \u2014 signals are the Garden's.",
+        "value": null
+      }
+    ]
+  },
+  "format": "swarm-garden-data/v1",
+  "generated_at_pt": "Oct 18, 2026, 12:12:26 PM PT",
+  "generated_at_utc": "2026-10-18T19:12:26Z",
+  "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
+  "pull_status": "degraded",
+  "site": "advisory",
+  "site_label": "Advisory \u2014 bayareaswarmwarning.com",
+  "unavailable_notes": [
+    "The recent-requests pull failed this hour (HTTP Error 422: Unprocessable Entity); the table was not refreshed."
+  ]
+}
