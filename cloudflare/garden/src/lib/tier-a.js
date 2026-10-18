@@ -44,7 +44,7 @@ const basis = (at) => 'per the Garden\u2019s record at ' + at;
 export async function tierAQuestion(env, questionText, at) {
   const q = String(questionText || '');
   const ql = q.toLowerCase();
-  const num = (q.match(/\b(\d{4,})\b/) || [])[1];
+  const num = (q.match(/\b(\d{6,})\b/) || [])[1];
 
   // 4/5. A named receipt: its state, or a registry listing's lapse.
   if (num && /(receipt|listing|submission)/.test(ql)) {

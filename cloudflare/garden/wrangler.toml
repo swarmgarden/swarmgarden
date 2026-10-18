@@ -63,6 +63,14 @@ AE_DATASET = "garden_visits"
 # switch: set this to anything but "true" and redeploy, or pause the
 # book from its steward page; the book itself stays up either way.
 GUESTBOOK_OPEN = "true"
+INTAKE_OPEN = "true"
+# The signal (added Oct 17 2026, Caitria's direction): like the book,
+# SIGNAL_OPEN is set HERE, in the file — opening the signal is the
+# commission, so the value travels with the build. Kill switch: set
+# this to anything but "true" and redeploy, or pause the signal from
+# the steward endpoint (action signal-pause); the counts stay up
+# either way.
+SIGNAL_OPEN = "true"
 # AE_ACCOUNT_ID is set at provisioning (not secret, but account-specific).
 
 # SECRETS — names only, set with `wrangler secret put` at provisioning;
@@ -72,6 +80,11 @@ GUESTBOOK_OPEN = "true"
 #   LEDGER_KEY    — gates ledger appends
 #   AE_API_TOKEN  — read-only Analytics Engine token for dashboard/count reads
 #
-# THE DOOR: INTAKE_OPEN is deliberately ABSENT. Unset = intake closed
-# regardless of any steward pause flag (the outer kill-switch layer).
-# It is set to "true" only by Caitria's opening decision (Phase 5+).
+# THE DOOR: INTAKE_OPEN was deliberately ABSENT through the build (unset
+# = intake closed regardless of any steward pause flag — the outer
+# kill-switch layer). It is set to "true" above under Caitria's opening
+# decision of Oct 17 2026 (~10:51 PM PT: "get the agent intake piping
+# setup as soon as possible"), executed the same evening; the public
+# status copy flipped in the same deploy. To close the door again, remove
+# the line (or set it to anything but "true") and redeploy; the steward
+# pause flag is the second, independent layer.

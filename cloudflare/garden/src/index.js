@@ -24,6 +24,7 @@ import changedRoute from './routes/changed.js';
 import utilitiesRoute from './routes/utilities.js';
 import notesRoute from './routes/notes.js';
 import guestbookStewardRoute from './routes/guestbook.js';
+import { challengeRoute, signalRoute } from './routes/signal.js';
 export { Sequencer } from './lib/sequencer.js';
 
 const SITE_HOST = 'swarmgarden.com';
@@ -37,6 +38,11 @@ function route(pathname) {
   // intake channel and stays live while intake is closed.
   if (pathname === '/api/v1/notes') return notesRoute;
   if (pathname === '/.netlify/functions/notes') return notesRoute;
+  // The signal (added Oct 17 2026): likewise matched BEFORE the
+  // generic /api/v1/ intake branch — the signal is not an intake
+  // channel and stays live on its own gate (SIGNAL_OPEN).
+  if (pathname === '/api/v1/signal/challenge') return challengeRoute;
+  if (pathname === '/api/v1/signal') return signalRoute;
   if (pathname === '/.netlify/functions/guestbook') return guestbookStewardRoute;
   if (pathname.startsWith('/api/v1/receipts/') || pathname === '/api/v1/receipts') return receiptsRoute;
   if (pathname.startsWith('/receipts/')) return receiptsRoute;

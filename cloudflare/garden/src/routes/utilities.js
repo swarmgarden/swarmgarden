@@ -72,7 +72,7 @@ async function gardenVerify(env, req, url) {
       }
     } catch (e) { /* fall through to parameter validation */ }
   }
-  if (!receiptNo) return err(400, 'A receipt number is required: ?receipt=NNNN with ?sha256=<hex> or ?text=<exact bytes>.');
+  if (!receiptNo) return err(400, 'A receipt number is required: ?receipt=NNNNNN with ?sha256=<hex> or ?text=<exact bytes>.');
   if (!hash && text === null) return err(400, 'Supply the candidate fingerprint as sha256=<hex>, or the candidate bytes as text=.');
   const r = await loadReceipt(env, String(receiptNo));
   if (!r) return respond(req, { utility: 'garden-verify-receipt', version: 'v1', receipt: String(receiptNo), result: 'no-such-receipt' });

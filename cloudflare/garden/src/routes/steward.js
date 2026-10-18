@@ -11,6 +11,7 @@
 //   { action: 'brief', brief: { brief_id, version, state, cap, closes_at, disposition_window_days, required_answer_fields } }
 // GET: the quarantine queue (every receipt, with its stored submission).
 import { JSON_HEADERS, STATES, setIntakePaused, listReceipts, loadReceipt, saveReceipt, appendLedger, saveBrief } from '../lib/garden.js';
+import { setSignalPaused } from '../lib/signal.js';
 
 const REGISTRY_STATES = ['listed', 'lapsed', 'refreshed'];
 
@@ -41,6 +42,13 @@ export default async (req, env) => {
   if (body.action === 'pause' || body.action === 'resume') {
     await setIntakePaused(env, body.action === 'pause', 'steward-endpoint');
     return new Response(JSON.stringify({ ok: true, intake_paused: body.action === 'pause' }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // The signal's steward pause (added Oct 17 2026): the second gate
+  // layer for the signal endpoints, beside SIGNAL_OPEN.
+  if (body.action === 'signal-pause' || body.action === 'signal-resume') {
+    await setSignalPaused(env, body.action === 'signal-pause', 'steward-endpoint');
+    return new Response(JSON.stringify({ ok: true, signal_paused: body.action === 'signal-pause' }), { status: 200, headers: JSON_HEADERS });
   }
 
   if (body.action === 'brief') {

@@ -113,6 +113,41 @@ export async function dbMaxNoteNumber(db) {
   return row && row.m ? Number(row.m) : 0;
 }
 
+// ---- signals (added Oct 17 2026) ----
+// Challenges are stored by DIGEST only — the nonce itself is never in
+// the record. A challenge row moves once: unconsumed → consumed, by a
+// single UPDATE that only fires on an unconsumed row, so a nonce
+// answers exactly once however requests interleave.
+export async function dbPutSignalChallenge(db, c) {
+  await db.prepare('INSERT INTO signal_challenges (nonce_digest, expires_at, created_at, consumed_at) VALUES (?1,?2,?3,?4)')
+    .bind(c.nonce_digest, c.expires_at, c.created_at, c.consumed_at || null).run();
+}
+export async function dbGetSignalChallenge(db, digest) {
+  const row = await db.prepare('SELECT nonce_digest, expires_at, created_at, consumed_at FROM signal_challenges WHERE nonce_digest = ?1')
+    .bind(String(digest)).first();
+  return row || null;
+}
+export async function dbConsumeSignalChallenge(db, digest, at) {
+  const r = await db.prepare('UPDATE signal_challenges SET consumed_at = ?2 WHERE nonce_digest = ?1 AND consumed_at IS NULL')
+    .bind(String(digest), at).run();
+  return !!(r && r.meta && r.meta.changes === 1);
+}
+export async function dbPruneSignalChallenges(db, nowIso) {
+  await db.prepare('DELETE FROM signal_challenges WHERE expires_at < ?1').bind(nowIso).run();
+}
+export async function dbInsertSignal(db, s) {
+  await db.prepare('INSERT INTO signals (number, name_claim, signalled_at, data) VALUES (?1,?2,?3,?4)')
+    .bind(s.number, s.name_claim, s.signalled_at, JSON.stringify(s)).run();
+}
+export async function dbCountSignals(db) {
+  const row = await db.prepare('SELECT COUNT(*) AS n FROM signals').first();
+  return row ? Number(row.n) || 0 : 0;
+}
+export async function dbMaxSignalNumber(db) {
+  const row = await db.prepare('SELECT MAX(CAST(number AS INTEGER)) AS m FROM signals').first();
+  return row && row.m ? Number(row.m) : 0;
+}
+
 // ---- garden state (the steward pause flag) ----
 export async function dbGetState(db, key) {
   const row = await db.prepare('SELECT data FROM garden_state WHERE key = ?1').bind(key).first();

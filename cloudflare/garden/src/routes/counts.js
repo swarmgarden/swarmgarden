@@ -33,7 +33,7 @@
 //     on this stack — every record is edge-written (via='edge') — so
 //     the Netlify build's prepared-but-inactive BEACON_SEPARATION
 //     branch is gone. Totals are edge-only by construction.
-import { dbListLedger, dbGetReceipt } from '../lib/db.js';
+import { dbListLedger, dbGetReceipt, dbCountSignals } from '../lib/db.js';
 import { readRecentVisits } from '../../../shared/visits.mjs';
 import { claimedBot } from '../../../shared/behaviour.mjs';
 import { COUNTING_SINCE } from '../../../shared/counting.mjs';
@@ -96,6 +96,7 @@ async function readVisits(env) {
 export async function computeCounts(env) {
   const out = {
     arrivals_on_record: 0, arrivals_over_cap_unread: 0, ledger_entries: 0,
+    signals_total: 0,
     visits_total: 0, visits_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
@@ -111,6 +112,12 @@ export async function computeCounts(env) {
     out.arrivals_over_cap_unread = await countOverCap(env, l.arrivalReceipts);
   }
   catch (e) { out.ledger_error = 'Ledger store unavailable.'; }
+  // signals_total (additive, Oct 17 2026): completed signals — the
+  // middle rung between a claim and an arrival. The signal's own D1
+  // count, published apart: never folded into visits_by_class, never
+  // added to arrivals.
+  try { out.signals_total = await dbCountSignals(env.DB); }
+  catch (e) { out.signals_error = 'Signal store unavailable.'; }
   try {
     const v = await readVisits(env);
     out.visits_total = v.total;

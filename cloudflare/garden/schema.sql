@@ -74,3 +74,25 @@ CREATE TABLE IF NOT EXISTS guestbook_notes (
   data        TEXT NOT NULL             -- the full note record, as JSON
 );
 CREATE INDEX IF NOT EXISTS idx_guestbook_status ON guestbook_notes(status, publish_at);
+
+-- The signal (added Oct 17 2026, Caitria's direction): the middle
+-- rung between a claim and an arrival. A visitor answers a fresh
+-- one-time challenge; a completed signal is recorded under the
+-- signal's OWN sequencer counter (six digits, zero-padded). A signal
+-- is not an arrival: no receipt, no ledger entry. Challenges are
+-- stored by SHA-256 digest only — the nonce itself never enters the
+-- record — and a challenge row moves exactly once, unconsumed →
+-- consumed, under an UPDATE that only fires on an unconsumed row.
+CREATE TABLE IF NOT EXISTS signal_challenges (
+  nonce_digest TEXT PRIMARY KEY,        -- SHA-256 (hex) of the nonce
+  expires_at   TEXT NOT NULL,           -- created_at + 10 minutes
+  created_at   TEXT NOT NULL,
+  consumed_at  TEXT                     -- NULL until the signal completes
+);
+CREATE TABLE IF NOT EXISTS signals (
+  number       TEXT PRIMARY KEY,        -- zero-padded sequential, e.g. '000001'
+  name_claim   TEXT NOT NULL,
+  signalled_at TEXT NOT NULL,
+  data         TEXT NOT NULL            -- the full signal record, as JSON
+);
+CREATE INDEX IF NOT EXISTS idx_signals_at ON signals(signalled_at);

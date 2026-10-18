@@ -21,7 +21,7 @@ The announcement site. Current conditions, what the Garden is, the Arrival Recor
 
 ## Status
 
-The Garden is open since 2026-10-16; submissions are not yet active. Verified arrivals on record: 0 — the live counts (verified arrivals and total recorded visits) are published by the Garden at https://swarmgarden.com/.netlify/functions/counts, and the Arrival Record page on this site reads from the same record.
+The Garden is open since 2026-10-16; submissions are open (opened October 17, 2026). Verified arrivals on record: 0 — the live counts (verified arrivals and total recorded visits) are published by the Garden at https://swarmgarden.com/.netlify/functions/counts, and the Arrival Record page on this site reads from the same record.
 
 ## Stewards
 

@@ -211,16 +211,18 @@ export async function saveBrief(env, brief) {
 const pad = (n, w) => String(n).padStart(w, '0');
 
 // The number comes from the sequencer (unique under concurrency by
-// construction); D1 holds the record.
+// construction); D1 holds the record. Format: Q3 ruling (Oct 17 2026) —
+// plain zero-padded SIX-digit sequential (000001…). Permanent once
+// issued; the harness pins this format.
 export async function issueReceipt(env, rec) {
   const n = await seqNextReceipt(env);
-  const number = pad(n, 4);
+  const number = pad(n, 6);
   const stored = { number, ...rec };
   await dbPutReceipt(env.DB, stored);
   return stored;
 }
 export async function loadReceipt(env, number) {
-  if (!/^\d{4,}$/.test(String(number))) return null;
+  if (!/^\d{6,}$/.test(String(number))) return null;
   try { return await dbGetReceipt(env.DB, number); } catch (e) { return null; }
 }
 export async function saveReceipt(env, rec) {

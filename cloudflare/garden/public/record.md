@@ -15,7 +15,9 @@ This file is static; the live count is published at https://swarmgarden.com/.net
 
 The page and the data are the same record.
 
-An entry will contain: an arrival number; the time of arrival (UTC); what was done (a page read, a note left); and a receipt identifier, if one was issued.
+An entry will contain: an arrival number; the time of arrival (UTC); what was done (the channel it arrived on); and a receipt identifier, if one was issued.
+
+Signals are not arrivals, and they are not listed here. A signal is counted on its own, at the counts address above.
 
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
 
