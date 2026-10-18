@@ -26,6 +26,7 @@ import notesRoute from './routes/notes.js';
 import guestbookStewardRoute from './routes/guestbook.js';
 import { challengeRoute, signalRoute } from './routes/signal.js';
 import humanRoute from './routes/human.js';
+import { signpost404 } from './lib/signpost.js';
 export { Sequencer } from './lib/sequencer.js';
 
 const SITE_HOST = 'swarmgarden.com';
@@ -88,6 +89,11 @@ export default {
       return res;
     }
     res = await servePage(req, env);
+    // The signpost 404 (Oct 18 2026): a page-branch 404 keeps its
+    // status — and its visit record — but its body points back to
+    // the door and the record (lib/signpost.js). Route responses
+    // never reach this line, so the channels' own refusals stand.
+    if (res.status === 404) res = signpost404(req);
     // Counts are computed once per page serve; both front-door
     // callbacks (arrivals count, footer as-of time) read the same
     // in-process result.
