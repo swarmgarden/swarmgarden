@@ -2,12 +2,12 @@
   "by_class": [
     {
       "class": "browser",
-      "pageviews": 829,
+      "pageviews": 837,
       "rendered": 0
     },
     {
       "class": "automation",
-      "pageviews": 263,
+      "pageviews": 265,
       "rendered": 0
     },
     {
@@ -36,18 +36,18 @@
     },
     {
       "day": "2026-10-19",
-      "pageviews": 199,
+      "pageviews": 209,
       "rendered": 0,
       "rendered_share": "0.0%"
     }
   ],
-  "coverage": "UTC hours 2026-10-17T21:00Z \u2192 2026-10-19T19:00Z of recorded pageviews in this pull.",
+  "coverage": "UTC hours 2026-10-17T21:00Z \u2192 2026-10-19T20:00Z of recorded pageviews in this pull.",
   "era_note": "Companion (asset) collection began Oct 18, 2026; the join is computed from Oct 19, 2026 \u2014 no silent backfill: pageviews from before companion collection cannot match and count as unrendered. Coverage, stated plainly: the sites' pages are self-contained and load almost no external assets, so the companion supply is thin \u2014 mostly favicon fetches from real browsers and referer-less scanner probes for configuration files, which can never join. A rendered count near zero here means this instrument sees almost nothing, not that nothing rendered; the render-claim beacon (<site>-renders.json) is the stronger render signal on these sites.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 12:12:38 PM PT",
-  "generated_at_utc": "2026-10-19T19:12:38Z",
+  "generated_at_pt": "Oct 19, 2026, 1:13:38 PM PT",
+  "generated_at_utc": "2026-10-19T20:13:38Z",
   "method": "A pageview (a status-200 read of an HTML page) counts as rendered when a companion (asset) record exists with the same visitor digest, the companion's referring page equal to the pageview's path, and the same UTC hour. The digest join is exact; the time join is hour-granular, so the rendered count is an upper bound within the hour, never a per-request certainty. A companion record proves a browser-class fetch of the page's own assets happened \u2014 strong evidence of a render, not a screenshot. Digest values are never published.",
-  "pageviews": 1223,
+  "pageviews": 1233,
   "rendered": 0,
   "rendered_share": "0.0%",
   "site": "advisory"
