@@ -88,6 +88,112 @@
       "web_bot_auth_present": 0
     },
     {
+      "bucket": "extra",
+      "claimed_name": "Googlebot",
+      "countries": {
+        "US": 66
+      },
+      "kind": "search-engine",
+      "operator_claimed": "Google",
+      "paths": {
+        "/": 6,
+        "/.env": 1,
+        "/.env.development": 1,
+        "/.env.development.local": 1,
+        "/.mcp.json": 1,
+        "/agent-page": 5,
+        "/agent-page.html": 5,
+        "/ansible.cfg": 1,
+        "/blog": 5,
+        "/blog.html": 4,
+        "/blog.md": 2,
+        "/changed": 1,
+        "/config.ini": 1,
+        "/credentials.yml": 1,
+        "/dashboard": 1,
+        "/dashboard.html": 1,
+        "/google/service-account.json": 1,
+        "/hypothesis-register": 2,
+        "/hypothesis-register.html": 2,
+        "/hypothesis-register.md": 1,
+        "/index.html": 6,
+        "/index.md": 1,
+        "/postman_collection.json": 1,
+        "/registry.html": 1,
+        "/research": 6,
+        "/research.html": 5,
+        "/research.md": 1,
+        "/s3.properties": 1,
+        "/var/www/.env": 1
+      },
+      "requests": 66,
+      "stored_classes": {
+        "automation": 66
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "web_bot_auth_present": 0
+    },
+    {
+      "bucket": "extra",
+      "claimed_name": "Googlebot",
+      "countries": {
+        "US": 42
+      },
+      "kind": "search-engine",
+      "operator_claimed": "Google",
+      "paths": {
+        "/": 3,
+        "/robots.txt": 39
+      },
+      "requests": 42,
+      "stored_classes": {
+        "automation": 42
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "web_bot_auth_present": 0
+    },
+    {
+      "bucket": "taxonomy",
+      "claimed_name": "GoogleOther",
+      "countries": {
+        "US": 41
+      },
+      "kind": "other",
+      "operator_claimed": "Google",
+      "paths": {
+        "/": 2,
+        "/.docker/laravel/app/.env": 1,
+        "/.env.aws": 1,
+        "/.env.swp": 1,
+        "/CLAUDE.md": 1,
+        "/README.md": 1,
+        "/_profiler/phpinfo": 1,
+        "/agent-page": 3,
+        "/agent-page.html": 3,
+        "/blog": 4,
+        "/blog.html": 3,
+        "/blog.md": 3,
+        "/config/aws.php": 1,
+        "/hypothesis-register": 1,
+        "/hypothesis-register.html": 1,
+        "/index.html": 1,
+        "/receipts/000001": 1,
+        "/research": 5,
+        "/research.html": 5,
+        "/research.md": 1,
+        "/wordpress/": 1
+      },
+      "requests": 41,
+      "stored_classes": {
+        "agent-claimed": 41
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; GoogleOther)",
+      "web_bot_auth_present": 0
+    },
+    {
       "bucket": "taxonomy",
       "claimed_name": "GPTBot",
       "countries": {
@@ -119,90 +225,49 @@
     },
     {
       "bucket": "extra",
-      "claimed_name": "Googlebot",
-      "countries": {
-        "US": 10
-      },
-      "kind": "search-engine",
-      "operator_claimed": "Google",
-      "paths": {
-        "/": 1,
-        "/agent-page": 2,
-        "/agent-page.html": 2,
-        "/dashboard": 1,
-        "/dashboard.html": 1,
-        "/index.html": 1,
-        "/research": 1,
-        "/research.html": 1
-      },
-      "requests": 10,
-      "stored_classes": {
-        "automation": 10
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "extra",
       "claimed_name": "meta-webindexer",
       "countries": {
-        "US": 10
+        "US": 18
       },
       "kind": "link-indexer",
       "operator_claimed": "Meta",
       "paths": {
-        "/": 1,
+        "/": 2,
         "/agent-page.md": 1,
-        "/blog.md": 1,
+        "/blog": 1,
+        "/blog.html": 1,
+        "/blog.md": 2,
         "/dashboard": 1,
         "/dashboard.html": 1,
+        "/hypothesis-register": 1,
+        "/hypothesis-register.html": 1,
         "/index.md": 1,
-        "/research": 2,
-        "/research.html": 2
+        "/research": 3,
+        "/research.html": 3
       },
-      "requests": 10,
+      "requests": 18,
       "stored_classes": {
-        "automation": 10
+        "automation": 18
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "meta-webindexer/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)",
-      "web_bot_auth_present": 10
-    },
-    {
-      "bucket": "extra",
-      "claimed_name": "Googlebot",
-      "countries": {
-        "US": 7
-      },
-      "kind": "search-engine",
-      "operator_claimed": "Google",
-      "paths": {
-        "/robots.txt": 7
-      },
-      "requests": 7,
-      "stored_classes": {
-        "automation": 7
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-      "web_bot_auth_present": 0
+      "web_bot_auth_present": 18
     },
     {
       "bucket": "extra",
       "claimed_name": "facebookexternalhit",
       "countries": {
-        "US": 7
+        "US": 9
       },
       "kind": "link-preview",
       "operator_claimed": "Meta",
       "paths": {
         "/": 1,
-        "/robots.txt": 6
+        "/robots.txt": 8
       },
-      "requests": 7,
+      "requests": 9,
       "stored_classes": {
-        "unknown": 7
+        "unknown": 9
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
@@ -271,24 +336,22 @@
       "web_bot_auth_present": 0
     },
     {
-      "bucket": "taxonomy",
-      "claimed_name": "GoogleOther",
+      "bucket": "extra",
+      "claimed_name": "Googlebot",
       "countries": {
         "US": 3
       },
-      "kind": "other",
+      "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
-        "/research": 1,
-        "/research.html": 1,
-        "/research.md": 1
+        "/": 3
       },
       "requests": 3,
       "stored_classes": {
-        "agent-claimed": 3
+        "automation": 3
       },
       "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; GoogleOther)",
+      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
       "web_bot_auth_present": 0
     },
     {
@@ -409,64 +472,69 @@
     }
   ],
   "claimed_purposes": {
-    "": 2653,
-    "other": 3,
+    "": 3576,
+    "other": 41,
     "search": 2,
     "training": 21
   },
   "classes": {
-    "agent-claimed": 26,
-    "automation": 363,
-    "browser": 1854,
-    "unknown": 436
+    "agent-claimed": 64,
+    "automation": 539,
+    "browser": 2442,
+    "unknown": 595
   },
   "counting_window": {
     "ae_retention": "Analytics Engine retains raw records three months, rolling; aggregates here are cumulative over the current dataset window.",
     "dataset_first_record_utc": "2026-10-17 21:40:07",
-    "dataset_last_record_utc": "2026-10-18 16:13:39"
+    "dataset_last_record_utc": "2026-10-19 06:12:52"
   },
   "countries": {
     "AU": 1,
-    "BD": 2,
+    "BD": 4,
     "BE": 48,
     "BR": 17,
     "CA": 88,
     "CH": 23,
-    "CN": 7,
-    "DE": 293,
-    "FI": 1,
-    "FR": 21,
+    "CN": 18,
+    "DE": 353,
+    "FI": 2,
+    "FR": 24,
     "GB": 64,
     "HK": 10,
-    "ID": 9,
+    "ID": 12,
     "IN": 62,
-    "JP": 10,
-    "KR": 8,
+    "JP": 62,
+    "KR": 10,
     "MX": 1,
-    "NL": 118,
-    "PL": 846,
-    "RU": 43,
+    "NL": 384,
+    "PL": 864,
+    "RO": 19,
+    "RU": 91,
     "SE": 3,
-    "SG": 68,
+    "SG": 97,
+    "T1": 1,
     "TH": 5,
-    "UA": 20,
-    "US": 911
+    "TR": 1,
+    "UA": 23,
+    "US": 1353
   },
   "dataset": "advisory_visits",
-  "dataset_total": 2679,
+  "dataset_total": 3640,
   "date_pt": "2026-10-18",
-  "distinct_referrer_values_steward_copy": 44,
+  "distinct_referrer_values_steward_copy": 45,
   "events": {
-    "arrival-board-view": 73,
-    "pageview": 2606
+    "arrival-board-view": 93,
+    "changed-read": 1,
+    "pageview": 3545,
+    "receipt-check": 1
   },
   "generic_http_clients": {
-    "aiohttp": 10,
+    "aiohttp": 13,
     "axios": 4,
-    "curl": 284,
-    "go-http-client": 3,
+    "curl": 348,
+    "go-http-client": 5,
     "httpx": 4,
-    "python-requests": 19,
+    "python-requests": 22,
     "scrapy": 2
   },
   "hourly_buckets_utc": {
@@ -489,28 +557,62 @@
     "2026-10-18T13": 25,
     "2026-10-18T14": 40,
     "2026-10-18T15": 12,
-    "2026-10-18T16": 4
+    "2026-10-18T16": 36,
+    "2026-10-18T17": 125,
+    "2026-10-18T18": 74,
+    "2026-10-18T19": 35,
+    "2026-10-18T20": 20,
+    "2026-10-18T21": 118,
+    "2026-10-18T22": 28,
+    "2026-10-18T23": 197,
+    "2026-10-19T00": 33,
+    "2026-10-19T01": 42,
+    "2026-10-19T02": 40,
+    "2026-10-19T03": 81,
+    "2026-10-19T04": 35,
+    "2026-10-19T05": 86,
+    "2026-10-19T06": 15
   },
   "markdown_preference_records": 2,
   "methods": {
-    "GET": 2672,
-    "HEAD": 7
+    "GET": 3631,
+    "HEAD": 9
   },
   "networks": [
     {
       "as_organization": "TC DATACENTER LIMITED MANAGED IP SPACE",
       "asn": "218785",
-      "requests": 580
+      "requests": 598
     },
     {
       "as_organization": "Cloudflare, Inc.",
       "asn": "13335",
-      "requests": 290
+      "requests": 477
+    },
+    {
+      "as_organization": "TECHOFF SRV LIMITED",
+      "asn": "48090",
+      "requests": 262
     },
     {
       "as_organization": "DigitalOcean, LLC",
       "asn": "14061",
-      "requests": 202
+      "requests": 228
+    },
+    {
+      "as_organization": "Google LLC",
+      "asn": "396982",
+      "requests": 187
+    },
+    {
+      "as_organization": "Google LLC",
+      "asn": "15169",
+      "requests": 152
+    },
+    {
+      "as_organization": "SpaceX Services, Inc.",
+      "asn": "14593",
+      "requests": 124
     },
     {
       "as_organization": "Virtualine Technologies",
@@ -518,24 +620,19 @@
       "requests": 95
     },
     {
-      "as_organization": "Google LLC",
-      "asn": "396982",
-      "requests": 77
+      "as_organization": "6 COLLYER QUAY",
+      "asn": "132203",
+      "requests": 55
     },
     {
-      "as_organization": "SpaceX Services, Inc.",
-      "asn": "14593",
-      "requests": 61
+      "as_organization": "Blatant Technologies, LLC",
+      "asn": "403005",
+      "requests": 52
     },
     {
       "as_organization": "netcup GmbH",
       "asn": "214996",
       "requests": 52
-    },
-    {
-      "as_organization": "6 COLLYER QUAY",
-      "asn": "132203",
-      "requests": 46
     },
     {
       "as_organization": "OVH Hosting, Inc.",
@@ -563,8 +660,8 @@
       "requests": 20
     },
     {
-      "as_organization": "Google LLC",
-      "asn": "15169",
+      "as_organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
+      "asn": "132203",
       "requests": 20
     },
     {
@@ -573,9 +670,9 @@
       "requests": 19
     },
     {
-      "as_organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
-      "asn": "132203",
-      "requests": 18
+      "as_organization": "Orange Romania",
+      "asn": "8953",
+      "requests": 17
     },
     {
       "as_organization": "CustodianDC Limited",
@@ -593,13 +690,28 @@
       "requests": 14
     },
     {
+      "as_organization": "16 COLLYER QUAY",
+      "asn": "132203",
+      "requests": 14
+    },
+    {
+      "as_organization": "Microsoft Corporation",
+      "asn": "8075",
+      "requests": 13
+    },
+    {
       "as_organization": "",
       "asn": "9009",
       "requests": 13
     },
     {
-      "as_organization": "16 COLLYER QUAY",
-      "asn": "132203",
+      "as_organization": "EarthMeta Multimedia Studios LLC",
+      "asn": "47007",
+      "requests": 13
+    },
+    {
+      "as_organization": "Cloudflare London, LLC",
+      "asn": "13335",
       "requests": 13
     },
     {
@@ -633,8 +745,8 @@
       "requests": 9
     },
     {
-      "as_organization": "Microsoft Corporation",
-      "asn": "8075",
+      "as_organization": "Shanghai UCloud Information Technology Company Limited",
+      "asn": "58466",
       "requests": 8
     },
     {
@@ -643,18 +755,28 @@
       "requests": 8
     },
     {
+      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
+      "asn": "132203",
+      "requests": 7
+    },
+    {
       "as_organization": "PRCDN Consumer Pool",
       "asn": "137409",
       "requests": 7
     },
     {
-      "as_organization": "Cloudflare London, LLC",
-      "asn": "13335",
+      "as_organization": "RouterHosting LLC",
+      "asn": "14956",
       "requests": 7
     },
     {
-      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
-      "asn": "132203",
+      "as_organization": "Amazon Data Services Northern Virginia",
+      "asn": "14618",
+      "requests": 6
+    },
+    {
+      "as_organization": "Meta Platforms Ireland Limited",
+      "asn": "32934",
       "requests": 6
     },
     {
@@ -668,12 +790,12 @@
       "requests": 6
     },
     {
-      "as_organization": "Amazon Technologies Inc.",
-      "asn": "14618",
-      "requests": 4
+      "as_organization": "Alibaba Cloud - US",
+      "asn": "45102",
+      "requests": 5
     },
     {
-      "as_organization": "Amazon Data Services Northern Virginia",
+      "as_organization": "Amazon Technologies Inc.",
       "asn": "14618",
       "requests": 4
     },
@@ -683,13 +805,28 @@
       "requests": 4
     },
     {
-      "as_organization": "Meta Platforms Ireland Limited",
-      "asn": "32934",
+      "as_organization": "Hetzner Online GmbH",
+      "asn": "24940",
       "requests": 4
     },
     {
-      "as_organization": "Hetzner Online GmbH",
-      "asn": "24940",
+      "as_organization": "Alibaba Cloud LLC",
+      "asn": "45102",
+      "requests": 4
+    },
+    {
+      "as_organization": "Palo Alto Networks, Inc",
+      "asn": "3356",
+      "requests": 4
+    },
+    {
+      "as_organization": "SAKURA Internet Inc.",
+      "asn": "7684",
+      "requests": 4
+    },
+    {
+      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
+      "asn": "45090",
       "requests": 4
     },
     {
@@ -703,6 +840,11 @@
       "requests": 4
     },
     {
+      "as_organization": "Amazon.com, Inc.",
+      "asn": "14618",
+      "requests": 3
+    },
+    {
       "as_organization": "Leaseweb Canada Inc.",
       "asn": "32613",
       "requests": 3
@@ -713,8 +855,8 @@
       "requests": 3
     },
     {
-      "as_organization": "RouterHosting LLC",
-      "asn": "14956",
+      "as_organization": "OVH SAS",
+      "asn": "16276",
       "requests": 3
     },
     {
@@ -723,13 +865,13 @@
       "requests": 3
     },
     {
-      "as_organization": "Alibaba Cloud - US",
-      "asn": "45102",
+      "as_organization": "Apple Inc.",
+      "asn": "714",
       "requests": 3
     },
     {
-      "as_organization": "Apple Inc.",
-      "asn": "714",
+      "as_organization": "Hostwinds Seattle",
+      "asn": "36352",
       "requests": 3
     },
     {
@@ -738,18 +880,13 @@
       "requests": 3
     },
     {
-      "as_organization": "OVH US LLC",
-      "asn": "16276",
-      "requests": 2
-    },
-    {
       "as_organization": "M247 Europe - Zurich Infrastructure",
       "asn": "9009",
       "requests": 2
     },
     {
-      "as_organization": "Amazon.com, Inc.",
-      "asn": "14618",
+      "as_organization": "OVH US LLC",
+      "asn": "16276",
       "requests": 2
     },
     {
@@ -778,18 +915,18 @@
       "requests": 2
     },
     {
-      "as_organization": "SAKURA Internet Inc.",
-      "asn": "7684",
-      "requests": 2
-    },
-    {
-      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
-      "asn": "45090",
-      "requests": 2
-    },
-    {
       "as_organization": "M247 LTD Luxembourg Infrastructure",
       "asn": "9009",
+      "requests": 2
+    },
+    {
+      "as_organization": "IONOS Inc.",
+      "asn": "8560",
+      "requests": 2
+    },
+    {
+      "as_organization": "HostPapa",
+      "asn": "36352",
       "requests": 2
     },
     {
@@ -798,13 +935,13 @@
       "requests": 2
     },
     {
-      "as_organization": "ZENLA-1",
-      "asn": "21859",
+      "as_organization": "ONYPHE SAS",
+      "asn": "213412",
       "requests": 2
     },
     {
-      "as_organization": "ONYPHE SAS",
-      "asn": "213412",
+      "as_organization": "ZENLA-1",
+      "asn": "21859",
       "requests": 2
     },
     {
@@ -813,13 +950,18 @@
       "requests": 2
     },
     {
-      "as_organization": "Hostwinds Seattle",
-      "asn": "36352",
+      "as_organization": "Kabel Deutschland Vertrieb und Service GmbH",
+      "asn": "3209",
       "requests": 2
     },
     {
-      "as_organization": "TECHOFF SRV LIMITED",
-      "asn": "48090",
+      "as_organization": "PT. Menaksopal Link Nusantara",
+      "asn": "139981",
+      "requests": 2
+    },
+    {
+      "as_organization": "Comcast Cable Communications, LLC",
+      "asn": "7922",
       "requests": 2
     },
     {
@@ -830,6 +972,16 @@
     {
       "as_organization": "LeaseWeb USA, Inc. Chicago",
       "asn": "27411",
+      "requests": 1
+    },
+    {
+      "as_organization": "Elisteka UAB",
+      "asn": "35830",
+      "requests": 1
+    },
+    {
+      "as_organization": "Technische Universitaet Muenchen",
+      "asn": "12816",
       "requests": 1
     },
     {
@@ -868,8 +1020,18 @@
       "requests": 1
     },
     {
+      "as_organization": "RCS & RDS Business",
+      "asn": "8708",
+      "requests": 1
+    },
+    {
       "as_organization": "Shree Padma Technology",
       "asn": "132116",
+      "requests": 1
+    },
+    {
+      "as_organization": "Cisco OpenDNS LLC",
+      "asn": "36692",
       "requests": 1
     },
     {
@@ -878,18 +1040,18 @@
       "requests": 1
     },
     {
-      "as_organization": "Alibaba Cloud LLC",
-      "asn": "45102",
-      "requests": 1
-    },
-    {
       "as_organization": "about-asi.recordedfuture.com",
       "asn": "14618",
       "requests": 1
     },
     {
-      "as_organization": "Palo Alto Networks, Inc",
-      "asn": "3356",
+      "as_organization": "Railway",
+      "asn": "400940",
+      "requests": 1
+    },
+    {
+      "as_organization": "3NT Solutions LLP",
+      "asn": "58061",
       "requests": 1
     },
     {
@@ -903,18 +1065,33 @@
       "requests": 1
     },
     {
-      "as_organization": "web2objects GmbH",
-      "asn": "204646",
-      "requests": 1
-    },
-    {
       "as_organization": "Private Customer",
       "asn": "396356",
       "requests": 1
     },
     {
+      "as_organization": "web2objects GmbH",
+      "asn": "204646",
+      "requests": 1
+    },
+    {
+      "as_organization": "WomenBusiness Center",
+      "asn": "9318",
+      "requests": 1
+    },
+    {
       "as_organization": "Cogent Communications, LLC",
       "asn": "174",
+      "requests": 1
+    },
+    {
+      "as_organization": "Blazing SEO, LLC",
+      "asn": "64267",
+      "requests": 1
+    },
+    {
+      "as_organization": "EDINAYA SET LIMITED LIABILITY COMPANY",
+      "asn": "50340",
       "requests": 1
     },
     {
@@ -933,13 +1110,33 @@
       "requests": 1
     },
     {
+      "as_organization": "TechTies Inc.",
+      "asn": "197170",
+      "requests": 1
+    },
+    {
       "as_organization": "ONYPHE SAS",
       "asn": "16276",
       "requests": 1
     },
     {
+      "as_organization": "Tres Teknoloji A.S.",
+      "asn": "214195",
+      "requests": 1
+    },
+    {
       "as_organization": "TRUE BROADBAND",
       "asn": "17552",
+      "requests": 1
+    },
+    {
+      "as_organization": "Flux Telecom, LLC",
+      "asn": "6079",
+      "requests": 1
+    },
+    {
+      "as_organization": "CHINANET Beijing province network",
+      "asn": "4847",
       "requests": 1
     },
     {
@@ -973,8 +1170,18 @@
       "requests": 1
     },
     {
+      "as_organization": "Subnet Digital LLC",
+      "asn": "9009",
+      "requests": 1
+    },
+    {
       "as_organization": "SWIFTIFY PRIVATE LIMITED",
       "asn": "151729",
+      "requests": 1
+    },
+    {
+      "as_organization": "UNMANAGED LTD",
+      "asn": "47890",
       "requests": 1
     },
     {
@@ -991,170 +1198,226 @@
       "as_organization": "Varendra IT",
       "asn": "151391",
       "requests": 1
+    },
+    {
+      "as_organization": "SURF B.V.",
+      "asn": "215125",
+      "requests": 1
     }
   ],
-  "no_referer_recorded": 1718,
+  "no_referer_recorded": 2621,
   "paths": [
     {
       "path": "/",
       "status": {
-        "200": 509
+        "200": 664
       },
-      "total": 509
+      "total": 664
     },
     {
       "path": "/blog",
       "status": {
-        "200": 93
+        "200": 116
       },
-      "total": 93
-    },
-    {
-      "path": "/dashboard",
-      "status": {
-        "200": 74
-      },
-      "total": 74
-    },
-    {
-      "path": "/dashboard.html",
-      "status": {
-        "307": 73
-      },
-      "total": 73
+      "total": 116
     },
     {
       "path": "/blog.html",
       "status": {
-        "307": 65
+        "307": 93
       },
-      "total": 65
-    },
-    {
-      "path": "/research",
-      "status": {
-        "200": 57
-      },
-      "total": 57
-    },
-    {
-      "path": "/agent-page.html",
-      "status": {
-        "307": 51
-      },
-      "total": 51
-    },
-    {
-      "path": "/research.html",
-      "status": {
-        "307": 51
-      },
-      "total": 51
-    },
-    {
-      "path": "/index.html",
-      "status": {
-        "307": 44
-      },
-      "total": 44
+      "total": 93
     },
     {
       "path": "/wp-admin/install.php",
       "status": {
-        "404": 43
+        "404": 90
       },
-      "total": 43
+      "total": 90
+    },
+    {
+      "path": "/dashboard",
+      "status": {
+        "200": 87
+      },
+      "total": 87
+    },
+    {
+      "path": "/research",
+      "status": {
+        "200": 83
+      },
+      "total": 83
+    },
+    {
+      "path": "/dashboard.html",
+      "status": {
+        "307": 80
+      },
+      "total": 80
+    },
+    {
+      "path": "/research.html",
+      "status": {
+        "307": 78
+      },
+      "total": 78
+    },
+    {
+      "path": "/agent-page.html",
+      "status": {
+        "307": 70
+      },
+      "total": 70
+    },
+    {
+      "path": "/robots.txt",
+      "status": {
+        "200": 66
+      },
+      "total": 66
     },
     {
       "path": "/agent-page",
+      "status": {
+        "200": 62
+      },
+      "total": 62
+    },
+    {
+      "path": "/index.html",
+      "status": {
+        "307": 57
+      },
+      "total": 57
+    },
+    {
+      "path": "/index.md",
       "status": {
         "200": 41
       },
       "total": 41
     },
     {
-      "path": "/index.md",
-      "status": {
-        "200": 36
-      },
-      "total": 36
-    },
-    {
       "path": "/.env",
       "status": {
-        "404": 27
+        "404": 38
       },
-      "total": 27
-    },
-    {
-      "path": "/.well-known/security.txt",
-      "status": {
-        "200": 19,
-        "404": 6
-      },
-      "total": 25
-    },
-    {
-      "path": "/robots.txt",
-      "status": {
-        "200": 24
-      },
-      "total": 24
-    },
-    {
-      "path": "/.git/config",
-      "status": {
-        "404": 23
-      },
-      "total": 23
-    },
-    {
-      "path": "/config.json",
-      "status": {
-        "404": 23
-      },
-      "total": 23
+      "total": 38
     },
     {
       "path": "/blog.md",
       "status": {
-        "200": 20
+        "200": 31
       },
-      "total": 20
+      "total": 31
+    },
+    {
+      "path": "/config.json",
+      "status": {
+        "404": 31
+      },
+      "total": 31
+    },
+    {
+      "path": "/.git/config",
+      "status": {
+        "404": 29
+      },
+      "total": 29
+    },
+    {
+      "path": "/.well-known/security.txt",
+      "status": {
+        "200": 21,
+        "404": 6
+      },
+      "total": 27
     },
     {
       "path": "/sitemap.xml",
+      "status": {
+        "200": 26
+      },
+      "total": 26
+    },
+    {
+      "path": "/AGENTS.md",
+      "status": {
+        "200": 21,
+        "404": 4
+      },
+      "total": 25
+    },
+    {
+      "path": "/CLAUDE.md",
+      "status": {
+        "200": 16,
+        "404": 5
+      },
+      "total": 21
+    },
+    {
+      "path": "/README.md",
+      "status": {
+        "200": 17,
+        "404": 4
+      },
+      "total": 21
+    },
+    {
+      "path": "/agent-page.md",
+      "status": {
+        "200": 18
+      },
+      "total": 18
+    },
+    {
+      "path": "/info.php",
+      "status": {
+        "404": 17
+      },
+      "total": 17
+    },
+    {
+      "path": "/research.md",
       "status": {
         "200": 17
       },
       "total": 17
     },
     {
-      "path": "/agent-page.md",
+      "path": "/wp-login.php",
+      "status": {
+        "404": 16
+      },
+      "total": 16
+    },
+    {
+      "path": "/llms-full.txt",
       "status": {
         "200": 15
       },
       "total": 15
     },
     {
-      "path": "/research.md",
+      "path": "/llms.txt",
       "status": {
-        "200": 15
-      },
-      "total": 15
-    },
-    {
-      "path": "/info.php",
-      "status": {
-        "404": 14
+        "200": 14
       },
       "total": 14
     },
     {
-      "path": "/AGENTS.md",
+      "path": "/.github/copilot-instructions.md",
       "status": {
-        "200": 9,
-        "404": 4
+        "404": 13
+      },
+      "total": 13
+    },
+    {
+      "path": "/hypothesis-register.html",
+      "status": {
+        "307": 13
       },
       "total": 13
     },
@@ -1162,22 +1425,6 @@
       "path": "/@vite/env",
       "status": {
         "404": 12
-      },
-      "total": 12
-    },
-    {
-      "path": "/CLAUDE.md",
-      "status": {
-        "200": 7,
-        "404": 5
-      },
-      "total": 12
-    },
-    {
-      "path": "/README.md",
-      "status": {
-        "200": 8,
-        "404": 4
       },
       "total": 12
     },
@@ -1197,6 +1444,13 @@
     },
     {
       "path": "/actuator/env",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
+      "path": "/api/config",
       "status": {
         "404": 12
       },
@@ -1259,9 +1513,23 @@
       "total": 11
     },
     {
+      "path": "/hypothesis-register",
+      "status": {
+        "200": 11
+      },
+      "total": 11
+    },
+    {
       "path": "/login.action",
       "status": {
         "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/security.txt",
+      "status": {
+        "200": 11
       },
       "total": 11
     },
@@ -1280,28 +1548,84 @@
       "total": 11
     },
     {
-      "path": "/wp-login.php",
+      "path": "/.env.production",
       "status": {
-        "404": 11
+        "404": 10
       },
-      "total": 11
-    },
-    {
-      "path": "/llms-full.txt",
-      "status": {
-        "200": 9
-      },
-      "total": 9
-    },
-    {
-      "path": "/security.txt",
-      "status": {
-        "200": 9
-      },
-      "total": 9
+      "total": 10
     },
     {
       "path": "/.aws/credentials",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.env.bak",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/api/.env",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.env.dev",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/.env.old",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/.env.prod",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/.env.save",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/app/.env",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/appsettings.Production.json",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/backend/.env",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/config/.env",
       "status": {
         "404": 8
       },
@@ -1315,49 +1639,63 @@
       "total": 8
     },
     {
-      "path": "/llms.txt",
+      "path": "/wp-includes/wlwmanifest.xml",
       "status": {
-        "200": 8
+        "404": 8
       },
       "total": 8
     },
     {
-      "path": "/.env.production",
+      "path": "/.env.backup",
       "status": {
         "404": 7
       },
       "total": 7
     },
     {
-      "path": "/app/.env",
+      "path": "/.env.local",
       "status": {
         "404": 7
       },
       "total": 7
     },
     {
-      "path": "/.env.bak",
+      "path": "/old/.env",
+      "status": {
+        "404": 7
+      },
+      "total": 7
+    },
+    {
+      "path": "/wp/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 7
+      },
+      "total": 7
+    },
+    {
+      "path": "/.env.development",
       "status": {
         "404": 6
       },
       "total": 6
     },
     {
-      "path": "/.env.dev",
+      "path": "/.env.swp",
       "status": {
         "404": 6
       },
       "total": 6
     },
     {
-      "path": "/.env.prod",
+      "path": "/.git/index",
       "status": {
         "404": 6
       },
       "total": 6
     },
     {
-      "path": "/.github/copilot-instructions.md",
+      "path": "/.github/workflows/deploy.yml",
       "status": {
         "404": 6
       },
@@ -1371,6 +1709,13 @@
       "total": 6
     },
     {
+      "path": "/.well-known/agent-skills/index.json",
+      "status": {
+        "200": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/app/.aws/credentials",
       "status": {
         "404": 6
@@ -1378,21 +1723,7 @@
       "total": 6
     },
     {
-      "path": "/appsettings.Production.json",
-      "status": {
-        "404": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/backend/.env",
-      "status": {
-        "404": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/config/.env",
+      "path": "/google/service-account.json",
       "status": {
         "404": 6
       },
@@ -1400,6 +1731,13 @@
     },
     {
       "path": "/mcp_config.json",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/phpinfo.php",
       "status": {
         "404": 6
       },
@@ -1427,6 +1765,20 @@
       "total": 6
     },
     {
+      "path": "/shop/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/staging/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/swagger/v1/swagger.json",
       "status": {
         "404": 6
@@ -1434,7 +1786,21 @@
       "total": 6
     },
     {
-      "path": "/wp-includes/wlwmanifest.xml",
+      "path": "/terraform.tfstate",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/wp2/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/xmlrpc.php",
       "status": {
         "404": 6
       },
@@ -1469,14 +1835,7 @@
       "total": 5
     },
     {
-      "path": "/.env.old",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/.env.save",
+      "path": "/.config/gcloud/credentials.db",
       "status": {
         "404": 5
       },
@@ -1484,13 +1843,6 @@
     },
     {
       "path": "/.git/HEAD",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/.git/index",
       "status": {
         "404": 5
       },
@@ -1511,6 +1863,13 @@
       "total": 5
     },
     {
+      "path": "/.npmrc",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
       "path": "/2019/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 5
@@ -1525,14 +1884,7 @@
       "total": 5
     },
     {
-      "path": "/api/.env",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/api/config",
+      "path": "/ansible.cfg",
       "status": {
         "404": 5
       },
@@ -1588,6 +1940,13 @@
       "total": 5
     },
     {
+      "path": "/backup/.env",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
       "path": "/config.prod.json",
       "status": {
         "404": 5
@@ -1616,7 +1975,14 @@
       "total": 5
     },
     {
-      "path": "/google/service-account.json",
+      "path": "/gcp-credentials.json",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
+      "path": "/htdocs/.env",
       "status": {
         "404": 5
       },
@@ -1637,13 +2003,6 @@
       "total": 5
     },
     {
-      "path": "/old/.env",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
       "path": "/proc/self/environ",
       "status": {
         "404": 5
@@ -1652,6 +2011,13 @@
     },
     {
       "path": "/root/.aws/config",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
+      "path": "/s3.properties",
       "status": {
         "404": 5
       },
@@ -1679,13 +2045,6 @@
       "total": 5
     },
     {
-      "path": "/shop/wp-includes/wlwmanifest.xml",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
       "path": "/site/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 5
@@ -1693,7 +2052,7 @@
       "total": 5
     },
     {
-      "path": "/terraform.tfstate",
+      "path": "/terraform.tfstate.backup",
       "status": {
         "404": 5
       },
@@ -1707,14 +2066,14 @@
       "total": 5
     },
     {
-      "path": "/vertex-ai-credentials.json",
+      "path": "/var/www/html/.env",
       "status": {
         "404": 5
       },
       "total": 5
     },
     {
-      "path": "/wp/wp-includes/wlwmanifest.xml",
+      "path": "/vertex-ai-credentials.json",
       "status": {
         "404": 5
       },
@@ -1763,21 +2122,21 @@
       "total": 4
     },
     {
-      "path": "/.config/gcloud/credentials.db",
+      "path": "/.env.aws",
       "status": {
         "404": 4
       },
       "total": 4
     },
     {
-      "path": "/.env.backup",
+      "path": "/.env.example",
       "status": {
         "404": 4
       },
       "total": 4
     },
     {
-      "path": "/.env.swp",
+      "path": "/.env.staging",
       "status": {
         "404": 4
       },
@@ -1791,7 +2150,7 @@
       "total": 4
     },
     {
-      "path": "/.github/workflows/deploy.yml",
+      "path": "/.mcp.json",
       "status": {
         "404": 4
       },
@@ -1820,13 +2179,6 @@
     },
     {
       "path": "/ads.txt",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
-      "path": "/ansible.cfg",
       "status": {
         "404": 4
       },
@@ -1952,7 +2304,7 @@
       "total": 4
     },
     {
-      "path": "/backup/.env",
+      "path": "/blog/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 4
       },
@@ -1974,6 +2326,13 @@
     },
     {
       "path": "/config.dev.json",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/config/aws.php",
       "status": {
         "404": 4
       },
@@ -2036,13 +2395,6 @@
       "total": 4
     },
     {
-      "path": "/gcp-credentials.json",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
       "path": "/gcp.json",
       "status": {
         "404": 4
@@ -2065,13 +2417,6 @@
     },
     {
       "path": "/home/ubuntu/.aws/credentials",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
-      "path": "/htdocs/.env",
       "status": {
         "404": 4
       },
@@ -2106,13 +2451,6 @@
       "total": 4
     },
     {
-      "path": "/phpinfo.php",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
       "path": "/public_html/.env",
       "status": {
         "404": 4
@@ -2134,13 +2472,6 @@
       "total": 4
     },
     {
-      "path": "/s3.properties",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
       "path": "/s3.yaml",
       "status": {
         "404": 4
@@ -2155,7 +2486,28 @@
       "total": 4
     },
     {
+      "path": "/s3cmd.ini",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
       "path": "/sellers.json",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/serverless.yaml",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/serverless.yml",
       "status": {
         "404": 4
       },
@@ -2176,14 +2528,28 @@
       "total": 4
     },
     {
-      "path": "/staging/.env",
+      "path": "/site/.env",
       "status": {
         "404": 4
       },
       "total": 4
     },
     {
-      "path": "/terraform.tfstate.backup",
+      "path": "/sito/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/src/.env",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/terraform.tfvars",
       "status": {
         "404": 4
       },
@@ -2197,21 +2563,35 @@
       "total": 4
     },
     {
-      "path": "/var/www/html/.env",
+      "path": "/web/.env",
       "status": {
         "404": 4
       },
       "total": 4
     },
     {
-      "path": "/wp2/wp-includes/wlwmanifest.xml",
+      "path": "/web/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 4
       },
       "total": 4
     },
     {
-      "path": "/xmlrpc.php",
+      "path": "/wordpress/",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/wp1/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/www/.env",
       "status": {
         "404": 4
       },
@@ -2253,6 +2633,20 @@
       "total": 3
     },
     {
+      "path": "/.aws/credentials.bak",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/.claude/settings.json",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
       "path": "/.config/claude.json",
       "status": {
         "404": 3
@@ -2267,21 +2661,14 @@
       "total": 3
     },
     {
-      "path": "/.env.aws",
+      "path": "/.dockercfg",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/.env.development",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/.env.local",
+      "path": "/.env.live",
       "status": {
         "404": 3
       },
@@ -2302,6 +2689,13 @@
       "total": 3
     },
     {
+      "path": "/.env.test",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
       "path": "/.env.txt",
       "status": {
         "404": 3
@@ -2309,14 +2703,21 @@
       "total": 3
     },
     {
-      "path": "/.mcp.json",
+      "path": "/.git-credentials",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/.npmrc",
+      "path": "/.svn/wc.db",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/.travis.yml",
       "status": {
         "404": 3
       },
@@ -2345,6 +2746,13 @@
     },
     {
       "path": "//cms/.env",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/_profiler/phpinfo",
       "status": {
         "404": 3
       },
@@ -2387,6 +2795,13 @@
     },
     {
       "path": "/app/terraform.tfstate",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/application.yaml",
       "status": {
         "404": 3
       },
@@ -2470,6 +2885,13 @@
       "total": 3
     },
     {
+      "path": "/cms/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
       "path": "/config.development.json",
       "status": {
         "404": 3
@@ -2477,14 +2899,14 @@
       "total": 3
     },
     {
-      "path": "/config/.aws/credentials",
+      "path": "/config.yaml",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/config/aws.php",
+      "path": "/config/.aws/credentials",
       "status": {
         "404": 3
       },
@@ -2499,6 +2921,13 @@
     },
     {
       "path": "/content../.git/config",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/credentials.json",
       "status": {
         "404": 3
       },
@@ -2526,7 +2955,35 @@
       "total": 3
     },
     {
+      "path": "/database.sql",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/docker-compose.yml",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/env",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
       "path": "/etc/boto.cfg",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/frontend/.env",
       "status": {
         "404": 3
       },
@@ -2582,6 +3039,20 @@
       "total": 3
     },
     {
+      "path": "/panel/.env",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/public/.env",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
       "path": "/react/config.json",
       "status": {
         "404": 3
@@ -2631,14 +3102,14 @@
       "total": 3
     },
     {
-      "path": "/s3cmd.ini",
+      "path": "/secret/config.json",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/secret/config.json",
+      "path": "/secrets.json",
       "status": {
         "404": 3
       },
@@ -2659,20 +3130,6 @@
       "total": 3
     },
     {
-      "path": "/serverless.yaml",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/serverless.yml",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
       "path": "/settings",
       "status": {
         "404": 3
@@ -2681,27 +3138,6 @@
     },
     {
       "path": "/shop/.env",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/site/.env",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/sito/wp-includes/wlwmanifest.xml",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/src/.env",
       "status": {
         "404": 3
       },
@@ -2729,14 +3165,14 @@
       "total": 3
     },
     {
-      "path": "/terraform.tfvars",
+      "path": "/terraform/terraform.tfvars.json",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/terraform/terraform.tfvars.json",
+      "path": "/test/.env",
       "status": {
         "404": 3
       },
@@ -2750,14 +3186,14 @@
       "total": 3
     },
     {
-      "path": "/web/.env",
+      "path": "/var/www/.env",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/web/wp-includes/wlwmanifest.xml",
+      "path": "/vendor/composer/installed.json",
       "status": {
         "404": 3
       },
@@ -2778,14 +3214,7 @@
       "total": 3
     },
     {
-      "path": "/wp1/wp-includes/wlwmanifest.xml",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
-      "path": "/www/.env",
+      "path": "/wordpress/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 3
       },
@@ -2820,7 +3249,7 @@
       "total": 2
     },
     {
-      "path": "/.aws/credentials.bak",
+      "path": "/.boto",
       "status": {
         "404": 2
       },
@@ -2834,13 +3263,6 @@
       "total": 2
     },
     {
-      "path": "/.claude/settings.json",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/.codex/config.toml",
       "status": {
         "404": 2
@@ -2848,7 +3270,7 @@
       "total": 2
     },
     {
-      "path": "/.dockercfg",
+      "path": "/.docker/laravel/app/.env",
       "status": {
         "404": 2
       },
@@ -2862,14 +3284,28 @@
       "total": 2
     },
     {
-      "path": "/.env.staging",
+      "path": "/.env.development.local",
       "status": {
         "404": 2
       },
       "total": 2
     },
     {
-      "path": "/.env.test",
+      "path": "/.env.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/.env.stage",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/.env.testing",
       "status": {
         "404": 2
       },
@@ -2883,7 +3319,7 @@
       "total": 2
     },
     {
-      "path": "/.git-credentials",
+      "path": "/.git/logs/HEAD",
       "status": {
         "404": 2
       },
@@ -2911,6 +3347,13 @@
       "total": 2
     },
     {
+      "path": "/.netrc",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
       "path": "/.passwd-s3fs",
       "status": {
         "404": 2
@@ -2925,13 +3368,6 @@
       "total": 2
     },
     {
-      "path": "/.svn/wc.db",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/.terraform.tfstate",
       "status": {
         "404": 2
@@ -2940,13 +3376,6 @@
     },
     {
       "path": "/.terraform/credentials.tfrc.json",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
-      "path": "/.travis.yml",
       "status": {
         "404": 2
       },
@@ -3051,6 +3480,13 @@
       "total": 2
     },
     {
+      "path": "/2018/wp-includes/wlwmanifest.xml",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
       "path": "/amplify/team-provider-info.json",
       "status": {
         "404": 2
@@ -3065,7 +3501,21 @@
       "total": 2
     },
     {
-      "path": "/application.yaml",
+      "path": "/application.properties",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/application/.env",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/appsettings.json",
       "status": {
         "404": 2
       },
@@ -3114,7 +3564,7 @@
       "total": 2
     },
     {
-      "path": "/blog/wp-includes/wlwmanifest.xml",
+      "path": "/build/.env",
       "status": {
         "404": 2
       },
@@ -3122,13 +3572,6 @@
     },
     {
       "path": "/claude_desktop_config.json",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
-      "path": "/cms/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 2
       },
@@ -3149,6 +3592,48 @@
       "total": 2
     },
     {
+      "path": "/config.ini",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/config.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/core/.env",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/credentials",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/credentials.ini",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/credentials.yml",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
       "path": "/dashboard/.env",
       "status": {
         "404": 2
@@ -3163,6 +3648,27 @@
       "total": 2
     },
     {
+      "path": "/gcp-sa.json",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/google-services.json",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/hypothesis-register.md",
+      "status": {
+        "200": 2
+      },
+      "total": 2
+    },
+    {
       "path": "/keys.json",
       "status": {
         "404": 2
@@ -3171,6 +3677,13 @@
     },
     {
       "path": "/keys/config.json",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/media/.env",
       "status": {
         "404": 2
       },
@@ -3205,14 +3718,21 @@
       "total": 2
     },
     {
-      "path": "/panel/.env",
+      "path": "/phpinfo.php.old",
       "status": {
         "404": 2
       },
       "total": 2
     },
     {
-      "path": "/public/.env",
+      "path": "/postman_collection.json",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/psnlink/.env",
       "status": {
         "404": 2
       },
@@ -3220,6 +3740,13 @@
     },
     {
       "path": "/s3/bucket",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/server-info.php",
       "status": {
         "404": 2
       },
@@ -3240,14 +3767,28 @@
       "total": 2
     },
     {
-      "path": "/var/task/amplify.yaml",
+      "path": "/symfony/.env",
       "status": {
         "404": 2
       },
       "total": 2
     },
     {
-      "path": "/var/www/.env",
+      "path": "/temp/.env",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/v2/.env",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/var/task/amplify.yaml",
       "status": {
         "404": 2
       },
@@ -3268,25 +3809,88 @@
       "total": 2
     },
     {
-      "path": "/wordpress/",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
-      "path": "/wordpress/wp-includes/wlwmanifest.xml",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/~/.boto",
       "status": {
         "404": 2
       },
       "total": 2
+    },
+    {
+      "path": "/.auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.aws/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.azure-pipelines.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.bash_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.circleci/config.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.circleci/ssh-config",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.composer-auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.config/gcloud/access_tokens.db",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.config/gcloud/configurations/config_default",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.config/sftp.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.credentials",
+      "status": {
+        "404": 1
+      },
+      "total": 1
     },
     {
       "path": "/.docker/.env",
@@ -3310,35 +3914,42 @@
       "total": 1
     },
     {
-      "path": "/.env.example",
+      "path": "/.env.anthropic",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/.env.live",
+      "path": "/.env.dist",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/.env.php",
+      "path": "/.env.docker",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/.env.stage",
+      "path": "/.env.json",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/.env.testing",
+      "path": "/.env.openai",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.env.remote",
       "status": {
         "404": 1
       },
@@ -3352,6 +3963,27 @@
       "total": 1
     },
     {
+      "path": "/.envrc",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.esmtprc",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.gem/credentials",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/.git/credentials",
       "status": {
         "404": 1
@@ -3359,7 +3991,49 @@
       "total": 1
     },
     {
-      "path": "/.git/logs/HEAD",
+      "path": "/.git/logs/refs/heads/main",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.github/workflows/alpha.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.github/workflows/beta.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.github/workflows/main.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.github/workflows/push.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.gitlab-ci/variables.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.gitmodules",
       "status": {
         "404": 1
       },
@@ -3373,16 +4047,100 @@
       "total": 1
     },
     {
-      "path": "/.netrc",
+      "path": "/.irb_history",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/.well-known/agent-skills/index.json",
+      "path": "/.ksh_history",
       "status": {
-        "200": 1
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.lesshst",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.m2/settings.xml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.node_repl_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.nuget/nuget.config",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.nuget/packages.config",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.pgpass",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.postgresql_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.psql_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.semaphore/semaphore.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.sh_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.sqlite_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.well-known/agent-card.json",
+      "status": {
+        "404": 1
       },
       "total": 1
     },
@@ -3390,6 +4148,20 @@
       "path": "/.well-known/agent-skills/swarm-garden/SKILL.md",
       "status": {
         "200": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.well-known/ai-plugin.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.wget-hsts",
+      "status": {
+        "404": 1
       },
       "total": 1
     },
@@ -3723,7 +4495,14 @@
       "total": 1
     },
     {
-      "path": "/2018/wp-includes/wlwmanifest.xml",
+      "path": "/Jenkinsfile",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/Properties/launchSettings.json",
       "status": {
         "404": 1
       },
@@ -3737,6 +4516,13 @@
       "total": 1
     },
     {
+      "path": "/_config.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/_debugbar/",
       "status": {
         "404": 1
@@ -3744,7 +4530,63 @@
       "total": 1
     },
     {
-      "path": "/_profiler/phpinfo",
+      "path": "/about.html",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actions/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/configprops",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/logfile",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/loggers",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/loggingConfig",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/mappings",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/actuator/trace",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/admin-panel/.env",
       "status": {
         "404": 1
       },
@@ -3758,7 +4600,21 @@
       "total": 1
     },
     {
+      "path": "/admin/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/agent",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/agent-card.json",
       "status": {
         "404": 1
       },
@@ -3772,7 +4628,112 @@
       "total": 1
     },
     {
+      "path": "/agents.md",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/android/app/google-services.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/api/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/api/dev/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/api/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/api/postman.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/config/parameters.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/config/parameters.yml.dist",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/config/pimcore/google-api-private-key.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/etc/local.xml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/etc/local.xml.additional",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/app/settings.py",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/application-prod.properties",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/application-secrets.properties",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/application-secrets.yml",
       "status": {
         "404": 1
       },
@@ -3786,14 +4747,42 @@
       "total": 1
     },
     {
-      "path": "/application/.env",
+      "path": "/apps/.env",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/appsettings.json",
+      "path": "/artemis/actuator/env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/assets/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/assets/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/assets/other/service-account-credentials.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/auth.json",
       "status": {
         "404": 1
       },
@@ -3807,7 +4796,98 @@
       "total": 1
     },
     {
+      "path": "/azure-pipelines.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/back/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/backup.sql.bak",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/backup/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/backups/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/bamboo.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/beta/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/bitrise.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/blog/robots.txt",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/changed",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/circleci/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/claude.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/client_secrets.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/cloud-config.yml",
       "status": {
         "404": 1
       },
@@ -3821,6 +4901,41 @@
       "total": 1
     },
     {
+      "path": "/cms/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/codeship-services.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/collections/postman.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/compose.yaml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/compose.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/config.env",
       "status": {
         "404": 1
@@ -3828,28 +4943,203 @@
       "total": 1
     },
     {
-      "path": "/credentials",
+      "path": "/config.php.dist",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/database.sql",
+      "path": "/config.php.old",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/docker-compose.yml",
+      "path": "/config.php.txt",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/env",
+      "path": "/config.toml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config/aws.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config/database.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config/initializers/secret_token.rb",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config/secrets.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/config/storage.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/configurations/config_default",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/credentials.db",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/credentials.tfvars",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/database_backup.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/db.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/db_dump.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/deployment-config.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/dev/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/dist/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/django/settings.py",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/docker-compose.override.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/docker-compose.prod.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/docker/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/dump.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/dump.sql.bak",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/en/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/env.txt",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/field-notes.html",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/firebase-key.json",
       "status": {
         "404": 1
       },
@@ -3863,7 +5153,14 @@
       "total": 1
     },
     {
-      "path": "/frontend/.env",
+      "path": "/gcp/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/gitlab-ci.yml",
       "status": {
         "404": 1
       },
@@ -3877,7 +5174,42 @@
       "total": 1
     },
     {
-      "path": "/google-services.json",
+      "path": "/hosting/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/i.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/info",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/info.php.bak",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/infrastructure/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/internal/.env",
       "status": {
         "404": 1
       },
@@ -3891,6 +5223,55 @@
       "total": 1
     },
     {
+      "path": "/kafka/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/keycloak.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/kubernetes/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/lab/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/launchSettings.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/logs/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/mail/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/manage/env",
       "status": {
         "404": 1
@@ -3898,7 +5279,56 @@
       "total": 1
     },
     {
-      "path": "/media/.env",
+      "path": "/message-api/actuator/env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/mysql_dump.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/nest/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/new/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/next/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/node/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/notifications/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/oauth-credentials.json",
       "status": {
         "404": 1
       },
@@ -3912,6 +5342,132 @@
       "total": 1
     },
     {
+      "path": "/old/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/ovh-backups.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/packages.config",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/php.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/phpinfo",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/phpinfo.php.bak",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/portal/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/postgres/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/production/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/psql_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/public/auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/railsapp/config/storage.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/receipts/000001",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/redis/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/redmine/config/settings.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/registry.html",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/ruby/config/storage.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sa.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/sam-template.yaml",
       "status": {
         "404": 1
@@ -3919,28 +5475,301 @@
       "total": 1
     },
     {
-      "path": "/secrets.json",
+      "path": "/sbin/.env",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/test/.env",
+      "path": "/secret.json",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/v2/.env",
+      "path": "/secrets.properties",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "/vendor/composer/installed.json",
+      "path": "/secrets.tfvars",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/secrets.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sender/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/server-status.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/serviceAccountCredentials.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.php.bak",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.php.txt",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.py",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.toml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/settings.xml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sftp.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/shared/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/site.sql",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sites/default/settings.local.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sites/default/settings.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sites/default/settings.php.old",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/sites/default/settings.php.orig",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/storage/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/svelte/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/test/config/secrets.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/token.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/travis/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/uat/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/user-panel/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/user_secrets.yml.old",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/v1/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/variables.tfvars",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/vendor/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/vendor/webmozart/assert/.composer-auth.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/web/settings/settings.py",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/webmail/phpinfo.php",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wercker.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/worker/.env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-content/debug.log",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-json/atarim/v1/db/vc",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-json/gravitysmtp/v1/tests/mock-data",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-json/logtivity/v1/options",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-json/lottiefiles/v1/settings/",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/wp-json/wp/v2/docs/settings",
       "status": {
         "404": 1
       },
@@ -3959,90 +5788,113 @@
         "404": 1
       },
       "total": 1
+    },
+    {
+      "path": "/ws-config.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
     }
   ],
   "probe_path_traffic_by_stored_class": {
-    "browser": 464,
-    "unknown": 137
+    "agent-claimed": 4,
+    "automation": 4,
+    "browser": 610,
+    "unknown": 237
   },
   "records_with_no_user_agent": 7,
   "referrers_by_hostname": {
     "batmantotojams.site": 4,
     "bay-area-swarm-warning.redacted-staging-hostname": 21,
-    "bayareaswarmwarning.com": 908,
-    "swarmgarden.com": 1,
+    "bayareaswarmwarning.com": 960,
+    "swarmgarden.com": 4,
+    "www.ayusudha.com": 3,
     "www.bayareaswarmwarning.com": 26,
     "www.google.com": 1
   },
   "regions": {
-    "": 873,
+    "": 902,
     "Bangkok": 5,
+    "Bavaria": 1,
+    "Beijing": 1,
+    "Bra\u0219ov County": 17,
     "British Columbia": 1,
     "Brussels Capital": 48,
-    "California": 177,
-    "Colorado": 30,
+    "Bucharest": 1,
+    "California": 297,
+    "Colorado": 43,
     "Delhi": 29,
-    "Dhaka Division": 1,
+    "Dhaka Division": 3,
+    "Drenthe": 1,
+    "East Java": 2,
     "England": 47,
     "Federal District": 1,
-    "Florida": 36,
-    "Georgia": 41,
+    "Florida": 47,
+    "Georgia": 53,
     "Grand Est": 6,
-    "Groningen": 14,
-    "Guangdong": 2,
+    "Groningen": 15,
+    "Guangdong": 10,
     "Gyeonggi-do": 1,
     "Halland": 1,
-    "Hauts-de-France": 1,
-    "Hesse": 70,
+    "Hauts-de-France": 4,
+    "Hesse": 127,
     "Idaho": 1,
-    "Illinois": 19,
-    "Iowa": 14,
-    "Jakarta": 7,
+    "Illinois": 31,
+    "Iowa": 16,
+    "Istanbul": 1,
+    "Jakarta": 8,
+    "Jiangsu": 1,
     "Karnataka": 5,
-    "Kyiv City": 17,
+    "Kyiv City": 20,
     "Maharashtra": 5,
-    "Massachusetts": 1,
-    "Mazovia": 566,
-    "Moscow": 43,
+    "Massachusetts": 3,
+    "Mazovia": 584,
+    "Missouri": 2,
+    "Moscow": 91,
     "Mymensingh Division": 1,
-    "Nebraska": 2,
+    "Nebraska": 42,
+    "Nevada": 42,
     "New Jersey": 53,
     "New South Wales": 1,
-    "New York": 64,
-    "North Carolina": 20,
-    "North Holland": 59,
+    "New York": 75,
+    "North Carolina": 112,
+    "North Holland": 324,
     "North Rhine-Westphalia": 95,
     "Ohio": 2,
-    "Oregon": 6,
-    "Osaka": 3,
+    "Oregon": 17,
+    "Osaka": 55,
     "Quebec": 44,
     "Quer\u00e9taro": 1,
+    "Rheinland-Pfalz": 2,
     "Saxony": 3,
-    "Seoul": 7,
+    "Seoul": 9,
     "Shanghai": 4,
-    "South Carolina": 1,
+    "Sichuan": 1,
+    "South Carolina": 4,
     "S\u00e3o Paulo": 15,
-    "Tennessee": 1,
-    "Texas": 30,
+    "Tennessee": 2,
+    "Texas": 62,
     "Ticino": 20,
+    "Timi\u0219 County": 1,
     "Tokyo": 7,
-    "Utah": 2,
-    "Uusimaa": 1,
-    "Virginia": 132,
+    "Utah": 3,
+    "Uusimaa": 2,
+    "Virginia": 156,
     "V\u00e4stra G\u00f6taland": 1,
-    "Washington": 25,
+    "Washington": 36,
     "Xinjiang": 1,
     "Zurich": 2,
     "\u00cele-de-France": 14
   },
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",
-  "snapshot_at_pt": "2026-10-18T09:15:01.991870-07:00",
-  "snapshot_at_utc": "2026-10-18T16:15:01Z",
+  "snapshot_at_pt": "2026-10-18T23:12:40.325874-07:00",
+  "snapshot_at_utc": "2026-10-19T06:12:40Z",
   "status": {
-    "200": 972,
-    "307": 284,
-    "404": 1423
+    "200": 1346,
+    "307": 391,
+    "404": 1903
   },
   "ua_anomaly_redactions": 2,
   "verified_record": {
@@ -4053,7 +5905,7 @@
     "signals_total": 0
   },
   "web_bot_auth_verdicts": {
-    "absent": 2669,
-    "present": 10
+    "absent": 3622,
+    "present": 18
   }
 }

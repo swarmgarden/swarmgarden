@@ -1,28 +1,52 @@
-snapshot_at_utc,snapshot_at_pt,site,dataset_total,arrivals_on_record,ledger_entries,arrivals_over_cap_unread,visits_total_full_dataset,class_browser,class_automation,class_agent_claimed,class_unknown,status_404_total,signals_total,humans_self_reported
-2026-10-18T01:09:24Z,2026-10-17T18:09:24-07:00,advisory,863,,,,863,639,63,3,158,498,0,
-2026-10-18T01:10:24Z,2026-10-17T18:10:24-07:00,advisory,891,,,,891,665,65,3,158,527,0,
-2026-10-18T02:12:36Z,2026-10-17T19:12:36-07:00,advisory,1489,,,,1489,1059,107,3,320,852,0,
-2026-10-18T02:40:37Z,2026-10-17T19:40:37-07:00,advisory,1728,,,,1728,1269,116,22,321,1032,0,
-2026-10-18T03:01:07Z,2026-10-17T20:01:07-07:00,advisory,1965,,,,1965,1495,125,22,323,1205,0,
-2026-10-18T03:13:36Z,2026-10-17T20:13:36-07:00,advisory,1991,,,,1991,1520,125,22,324,1216,0,
-2026-10-18T04:09:05Z,2026-10-17T21:09:05-07:00,advisory,2048,,,,2048,1541,157,22,328,1222,0,
-2026-10-18T04:12:39Z,2026-10-17T21:12:39-07:00,advisory,2049,,,,2049,1541,157,22,329,1223,0,
-2026-10-18T04:16:54Z,2026-10-17T21:16:54-07:00,advisory,2052,,,,2052,1546,157,22,329,1223,0,
-2026-10-18T04:25:50Z,2026-10-17T21:25:50-07:00,advisory,2075,,,,2075,1553,170,22,330,1224,0,
-2026-10-18T05:12:41Z,2026-10-17T22:12:41-07:00,advisory,2167,,,,2167,1577,190,22,378,1277,0,
-2026-10-18T06:12:41Z,2026-10-17T23:12:41-07:00,advisory,2235,,,,2235,1619,210,22,384,1293,0,
-2026-10-18T07:12:33Z,2026-10-18T00:12:33-07:00,advisory,2311,,,,2311,1644,251,22,394,1309,0,
-2026-10-18T07:48:29Z,2026-10-18T00:48:29-07:00,advisory,2375,,,,2375,1670,286,22,397,1313,0,
-2026-10-18T08:12:32Z,2026-10-18T01:12:32-07:00,advisory,2402,,,,2402,1682,297,24,399,1314,0,
-2026-10-18T09:12:32Z,2026-10-18T02:12:32-07:00,advisory,2458,,,,2458,1696,335,24,403,1325,0,
-2026-10-18T10:12:33Z,2026-10-18T03:12:33-07:00,advisory,2484,,,,2484,1711,341,24,408,1335,0,
-2026-10-18T11:12:31Z,2026-10-18T04:12:31-07:00,advisory,2538,,,,2538,1755,344,25,414,1360,0,
-2026-10-18T12:12:45Z,2026-10-18T05:12:45-07:00,advisory,2589,,,,2589,1801,346,25,417,1374,0,
-2026-10-18T13:12:44Z,2026-10-18T06:12:44-07:00,advisory,2612,,,,2612,1810,356,25,421,1384,0,
-2026-10-18T14:12:34Z,2026-10-18T07:12:34-07:00,advisory,2625,,,,2625,1818,356,25,426,1393,0,
-2026-10-18T15:12:36Z,2026-10-18T08:12:36-07:00,advisory,2665,,,,2665,1849,360,25,431,1419,0,
-2026-10-18T15:46:34Z,2026-10-18T08:46:34-07:00,advisory,2673,,,,2673,1852,363,25,433,1422,0,
-2026-10-18T16:00:36Z,2026-10-18T09:00:36-07:00,advisory,2675,,,,2675,1854,363,25,433,1422,0,
-2026-10-18T16:12:35Z,2026-10-18T09:12:35-07:00,advisory,2678,,,,2678,1854,363,26,435,1423,0,
-2026-10-18T16:14:50Z,2026-10-18T09:14:50-07:00,advisory,2679,,,,2679,1854,363,26,436,1423,0,
-2026-10-18T16:15:01Z,2026-10-18T09:15:01-07:00,advisory,2679,,,,2679,1854,363,26,436,1423,0,2
+snapshot_at_utc,snapshot_at_pt,site,dataset_total,arrivals_on_record,ledger_entries,arrivals_over_cap_unread,arrivals_basis,visits_total_full_dataset,class_browser,class_automation,class_agent_claimed,class_unknown,status_404_total,signals_total,signals_basis,humans_self_reported,humans_basis
+2026-10-18T01:09:24Z,2026-10-17T18:09:24-07:00,advisory,863,,,,structural-no-arrival-ledger-on-this-site,863,639,63,3,158,498,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T01:10:24Z,2026-10-17T18:10:24-07:00,advisory,891,,,,structural-no-arrival-ledger-on-this-site,891,665,65,3,158,527,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T02:12:36Z,2026-10-17T19:12:36-07:00,advisory,1489,,,,structural-no-arrival-ledger-on-this-site,1489,1059,107,3,320,852,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T02:40:37Z,2026-10-17T19:40:37-07:00,advisory,1728,,,,structural-no-arrival-ledger-on-this-site,1728,1269,116,22,321,1032,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T03:01:07Z,2026-10-17T20:01:07-07:00,advisory,1965,,,,structural-no-arrival-ledger-on-this-site,1965,1495,125,22,323,1205,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T03:13:36Z,2026-10-17T20:13:36-07:00,advisory,1991,,,,structural-no-arrival-ledger-on-this-site,1991,1520,125,22,324,1216,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T04:09:05Z,2026-10-17T21:09:05-07:00,advisory,2048,,,,structural-no-arrival-ledger-on-this-site,2048,1541,157,22,328,1222,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T04:12:39Z,2026-10-17T21:12:39-07:00,advisory,2049,,,,structural-no-arrival-ledger-on-this-site,2049,1541,157,22,329,1223,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T04:16:54Z,2026-10-17T21:16:54-07:00,advisory,2052,,,,structural-no-arrival-ledger-on-this-site,2052,1546,157,22,329,1223,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T04:25:50Z,2026-10-17T21:25:50-07:00,advisory,2075,,,,structural-no-arrival-ledger-on-this-site,2075,1553,170,22,330,1224,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T05:12:41Z,2026-10-17T22:12:41-07:00,advisory,2167,,,,structural-no-arrival-ledger-on-this-site,2167,1577,190,22,378,1277,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T06:12:41Z,2026-10-17T23:12:41-07:00,advisory,2235,,,,structural-no-arrival-ledger-on-this-site,2235,1619,210,22,384,1293,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T07:12:33Z,2026-10-18T00:12:33-07:00,advisory,2311,,,,structural-no-arrival-ledger-on-this-site,2311,1644,251,22,394,1309,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T07:48:29Z,2026-10-18T00:48:29-07:00,advisory,2375,,,,structural-no-arrival-ledger-on-this-site,2375,1670,286,22,397,1313,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T08:12:32Z,2026-10-18T01:12:32-07:00,advisory,2402,,,,structural-no-arrival-ledger-on-this-site,2402,1682,297,24,399,1314,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T09:12:32Z,2026-10-18T02:12:32-07:00,advisory,2458,,,,structural-no-arrival-ledger-on-this-site,2458,1696,335,24,403,1325,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T10:12:33Z,2026-10-18T03:12:33-07:00,advisory,2484,,,,structural-no-arrival-ledger-on-this-site,2484,1711,341,24,408,1335,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T11:12:31Z,2026-10-18T04:12:31-07:00,advisory,2538,,,,structural-no-arrival-ledger-on-this-site,2538,1755,344,25,414,1360,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T12:12:45Z,2026-10-18T05:12:45-07:00,advisory,2589,,,,structural-no-arrival-ledger-on-this-site,2589,1801,346,25,417,1374,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T13:12:44Z,2026-10-18T06:12:44-07:00,advisory,2612,,,,structural-no-arrival-ledger-on-this-site,2612,1810,356,25,421,1384,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T14:12:34Z,2026-10-18T07:12:34-07:00,advisory,2625,,,,structural-no-arrival-ledger-on-this-site,2625,1818,356,25,426,1393,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T15:12:36Z,2026-10-18T08:12:36-07:00,advisory,2665,,,,structural-no-arrival-ledger-on-this-site,2665,1849,360,25,431,1419,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T15:46:34Z,2026-10-18T08:46:34-07:00,advisory,2673,,,,structural-no-arrival-ledger-on-this-site,2673,1852,363,25,433,1422,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T16:00:36Z,2026-10-18T09:00:36-07:00,advisory,2675,,,,structural-no-arrival-ledger-on-this-site,2675,1854,363,25,433,1422,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T16:12:35Z,2026-10-18T09:12:35-07:00,advisory,2678,,,,structural-no-arrival-ledger-on-this-site,2678,1854,363,26,435,1423,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T16:14:50Z,2026-10-18T09:14:50-07:00,advisory,2679,,,,structural-no-arrival-ledger-on-this-site,2679,1854,363,26,436,1423,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T16:15:01Z,2026-10-18T09:15:01-07:00,advisory,2679,,,,structural-no-arrival-ledger-on-this-site,2679,1854,363,26,436,1423,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T17:12:41Z,2026-10-18T10:12:41-07:00,advisory,2724,,,,structural-no-arrival-ledger-on-this-site,2724,1874,376,26,448,1428,0,structural-zero-no-signal-tier,,not-carried-by-snapshot-log
+2026-10-18T17:16:47Z,2026-10-18T10:16:47-07:00,advisory,2726,,,,structural-no-arrival-ledger-on-this-site,2726,1874,378,26,448,1428,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T18:12:37Z,2026-10-18T11:12:37-07:00,advisory,2874,,,,structural-no-arrival-ledger-on-this-site,2874,1933,382,26,533,1538,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T19:12:26Z,2026-10-18T12:12:26-07:00,advisory,2917,,,,structural-no-arrival-ledger-on-this-site,2917,1971,383,26,537,1555,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T19:12:36Z,2026-10-18T12:12:36-07:00,advisory,2917,,,,structural-no-arrival-ledger-on-this-site,2917,1971,383,26,537,1555,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T19:29:50Z,2026-10-18T12:29:50-07:00,advisory,2922,,,,structural-no-arrival-ledger-on-this-site,2922,1975,383,26,538,1558,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T20:12:36Z,2026-10-18T13:12:36-07:00,advisory,2948,,,,structural-no-arrival-ledger-on-this-site,2948,1993,389,26,540,1561,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T20:29:41Z,2026-10-18T13:29:41-07:00,advisory,2956,,,,structural-no-arrival-ledger-on-this-site,2956,1998,390,26,542,1563,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T20:34:03Z,2026-10-18T13:34:03-07:00,advisory,2960,,,,structural-no-arrival-ledger-on-this-site,2960,2002,390,26,542,1563,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T20:35:44Z,2026-10-18T13:35:44-07:00,advisory,2960,,,,structural-no-arrival-ledger-on-this-site,2960,2002,390,26,542,1563,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T21:12:37Z,2026-10-18T14:12:37-07:00,advisory,3017,,,,structural-no-arrival-ledger-on-this-site,3017,2057,390,26,544,1565,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T22:12:39Z,2026-10-18T15:12:39-07:00,advisory,3091,,,,structural-no-arrival-ledger-on-this-site,3091,2071,441,29,550,1574,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-18T23:12:46Z,2026-10-18T16:12:46-07:00,advisory,3112,,,,structural-no-arrival-ledger-on-this-site,3112,2073,454,31,554,1579,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T00:12:50Z,2026-10-18T17:12:50-07:00,advisory,3328,,,,structural-no-arrival-ledger-on-this-site,3328,2278,459,34,557,1765,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T01:12:42Z,2026-10-18T18:12:42-07:00,advisory,3355,,,,structural-no-arrival-ledger-on-this-site,3355,2289,470,35,561,1769,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T02:12:38Z,2026-10-18T19:12:38-07:00,advisory,3388,,,,structural-no-arrival-ledger-on-this-site,3388,2301,478,43,566,1772,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T02:50:44Z,2026-10-18T19:50:44-07:00,advisory,3419,,,,structural-no-arrival-ledger-on-this-site,3419,2305,491,43,580,1776,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T03:13:54Z,2026-10-18T20:13:54-07:00,advisory,3482,,,,structural-no-arrival-ledger-on-this-site,3482,2361,495,45,581,1826,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T03:18:43Z,2026-10-18T20:18:43-07:00,advisory,3486,,,,structural-no-arrival-ledger-on-this-site,3486,2363,496,45,582,1827,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T04:12:43Z,2026-10-18T21:12:43-07:00,advisory,3511,,,,structural-no-arrival-ledger-on-this-site,3511,2370,507,47,587,1833,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T05:12:30Z,2026-10-18T22:12:30-07:00,advisory,3547,,,,structural-no-arrival-ledger-on-this-site,3547,2390,515,53,589,1841,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T05:59:30Z,2026-10-18T22:59:30-07:00,advisory,3627,,,,structural-no-arrival-ledger-on-this-site,3627,2437,533,64,593,1898,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T06:12:40Z,2026-10-18T23:12:40-07:00,advisory,3640,,,,structural-no-arrival-ledger-on-this-site,3640,2442,539,64,595,1903,0,structural-zero-no-signal-tier,2,d1-count-via-advisory-counts-payload (from the snapshot log)
+2026-10-19T07:12:48Z,2026-10-19T00:12:48-07:00,advisory,3805,,,,structural-no-arrival-ledger-on-this-site,3805,2460,615,131,599,2037,0,structural-zero-no-signal-tier,2,"d1-count-via-public-human-press-get (latest row, read at export time)"
