@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 2186,
+    "absent_total": 2189,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -8,12 +8,17 @@
       },
       {
         "name": "(no claimed name)",
-        "records_with_signature_headers": 1
+        "records_with_signature_headers": 2
       }
     ],
     "note": "Signature-header presence (Signature, Signature-Input, or Signature-Agent) by claimed name. Presence is a claim, not a verification: no signature has been verified, and the platform's verified-bot verdict cannot fire on this hosting tier. signature_agent_hosts is deployment-forward from Oct 18, 2026 (evening): the hostnames signers name for their key directories, stored as claims.",
-    "present_total": 6,
-    "signature_agent_hosts": []
+    "present_total": 7,
+    "signature_agent_hosts": [
+      {
+        "host": "probe.example.org",
+        "records": 1
+      }
+    ]
   },
   "columns": [
     "name",
@@ -26,8 +31,8 @@
   ],
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 8:13:54 PM PT",
-  "generated_at_utc": "2026-10-19T03:13:54Z",
+  "generated_at_pt": "Oct 18, 2026, 8:18:43 PM PT",
+  "generated_at_utc": "2026-10-19T03:18:43Z",
   "rows": [
     {
       "claimed": 23,

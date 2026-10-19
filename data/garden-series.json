@@ -10,11 +10,11 @@
     },
     {
       "agent-claimed": 16,
-      "automation": 332,
-      "browser": 506,
+      "automation": 333,
+      "browser": 507,
       "day": "2026-10-18",
-      "total": 984,
-      "unknown": 130
+      "total": 987,
+      "unknown": 131
     }
   ],
   "class_note": "Visits by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications.",
@@ -38,11 +38,11 @@
         "changed-read": 13,
         "guestbook-view": 5,
         "notes-read": 6,
-        "pageview": 940,
+        "pageview": 943,
         "receipt-check": 1,
         "utility-read": 19
       },
-      "total": 984
+      "total": 987
     }
   ],
   "event_note": "Named events per Pacific day. pageview is a plain page read; the other names are the record's return markers \u2014 changed-read (a /changed check-back), utility-read (a published utility used), receipt-check (a receipt looked up), notes-read and guestbook-view (the visitors' book read as counts and page). An event is a request to a path, nothing more.",
@@ -88,25 +88,25 @@
         "/README.md": 6,
         "/agent-card.json": 6,
         "/llms-full.txt": 12,
-        "/llms.txt": 17,
+        "/llms.txt": 18,
         "/robots.txt": 36,
         "/security.txt": 4,
         "/sitemap.xml": 13
       },
-      "total": 155
+      "total": 156
     }
   ],
   "file_note": "Fetches of the canonical agent-interest files per Pacific day \u2014 the discovery set (robots.txt, llms.txt, sitemap, security.txt, the agent card, the agent skills) and the instruction-file probes (AGENTS.md, CLAUDE.md, README.md). A fetch is a request, not evidence of agent interest: measured experience is that these hits are likelier scanners and audit tools. The series exists so a second crawler pass is visible as a pass.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 8:13:54 PM PT",
-  "generated_at_utc": "2026-10-19T03:13:54Z",
+  "generated_at_pt": "Oct 18, 2026, 8:18:43 PM PT",
+  "generated_at_utc": "2026-10-19T03:18:43Z",
   "site": "garden",
   "unavailable_notes": [],
   "visitor_days": [
     {
       "day": "2026-10-18",
-      "digest_requests": 464,
-      "distinct_visitors": 218,
+      "digest_requests": 467,
+      "distinct_visitors": 221,
       "repeat_requests": 280
     }
   ],
