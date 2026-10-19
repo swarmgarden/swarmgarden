@@ -39,8 +39,13 @@ import { isPublicNote } from '../lib/notes.js';
 const BASIS = 'All recorded visits since Oct 17, 2026';
 
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday']);
-  const recent = await readRecentVisits(env, 50); // newest first — display list only
+  // The aggregates and the recent-50 display read are independent;
+  // they run concurrently (Oct 19, 2026 — the sequential chain was
+  // the bulk of this route's ~5s; see shared/visits.mjs).
+  const [a, recent] = await Promise.all([
+    aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday']),
+    readRecentVisits(env, 50) // newest first — display list only
+  ]);
   return { a, recent };
 }
 
@@ -72,11 +77,16 @@ export default async (req, env) => {
   const recs = loaded.recent; // newest first, at most 50 — display list
   const agg = aggregate(loaded.a);
   const asOf = new Date().toISOString();
-  const entries = await dbListLedger(env.DB).catch(() => null);
-  const receipts = await dbListReceipts(env.DB).catch(() => null);
+  // The D1 reads below are independent of each other; they run
+  // concurrently, each keeping its own failure-to-null semantics
+  // (Oct 19, 2026, latency fix — values unchanged).
+  const [entries, receipts, humans, signals] = await Promise.all([
+    dbListLedger(env.DB).catch(() => null),
+    dbListReceipts(env.DB).catch(() => null),
+    dbCountHumanPresses(env.DB).catch(() => null),
+    dbCountSignals(env.DB).catch(() => null)
+  ]);
   const arrivals = entries ? entries.filter(e => e.kind === 'arrival').length : null;
-  const humans = await dbCountHumanPresses(env.DB).catch(() => null);
-  const signals = await dbCountSignals(env.DB).catch(() => null);
   // Visitors' Book counts ONLY (the standing rule: no agent workflow
   // reads note contents; these are the same counts the book's steward
   // page exposes — published vs held, nothing else leaves the table).
@@ -90,8 +100,10 @@ export default async (req, env) => {
       awaiting_publication: notes.filter(n => n.status === 'pending' && !isPublicNote(n, nowIso)).length
     };
   } catch (e) { /* counts unavailable: the section says so */ }
-  const attempts = await attemptStats(env).catch(() => null);
-  const renders = await renderStats(env).catch(() => null);
+  const [attempts, renders] = await Promise.all([
+    attemptStats(env).catch(() => null),
+    renderStats(env).catch(() => null)
+  ]);
   const lanes = {};
   const states = {};
   if (receipts) for (const r of receipts) { lanes[r.lane] = (lanes[r.lane] || 0) + 1; states[r.state] = (states[r.state] || 0) + 1; }

@@ -313,7 +313,7 @@ export async function aggregateVisits(env, dims) {
   const out = {};
   const ae = aeConfigured(env);
   const host = String(env.SITE_HOST || '').replace(/'/g, '');
-  const runGroup = async (dim) => {
+  const runGroup = async (dim, target) => {
     const [key, aeExpr, d1Path, skip] = AGG_DIMS[dim];
     let rows;
     if (ae) {
@@ -327,20 +327,43 @@ export async function aggregateVisits(env, dims) {
       const { results } = await env.DB.prepare('SELECT ' + expr + ' AS k, COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET + ' GROUP BY k').all();
       rows = results || [];
     }
-    out[key] = foldGroups(rows, skip);
-    return out[key];
+    target[key] = foldGroups(rows, skip);
+    return target[key];
   };
 
-  // The headline total: a count over the full scope, not a sum.
-  if (ae) {
-    const rows = await aeSql(env, 'SELECT count() AS c FROM ' + env.AE_DATASET + " WHERE index1 = '" + host + "'");
-    out.total = rows.length ? Number(rows[0].c || 0) : 0;
-  } else {
+  // Concurrency (Oct 19, 2026 — keyed-stats latency fix): the total
+  // and every dimension are INDEPENDENT reads of the same dataset,
+  // each folded into its own result keys, so they run concurrently
+  // in small waves and are assigned to `out` afterwards in the
+  // original order — the returned object (values and key order
+  // alike) is identical to the sequential version; only the
+  // wall-clock changes. Run sequentially, the ~14 Analytics Engine
+  // round trips cost the keyed stats routes ~5s and timed out
+  // often enough to degrade the hourly snapshot's keyed legs. The
+  // wave width is deliberate: a fully parallel burst of ~15 AE SQL
+  // requests from one invocation correlated with the client
+  // connection being reset before any byte arrived (measured
+  // 1-of-4 first-attempt success against the sequential Advisory
+  // route's 4-of-4 in the same window, Oct 19, 2026), while the
+  // counts route's 4-wide burst stayed 6-of-6 — so the jobs run
+  // AGG_WAVE at a time: the chain drops from ~14 round trips to
+  // ~4 waves. Error surface unchanged: any query failure rejects
+  // aggregateVisits, exactly as the first failing sequential query
+  // did (callers catch and report the read as failed); later waves
+  // then never start, as later sequential queries never ran.
+  const AGG_WAVE = 4;
+  const totalJob = async () => {
+    // The headline total: a count over the full scope, not a sum.
+    if (ae) {
+      const rows = await aeSql(env, 'SELECT count() AS c FROM ' + env.AE_DATASET + " WHERE index1 = '" + host + "'");
+      return { total: rows.length ? Number(rows[0].c || 0) : 0 };
+    }
     const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET).first();
-    out.total = row ? Number(row.c || 0) : 0;
-  }
+    return { total: row ? Number(row.c || 0) : 0 };
+  };
 
-  for (const dim of dims) {
+  const dimJob = async (dim) => {
+    const part = {};
     if (dim === 'nameverdict') {
       // The combined per-name verdict grouping (lens spec A4): one
       // query returns the full (claimed name × verdict) table.
@@ -362,7 +385,7 @@ export async function aggregateVisits(env, dims) {
         m[n] = m[n] || {};
         m[n][v] = (m[n][v] || 0) + Number(r.c || 0);
       }
-      out.byNameVerdict = m;
+      part.byNameVerdict = m;
     } else if (dim === 'visitorday') {
       // The digest series (lens spec B-e): one query returns
       // (digest, UTC hour, count) rows; the Pacific-day fold runs
@@ -378,9 +401,9 @@ export async function aggregateVisits(env, dims) {
           "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
         rows = results || [];
       }
-      out.byVisitorDay = foldVisitorDays(rows);
+      part.byVisitorDay = foldVisitorDays(rows);
     } else if (dim === 'ua') {
-      const byUa = await runGroup('ua');
+      const byUa = await runGroup('ua', {});
       const crawlers = {}, fetchers = {};
       for (const [ua, c] of Object.entries(byUa)) {
         const bot = claimedBot(ua);
@@ -389,19 +412,27 @@ export async function aggregateVisits(env, dims) {
       }
       const top = (obj, n) => Object.fromEntries(Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n));
       const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
-      out.crawlersClaimed = { total: sum(crawlers), by_name: top(crawlers, 10) };
-      out.fetchersClaimed = { total: sum(fetchers), by_name: top(fetchers, 10) };
-      delete out.byUa;
+      part.crawlersClaimed = { total: sum(crawlers), by_name: top(crawlers, 10) };
+      part.fetchersClaimed = { total: sum(fetchers), by_name: top(fetchers, 10) };
     } else if (dim === 'ref') {
-      const byRefRaw = await runGroup('ref');
+      const byRefRaw = await runGroup('ref', {});
       const byRef = {};
       for (const [ref, c] of Object.entries(byRefRaw)) {
         try { const h = new URL(ref).host; if (h) byRef[h] = (byRef[h] || 0) + c; } catch (e) {}
       }
-      out.byRef = byRef;
+      part.byRef = byRef;
     } else {
-      await runGroup(dim);
+      await runGroup(dim, part);
     }
+    return part;
+  };
+
+  const jobFns = [totalJob, ...dims.map(d => () => dimJob(d))];
+  const parts = [];
+  for (let i = 0; i < jobFns.length; i += AGG_WAVE) {
+    parts.push(...await Promise.all(
+      jobFns.slice(i, i + AGG_WAVE).map(f => f())));
   }
+  for (const part of parts) Object.assign(out, part);
   return out;
 }
