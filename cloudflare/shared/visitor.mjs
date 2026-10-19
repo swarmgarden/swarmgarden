@@ -1,24 +1,46 @@
-// Swarm Garden — the rotating-salt visitor digest (lens spec B-e;
-// burn-down B48; steward ruling Oct 18, 2026: BUILD).
+// Swarm Garden — the rotating-salt visitor digests (lens spec B-e;
+// burn-down B48; steward ruling Oct 18, 2026: BUILD; extended by D2
+// of the measurement-accuracy build, Oct 19, 2026).
 //
-//   visitor = first 16 hex chars (64 bits) of
-//             HMAC-SHA-256(key = VISITOR_DIGEST_SECRET,
-//                          message = "<UTC date>|<cf-connecting-ip>|<user-agent>")
+//   visitor      = first 16 hex chars (64 bits) of
+//                  HMAC-SHA-256(key = VISITOR_DIGEST_SECRET,
+//                    message = "<Pacific date>|<cf-connecting-ip>|<user-agent>")
+//   visitorepoch = the same construction over "<Pacific month>"
+//                  ("YYYY-MM") — an epoch digest that links a
+//                  visitor's requests across a whole calendar
+//                  month, so distinct-visitor counts can span a
+//                  week or a month (Caitria's ruling, Oct 19 2026:
+//                  cross-day-linking digests are acceptable; privacy
+//                  means raw addresses are never stored, and they
+//                  never are).
+//
+// The date inside the DAILY digest was the UTC date from Oct 18
+// 2026 until this build; from Oct 19 2026 it is the PACIFIC calendar
+// date (America/Los_Angeles) — the day boundary the site's own
+// reporting folds by, so a digest can no longer straddle two
+// Pacific days (the audit measured the straddle manufacturing up to
+// ~2x the distinct count on busy days). Records from the first era
+// carry UTC-date digests; the era split is labelled wherever the
+// series is printed. The epoch digest exists only from this build
+// forward — there is no earlier epoch era to confuse it with.
 //
 // The secret is a per-site Worker secret, distinct per site — the
 // two sites' digests are never comparable, so the key cannot merge
-// what the datasets do not. Rotation is by the UTC date inside the
-// message: automatic, daily, with nothing stored — there is no salt
-// file to keep or leak. The key itself rotates only on steward
-// action (e.g. suspected compromise); that rotation splits eras and
-// is noted in PORT-NOTES when it happens.
+// what the datasets do not. Rotation is by the date/month inside the
+// message: automatic, with nothing stored — there is no salt file to
+// keep or leak. The key itself rotates only on steward action (e.g.
+// suspected compromise); that rotation splits eras and is noted in
+// PORT-NOTES when it happens.
 //
-// Semantics, exact: equal digests mean the same (UTC day, egress
+// Semantics, exact: equal digests mean the same (period, egress
 // address, user-agent) triple. It does NOT mean the same person,
 // the same device, or a human — a NAT household shares one digest;
-// one person on two networks is two digests. The published name, on
-// any surface, is "distinct visitor digests (one day; unlinked
-// across days)" — never bare "visitors".
+// one person on two networks is two digests. The user-agent stays
+// inside both digests (documented undercount: one visitor whose
+// client string changes mid-period counts twice); removing it is a
+// modelling choice for a later ruling. The published name, on any
+// surface, is "distinct visitor digests" with its period stated —
+// never bare "visitors".
 //
 // The address is an input to a one-way function and is discarded —
 // the identical posture to the intake and human-press rate-limit
@@ -41,25 +63,44 @@ function importKey(secret) {
 }
 
 // The pure digest: first 16 hex chars of the HMAC over
-// "<UTC date>|<address>|<user-agent>". Returns '' when it cannot be
+// "<period>|<address>|<user-agent>", where the period is a calendar
+// date ("YYYY-MM-DD") for the daily digest or a calendar month
+// ("YYYY-MM") for the epoch digest. Returns '' when it cannot be
 // computed (no secret, or no address) — the record then honestly
 // carries no digest.
-export async function visitorDigest(secret, utcDate, ip, ua) {
+export async function visitorDigest(secret, period, ip, ua) {
   if (!secret || !ip) return '';
   const key = await importKey(secret);
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(utcDate + '|' + ip + '|' + (ua || '')));
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(period + '|' + ip + '|' + (ua || '')));
   return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
 }
 
-// The digest for one request, or '' when this Worker has no
-// VISITOR_DIGEST_SECRET provisioned, or the request reached the
-// edge without a cf-connecting-ip header. The user-agent is the
-// record's own UA (the header, capped at 400 chars, as recorded).
+// The request's Pacific calendar date ("YYYY-MM-DD") and month
+// ("YYYY-MM") in America/Los_Angeles — the day boundary the site's
+// own reporting uses.
+const PT_PARTS = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' });
+export function pacificPeriods(now = new Date()) {
+  const parts = PT_PARTS.formatToParts(now);
+  const g = (t) => (parts.find(p => p.type === t) || {}).value || '';
+  const month = g('year') + '-' + g('month');
+  return { day: month + '-' + g('day'), month };
+}
+
+// The digests for one request: { visitor, visitorepoch }, both ''
+// when this Worker has no VISITOR_DIGEST_SECRET provisioned, or the
+// request reached the edge without a cf-connecting-ip header. The
+// user-agent is the record's own UA (the header, capped at 400
+// chars, as recorded).
 export async function visitorForRequest(env, req) {
   const secret = (env && env.VISITOR_DIGEST_SECRET) || '';
-  if (!secret) return '';
+  if (!secret) return { visitor: '', visitorepoch: '' };
   const ip = req.headers.get('cf-connecting-ip');
-  if (!ip) return '';
+  if (!ip) return { visitor: '', visitorepoch: '' };
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
-  return visitorDigest(secret, new Date().toISOString().slice(0, 10), ip.trim(), ua);
+  const { day, month } = pacificPeriods();
+  const addr = ip.trim();
+  return {
+    visitor: await visitorDigest(secret, day, addr, ua),
+    visitorepoch: await visitorDigest(secret, month, addr, ua)
+  };
 }

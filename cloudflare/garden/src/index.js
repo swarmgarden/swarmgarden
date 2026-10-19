@@ -84,17 +84,23 @@ export default {
     const url = new URL(req.url);
     // The published data files (added Oct 18 2026, ASAP Item 2):
     // GET/HEAD /data/<published-name>.json answers directly here,
-    // before the route table and the front door — exactly the
-    // Advisory's discipline. Reads of the record are not
-    // visit-logged (a reader of the record does not write
-    // themselves into it) and never counted as knocks. Any other
-    // /data/* path, and any non-GET/HEAD method, falls through to
-    // the ordinary handling below (and its 404 signpost).
+    // before the route table — exactly the Advisory's discipline.
+    // Any other /data/* path, and any non-GET/HEAD method, falls
+    // through to the ordinary handling below (and its 404 signpost).
+    // D3.2 (Oct 19 2026) REVERSES the Oct 18 no-logging rule for
+    // this branch: reads of the record now write one 'data-read'
+    // visit record each, through the front door like every other
+    // public read — the audit found the record's own reads were the
+    // largest blind spot in the measurement (a reader of the record
+    // DOES write themselves into it; that is the honest count). The
+    // reversal is deliberate and is named in PORT-NOTES; the Oct 18
+    // harness pin asserting no record was reversed with it.
     if ((req.method === 'GET' || req.method === 'HEAD')
         && url.pathname.startsWith('/data/')) {
       const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
       if (jm) {
         let res = await dataJsonRoute(req, env, ctx, jm[1]);
+        res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
         if (!res.headers.get('link')) {
           const headers = new Headers(res.headers);
           headers.set('Link', LINK_HEADER);
@@ -134,9 +140,14 @@ export default {
     }
     res = await servePage(req, env);
     // Unrouted POSTs (lens spec B-b): a non-GET/HEAD request with no
-    // route, answered 404 by the page branch, is a knock too.
-    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status === 404) {
-      const w = logAttempt(env, req, res, 'unrouted');
+    // route, refused by the page branch, is a knock too. Widened
+    // (Oct 19 2026, D3.3): ANY refusal status counts (>= 400, not
+    // only 404 — a 405/500 unrouted response was going uncounted),
+    // and the channel is the path's own channel when it has one
+    // (channelForPath — the utilities mapping included), else
+    // 'unrouted'.
+    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status >= 400) {
+      const w = logAttempt(env, req, res, channelForPath(url.pathname) || 'unrouted');
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
     }
     // The signpost 404 (Oct 18 2026): a page-branch 404 keeps its

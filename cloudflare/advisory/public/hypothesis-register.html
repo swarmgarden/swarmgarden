@@ -147,5 +147,20 @@ body{--stageink:#5b2100}
   </div>
 </div>
 <div style="background:#0A0E24;color:#F4F1E6;padding:26px 22px;text-align:center;font-family:IBM Plex Mono,monospace;margin-top:26px"><div style="font-size:11px;letter-spacing:.22em;color:#7DD3FC">THE GARDEN ITSELF — THE RECORD THE AGENTS READ</div><div style="margin-top:8px"><a href="https://swarmgarden.com" style="color:#F4F1E6;font-size:22px;font-weight:700;letter-spacing:.06em;text-decoration:underline">SWARMGARDEN.COM</a></div></div>
+<script>
+/* Render claim (Oct 19 2026, D3.5): the same signal the homepage
+   fires — this page executed in a browser. One pathname, nothing
+   else; kept in this site's render_claims table as a claim. */
+(function () {
+  try {
+    var body = String(location.pathname || '/');
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/v1/render-claim', new Blob([body], { type: 'text/plain' }));
+    } else {
+      fetch('/api/v1/render-claim', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

@@ -12,7 +12,7 @@
 // tokens) is not carried over. The unauthenticated beacon write path
 // is not carried over either: the edge is the only writer.
 import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
-import { logAttempt } from '../../shared/attempts.mjs';
+import { logAttempt, channelForPath } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
 import countsRoute from './routes/counts.js';
 import dataRoute, { dataJsonRoute } from './routes/data.js';
@@ -38,10 +38,15 @@ export default {
     // This site's own public counts (added Oct 18 2026): the same
     // published address shape as the Garden's, carrying this site's
     // own figures (routes/counts.js). Answered directly, like the
-    // stats route — a counts failure can never reach page serving,
-    // and the route's reads are not visit-logged.
+    // stats route — a counts failure can never reach page serving.
+    // Since D3.2 (Oct 19 2026) the response passes through the front
+    // door: each read writes one 'counts-read' visit record (the
+    // Garden's counts route has always been logged the same way,
+    // through its handler branch). The Oct 18 "reads are not
+    // visit-logged" note is superseded for this route.
     if (url.pathname === '/.netlify/functions/counts') {
-      const res = await countsRoute(req, env, ctx);
+      let res = await countsRoute(req, env, ctx);
+      res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
       if (!res.headers.get('link')) {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
@@ -58,13 +63,19 @@ export default {
     }
     // The public data pages (added Oct 18 2026): /data, /data/garden,
     // /data/advisory and the same-origin JSON files under /data/*.json.
-    // Answered directly, like the counts and stats routes — reads of
-    // the record are not visit-logged, and a data failure can never
-    // reach page serving. The pages render the data files the hourly
-    // snapshot publishes into the public repository (routes/data.js).
+    // Answered directly, like the counts and stats routes, so a data
+    // failure can never reach page serving. The pages render the data
+    // files the hourly snapshot publishes into the public repository
+    // (routes/data.js). Since D3.2 (Oct 19 2026) the response passes
+    // through the front door: each read — page or JSON file — writes
+    // one 'data-read' visit record, reversing the Oct 18 no-logging
+    // rule exactly as on the Garden (the reversal is named in
+    // PORT-NOTES; the Oct 18 pin asserting no record was reversed
+    // with it).
     if (url.pathname === '/data' || url.pathname.startsWith('/data/')) {
       const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
       let res = jm ? await dataJsonRoute(req, env, ctx, jm[1]) : await dataRoute(req, env, ctx);
+      res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
       if (!res.headers.get('link')) {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
@@ -98,11 +109,19 @@ export default {
     // the page renders; the claim is
     // kept in this site's own render_claims table and published as
     // "render-signalled". Answered directly, like the press — a
-    // claim-path failure can never reach page serving, and the
-    // route's reads are not visit-logged. Recorded claims are not
-    // knocks; refusals are (lens spec B-b).
+    // claim-path failure can never reach page serving. Recorded
+    // claims are not knocks; refusals are (lens spec B-b). (GET
+    // reads of the how-to ARE visit-logged since D3.2 — see the
+    // wrap inside the branch.)
     if (url.pathname === '/api/v1/render-claim') {
       let res = await renderRoute(req, env, ctx);
+      // D3.2 (Oct 19 2026): a GET of the how-to is a protocol read
+      // and is visit-logged ('render-howto-read') through the front
+      // door; POSTs keep their knock treatment below and are never
+      // visit-logged.
+      if (req.method === 'GET' || req.method === 'HEAD') {
+        res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
+      }
       if (!res.headers.get('link')) {
         const headers = new Headers(res.headers);
         headers.set('Link', LINK_HEADER);
@@ -116,9 +135,12 @@ export default {
     }
     const res = await servePage(req, env);
     // Unrouted POSTs (lens spec B-b): a non-GET/HEAD request with no
-    // route, answered 404 by the page branch, is a knock too.
-    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status === 404) {
-      const w = logAttempt(env, req, res, 'unrouted');
+    // route, refused by the page branch, is a knock too. Widened
+    // (Oct 19 2026, D3.3): ANY refusal status counts (>= 400, not
+    // only 404), on the path's own channel when it has one
+    // (channelForPath), else 'unrouted'.
+    if (req.method !== 'GET' && req.method !== 'HEAD' && res.status >= 400) {
+      const w = logAttempt(env, req, res, channelForPath(url.pathname) || 'unrouted');
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
     }
     // The Garden's published counts, fetched once per page serve; the

@@ -393,9 +393,9 @@ check('over-cap receipt page says it counts as an arrival and was not read',
 res = await req(open, FN + '/counts');
 body = await res.json();
 check('counts publish the over-cap composition (D2)', body.arrivals_over_cap_unread >= 1, JSON.stringify(body).slice(0, 240));
-check('counts state the full-dataset basis inside the JSON (Oct 18 2026 correction: no window cap)',
-  body.visits_window_records === body.visits_total &&
-  body.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+check('counts state the full-dataset basis inside the JSON (Oct 18 2026 correction: no window cap; D1, Oct 19 2026: fetches + redirects = all records)',
+  body.visits_window_records === body.visits_total + body.redirects_total &&
+  body.visits_window_note === 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
   JSON.stringify(body).slice(0, 240));
 
 // ---------- 16. utilities ----------
@@ -538,9 +538,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
 {
   const r = await req(open, FN + '/counts');
   const b = await r.json();
-  const expectedKeys = ['agent_interest_files', 'arrivals_on_record', 'arrivals_over_cap_unread', 'counting_since', 'crawlers_claimed', 'fetchers_claimed', 'humans_total', 'ledger_entries', 'signals_total', 'top_paths', 'updated', 'visits_by_class', 'visits_total', 'visits_window_note', 'visits_window_records'];
+  const expectedKeys = ['agent_interest_files', 'arrivals_on_record', 'arrivals_over_cap_unread', 'counting_since', 'crawlers_claimed', 'fetchers_claimed', 'humans_total', 'ledger_entries', 'redirects_by_class', 'redirects_total', 'signals_total', 'top_paths', 'updated', 'visits_by_class', 'visits_total', 'visits_window_note', 'visits_window_records'];
   const keys = Object.keys(b).sort();
-  checkP2('counts output: Netlify key set intact + the additive claimed-bot aggregates',
+  checkP2('counts output: Netlify key set intact + the additive claimed-bot aggregates + the D1 redirect keys (redirects_total / redirects_by_class)',
     JSON.stringify(keys) === JSON.stringify(expectedKeys), JSON.stringify(keys));
   checkP2('counts output: counting_since carries the current dataset start (Oct 17 2026 cutover)',
     b.counting_since === '2026-10-17T21:38:49Z', b.counting_since || '');
@@ -635,7 +635,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const fake = {
     arrivals_on_record: 0, visits_total: 10, visits_by_class: { browser: 10 },
     crawlers_claimed: { total: 0, by_name: {} }, fetchers_claimed: { total: 0, by_name: {} },
-    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    agent_interest_files: {}, visits_window_note: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
   const winRe = /Counting since Oct 17, 2026/;
@@ -1007,7 +1007,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const fake = {
     arrivals_on_record: 0, visits_total: 10, visits_by_class: { browser: 10 },
     crawlers_claimed: { total: 0, by_name: {} }, fetchers_claimed: { total: 0, by_name: {} },
-    agent_interest_files: {}, visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    agent_interest_files: {}, visits_window_note: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
     updated: new Date().toISOString(), counting_since: '2026-10-17T21:38:49Z'
   };
   checkP2('counter block (Advisory): the humans line rides with a local total, shortened gloss (a claim) attached',
@@ -1143,6 +1143,13 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
 // by reading the visit store's rows and counting them here, the old
 // way — and require the endpoints to match, including with a store
 // deliberately filled past the old cap.
+// D1/D3.2 shape (Oct 19 2026): visits_total is now HTTP FETCHES and
+// the split is computed here independently from each stored row's
+// status; and because the counts endpoint's own GETs are now logged
+// ('counts-read'), a payload is compared against the SETTLED store
+// minus exactly its own read's record (a fetch, cls 'unknown') —
+// the observer is part of the measurement and is accounted, not
+// ignored.
 {
   const sameMap = (a, b) => {
     const ka = Object.keys(a || {}).sort(), kb = Object.keys(b || {}).sort();
@@ -1151,62 +1158,93 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const storeAgg = async (mf) => {
     const db = await mf.getD1Database('DB');
     const { results } = await db.prepare('SELECT data FROM visit_log').all();
-    const byClass = {}; let total = 0;
+    const byClass = {}, byClassFetches = {}, byClassRedirects = {};
+    let total = 0, fetches = 0, redirects = 0;
     for (const row of results || []) {
       let r; try { r = JSON.parse(row.data); } catch (e) { continue; }
+      if (r.event === 'asset') continue; // companions are not visit records (the endpoints exclude them too)
       total++;
       byClass[r.cls] = (byClass[r.cls] || 0) + 1;
+      if (Number.isInteger(r.status) && r.status >= 300 && r.status <= 399) {
+        redirects++;
+        byClassRedirects[r.cls] = (byClassRedirects[r.cls] || 0) + 1;
+      } else {
+        fetches++;
+        byClassFetches[r.cls] = (byClassFetches[r.cls] || 0) + 1;
+      }
     }
-    return { total, byClass };
+    return { total, byClass, fetches, redirects, byClassFetches, byClassRedirects };
   };
-  const pollCounts = async (pred) => {
-    let b = null;
+  const settleAgg = async (mf) => {
+    let prev = null;
     for (let i = 0; i < 40; i++) {
-      b = await (await req(open, FN + '/counts')).json();
-      if (pred(b)) return b;
+      const cur = await storeAgg(mf);
+      if (prev && JSON.stringify(cur) === JSON.stringify(prev)) return cur;
+      prev = cur;
       await new Promise(r => setTimeout(r, 150));
     }
-    return b;
+    return prev;
+  };
+  // The payload-side expectation: the settled store minus the one
+  // record the payload's own counts fetch wrote after answering.
+  const minusOwnRead = (agg) => {
+    const byClassFetches = { ...agg.byClassFetches };
+    byClassFetches['unknown'] = (byClassFetches['unknown'] || 0) - 1;
+    if (byClassFetches['unknown'] <= 0) delete byClassFetches['unknown'];
+    return { fetches: agg.fetches - 1, total: agg.total - 1, byClassFetches };
   };
   // Two more real visits, then endpoint vs independent aggregate.
   await req(open, 'https://swarmgarden.com/record.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   await req(open, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': 'Mozilla/5.0 (compatible; GPTBot/1.2)' } });
-  let expected = await storeAgg(open);
-  let payload = await pollCounts(b => b.visits_total === expected.total && expected.total > 0);
-  expected = await storeAgg(open);
-  checkP2('exact counts: visits_total equals an independent aggregate over the visit store',
-    payload.visits_total === expected.total && expected.total > 0,
-    'endpoint ' + payload.visits_total + ' vs store ' + expected.total);
-  checkP2('exact counts: visits_by_class equals the independent aggregate',
-    sameMap(payload.visits_by_class, expected.byClass),
-    JSON.stringify({ endpoint: payload.visits_by_class, store: expected.byClass }));
-  checkP2('exact counts: the stated basis matches the arithmetic (records = total; note states the full dataset)',
-    payload.visits_window_records === payload.visits_total &&
-    payload.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+  let payload = await (await req(open, FN + '/counts')).json();
+  let expected = await settleAgg(open);
+  let expP = minusOwnRead(expected);
+  checkP2('exact counts: visits_total (HTTP fetches, D1) + redirects_total equals an independent aggregate over the visit store — fetches and redirects split exactly, the endpoint\u2019s own logged read accounted',
+    payload.visits_total === expP.fetches && payload.redirects_total === expected.redirects &&
+    payload.visits_total + payload.redirects_total === expP.total && expected.total > 0,
+    'endpoint ' + payload.visits_total + '+' + payload.redirects_total + ' vs store ' + expP.total);
+  checkP2('exact counts: visits_by_class equals the independent aggregate of FETCHES by class; redirects_by_class carries the redirect legs',
+    sameMap(payload.visits_by_class, expP.byClassFetches) && sameMap(payload.redirects_by_class, expected.byClassRedirects),
+    JSON.stringify({ endpoint: payload.visits_by_class, store: expP.byClassFetches, redirects: payload.redirects_by_class }));
+  checkP2('exact counts: the stated basis matches the arithmetic (fetches + redirects = window records; the D1 note states the basis)',
+    payload.visits_window_records === expP.total &&
+    payload.visits_window_note === 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
     JSON.stringify({ records: payload.visits_window_records, total: payload.visits_total, note: payload.visits_window_note }));
   const gStats = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
-  checkP2('exact counts: the Garden steward dashboard total equals the same independent aggregate',
-    gStats.total === expected.total && sameMap(gStats.byClass, expected.byClass),
+  checkP2('exact counts: the Garden steward dashboard total equals the same independent aggregate (all records), and its visits block carries the same split',
+    gStats.total === expected.total && sameMap(gStats.byClass, expected.byClass) &&
+    gStats.visits.fetches_total === expected.fetches && gStats.visits.redirects_total === expected.redirects,
     'dashboard ' + gStats.total + ' vs store ' + expected.total);
-  // Past the old cap: 1,600 synthetic records straight into the store.
+  // Past the old cap: 1,600 synthetic records straight into the store —
+  // plus 25 synthetic redirect legs (status 307), so the D1 split is
+  // exercised past the cap too (miniflare's assets server produces no
+  // platform redirect legs; the split pins seed them, as the audit's
+  // harness note prescribes).
   {
     const db = await open.getD1Database('DB');
     const rec = JSON.stringify({ t: new Date().toISOString(), site: 'swarmgarden.com', path: '/synthetic-exactness-probe', ref: '', country: '', region: '', asn: '', asOrganization: '', ua: 'SyntheticProbe/1.0', cls: 'unknown', purpose: null, method: 'GET', status: 200, md: null, ba: null, via: 'edge', event: 'pageview' });
+    const rec307 = JSON.stringify({ t: new Date().toISOString(), site: 'swarmgarden.com', path: '/synthetic-redirect-probe', ref: '', country: '', region: '', asn: '', asOrganization: '', ua: 'SyntheticProbe/1.0', cls: 'browser', purpose: null, method: 'GET', status: 307, md: null, ba: null, via: 'edge', event: 'pageview' });
     const stmt = db.prepare('INSERT INTO visit_log (t, data) VALUES (?1, ?2)');
     for (let base = 0; base < 1600; base += 100) {
       const batch = [];
       for (let i = 0; i < 100; i++) batch.push(stmt.bind(new Date().toISOString(), rec));
       await db.batch(batch);
     }
+    const batch307 = [];
+    for (let i = 0; i < 25; i++) batch307.push(stmt.bind(new Date().toISOString(), rec307));
+    await db.batch(batch307);
   }
-  expected = await storeAgg(open);
-  payload = await pollCounts(b => b.visits_total === expected.total);
-  checkP2('exact counts: with the store past the old 1,500 cap, visits_total is still the full count',
-    payload.visits_total === expected.total && payload.visits_total > 1500,
-    'endpoint ' + payload.visits_total + ' vs store ' + expected.total);
-  checkP2('exact counts: past the cap, by_class and the window key still match the store',
-    sameMap(payload.visits_by_class, expected.byClass) && payload.visits_window_records === payload.visits_total,
-    JSON.stringify({ endpoint: payload.visits_by_class, store: expected.byClass }));
+  payload = await (await req(open, FN + '/counts')).json();
+  expected = await settleAgg(open);
+  expP = minusOwnRead(expected);
+  checkP2('exact counts: with the store past the old 1,500 cap, fetches + redirects is still the full count — and the seeded 307 legs are all in redirects, none in fetches',
+    payload.visits_total === expP.fetches && payload.redirects_total === expected.redirects &&
+    payload.visits_total + payload.redirects_total > 1500 && payload.redirects_total >= 25,
+    'endpoint ' + payload.visits_total + '+' + payload.redirects_total + ' vs store ' + expP.total);
+  checkP2('exact counts: past the cap, by_class (fetches) and the window key still match the store',
+    sameMap(payload.visits_by_class, expP.byClassFetches) && payload.visits_window_records === expP.total &&
+    (payload.redirects_by_class || {})['browser'] >= 25,
+    JSON.stringify({ endpoint: payload.visits_by_class, store: expP.byClassFetches }));
   const gStats2 = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
   checkP2('exact counts: past the cap, the Garden steward dashboard total is still the full count',
     gStats2.total === expected.total && sameMap(gStats2.byClass, expected.byClass),
@@ -1285,6 +1323,12 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     eventForPath('/guestbook.html') === 'guestbook-view' && eventForPath('/utilities/garden-state/v1') === 'utility-read' &&
     eventForPath('/changed') === 'changed-read' && eventForPath('/api/v1/notes') === 'notes-read' &&
     eventForPath('/api/v1/receipts/000001') === 'receipt-check', '');
+  checkP2('events (D3.1/D3.2): the public function reads carry their named events — data, counts, ledger, signal challenge, render how-to, both /changed spellings',
+    eventForPath('/data/garden.json') === 'data-read' && eventForPath('/data') === 'data-read' &&
+    eventForPath('/.netlify/functions/counts') === 'counts-read' && eventForPath('/.netlify/functions/ledger') === 'ledger-read' &&
+    eventForPath('/api/v1/signal/challenge') === 'signal-challenge-read' &&
+    eventForPath('/api/v1/render-claim') === 'render-howto-read' &&
+    eventForPath('/.netlify/functions/changed') === 'changed-read', '');
 
   // End-to-end through the front door: claimed-name records carry the
   // three new fields, and the fixture address appears NOWHERE in the
@@ -1325,16 +1369,20 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   // Named events land on the records they name.
   await req(open, 'https://swarmgarden.com/guestbook.html');
   await req(open, 'https://swarmgarden.com/changed?format=json&since=2999-01-01');
+  await req(open, 'https://swarmgarden.com/changed?format=atom&since=2999-01-01');
+  await req(open, 'https://swarmgarden.com/changed?since=2999-01-01');
   await req(open, 'https://swarmgarden.com/utilities/garden-state/v1');
   await req(open, 'https://swarmgarden.com/api/v1/notes');
   const evRes = await pollRecent(r => r.path === '/guestbook.html');
   const evAll = evRes.sj ? evRes.sj.recent : [];
-  checkP2('events e2e: guestbook-view, changed-read, utility-read and notes-read land on their records',
+  checkP2('events e2e: guestbook-view, changed-read in all three formats (D3.1: the event names the format served), utility-read and notes-read land on their records',
     !!evRes.hit && evRes.hit.event === 'guestbook-view' &&
+    evAll.some(r => r.path === '/changed' && r.event === 'changed-read-json') &&
+    evAll.some(r => r.path === '/changed' && r.event === 'changed-read-atom') &&
     evAll.some(r => r.path === '/changed' && r.event === 'changed-read') &&
     evAll.some(r => r.path === '/utilities/garden-state/v1' && r.event === 'utility-read') &&
     evAll.some(r => r.path === '/api/v1/notes' && r.event === 'notes-read'),
-    JSON.stringify(evAll.slice(0, 6).map(r => [r.path, r.event])));
+    JSON.stringify(evAll.slice(0, 8).map(r => [r.path, r.event])));
 
   // Asset companions: a companion fetch writes an asset row and moves
   // NO total — visit store, counts payload, and recent list all clean.
@@ -1350,12 +1398,23 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     await new Promise(r => setTimeout(r, 150));
   }
   const countsAfterAssets = await (await req(open, FN + '/counts')).json();
-  const statsAfterAssets = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+  // Since D3.2 the counts endpoint's own GETs are logged
+  // ('counts-read'), so the totals move by exactly the intervening
+  // counts reads themselves — the asset companions must add NOTHING.
+  // The dashboard total is polled: the last counts read's own record
+  // lands just after its payload was computed.
+  let statsAfterAssets = null;
+  for (let i = 0; i < 40; i++) {
+    statsAfterAssets = await (await req(open, FN + '/stats?k=test-stats-key&format=json')).json();
+    if (statsAfterAssets.total === countsAfterAssets.visits_total + countsAfterAssets.redirects_total + 1) break;
+    await new Promise(r => setTimeout(r, 150));
+  }
   checkP2('assets: companion fetches write asset rows to the fallback store (event asset, cls asset)',
     assetRows >= 2, 'asset rows ' + assetRows);
-  checkP2('assets: page totals byte-identical with companions on — counts payload and dashboard total unmoved, recent list carries no asset row',
-    countsAfterAssets.visits_total === countsBeforeAssets.visits_total &&
-    statsAfterAssets.total === countsBeforeAssets.visits_total &&
+  checkP2('assets: companions move NO total — the only delta is the counts endpoint\u2019s own logged reads (D3.2): +1 fetch per intervening counts GET, redirects unmoved, dashboard total = payload fetches + redirects + the last read\u2019s own record; recent list carries no asset row',
+    countsAfterAssets.visits_total === countsBeforeAssets.visits_total + 1 &&
+    countsAfterAssets.redirects_total === countsBeforeAssets.redirects_total &&
+    statsAfterAssets.total === countsAfterAssets.visits_total + countsAfterAssets.redirects_total + 1 &&
     !(statsAfterAssets.recent || []).some(r => r.event === 'asset'),
     'counts ' + countsBeforeAssets.visits_total + ' -> ' + countsAfterAssets.visits_total);
 
@@ -1368,8 +1427,8 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     typeof gStats.ledger_entries === 'number' &&
     !!gStats.guestbook && gStats.guestbook.published === 2 && gStats.guestbook.held_flagged === 1,
     JSON.stringify({ h: gStats.humans_total, s: gStats.signals_total, gb: gStats.guestbook, counts: { h: countsNow.humans_total, s: countsNow.signals_total } }));
-  checkP2('B1 (Garden): the visits block carries the standardized keys incl. verdicts and grouped referrers',
-    !!gStats.visits && gStats.visits.basis === 'All recorded visits since Oct 17, 2026' &&
+  checkP2('B1 (Garden): the visits block carries the standardized keys incl. verdicts and grouped referrers (basis moved by D1: the headline is HTTP fetches)',
+    !!gStats.visits && gStats.visits.basis === 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately' &&
     typeof gStats.visits.distinct_paths === 'number' && Array.isArray(gStats.visits.by_country) &&
     !!gStats.visits.referrers && typeof gStats.visits.referrers.no_referer_recorded === 'number' &&
     !!gStats.visits.by_verdict && Array.isArray(gStats.visits.verdicts_by_name), Object.keys(gStats.visits || {}).join(','));
@@ -1494,9 +1553,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const { createHmac } = await import('node:crypto');
   const S = 'unit-test-secret', D = '2026-10-18', IP = '192.0.2.44', UA = 'DigestCheck/1.0';
   const expected = createHmac('sha256', S).update(D + '|' + IP + '|' + UA).digest('hex').slice(0, 16);
-  checkP2('digest: known-answer vector — first 16 hex of HMAC-SHA-256(secret, "UTC date|address|UA")',
+  checkP2('digest: known-answer vector — first 16 hex of HMAC-SHA-256(secret, "date|address|UA") (the period is the Pacific date since D2; the pure function is period-agnostic)',
     (await visitorDigest(S, D, IP, UA)) === expected, expected);
-  checkP2('digest: deterministic within a day — and a different UTC date, address, UA, or secret changes it (daily rotation; per-site separation)',
+  checkP2('digest: deterministic within a period — and a different date, address, UA, or secret changes it (daily rotation; per-site separation)',
     (await visitorDigest(S, D, IP, UA)) === expected &&
     (await visitorDigest(S, '2026-10-19', IP, UA)) !== expected &&
     (await visitorDigest(S, D, '192.0.2.45', UA)) !== expected &&
@@ -1540,8 +1599,12 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const fx = (dStats.recent || []).filter(r => (r.ua || '').includes('DigestFixture'));
   const digests = fx.map(r => r.visitor);
   const countsPerDigest = Object.values(digests.reduce((m, d) => { m[d] = (m[d] || 0) + 1; return m; }, {})).sort();
-  const gardenDigest = await visitorDigest('garden-test-secret', todayUtc, digIp, digUa);
-  checkP2('digest e2e: the same (day, address, UA) shares one digest; a different address or UA is a different digest (counts {3,1,1})',
+  // D2 (Oct 19 2026): the daily digest is keyed on the PACIFIC date —
+  // the expected digest is computed over ptToday, not the UTC date
+  // (this pin asserted the UTC keying until the re-key; moved
+  // deliberately with the build).
+  const gardenDigest = await visitorDigest('garden-test-secret', ptToday, digIp, digUa);
+  checkP2('digest e2e: the same (Pacific day, address, UA) shares one digest; a different address or UA is a different digest (counts {3,1,1})',
     fx.length === 5 && countsPerDigest.join(',') === '1,1,3' &&
     digests.filter(d => d === gardenDigest).length === 3 &&
     digests.every(d => /^[0-9a-f]{16}$/.test(d)), JSON.stringify(digests));
@@ -1575,7 +1638,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const aStats = await pollStatsJson(digAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json',
     sj => (sj.recent || []).some(r => (r.ua || '').includes('DigestFixture')));
   const aRec = (aStats.recent || []).find(r => (r.ua || '').includes('DigestFixture'));
-  const advisoryDigest = await visitorDigest('advisory-test-secret', todayUtc, digIp, digUa);
+  const advisoryDigest = await visitorDigest('advisory-test-secret', ptToday, digIp, digUa);
   const keySet = (o) => JSON.stringify(Object.keys(o || {}).sort());
   checkP2('digest e2e (Advisory): the same triple under the Advisory\u2019s own secret yields its own digest — never comparable across sites',
     !!aRec && aRec.visitor === advisoryDigest && advisoryDigest !== gardenDigest &&
@@ -1648,8 +1711,15 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const dashRes = await req(renAdv, A + '/dashboard.html', { redirect: 'manual' });
   const howAfter = await howJson(renAdv, A);
   checkP2('render: plain page fetches record no claim (only an executed page fires)', howAfter.claims_total === 2, 'total ' + howAfter.claims_total);
-  checkP2('render: the Advisory homepage alone carries the firing script; the retired board address redirects',
-    homeHtml.includes('sendBeacon') && homeHtml.includes('/api/v1/render-claim') && !blogHtml.includes('/api/v1/render-claim') && dashRes.status === 301);
+  const researchHtml = await (await req(renAdv, A + '/research.html')).text();
+  const agentPageHtml = await (await req(renAdv, A + '/agent-page.html')).text();
+  const hypHtml = await (await req(renAdv, A + '/hypothesis-register.html')).text();
+  const llmsTxt = await (await req(renAdv, A + '/llms.txt')).text();
+  checkP2('render: the firing script rides the five human pages (D3.5, Oct 19 2026 — extended from the homepage alone, which this pin asserted until now: index, research, blog, agent-page, hypothesis-register); the retired board address redirects; non-page files carry no script',
+    homeHtml.includes('sendBeacon') && homeHtml.includes('/api/v1/render-claim') &&
+    blogHtml.includes('/api/v1/render-claim') && researchHtml.includes('/api/v1/render-claim') &&
+    agentPageHtml.includes('/api/v1/render-claim') && hypHtml.includes('/api/v1/render-claim') &&
+    !llmsTxt.includes('/api/v1/render-claim') && dashRes.status === 301);
 
   // The keyed stats page carries the figure, under its ruled name.
   const aStats = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
@@ -1750,13 +1820,22 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const storeAggC = async (mf) => {
     const db = await mf.getD1Database('DB');
     const { results } = await db.prepare('SELECT data FROM visit_log').all();
-    const byClass = {}; let total = 0;
+    const byClass = {}, byClassFetches = {}, byClassRedirects = {};
+    let total = 0, fetches = 0, redirects = 0;
     for (const row of results || []) {
       let r; try { r = JSON.parse(row.data); } catch (e) { continue; }
+      if (r.event === 'asset') continue;
       total++;
       byClass[r.cls] = (byClass[r.cls] || 0) + 1;
+      if (Number.isInteger(r.status) && r.status >= 300 && r.status <= 399) {
+        redirects++;
+        byClassRedirects[r.cls] = (byClassRedirects[r.cls] || 0) + 1;
+      } else {
+        fetches++;
+        byClassFetches[r.cls] = (byClassFetches[r.cls] || 0) + 1;
+      }
     }
-    return { total, byClass };
+    return { total, byClass, fetches, redirects, byClassFetches, byClassRedirects };
   };
   const sameMapC = (a, b) => {
     const ka = Object.keys(a || {}).sort(), kb = Object.keys(b || {}).sort();
@@ -1766,24 +1845,35 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await req(advC, 'https://bayareaswarmwarning.com/blog.html', { headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) Chrome/120' } });
   await req(advC, 'https://bayareaswarmwarning.com/index.html', { headers: { 'user-agent': 'curl/8.0' } });
   await post(advC, 'https://bayareaswarmwarning.com/api/v1/human-press', {}, '203.0.113.71');
+  // Seeded redirect legs (D1): miniflare's assets server produces no
+  // platform 307 legs, so the split is pinned against synthetic
+  // stored records — 2 x 307 browser + 1 x 301 automation.
+  {
+    const db = await advC.getD1Database('DB');
+    const mk = (status, cls) => JSON.stringify({ t: new Date().toISOString(), site: 'bayareaswarmwarning.com', path: '/synthetic-redirect-probe', ref: '', country: '', region: '', asn: '', asOrganization: '', ua: 'SyntheticProbe/1.0', cls, purpose: null, method: 'GET', status, md: null, ba: null, via: 'edge', event: 'pageview' });
+    const stmt = db.prepare('INSERT INTO visit_log (t, data) VALUES (?1, ?2)');
+    await db.batch([stmt.bind(new Date().toISOString(), mk(307, 'browser')), stmt.bind(new Date().toISOString(), mk(307, 'browser')), stmt.bind(new Date().toISOString(), mk(301, 'automation'))]);
+  }
   let aCounts = null, aExp = null;
   for (let i = 0; i < 40; i++) {
     aExp = await storeAggC(advC);
     const rr = await req(advC, AC);
     if (rr.status === 200) aCounts = await rr.json();
-    if (aCounts && aCounts.visits_total === aExp.total && aExp.total >= 3) break;
+    if (aCounts && aCounts.visits_total === aExp.fetches && aExp.total >= 6) break;
     await new Promise(r => setTimeout(r, 150));
   }
   checkP2('advisory counts: the route answers 200 (it 404d for the site\u2019s whole life)',
     !!aCounts, 'payload ' + JSON.stringify(aCounts).slice(0, 120));
-  checkP2('advisory counts: visits_total + by_class equal an independent aggregate over THIS site\u2019s store',
-    !!aCounts && aCounts.visits_total === aExp.total && sameMapC(aCounts.visits_by_class, aExp.byClass),
-    'endpoint ' + (aCounts && aCounts.visits_total) + ' vs store ' + (aExp && aExp.total));
+  checkP2('advisory counts: visits_total (fetches, D1) + by_class equal an independent aggregate over THIS site\u2019s store, and the seeded redirect legs sit in redirects_total / redirects_by_class only',
+    !!aCounts && aCounts.visits_total === aExp.fetches && sameMapC(aCounts.visits_by_class, aExp.byClassFetches) &&
+    aCounts.redirects_total === aExp.redirects && sameMapC(aCounts.redirects_by_class, aExp.byClassRedirects) &&
+    aCounts.redirects_total === 3,
+    'endpoint ' + (aCounts && aCounts.visits_total) + '+' + (aCounts && aCounts.redirects_total) + ' vs store ' + (aExp && aExp.total));
   checkP2('advisory counts: counting_since is THIS dataset\u2019s start (2026-10-17T21:40:07Z), not the Garden\u2019s',
     !!aCounts && aCounts.counting_since === '2026-10-17T21:40:07Z',
     aCounts && aCounts.counting_since);
   checkP2('advisory counts: byte-shape parity with the Garden payload (every Garden key present)',
-    !!aCounts && ['arrivals_on_record', 'arrivals_over_cap_unread', 'ledger_entries', 'signals_total', 'humans_total', 'visits_total', 'visits_by_class', 'crawlers_claimed', 'fetchers_claimed', 'visits_window_records', 'visits_window_note', 'counting_since', 'updated', 'top_paths', 'agent_interest_files'].every(k => k in aCounts),
+    !!aCounts && ['arrivals_on_record', 'arrivals_over_cap_unread', 'ledger_entries', 'signals_total', 'humans_total', 'visits_total', 'visits_by_class', 'redirects_total', 'redirects_by_class', 'crawlers_claimed', 'fetchers_claimed', 'visits_window_records', 'visits_window_note', 'counting_since', 'updated', 'top_paths', 'agent_interest_files'].every(k => k in aCounts),
     aCounts && Object.keys(aCounts).join(','));
   checkP2('advisory counts: the Garden-only fields are structural — zero WITH their explanatory keys, never bare zeros',
     !!aCounts && aCounts.ledger_entries === 0 && typeof aCounts.ledger_error === 'string' &&
@@ -1791,10 +1881,10 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     aCounts && JSON.stringify({ ledger_error: aCounts.ledger_error, signals_error: aCounts.signals_error }));
   checkP2('advisory counts: humans_total is this site\u2019s own press count',
     !!aCounts && aCounts.humans_total === 1, aCounts && String(aCounts.humans_total));
-  checkP2('advisory counts: the stated basis matches the arithmetic (records = total; full-dataset note)',
-    !!aCounts && aCounts.visits_window_records === aCounts.visits_total &&
-    aCounts.visits_window_note === 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
-    aCounts && JSON.stringify({ records: aCounts.visits_window_records, total: aCounts.visits_total }));
+  checkP2('advisory counts: the stated basis matches the arithmetic (fetches + redirects = records; the D1 note)',
+    !!aCounts && aCounts.visits_window_records === aCounts.visits_total + aCounts.redirects_total &&
+    aCounts.visits_window_note === 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
+    aCounts && JSON.stringify({ records: aCounts.visits_window_records, total: aCounts.visits_total, redirects: aCounts.redirects_total }));
   checkP2('advisory counts: arrivals is a number read as the Garden reference (0 in the fixture era)',
     !!aCounts && typeof aCounts.arrivals_on_record === 'number',
     aCounts && String(aCounts.arrivals_on_record));
@@ -1818,9 +1908,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     format: 'swarm-garden-data/v1', site, site_label: label,
     generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
     pull_status: 'ok', unavailable_notes: [], counting_since: '2026-10-17T21:38:49Z',
-    counting_window: 'All recorded visits since Oct 17, 2026', licence: 'CC BY 4.0 — fixture licence',
+    counting_window: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately', licence: 'CC BY 4.0 — fixture licence',
     figures: { rows: [
-      { label: 'Total recorded visits', value: 42, note: 'Requests recorded at the edge — requests, not readers.' },
+      { label: 'Total HTTP fetches', value: 42, note: 'Content requests recorded at the edge — requests, not readers.' },
       { label: 'Verified agent arrivals on record', value: 0, note: 'The verified record.' },
       ...(site === 'advisory' ? [{ label: 'Signals', value: null, note: 'No signal tier on this site — signals are the Garden\u2019s.' }] : [])
     ], by_class: [{ label: 'agent-claimed', value: 5, note: 'a claim' }, { label: 'browser', value: 37, note: '' }],
@@ -1863,9 +1953,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     r.status + ' ' + idxHtml.slice(0, 120));
   r = await req(dataW, D + '/garden');
   const gHtml = await r.text();
-  checkP2('data (Garden): figures render with their basis (total 42, counting window + as-of in the caption)',
-    r.status === 200 && gHtml.includes('Total recorded visits') && gHtml.includes('42') &&
-    gHtml.includes('All recorded visits since Oct 17, 2026') && gHtml.includes('Oct 18, 2026, 11:00:00 AM PT'),
+  checkP2('data (Garden): figures render with their basis (total 42, counting window + as-of in the caption; D1: the headline figure is Total HTTP fetches)',
+    r.status === 200 && gHtml.includes('Total HTTP fetches') && gHtml.includes('42') &&
+    gHtml.includes('HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately') && gHtml.includes('Oct 18, 2026, 11:00:00 AM PT'),
     r.status + ' ' + gHtml.slice(0, 160));
   checkP2('data (Garden): the claims table renders names WITH verdicts and the small-n discipline',
     gHtml.includes('GPTBot') && gHtml.includes('verified-range') && gHtml.includes('small n (1 checkable)'));
@@ -1908,7 +1998,7 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   const downHtml = await r.text();
   checkP2('data: a failed load renders the EXPLAINED unavailable state (archive named, no figures, footer intact)',
     r.status === 200 && downHtml.includes('could not be loaded') && downHtml.includes('github.com/swarmgarden/swarmgarden') &&
-    !downHtml.includes('Total recorded visits') && downHtml.includes('The record itself:'),
+    !downHtml.includes('Total HTTP fetches') && downHtml.includes('The record itself:'),
     r.status + ' ' + downHtml.slice(0, 160));
   await dataDown.dispose();
 }
@@ -1928,9 +2018,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     format: 'swarm-garden-data/v1', site, site_label: label,
     generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
     pull_status: 'ok', unavailable_notes: [], counting_since: '2026-10-17T21:38:49Z',
-    counting_window: 'All recorded visits since Oct 17, 2026', licence: 'CC BY 4.0 — fixture licence',
+    counting_window: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately', licence: 'CC BY 4.0 — fixture licence',
     figures: { rows: [
-      { label: 'Total recorded visits', value: 52, note: 'Requests recorded at the edge — requests, not readers.' },
+      { label: 'Total HTTP fetches', value: 52, note: 'Content requests recorded at the edge — requests, not readers.' },
       { label: 'Verified agent arrivals on record', value: 0, note: 'The verified record.' }
     ], by_class: [{ label: 'browser', value: 52, note: '' }],
     by_status: [{ label: 'Responses with status 200', value: 40, note: '' }] },
@@ -1945,15 +2035,15 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     ] });
   const fxCountries = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
     generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
-    window: 'Visits by country over the counting window.',
-    suppression: { threshold: 5, rule: 'Countries with fewer than 5 visits in the window are folded into a single All other countries row.', folded_countries: 2, folded_visits: 5 },
+    window: 'Requests by country over the counting window.',
+    suppression: { threshold: 5, rule: 'Countries with fewer than 5 requests in the window are folded into a single All other countries row.', folded_countries: 2, folded_visits: 5 },
     not_recorded: 3,
     rows: [{ country: 'US', visits: 40 }, { country: 'DE', visits: 12 }] });
   const fxSeries = JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden',
     generated_at_utc: '2026-10-18T18:00:00Z', generated_at_pt: 'Oct 18, 2026, 11:00:00 AM PT',
     classes: ['agent-claimed', 'browser', 'automation', 'unknown'],
     class_days: [{ day: '2026-10-18', 'agent-claimed': 2, browser: 30, automation: 4, unknown: 1, total: 37 }],
-    class_note: 'Visits by claimed class, per Pacific day. Fixture note.',
+    class_note: 'Requests by claimed class, per Pacific day. Fixture note.',
     visitor_days: [{ day: '2026-10-18', distinct_visitors: 11, digest_requests: 25, repeat_requests: 9 }],
     visitor_note: 'Distinct visitors per Pacific day. The digest is date-scoped — fixture note.',
     unavailable_notes: [] });
@@ -1994,23 +2084,23 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   let r = await req(dataW2, D + '/garden');
   const g = await r.text();
   checkP2('data v1.1 (Garden): visits-by-page renders every path WITH its status-class split, filter controls shipped',
-    r.status === 200 && g.includes('Visits by page') && g.includes('/llms.txt') && g.includes('/.env') &&
+    r.status === 200 && g.includes('Requests by page') && g.includes('/llms.txt') && g.includes('/.env') &&
     g.includes('data-controls="paths"') && g.includes('Showing 2 of 2 paths') && g.includes("prefix: 'p_'"),
     r.status + ' ' + g.slice(0, 160));
   checkP2('data v1.1 (Garden): countries render kept rows + the printed fold; a suppressed country is never named',
-    g.includes('Visits by country') && g.includes('<td>DE</td>') && g.includes('All other countries') &&
-    g.includes('2 countries, each with fewer than 5 visits') && !g.includes('<td>FR</td>') &&
-    g.includes('Visits with no country recorded: 3'),
+    g.includes('Requests by country') && g.includes('<td>DE</td>') && g.includes('All other countries') &&
+    g.includes('2 countries, each with fewer than 5 requests') && !g.includes('<td>FR</td>') &&
+    g.includes('Requests with no country recorded: 3'),
     g.slice(0, 160));
   checkP2('data v1.1 (Garden): the daily series renders by-class days AND distinct-visitor days with their era notes',
-    g.includes('The daily series') && g.includes('2026-10-18') && g.includes('Distinct visitors, by day') &&
+    g.includes('The daily series') && g.includes('2026-10-18') && g.includes('Distinct visitor digests, by day') &&
     g.includes('date-scoped') && g.includes('>11</td>'),
     g.slice(0, 160));
   checkP2('data v1.1 (Garden): status-class totals render with the 404 count broken out of 4xx',
     g.includes('Response totals by status class') && g.includes('of which: status 404'),
     g.slice(0, 160));
   checkP2('data v1.1: the method block carries the aggregate disclosure (small-count fold, digests never printed)',
-    g.includes('Published as aggregates only') && g.includes('fewer than five visits') &&
+    g.includes('Published as aggregates only') && g.includes('fewer than five requests') &&
     g.includes('are never printed'),
     g.slice(0, 160));
   r = await req(dataW2, D + '/garden-paths.json');
@@ -2047,8 +2137,12 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
 // same since; preflight reports the published protocol (format
 // names, required fields, promise dates computed by the Garden's
 // own date rules) and refuses POSTs; the data files serve on the
-// Garden's domain from the published whitelist, and a data read
-// writes NO visit record (the Advisory's discipline, mirrored).
+// Garden's domain from the published whitelist. The data-read
+// logging pin below is the REVERSED Oct 18 pin (D3.2, Oct 19 2026):
+// where it asserted a data read writes NO visit record, it now
+// asserts each data read writes exactly one 'data-read' record —
+// the reversal is deliberate, authorized by the measurement-
+// accuracy build, and named in PORT-NOTES.
 {
   let r = await req(open, 'https://swarmgarden.com/changed?format=json&since=2000-01-01');
   const cj = await r.json();
@@ -2117,10 +2211,21 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   checkP2('ASAP garden-data: a near-miss name still 404s (whitelist by name, not by pattern)', r.status === 404, String(r.status));
   r = await req(gDataW, 'https://swarmgarden.com/data/secrets.json');
   checkP2('ASAP garden-data: an unpublished name 404s with the JSON error', r.status === 404, String(r.status));
-  const afterSj = await (await req(gDataW, 'https://swarmgarden.com/.netlify/functions/stats?k=test-stats-key&format=json')).json();
-  checkP2('ASAP garden-data: data reads write NO visit — the recorded total is unmoved and no /data path is in the recent list',
-    totalBefore !== null && afterSj.total === totalBefore && !(afterSj.recent || []).some(x => (x.path || '').startsWith('/data/')),
-    String(totalBefore) + ' -> ' + String(afterSj.total));
+  // REVERSED PIN (D3.2, Oct 19 2026): the Oct 18 pin here asserted
+  // data reads write NO visit. Four data GETs were made above (two
+  // served, two refused by name) — each now writes exactly one
+  // 'data-read' record, so the total moves by exactly 4.
+  let afterSj = null;
+  for (let i = 0; i < 40; i++) {
+    afterSj = await (await req(gDataW, 'https://swarmgarden.com/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+    if (totalBefore !== null && afterSj.total === totalBefore + 4) break;
+    await new Promise(res2 => setTimeout(res2, 150));
+  }
+  const dataRecs = (afterSj.recent || []).filter(x => (x.path || '').startsWith('/data/'));
+  checkP2('ASAP garden-data (REVERSED Oct 18 pin, D3.2): each data read writes exactly ONE data-read visit record — four reads, total +4, all four /data paths in the recent list under the data-read event',
+    totalBefore !== null && afterSj.total === totalBefore + 4 &&
+    dataRecs.length === 4 && dataRecs.every(x => x.event === 'data-read'),
+    String(totalBefore) + ' -> ' + String(afterSj.total) + ' recs ' + JSON.stringify(dataRecs.map(x => [x.path, x.event, x.status])));
   await gDataW.dispose();
 
   // Signature-Agent hostname (Item 5 stage ii): a signed request
@@ -2138,6 +2243,140 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     !!sigHit && sigHit.sigagent === 'agent.example.com' && sigHit.ba === 'present', JSON.stringify(sigHit));
   checkP2('ASAP sigagent: an unsigned request stores an empty sigagent and ba absent',
     !!plainHit && plainHit.sigagent === '' && plainHit.ba === 'absent', JSON.stringify(plainHit));
+}
+
+// P2-D (Oct 19 2026): the D1–D4 measurement-accuracy build — the
+// epoch visitor digest (D2), the Advisory's read-logging symmetry
+// and the knock widening (D3.2/D3.3). (D1's split is pinned in
+// P2-13/P2-17 against seeded redirect legs; D3.1's changed-format
+// events in P2-14; the Garden's data-read reversal in P2-ASAP. The
+// AE truncation flag has no harness pin: the AE SQL path cannot run
+// in miniflare — it is staging-verify, like every AE-path item; the
+// D1 fallback path applies no LIMIT and never flags.)
+{
+  const { visitorDigest, pacificPeriods } = await import(path.join(ROOT, 'shared', 'visitor.mjs'));
+  const { createHmac } = await import('node:crypto');
+  const ptParts = (d) => {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
+    const g = (t) => (parts.find(p => p.type === t) || {}).value || '';
+    return { day: g('year') + '-' + g('month') + '-' + g('day'), month: g('year') + '-' + g('month') };
+  };
+  const ptNow = ptParts(new Date());
+  checkP2('epoch digest: known-answer vector — the epoch digest is the same HMAC construction keyed on the Pacific month ("YYYY-MM|address|UA")',
+    (await visitorDigest('epoch-secret', '2026-10', '192.0.2.44', 'EpochCheck/1.0')) ===
+    createHmac('sha256', 'epoch-secret').update('2026-10|192.0.2.44|EpochCheck/1.0').digest('hex').slice(0, 16) &&
+    (await visitorDigest('epoch-secret', '2026-10', '192.0.2.44', 'EpochCheck/1.0')) !==
+    (await visitorDigest('epoch-secret', '2026-10-19', '192.0.2.44', 'EpochCheck/1.0')), '');
+  checkP2('epoch digest: pacificPeriods returns the Pacific day and its month (the day boundary and the epoch boundary the reporting uses)',
+    pacificPeriods().day === ptNow.day && pacificPeriods().month === ptNow.month &&
+    /^\d{4}-\d{2}-\d{2}$/.test(pacificPeriods().day) && /^\d{4}-\d{2}$/.test(pacificPeriods().month),
+    JSON.stringify(pacificPeriods()));
+
+  const readRecs = async (mf) => {
+    const db = await mf.getD1Database('DB');
+    const { results } = await db.prepare('SELECT data FROM visit_log').all();
+    return (results || []).map(row => { try { return JSON.parse(row.data); } catch (e) { return null; } }).filter(r => r && r.event !== 'asset');
+  };
+  const pollRecs = async (mf, pred) => {
+    let recs = [];
+    for (let i = 0; i < 40; i++) {
+      recs = await readRecs(mf);
+      if (pred(recs)) return recs;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return recs;
+  };
+
+  // Garden, dedicated instance: the epoch digest end-to-end, and
+  // the knock widening.
+  const kW = await makeWorker({
+    script: path.join(HERE, 'build/garden-worker.mjs'), pubDir: path.join(GARDEN, 'public'),
+    schemaFile: path.join(GARDEN, 'schema.sql'),
+    bindings: { SITE_HOST: 'swarmgarden.com', AE_DATASET: 'garden_visits', ...SECRETS, INTAKE_OPEN: 'true', GUESTBOOK_OPEN: 'true', SIGNAL_OPEN: 'true', HUMAN_OPEN: 'true', VISITOR_DIGEST_SECRET: 'garden-test-secret' }
+  });
+  const epIp = '192.0.2.70', epUa = 'EpochFixture/1.0';
+  await req(kW, 'https://swarmgarden.com/robots.txt', { headers: { 'user-agent': epUa, ...ipH(epIp) } });
+  const kStats = await (async () => {
+    let sj = null;
+    for (let i = 0; i < 40; i++) {
+      sj = await (await req(kW, FN + '/stats?k=test-stats-key&format=json')).json();
+      if ((sj.recent || []).some(r => (r.ua || '').includes('EpochFixture'))) return sj;
+      await new Promise(r => setTimeout(r, 150));
+    }
+    return sj;
+  })();
+  const epRec = (kStats.recent || []).find(r => (r.ua || '').includes('EpochFixture'));
+  const expDaily = await visitorDigest('garden-test-secret', ptNow.day, epIp, epUa);
+  const expEpoch = await visitorDigest('garden-test-secret', ptNow.month, epIp, epUa);
+  checkP2('epoch e2e: a fresh record carries BOTH digests — visitor keyed on the Pacific day, visitorepoch keyed on the Pacific month',
+    !!epRec && epRec.visitor === expDaily && epRec.visitorepoch === expEpoch && expDaily !== expEpoch &&
+    !JSON.stringify(epRec).includes(epIp), JSON.stringify(epRec).slice(0, 200));
+  const epDays = (((kStats.visits || {}).visitor_epochs || {}).days || []);
+  checkP2('epoch e2e: the stats JSON carries the epoch series (today: 1 distinct epoch digest, 1 request) and a truncated_dims array',
+    epDays.some(d => d.day === ptNow.day && d.distinct_visitor_digests === 1 && d.digest_requests === 1) &&
+    Array.isArray(kStats.truncated_dims) && Array.isArray((kStats.visits || {}).truncated_dims),
+    JSON.stringify(epDays) + ' td ' + JSON.stringify(kStats.truncated_dims));
+  // Knock widening (D3.3): a refused POST to a utility path counts
+  // on the 'utilities' channel (it mapped to no channel before); an
+  // unrouted POST 404 still counts as 'unrouted'. (The page-branch
+  // 405 case — a POST to a static asset — is production-only: the
+  // harness assets server answers 200 to POSTs, so that half of the
+  // widening is staging-verify, stated plainly.)
+  const { status: utilStatus } = await post(kW, 'https://swarmgarden.com/utilities/garden-state/v1', {}, '203.0.113.80');
+  const { status: unroutedStatus } = await post(kW, 'https://swarmgarden.com/no-such-page-here', {}, '203.0.113.81');
+  let attemptRows = [];
+  for (let i = 0; i < 40; i++) {
+    const db = await kW.getD1Database('DB');
+    const { results } = await db.prepare('SELECT channel, route, status FROM api_attempts').all();
+    attemptRows = results || [];
+    if (attemptRows.some(r => r.channel === 'utilities') && attemptRows.some(r => r.channel === 'unrouted')) break;
+    await new Promise(r => setTimeout(r, 150));
+  }
+  checkP2('knocks (D3.3): a refused POST to a utility path counts on the utilities channel; an unrouted POST still counts as unrouted',
+    utilStatus >= 400 && unroutedStatus === 404 &&
+    attemptRows.some(r => r.channel === 'utilities' && r.route === '/utilities/garden-state/v1' && r.status >= 400) &&
+    attemptRows.some(r => r.channel === 'unrouted' && r.route === '/no-such-page-here' && r.status === 404),
+    'util ' + utilStatus + ' unrouted ' + unroutedStatus + ' rows ' + JSON.stringify(attemptRows));
+  await kW.dispose();
+
+  // Advisory symmetry (D3.2): counts reads, data reads and the
+  // render-claim how-to GET are visit-logged under their named
+  // events; the keyed stats route writes NO record, keyed or not.
+  const fxAdvData = JSON.stringify({
+    'garden.json': JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden', figures: { rows: [] } }),
+    'status.json': JSON.stringify({ format: 'swarm-garden-data/v1', sites: {} })
+  });
+  const kA = await makeWorker({
+    script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
+    schemaFile: path.join(ADVISORY, 'schema.sql'),
+    bindings: { SITE_HOST: 'bayareaswarmwarning.com', AE_DATASET: 'advisory_visits', STATS_KEY: 'test-stats-key', HUMAN_OPEN: 'true', DATA_INLINE: fxAdvData }
+  });
+  const AB = 'https://bayareaswarmwarning.com';
+  await req(kA, AB + '/.netlify/functions/counts');
+  let recs = await pollRecs(kA, rs => rs.some(r => r.event === 'counts-read'));
+  checkP2('advisory reads (D3.2): a counts GET writes exactly one counts-read record',
+    recs.filter(r => r.event === 'counts-read').length === 1 &&
+    recs.find(r => r.event === 'counts-read').path === '/.netlify/functions/counts',
+    JSON.stringify(recs.map(r => [r.path, r.event])));
+  await req(kA, AB + '/data/garden.json');
+  recs = await pollRecs(kA, rs => rs.some(r => r.event === 'data-read'));
+  checkP2('advisory reads (D3.2): a data-file GET writes a data-read record',
+    recs.some(r => r.event === 'data-read' && r.path === '/data/garden.json'),
+    JSON.stringify(recs.map(r => [r.path, r.event])));
+  await req(kA, AB + '/api/v1/render-claim');
+  recs = await pollRecs(kA, rs => rs.some(r => r.event === 'render-howto-read'));
+  checkP2('advisory reads (D3.2): a render-claim how-to GET writes a render-howto-read record',
+    recs.some(r => r.event === 'render-howto-read' && r.path === '/api/v1/render-claim'),
+    JSON.stringify(recs.map(r => [r.path, r.event])));
+  const settledCount = recs.length;
+  await req(kA, AB + '/.netlify/functions/stats?k=test-stats-key&format=json');
+  await req(kA, AB + '/.netlify/functions/stats');
+  await new Promise(r => setTimeout(r, 600));
+  const afterStats = await readRecs(kA);
+  checkP2('advisory reads (D3.2): keyed stats reads write NO visit record — the steward\u2019s own reads stay out of the record',
+    afterStats.length === settledCount,
+    settledCount + ' -> ' + afterStats.length);
+  await kA.dispose();
 }
 
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');

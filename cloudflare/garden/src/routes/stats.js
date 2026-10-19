@@ -30,20 +30,20 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { dbListLedger, dbListReceipts, dbCountSignals, dbCountHumanPresses, dbListNotes } from '../lib/db.js';
 import { isPublicNote } from '../lib/notes.js';
 
-const BASIS = 'All recorded visits since Oct 17, 2026';
+const BASIS = VISITS_BASIS;
 
 async function loadVisits(env) {
   // The aggregates and the recent-50 display read are independent;
   // they run concurrently (Oct 19, 2026 — the sequential chain was
   // the bulk of this route's ~5s; see shared/visits.mjs).
   const [a, recent] = await Promise.all([
-    aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday']),
+    aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']),
     readRecentVisits(env, 50) // newest first — display list only
   ]);
   return { a, recent };
@@ -63,7 +63,11 @@ function aggregate(a) {
     byEvent: a.byEvent, topCountries: top(a.byCountry, 12),
     referrersGrouped: groupReferrers(a.byRef, a.total),
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
-    byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay
+    byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
+    byVisitorEpoch: a.byVisitorEpoch,
+    fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
+    fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
+    truncatedDims: a.truncated_dims || []
   };
 }
 
@@ -73,7 +77,7 @@ export default async (req, env) => {
   if (!KEY || url.searchParams.get('k') !== KEY) return new Response('Key required.', { status: 403, headers: { 'Content-Type': 'text/plain' } });
   let loaded;
   try { loaded = await loadVisits(env); }
-  catch (e) { return new Response('Storage read failed. Visit records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
+  catch (e) { return new Response('Storage read failed. Request records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
   const recs = loaded.recent; // newest first, at most 50 — display list
   const agg = aggregate(loaded.a);
   const asOf = new Date().toISOString();
@@ -113,6 +117,7 @@ export default async (req, env) => {
       arrivals_on_record: arrivals, humans_total: humans, signals_total: signals,
       ledger_entries: entries ? entries.length : null,
       guestbook: book, api_attempts: attempts, render_claims: renders,
+      truncated_dims: agg.truncatedDims,
       ...agg, submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
       visits: visitsBlock(agg, asOf), recent: recs
     }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -148,26 +153,29 @@ export default async (req, env) => {
     (book === null ? 'unavailable' : 'published <strong>' + book.published + '</strong> · held (flagged) <strong>' + book.held_flagged + '</strong> · awaiting publication <strong>' + book.awaiting_publication + '</strong>') + '.</p>';
 
   // ---- Block B: visits (full-dataset aggregates) ----
-  html += '<h3>Visits — ' + agg.total + ' total recorded visits</h3>';
-  html += '<p>' + BASIS + ' · as of ' + esc(asOf) + '. All records edge-written (' + agg.edge + ' via edge log, ' + agg.beacon + ' via legacy beacon). Everything below is requests, not arrivals.</p>';
-  html += '<h4>Requests by claimed class</h4>' + countTable(esc, sortedPairs(agg.byClass), agg.total);
+  html += '<h3>Requests — ' + agg.fetchesTotal + ' HTTP fetches · ' + agg.redirectsTotal + ' redirect responses (' + agg.total + ' recorded in all)</h3>';
+  html += '<p>' + BASIS + ' · as of ' + esc(asOf) + '. All records edge-written (' + agg.edge + ' via edge log, ' + agg.beacon + ' via legacy beacon). The tables below cover all recorded requests, redirect legs included, except the two split tables directly under this line. Everything below is requests, not arrivals.</p>';
+  html += '<h4>HTTP fetches by claimed class</h4>' + countTable(esc, sortedPairs(agg.fetchesByClass), agg.fetchesTotal);
+  html += '<h4>Redirect responses by claimed class</h4>' + countTable(esc, sortedPairs(agg.redirectsByClass), agg.redirectsTotal);
+  html += '<h4>Requests by claimed class (all recorded, redirects included)</h4>' + countTable(esc, sortedPairs(agg.byClass), agg.total);
   html += '<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>';
-  html += '<h4>Agent-claimed visits, by purpose</h4>' + countTable(esc, sortedPairs(agg.byPurpose), agentClaimed);
+  html += '<h4>Agent-claimed requests, by purpose</h4>' + countTable(esc, sortedPairs(agg.byPurpose), agentClaimed);
   html += '<h4>Claimed crawlers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += '<h4>Claimed fetchers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
-  html += '<p>Names are read from the user-agent strings through the shared claimed-bot dictionary — claims, as announced by the visiting software itself.</p>';
+  html += '<p>Names are read from the user-agent strings through the shared claimed-bot dictionary — claims, as announced by the requesting software itself.</p>';
   html += '<h4>Behaviour labels (private working labels, computed from paths)</h4>' + countTable(esc, sortedPairs(agg.byBehaviour), agg.total);
   html += '<h4>Response status totals</h4>' + countTable(esc, sortedPairs(agg.byStatus), agg.total);
   html += '<h4>Named events</h4>' + countTable(esc, sortedPairs(agg.byEvent), agg.total);
   html += '<h4>Top pages</h4>' + countTable(esc, agg.topPaths, agg.total);
   html += '<h4>Agent-interest files</h4>' + countTable(esc, agg.interest, agg.total);
   html += '<p>Distinct paths read: <strong>' + agg.readDepth + '</strong>.</p>';
-  html += '<h4>Visits by day</h4>' + countTable(esc, Object.entries(agg.byDay).sort(), agg.total);
-  html += '<h4>Visits by country (top 12)</h4>' + countTable(esc, agg.topCountries, agg.total);
+  html += '<h4>Requests by day</h4>' + countTable(esc, Object.entries(agg.byDay).sort(), agg.total);
+  html += '<h4>Requests by country (top 12)</h4>' + countTable(esc, agg.topCountries, agg.total);
   html += '<p>Edge geography — a country is the network exit point, not the operator&rsquo;s home.</p>';
   html += '<h4>Top referrers</h4>' + referrerTableHtml(esc, agg.referrersGrouped, agg.total);
   html += '<h4>Address-range verdicts, by claimed name</h4>' + verdictTableHtml(esc, agg.byNameVerdict);
   html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
+  html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
 
   // ---- Channel knocks (B-b read) ----
   html += '<h3>Channel knocks — refused POST attempts</h3>';

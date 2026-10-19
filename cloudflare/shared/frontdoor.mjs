@@ -157,10 +157,11 @@ function claimFields(req, ua) {
   return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
 }
 
-export function buildVisitRecord(req, res, siteHost, event, visitor = '') {
+export function buildVisitRecord(req, res, siteHost, event, digests = {}) {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
   const { cls, purpose } = classify(ua);
+  const dg = (digests && typeof digests === 'object') ? digests : { visitor: digests || '' };
   return {
     t: new Date().toISOString(),
     site: siteHost,
@@ -181,17 +182,30 @@ export function buildVisitRecord(req, res, siteHost, event, visitor = '') {
     via: 'edge',
     event: event || 'pageview',
     ...claimFields(req, ua),
-    // The visitor digest (lens spec B-e), computed by the caller
-    // (frontDoor) — '' when no secret is provisioned on this Worker
-    // or the request carried no cf-connecting-ip.
-    visitor: visitor || ''
+    // The visitor digests (lens spec B-e; epoch digest added Oct 19
+    // 2026, D2), computed by the caller (frontDoor) — '' when no
+    // secret is provisioned on this Worker or the request carried
+    // no cf-connecting-ip.
+    visitor: dg.visitor || '',
+    visitorepoch: dg.visitorepoch || ''
   };
 }
+
+// The keyed surfaces are the only function addresses excluded from
+// the visit record (narrowed Oct 19 2026, D3.2): the keyed stats
+// routes, the steward route and the steward guestbook route carry a
+// key by design, and steward use of them never enters the record.
+// Every other function address is a PUBLIC read (counts, ledger,
+// changed, the data files) and its GETs are visit-logged under their
+// named events (eventForPath below) — until this build the blanket
+// '/.netlify/' exclusion made those reads invisible, the largest
+// single blind spot in the record (the audit, D3).
+const KEYED_UNLOGGED = ['/.netlify/functions/stats', '/.netlify/functions/steward', '/.netlify/functions/guestbook'];
 
 export function shouldLog(req) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return false;
   const p = new URL(req.url).pathname;
-  if (p.startsWith('/.netlify/')) return false;
+  if (KEYED_UNLOGGED.some(k => p === k || p.startsWith(k + '/'))) return false;
   if (SKIP_EXT.some(e => p.endsWith(e))) return false;
   return true;
 }
@@ -213,9 +227,10 @@ export function shouldLogAsset(req) {
 // (the render-test join key). It is written to the site's SEPARATE
 // asset dataset (or, on the D1 fallback, the same visit_log table
 // under event 'asset', which every visit aggregate excludes).
-export function buildAssetRecord(req, res, siteHost, visitor = '') {
+export function buildAssetRecord(req, res, siteHost, digests = {}) {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
+  const dg = (digests && typeof digests === 'object') ? digests : { visitor: digests || '' };
   return {
     t: new Date().toISOString(),
     site: siteHost,
@@ -236,29 +251,57 @@ export function buildAssetRecord(req, res, siteHost, visitor = '') {
     via: 'edge',
     event: 'asset',
     ...claimFields(req, ua),
-    // Companion records carry the digest too (lens spec B-e: the
+    // Companion records carry the digests too (lens spec B-e: the
     // field rides the visit record "and B-a's companion records"),
     // so the render join can be exact rather than ASN-approximate.
-    visitor: visitor || ''
+    visitor: dg.visitor || '',
+    visitorepoch: dg.visitorepoch || ''
   };
 }
 
 // Named events (advisory amendment: actions, not just loads; extended
-// Oct 18 2026, lens spec B-c). Derived from the path at write time —
-// page loads stay 'pageview'; the named surfaces are labelled so
-// "what did people/agents do" is answerable without path-archaeology.
-// The keyed stats path is deliberately NOT an event: shouldLog
-// excludes /.netlify/* before any record is built, so steward
-// dashboard use never enters the visit record (if a steward-use count
-// is ever wanted it belongs in the D1 attempts table, not here).
+// Oct 18 2026, lens spec B-c; extended Oct 19 2026, D3.1/D3.2).
+// Derived from the path at write time — page loads stay 'pageview';
+// the named surfaces are labelled so "what did people/agents do" is
+// answerable without path-archaeology. The keyed surfaces are
+// deliberately NOT events: shouldLog excludes them before any record
+// is built, so steward use never enters the visit record (if a
+// steward-use count is ever wanted it belongs in the D1 attempts
+// table, not here). The public function reads (counts, ledger, the
+// data files, the render-claim and signal-challenge how-tos) ARE
+// events since D3.2 — they are published protocol surfaces and their
+// reads belong in the record.
+// The /changed format fold: eventForPath returns the bare
+// 'changed-read'; frontDoor resolves it against the response's own
+// content type (changedEventForResponse below) — the response is
+// the ground truth of routes/changed.js's selection (an explicit
+// ?format wins there, else the Accept header, Atom checked before
+// JSON), so the record names the format actually served.
 export function eventForPath(pathname) {
   if (pathname === '/dashboard.html' || pathname === '/dashboard') return 'arrival-board-view';
   if (pathname === '/guestbook.html' || pathname === '/guestbook') return 'guestbook-view';
   if (pathname.startsWith('/utilities/')) return 'utility-read';
   if (pathname.startsWith('/api/v1/receipts') || pathname.startsWith('/receipts/')) return 'receipt-check';
-  if (pathname === '/changed') return 'changed-read';
-  if (pathname === '/api/v1/notes') return 'notes-read';
+  if (pathname === '/changed' || pathname === '/.netlify/functions/changed') return 'changed-read';
+  if (pathname === '/api/v1/notes' || pathname === '/api/v1/notes/') return 'notes-read';
+  if (pathname === '/data' || pathname.startsWith('/data/')) return 'data-read';
+  if (pathname === '/.netlify/functions/counts') return 'counts-read';
+  if (pathname === '/.netlify/functions/ledger') return 'ledger-read';
+  if (pathname === '/api/v1/signal/challenge') return 'signal-challenge-read';
+  if (pathname === '/api/v1/render-claim') return 'render-howto-read';
   return 'pageview';
+}
+
+// The /changed Accept-based fold, applied where the response is in
+// hand (frontDoor): an explicit-format event already decided by
+// eventForPath stands; the bare 'changed-read' resolves to the
+// format the response actually carries.
+export function changedEventForResponse(event, res) {
+  if (event !== 'changed-read') return event;
+  const ct = (res && res.headers && res.headers.get('content-type')) || '';
+  if (ct.includes('application/json')) return 'changed-read-json';
+  if (ct.includes('application/atom+xml')) return 'changed-read-atom';
+  return event;
 }
 
 // Serve a request's content: markdown negotiation first (for plain
@@ -434,7 +477,8 @@ export async function frontDoor(req, env, ctx, res, opts) {
   }
   if (shouldLog(req)) {
     const visitor = await visitorForRequest(env, req);
-    const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname), visitor);
+    const event = changedEventForResponse(eventForPath(url.pathname), out);
+    const record = buildVisitRecord(req, out, opts.siteHost, event, visitor);
     const write = writeVisit(env, record)
       .then(() => { try { console.log('VISIT ' + JSON.stringify(record)); } catch (e) {} })
       .catch(() => {});

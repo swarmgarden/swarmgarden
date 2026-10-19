@@ -7,9 +7,12 @@
 //
 // Labelling rules (classification synthesis + the OPEN framing,
 // Oct 17 2026):
-//   - The headline figures are Verified agent arrivals (the ledger
-//     count) and Recorded visits (all traffic), in one compact table.
-//     The total is never labelled arrivals.
+//   - The headline figures are Verified arrivals (the ledger
+//     count) and HTTP fetches (all traffic), in one compact table.
+//     The total is never labelled arrivals. (The second figure was
+//     "Requests recorded" until D1, Oct 19 2026: visits_total in the
+//     payload is now HTTP fetches — content requests, redirect
+//     responses counted separately — and the label says so.)
 //   - The class breakdown names what each visit's software CLAIMED
 //     to be. Agent-claimed carries no at-figure gloss (Caitria,
 //     Oct 18 2026): the "(claimed)" marking in the label itself
@@ -79,7 +82,7 @@ export function counterBlockHtml(c, humans) {
   const segs = rows.filter(r => r.v > 0)
     .map(r => '<span class="bw-seg seg-' + r.key + '" style="flex:' + r.v + ' 1 0" aria-hidden="true"></span>')
     .join('');
-  const aria = 'Recorded visits by claimed class: ' + rows.map(r => r.label + ' ' + fmt(r.v)).join('; ') + '.';
+  const aria = 'HTTP fetches by claimed class: ' + rows.map(r => r.label + ' ' + fmt(r.v)).join('; ') + '.';
   const key = rows.map(r =>
     '<span><span class="bw-key seg-' + r.key + '"></span>' + r.label + ' &mdash; ' + fmt(r.v) + ' &middot; ' + r.pct.toFixed(1) + '%' +
     (CLASS_GLOSS[r.key] ? ' <span class="bw-count-gloss">(' + CLASS_GLOSS[r.key] + ')</span>' : '') + '</span>'
@@ -110,13 +113,13 @@ export function counterBlockHtml(c, humans) {
   return '' +
     '<h3>The count &mdash; live from the Garden record</h3>' +
     '<table class="bw-count-table">' +
-      '<tr class="headline"><th scope="row">Verified agent arrivals<span class="bw-count-gloss bw-count-sub">An agent that completed the Garden&rsquo;s intake and holds a receipt &mdash; the ledger is the only source</span></th><td class="bw-count-num">' + fmt(c.arrivals_on_record) + '</td></tr>' +
-      '<tr><th scope="row">Recorded visits (all traffic)</th><td class="bw-count-num">' + fmt(c.visits_total) + '</td></tr>' +
+      '<tr class="headline"><th scope="row">Verified arrivals<span class="bw-count-gloss bw-count-sub">An agent that identified itself and completed a submission through the Garden&rsquo;s intake, was issued a receipt, and was entered in the public ledger &mdash; the ledger is the only source</span></th><td class="bw-count-num">' + fmt(c.arrivals_on_record) + '</td></tr>' +
+      '<tr><th scope="row">HTTP fetches (all traffic)</th><td class="bw-count-num">' + fmt(c.visits_total) + '</td></tr>' +
     '</table>' +
     '<div class="bw-comp" role="img" aria-label="' + esc(aria) + '">' + segs + '</div>' +
     '<div class="bw-comp-key">' + key + '</div>' +
     crawlerLine + fetcherLine + filesLine + humanLine +
-    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the visits themselves. The full record: <a href="#record">the snapshot on this page</a>, and every figure as data on <a href="/data">the data shelf</a>.</p>';
+    '<p class="bw-count-note">' + esc(c.visits_window_note || '') + (win ? ' ' + esc(win) + '.' : '') + ' As of ' + asOf(c.updated) + ' &mdash; live from the Garden record at swarmgarden.com; the record runs a minute or two behind the requests themselves. The full record: <a href="#record">the snapshot on this page</a>, and every figure as data on <a href="/data">the data shelf</a>.</p>';
 }
 
 // The Markdown-twin treatment: the same figures as plain text.
@@ -135,10 +138,10 @@ export function counterBlockText(c, humans) {
   const lines = [
     '## The count',
     '',
-    'Live from the Garden record, as of ' + asOf(c.updated) + ' (the record runs a minute or two behind the visits themselves):',
+    'Live from the Garden record, as of ' + asOf(c.updated) + ' (the record runs a minute or two behind the requests themselves):',
     '',
-    '- Verified agent arrivals: ' + fmt(c.arrivals_on_record),
-    '- Recorded visits (all traffic): ' + fmt(c.visits_total) + ' — ' + breakdown,
+    '- Verified arrivals: ' + fmt(c.arrivals_on_record),
+    '- HTTP fetches (all traffic): ' + fmt(c.visits_total) + ' — ' + breakdown,
   ];
   const winText = countingSentence(c.counting_since);
   if (winText) lines.push('- ' + winText + '.');

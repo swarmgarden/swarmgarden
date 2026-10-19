@@ -17,14 +17,40 @@ import { claimedBot } from './behaviour.mjs';
 // rates are printed.
 // plus, from Oct 18 2026 (lens spec B-e), the visitor digest
 //   { visitor }
-// — 16 hex chars of an HMAC over (UTC date, egress address,
-// user-agent) under a per-site Worker secret (shared/visitor.mjs).
-// Within a day it links a visitor's requests; across days it links
-// nothing (the date is inside the keyed message). Records written
-// before the change carry no digest; records whose request reached
-// the edge without an address header, or whose Worker had no secret
-// provisioned, carry ''. The address itself is never stored — it is
-// an input to a one-way function and is discarded.
+// — 16 hex chars of an HMAC over (date, egress address, user-agent)
+// under a per-site Worker secret (shared/visitor.mjs). Within a day
+// it links a visitor's requests; across days it links nothing (the
+// date is inside the keyed message). From Oct 19 2026 (D2 of the
+// measurement-accuracy build) the date inside the digest is the
+// PACIFIC calendar date (America/Los_Angeles), not the UTC date —
+// the day boundary the site's own reporting uses; records from the
+// first day carry UTC-date digests, and the era split is labelled
+// wherever daily digests are printed. Records written before Oct 18
+// carry no digest; records whose request reached the edge without
+// an address header, or whose Worker had no secret provisioned,
+// carry ''. The address itself is never stored — it is an input to
+// a one-way function and is discarded.
+// plus, from Oct 19 2026 (D2), the epoch visitor digest
+//   { visitorepoch }
+// — the same HMAC construction keyed on the PACIFIC CALENDAR MONTH
+// instead of the day, so a distinct-visitor count can span a week
+// or a month (a span the daily digest cannot measure by
+// construction). Caitria's ruling (Oct 19 2026): cross-day-linking
+// digests are acceptable — privacy here means raw addresses are
+// never stored, and they never are; the address is an input to a
+// one-way function and is discarded. The user-agent stays inside
+// both digests (a documented undercount: one visitor whose client
+// string changes mid-period counts twice); removing it is a
+// modelling choice for a later ruling, not this build. Records
+// written before this change carry no epoch digest.
+// HEADLINE DEFINITION (D1, Oct 19 2026): the headline figure is
+// HTTP FETCHES — records whose response was not a redirect (status
+// outside 300–399). Redirect responses (on this platform, chiefly
+// the 307 leg of an extensionless page fetch) are counted
+// SEPARATELY, never inside the fetch total, and the two sum to the
+// old "visits" definition exactly (aggregateVisits' 'fetchsplit'
+// dimension computes both from the same stored status field; no
+// stored field changed).
 //   cls/purpose come from shared/taxonomy.mjs classify() at write time;
 //   behaviour labels are NOT stored — they are computed at query time
 //   over these records (shared/behaviour.mjs).
@@ -72,10 +98,15 @@ import { claimedBot } from './behaviour.mjs';
 //   blob19  : sigagent (Oct 18 2026, ASAP Item 5 stage ii — the
 //             Signature-Agent header's hostname only, a public
 //             claim the signer publishes about itself)
+//   blob20  : visitorepoch (Oct 19 2026, D2 — the epoch visitor
+//             digest, keyed on the Pacific calendar month)
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-// (AE allowance is 20 blobs; 19 are used. New stored fields are a
-// finite resource — see the lens spec's blob-budget note.)
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor', 'sigagent'];
+// Blob budget (stated accurately, Oct 19 2026): 20 of 20 allocated;
+// blob10 ('via', a constant since the beacon retired) is the
+// designated reclaim candidate — era-forward repurposing — if a
+// future field ever outranks it; otherwise a new field requires a
+// second dataset or a schema decision.
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor', 'sigagent', 'visitorepoch'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -214,17 +245,41 @@ export async function readRecentVisits(env, limit) {
 //                (lens spec A4). All three describe the era since the
 //                verdict fields began; earlier records carry neither
 //                field and are skipped, never folded into a verdict.
+//   'fetchsplit' -> fetchesTotal / fetchesByClass / redirectsTotal /
+//                redirectsByClass (D1, Oct 19 2026): one grouping
+//                over (class × status); a record is a REDIRECT when
+//                its stored status is an integer in 300–399, a FETCH
+//                otherwise. fetches + redirects == total, exactly —
+//                the INV-2 identity the deploys verify live.
+//   'visitorepoch' -> byVisitorEpoch (D2, Oct 19 2026): the epoch
+//                digest series, folded per Pacific day exactly like
+//                'visitorday' but over blob20. Per-day distinct
+//                epoch digests are exact; a multi-day distinct count
+//                is NOT the sum of the days (one digest spans days by
+//                design) — span counts come from span queries over
+//                the same grouping (the hourly snapshot's).
 // `total` is a dedicated count() over the same scope, never a sum of
 // a grouped map. The scope matches the raw read's: this site's own
 // dataset rows (AE index1 = SITE_HOST). The dataset begins at
 // counting_since by construction (shared/counting.mjs), so the full
 // dataset IS the since-counting_since set — the same basis the
 // hourly snapshot's totals use.
-// GROUP_LIMIT bounds the ROWS OF A GROUPING (distinct values), the
-// same bound the hourly snapshot's queries use; the live
-// cardinalities (paths, UA strings, referrers) sit orders of
-// magnitude below it, and the headline total/class figures do not
-// depend on it at all (count() + a six-value grouping).
+// GROUP_LIMIT bounds the ROWS OF A GROUPING (distinct values).
+// The measurement-accuracy audit (Oct 19 2026, finding f) named the
+// silent-truncation risk precisely: this LIMIT was applied with no
+// detection, and the binding case is 'visitorday' — its (digest ×
+// UTC hour) cardinality grows daily forever and reaches this limit
+// within weeks at current traffic, after which the distinct-visitor
+// tables would silently undercount. The fix (D3.4) is DETECTION,
+// not a smaller limit: any AE grouping that returns a full
+// GROUP_LIMIT of rows is FLAGGED in the result's truncated_dims —
+// possibly truncated, treat as degraded, never as exact. The limit
+// itself stays 10000: lowering it would truncate exact folds that
+// are already above any small bound today (the 'ua' grouping feeds
+// the counts payload's claimed-crawler fold; the Garden already has
+// hundreds of distinct UA strings). The D1 fallback path applies
+// no LIMIT (its groupings are complete by construction) and never
+// flags.
 const GROUP_LIMIT = 10000;
 
 const AGG_DIMS = {
@@ -313,6 +368,7 @@ export async function aggregateVisits(env, dims) {
   const out = {};
   const ae = aeConfigured(env);
   const host = String(env.SITE_HOST || '').replace(/'/g, '');
+  const truncated = [];
   const runGroup = async (dim, target) => {
     const [key, aeExpr, d1Path, skip] = AGG_DIMS[dim];
     let rows;
@@ -320,6 +376,7 @@ export async function aggregateVisits(env, dims) {
       const expr = dim === 'day' ? 'substring(blob1, 1, 10)' : aeExpr;
       rows = await aeSql(env, 'SELECT ' + expr + ' AS k, count() AS c FROM ' + env.AE_DATASET +
         " WHERE index1 = '" + host + "' GROUP BY k LIMIT " + GROUP_LIMIT);
+      if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
     } else {
       const expr = dim === 'day'
         ? "substr(json_extract(data, '$.t'), 1, 10)"
@@ -373,6 +430,7 @@ export async function aggregateVisits(env, dims) {
       if (ae) {
         rows = await aeSql(env, 'SELECT blob15 AS n, blob16 AS v, count() AS c FROM ' + env.AE_DATASET +
           " WHERE index1 = '" + host + "' GROUP BY n, v LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
           "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY n, v').all();
@@ -396,12 +454,63 @@ export async function aggregateVisits(env, dims) {
       if (ae) {
         rows = await aeSql(env, 'SELECT blob18 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM ' + env.AE_DATASET +
           " WHERE index1 = '" + host + "' GROUP BY v, h LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
           "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
         rows = results || [];
       }
       part.byVisitorDay = foldVisitorDays(rows);
+    } else if (dim === 'visitorepoch') {
+      // The epoch digest series (D2, Oct 19 2026): the same fold as
+      // 'visitorday' over blob20 (the month-keyed digest). Per-day
+      // rows are exact; multi-day distinct counts are span queries,
+      // not day sums (see the dims note above).
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, 'SELECT blob20 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM ' + env.AE_DATASET +
+          " WHERE index1 = '" + host + "' GROUP BY v, h LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
+        rows = results || [];
+      }
+      part.byVisitorEpoch = foldVisitorDays(rows);
+    } else if (dim === 'fetchsplit') {
+      // The fetch/redirect split (D1, Oct 19 2026): one grouping
+      // over (class × status). Redirect = stored status an integer
+      // in 300–399; everything else (including a null status) is a
+      // fetch. fetchesTotal + redirectsTotal == total by
+      // construction — the INV-2 identity.
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, 'SELECT blob6 AS cls, double1 AS s, count() AS c FROM ' + env.AE_DATASET +
+          " WHERE index1 = '" + host + "' GROUP BY cls, s LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY cls, s').all();
+        rows = results || [];
+      }
+      const fetchesByClass = {}, redirectsByClass = {};
+      let fetchesTotal = 0, redirectsTotal = 0;
+      for (const r of rows) {
+        const cls = r.cls || '';
+        const s = Number(r.s);
+        const c = Number(r.c || 0);
+        if (Number.isInteger(s) && s >= 300 && s <= 399) {
+          redirectsByClass[cls] = (redirectsByClass[cls] || 0) + c;
+          redirectsTotal += c;
+        } else {
+          fetchesByClass[cls] = (fetchesByClass[cls] || 0) + c;
+          fetchesTotal += c;
+        }
+      }
+      part.fetchesByClass = fetchesByClass;
+      part.fetchesTotal = fetchesTotal;
+      part.redirectsByClass = redirectsByClass;
+      part.redirectsTotal = redirectsTotal;
     } else if (dim === 'ua') {
       const byUa = await runGroup('ua', {});
       const crawlers = {}, fetchers = {};
@@ -434,5 +543,9 @@ export async function aggregateVisits(env, dims) {
       jobFns.slice(i, i + AGG_WAVE).map(f => f())));
   }
   for (const part of parts) Object.assign(out, part);
+  // AE groupings that returned a full GROUP_LIMIT of rows: possibly
+  // truncated (D3.4) — surfaced, never silently exact. Empty on the
+  // D1 fallback path, whose groupings carry no LIMIT.
+  out.truncated_dims = truncated;
   return out;
 }

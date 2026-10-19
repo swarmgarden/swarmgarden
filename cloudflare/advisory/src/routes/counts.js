@@ -63,7 +63,12 @@ async function readVisits(env) {
   // over the full dataset; claimed crawlers/fetchers re-read from
   // the stored UA strings through the shared dictionary (claims,
   // labelled as such wherever shown); only the ranked lists are cut.
-  const a = await aggregateVisits(env, ['class', 'path', 'ua']);
+  // D1 (Oct 19 2026): the fetchsplit dimension splits the same
+  // records into HTTP fetches and redirect responses — visits_total
+  // below is fetches, redirects ride additively, and
+  // visits_window_records stays the all-records count, so
+  // visits_total + redirects_total == visits_window_records exactly.
+  const a = await aggregateVisits(env, ['class', 'path', 'ua', 'fetchsplit']);
   const interest = {};
   for (const [p, c] of Object.entries(a.byPath)) {
     if (INTEREST.some(x => p.includes(x))) interest[p] = c;
@@ -72,7 +77,9 @@ async function readVisits(env) {
   return {
     total: a.total, byClass: a.byClass, topPaths: top(a.byPath, 10), interest: top(interest, 10),
     crawlersClaimed: a.crawlersClaimed,
-    fetchersClaimed: a.fetchersClaimed
+    fetchersClaimed: a.fetchersClaimed,
+    fetchesTotal: a.fetchesTotal, fetchesByClass: a.fetchesByClass,
+    redirectsTotal: a.redirectsTotal, redirectsByClass: a.redirectsByClass
   };
 }
 
@@ -84,10 +91,11 @@ export async function computeCounts(env) {
     signals_error: "No signal tier on this site — signals are the Garden's.",
     humans_total: 0,
     visits_total: 0, visits_by_class: {},
+    redirects_total: 0, redirects_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: 0,
-    visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    visits_window_note: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
     counting_since: COUNTING_SINCE_ADVISORY,
     updated: new Date().toISOString()
   };
@@ -101,15 +109,20 @@ export async function computeCounts(env) {
   catch (e) { out.humans_error = 'Human count store unavailable.'; }
   try {
     const v = await readVisits(env);
-    out.visits_total = v.total;
+    // D1 (Oct 19 2026): visits_total is HTTP fetches; redirects ride
+    // additively; visits_window_records stays the all-records count
+    // (visits_total + redirects_total == visits_window_records).
+    out.visits_total = v.fetchesTotal;
     out.visits_window_records = v.total;
-    out.visits_by_class = v.byClass;
+    out.visits_by_class = v.fetchesByClass;
+    out.redirects_total = v.redirectsTotal;
+    out.redirects_by_class = v.redirectsByClass;
     out.crawlers_claimed = v.crawlersClaimed;
     out.fetchers_claimed = v.fetchersClaimed;
     out.top_paths = v.topPaths;
     out.agent_interest_files = v.interest;
   }
-  catch (e) { out.visits_error = 'Visit store unavailable.'; }
+  catch (e) { out.visits_error = 'Request store unavailable.'; }
   return out;
 }
 

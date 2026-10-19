@@ -50,10 +50,10 @@
 const DATA_BASE_DEFAULT = 'https://raw.githubusercontent.com/swarmgarden/swarmgarden/main';
 const DATA_FILES = ['garden.json', 'garden-claims.json', 'garden-recent.json',
   'garden-paths.json', 'garden-countries.json', 'garden-series.json', 'garden-responses.json',
-  'garden-knocks.json', 'garden-renders.json',
+  'garden-knocks.json', 'garden-renders.json', 'garden-rendering.json',
   'advisory.json', 'advisory-claims.json', 'advisory-recent.json',
   'advisory-paths.json', 'advisory-countries.json', 'advisory-series.json', 'advisory-responses.json',
-  'advisory-knocks.json', 'advisory-renders.json',
+  'advisory-knocks.json', 'advisory-renders.json', 'advisory-rendering.json',
   'status.json'];
 const REPO_DATA_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/data';
 const REPO_RECORDS_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/records';
@@ -172,7 +172,7 @@ function shell(title, bodyHtml, scriptHtml) {
   return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
     '<title>' + esc(title) + '</title>' +
-    '<meta name="description" content="The Swarm Garden\u2019s record, published as data: per-site figures, claimed-visitor tables with verdicts, and the 100 most recent requests per site, refreshed hourly.">' +
+    '<meta name="description" content="The Swarm Garden\u2019s record, published as data: per-site figures, claimed-name tables with verdicts, and the 100 most recent requests per site, refreshed hourly.">' +
     '<style>' + CSS + '</style></head><body><main>' + bodyHtml +
     '<footer class="record-footer"><p>The record itself: <a href="https://swarmgarden.com">swarmgarden.com</a></p></footer>' +
     '</main>' + (scriptHtml || '') + '</body></html>';
@@ -191,22 +191,26 @@ const HTML_HEADERS = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Contro
 function methodBlock(siteLabel) {
   return '<h2>How this is counted — and what it cannot show</h2>' +
     '<p>Every figure on this page comes from the project\u2019s hourly snapshot of the two sites\u2019 records. ' +
-    'A visit record is written at the edge when a request arrives. It carries the time, the path, the response status, ' +
+    'A request record is written at the edge when a request arrives. It carries the time, the path, the response status, ' +
     'and what the request\u2019s user-agent claimed. <strong>Classes and names are claims</strong>: a request announcing ' +
     '\u201cGPTBot\u201d is recorded as <em>claiming</em> to be GPTBot — never as proof of what sent it. The address-range ' +
     'verdict is the one check the record runs on a claim: whether the request\u2019s network address falls inside the ' +
     'ranges the claimed operator publishes. The address itself is never stored, and the verdict certifies ' +
     'origin-network membership only — nothing about intent.</p>' +
-    '<p><strong>Verified arrivals come only from the Garden\u2019s ledger</strong> — an agent counts as arrived when it ' +
-    'lands and verifies. Claims, signals, render reports and button presses never enter that figure. ' +
-    'The stewards\u2019 own visits are included in these figures and are not filtered out; that is disclosed here ' +
+    '<p><strong>Arrivals come only from the Garden\u2019s ledger</strong> — an arrival counts only when an agent ' +
+    'identified itself and took a recorded action: it completed a submission through the Garden\u2019s intake, ' +
+    'was issued a receipt, and was entered in the public ledger. The name in a submission is self-reported ' +
+    'and remains a claim; what is verified is that the identified submission happened and is on the ledger. ' +
+    'A request is not an arrival, reading a page is not an arrival, and a signal is not an arrival. ' +
+    'Claims, signals, render reports and button presses never enter that figure. ' +
+    'The stewards\u2019 own requests are included in these figures and are not filtered out; that is disclosed here ' +
     'rather than corrected away.</p>' +
     '<p><strong>Published as aggregates only:</strong> countries are published as counts, and any country ' +
-    'with fewer than five visits in the window is folded into a single \u201cAll other countries\u201d ' +
+    'with fewer than five requests in the window is folded into a single \u201cAll other countries\u201d ' +
     'row \u2014 the number folded is printed with the table, and no folded country is named. Distinct ' +
-    'visitors are published as per-day counts (the series table below); the visitor digests those counts ' +
+    'visitor digests are published as per-day counts (the series table below); the digests those counts ' +
     'are made from are never printed, and because a digest is date-scoped the per-day counts cannot be ' +
-    'added into a count of distinct visitors over time.</p>' +
+    'added into a count of distinct digests over time.</p>' +
     '<p><strong>Not published, by design:</strong> referers are not printed; region and network-operator ' +
     'facts stay in the steward copy; and no raw network address exists anywhere in the record to print. ' +
     'Paths are printed with query strings stripped.</p>' +
@@ -236,6 +240,26 @@ function archiveBlock(bundle) {
       'CC BY 4.0 — republish freely with attribution to the Swarm Garden record; keep each figure\u2019s counting window and as-of time attached to it.') + '</p>';
 }
 
+function wordsBlock() {
+  return '<h2>What the words mean</h2>' +
+    '<p><strong>Request.</strong> One HTTP request, recorded at the edge when it arrives. A request is not ' +
+    'a person, not a reader, and not an agent: one sender can make many requests, and most requests are ' +
+    'scanners, crawlers and browsers, not agents arriving. Every total on these pages is a count of ' +
+    'requests, wearing its counting window and as-of time.</p>' +
+    '<p><strong>Fetch.</strong> A request whose response was content, not a redirect. On this platform an ' +
+    'extensionless page address answers first with a redirect (a 307) to its canonical form, so one read ' +
+    'of a page can be two requests; the headline figure on these pages — total HTTP fetches — counts the ' +
+    'content requests only, and redirect responses are counted separately beside it. The two add up to ' +
+    'total requests recorded.</p>' +
+    '<p><strong>Arrival.</strong> An arrival counts only when an agent identified itself and took a recorded ' +
+    'action \u2014 it completed a submission through the Garden\u2019s intake, was issued a receipt, and was ' +
+    'entered in the public ledger. A request alone is not an arrival. Reading a page is not an arrival. ' +
+    'Announcing an agent name in a request is not an arrival (that is a claim). Completing a signal ' +
+    'challenge is not an arrival (that is a signal). The name in a submission is self-reported and remains ' +
+    'a claim; what is verified is that the identified submission happened and is on the ledger \u2014 never ' +
+    'the identity itself.</p>';
+}
+
 // ---------------------------------------------------------------- figures
 
 function shareCell(v, total) {
@@ -244,7 +268,7 @@ function shareCell(v, total) {
 
 function figuresHtml(bundle) {
   const f = bundle.figures || {};
-  const total = (f.rows || []).find(r => r.label === 'Total recorded visits');
+  const total = (f.rows || []).find(r => r.label === 'Total HTTP fetches');
   const totalVal = total && typeof total.value === 'number' ? total.value : 0;
   let h = '<h2>Latest snapshot — figures</h2>';
   h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
@@ -259,8 +283,8 @@ function figuresHtml(bundle) {
   }
   h += '</tbody></table></div></div>';
   if (f.by_class) {
-    h += '<h3>Visits by claimed class</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
-      '<caption>What each request\u2019s user-agent claimed, over the same window. A claim is not a verification.</caption>' +
+    h += '<h3>HTTP fetches by claimed class</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+      '<caption>What each fetch\u2019s user-agent claimed, over the same window. A claim is not a verification.</caption>' +
       '<thead><tr><th scope="col">Claimed class</th><th scope="col" class="num">Requests</th><th scope="col" class="num">Share</th></tr></thead><tbody>';
     for (const r of f.by_class) {
       h += '<tr><td>' + esc(r.label) + '</td><td class="num mono">' + Number(r.value).toLocaleString('en-US') +
@@ -316,7 +340,7 @@ function responsesHtml(responses, bundle) {
 // ---------------------------------------------------------------- paths (v1.1)
 
 function pathsHtml(paths, bundle) {
-  let h = '<h2>Visits by page</h2>';
+  let h = '<h2>Requests by page</h2>';
   if (!paths) {
     return h + '<p>This table was unavailable in the latest pull — it was not refreshed, and the previous ' +
       'hour\u2019s table is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence is a failed ' +
@@ -324,7 +348,7 @@ function pathsHtml(paths, bundle) {
   }
   const rows = paths.rows || [];
   h += '<p class="gloss">Every path recorded for this site over the counting window \u2014 the pages ' +
-    'visitors asked for, and the files the probes asked for. Query strings are stripped, so paths that ' +
+    'that were asked for, and the files the probes asked for. Query strings are stripped, so paths that ' +
     'differ only in a query string are folded together. Most of the 4xx column is the probe traffic: ' +
     'addresses for credential and configuration files this site has never had.</p>';
   h += '<div class="controls" data-controls="paths">' +
@@ -335,11 +359,11 @@ function pathsHtml(paths, bundle) {
     '<button type="button" class="dl" data-dl="json" data-table="paths">Download JSON (current view)</button>' +
     '<a href="/data/' + esc(bundle.site) + '-paths.json">Full table as JSON</a></p></div>';
   h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table id="paths-table" data-enhance="paths">' +
-    '<caption>Visits by path, ' + esc(bundle.site_label) + ', split by response status class. ' +
+    '<caption>Requests by path, ' + esc(bundle.site_label) + ', split by response status class. ' +
     esc(paths.window || '') + ' As of ' + esc(paths.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
     '<thead><tr>' +
     '<th scope="col"><button type="button" class="sort" data-sort="path">Path</button></th>' +
-    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Visits</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Requests</button></th>' +
     '<th scope="col" class="num"><button type="button" class="sort" data-sort="2xx">2xx</button></th>' +
     '<th scope="col" class="num"><button type="button" class="sort" data-sort="3xx">3xx</button></th>' +
     '<th scope="col" class="num"><button type="button" class="sort" data-sort="4xx">4xx</button></th>' +
@@ -361,7 +385,7 @@ function pathsHtml(paths, bundle) {
 // ---------------------------------------------------------------- countries (v1.1)
 
 function countriesHtml(countries, bundle) {
-  let h = '<h2>Visits by country</h2>';
+  let h = '<h2>Requests by country</h2>';
   if (!countries) {
     return h + '<p>This table was unavailable in the latest pull — it was not refreshed, and the previous ' +
       'hour\u2019s table is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence is a failed ' +
@@ -372,11 +396,11 @@ function countriesHtml(countries, bundle) {
   if (sup.folded_countries > 0) {
     display.push({ country: 'All other countries', visits: sup.folded_visits || 0,
       note: sup.folded_countries + (sup.folded_countries === 1 ? ' country' : ' countries') +
-        ', each with fewer than ' + (sup.threshold || 5) + ' visits \u2014 folded, not named' });
+        ', each with fewer than ' + (sup.threshold || 5) + ' requests \u2014 folded, not named' });
   }
   for (const r of display) if (!r.note) r.note = '';
   h += '<p class="gloss">Country is the one geography this record publishes, and only as this ' +
-    'aggregate: a country with fewer than ' + (sup.threshold || 5) + ' visits in the window folds into ' +
+    'aggregate: a country with fewer than ' + (sup.threshold || 5) + ' requests in the window folds into ' +
     '\u201cAll other countries\u201d and is not named. Region and network operator stay in the ' +
     'steward copy. Country codes are the two-letter codes the edge reported.</p>';
   h += '<div class="controls" data-controls="countries">' +
@@ -387,17 +411,17 @@ function countriesHtml(countries, bundle) {
     '<button type="button" class="dl" data-dl="json" data-table="countries">Download JSON (current view)</button>' +
     '<a href="/data/' + esc(bundle.site) + '-countries.json">Full table as JSON</a></p></div>';
   h += '<div class="tablewrap"><div class="table-scroll" tabindex="0"><table id="countries-table" data-enhance="countries">' +
-    '<caption>Visits by country, ' + esc(bundle.site_label) + '. ' + esc(countries.window || '') +
+    '<caption>Requests by country, ' + esc(bundle.site_label) + '. ' + esc(countries.window || '') +
     ' Suppression: ' + esc(sup.rule || '') +
-    (countries.not_recorded ? ' Visits with no country recorded: ' + Number(countries.not_recorded).toLocaleString('en-US') +
+    (countries.not_recorded ? ' Requests with no country recorded: ' + Number(countries.not_recorded).toLocaleString('en-US') +
       ' \u2014 counted in the site total, in no country row.' : '') +
     ' As of ' + esc(countries.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
     '<thead><tr>' +
     '<th scope="col"><button type="button" class="sort" data-sort="country">Country</button></th>' +
-    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Visits</button></th>' +
+    '<th scope="col" class="num"><button type="button" class="sort" data-sort="visits">Requests</button></th>' +
     '<th scope="col">Note</th>' +
     '</tr></thead><tbody>';
-  if (!display.length) h += '<tr><td colspan="3">No visits with a recorded country yet in this window.</td></tr>';
+  if (!display.length) h += '<tr><td colspan="3">No requests with a recorded country yet in this window.</td></tr>';
   for (const r of display) {
     h += '<tr><td>' + esc(r.country) + '</td><td class="num mono">' + r.visits +
       '</td><td>' + esc(r.note || '\u2014') + '</td></tr>';
@@ -421,7 +445,7 @@ function seriesHtml(series, bundle) {
   }
   if (series.class_days) {
     const classes = series.classes || ['agent-claimed', 'browser', 'automation', 'unknown'];
-    h += '<h3>Visits by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+    h += '<h3>Requests by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
       '<caption>' + esc(series.class_note || '') + ' As of ' +
       esc(series.generated_at_pt || bundle.generated_at_pt || '') +
       '. Full series as JSON: <a href="/data/' + esc(bundle.site) + '-series.json">' + esc(bundle.site) + '-series.json</a>.</caption>' +
@@ -436,16 +460,16 @@ function seriesHtml(series, bundle) {
     }
     h += '</tbody></table></div></div>';
   } else {
-    h += '<h3>Visits by claimed class, by day</h3><p>That half of the series was not refreshed in the ' +
+    h += '<h3>Requests by claimed class, by day</h3><p>That half of the series was not refreshed in the ' +
       'latest pull — see the note above.</p>';
   }
   if (series.visitor_days) {
-    h += '<h3>Distinct visitors, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
+    h += '<h3>Distinct visitor digests, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
       '<caption>' + esc(series.visitor_note || '') + ' As of ' +
       esc(series.generated_at_pt || bundle.generated_at_pt || '') + '.</caption>' +
-      '<thead><tr><th scope="col">Day (Pacific)</th><th scope="col" class="num">Distinct visitors</th>' +
+      '<thead><tr><th scope="col">Day (Pacific)</th><th scope="col" class="num">Distinct visitor digests</th>' +
       '<th scope="col" class="num">Requests carrying a digest</th>' +
-      '<th scope="col" class="num">Of those, requests from visitors seen more than once that day</th></tr></thead><tbody>';
+      '<th scope="col" class="num">Of those, requests from digests seen more than once that day</th></tr></thead><tbody>';
     if (!series.visitor_days.length) h += '<tr><td colspan="4">No digest-bearing days recorded yet.</td></tr>';
     for (const r of series.visitor_days) {
       h += '<tr><td class="mono">' + esc(r.day) + '</td><td class="num mono">' + r.distinct_visitors +
@@ -454,7 +478,7 @@ function seriesHtml(series, bundle) {
     }
     h += '</tbody></table></div></div>';
   } else {
-    h += '<h3>Distinct visitors, by day</h3><p>That half of the series was not refreshed in the ' +
+    h += '<h3>Distinct visitor digests, by day</h3><p>That half of the series was not refreshed in the ' +
       'latest pull — see the note above.</p>';
   }
   return h;
@@ -463,14 +487,14 @@ function seriesHtml(series, bundle) {
 // ---------------------------------------------------------------- claims
 
 function claimsHtml(claims, bundle) {
-  let h = '<h2>Claimed visitors, by name — with address-range verdicts</h2>';
+  let h = '<h2>Claimed names — with address-range verdicts</h2>';
   if (!claims) {
     return h + '<p>This table was unavailable in the latest pull — it was not refreshed, and the previous ' +
       'hour\u2019s table is in the <a href="' + REPO_DATA_URL + '">data archive</a>. Its absence is a failed ' +
       'pull, not an empty record.</p>';
   }
   const rows = claims.rows || [];
-  h += '<p class="gloss">Each name is a claim read from the visiting software\u2019s own announcement. The verdict ' +
+  h += '<p class="gloss">Each name is a claim read from the requesting software\u2019s own announcement. The verdict ' +
     'checks the request\u2019s network address against the ranges the claimed operator publishes: ' +
     '<strong>verified-range</strong> (inside them), <strong>wrong-range</strong> (outside them), ' +
     '<strong>unverifiable-no-list</strong> (the operator publishes no list to check against), ' +
@@ -597,6 +621,7 @@ function sitePage(bundle, claims, recent, siteStatus, agg) {
     'with nothing held back but what the privacy paragraph below names. The other site\u2019s data ' +
     'is published separately, never added to this: ' + other + '.</p>';
   body += statusBanner(bundle, siteStatus);
+  body += wordsBlock();
   body += methodBlock(bundle.site_label);
   body += figuresHtml(bundle);
   body += responsesHtml(agg && agg.responses, bundle);
@@ -616,11 +641,11 @@ function siteShelf(site, bundle, siteStatus) {
       '</h3><p>Its data file could not be loaded for this rendering. The archive holds every hour: ' +
       '<a href="' + REPO_DATA_URL + '">data/</a>.</p></li>';
   }
-  const total = (bundle.figures.rows || []).find(r => r.label === 'Total recorded visits');
+  const total = (bundle.figures.rows || []).find(r => r.label === 'Total HTTP fetches');
   const arr = (bundle.figures.rows || []).find(r => r.label === 'Verified agent arrivals on record');
   return '<li><h3><a href="/data/' + esc(site) + '">' + esc(bundle.site_label) + '</a></h3>' +
-    '<p>Latest snapshot figures, visits by page and by country, the daily series, the per-name claimed table with verdicts, and the 100 most recent requests. ' +
-    'Total recorded visits: <span class="mono">' + (total && total.value !== null && total.value !== undefined ? Number(total.value).toLocaleString('en-US') : 'unavailable in the latest pull') + '</span> · ' +
+    '<p>Latest snapshot figures, requests by page and by country, the daily series, the per-name claimed table with verdicts, and the 100 most recent requests. ' +
+    'Total HTTP fetches: <span class="mono">' + (total && total.value !== null && total.value !== undefined ? Number(total.value).toLocaleString('en-US') : 'unavailable in the latest pull') + '</span> · ' +
     'Verified agent arrivals on record: <span class="mono">' + (arr && arr.value !== null && arr.value !== undefined ? arr.value : 'see the page') + '</span> · ' +
     'As of ' + esc(bundle.generated_at_pt || '') + ', refreshed hourly' +
     (siteStatus && siteStatus.state === 'failed' ? ' — <strong>the latest pull failed; the page says so and shows the last completed pull</strong>' : '') + '.</p>' +
@@ -640,6 +665,7 @@ function indexPage(garden, advisory, status) {
     'figures the stewards read — refreshed hourly, with every hour kept in the public repository so ' +
     'the record stands outside our own systems. Each site is a separate dataset, on its own page, ' +
     'counted from its own window; the two are never added together.</p>';
+  body += wordsBlock();
   body += '<ul class="shelf">' +
     siteShelf('garden', garden && garden.data, status && status.data && status.data.sites && status.data.sites.garden) +
     siteShelf('advisory', advisory && advisory.data, status && status.data && status.data.sites && status.data.sites.advisory) +

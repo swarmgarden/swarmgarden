@@ -12,6 +12,18 @@
 //   - Visit totals are computed over ALL recorded visits since
 //     counting began, and the JSON says so, in the open.
 //
+// D1 (Oct 19 2026, measurement-accuracy build): visits_total is now
+// HTTP FETCHES — records whose response was not a redirect (status
+// outside 300–399). On this platform an extensionless page fetch
+// arrives as two requests (a 307 leg, then the content fetch), so
+// the old total counted each such read nearly twice. Redirect
+// responses are published additively (redirects_total /
+// redirects_by_class, class splits on both sides), and
+// visits_window_records remains the all-records count, so
+// visits_total + redirects_total == visits_window_records exactly
+// (INV-2). crawlers_claimed / fetchers_claimed keep their
+// all-records basis (claims read from UA strings) — unchanged.
+//
 // Correction (Oct 18 2026, Caitria's flag): the launch build computed
 // the visit totals over a WINDOW of the most recent 1,500 records —
 // a read sized for launch volumes and never re-sized as they grew.
@@ -87,7 +99,13 @@ async function readVisits(env) {
   // (operator-scheduled) and fetchers (user-triggered) are counted
   // apart, always. Only the ranked LISTS are cut (top 10) — a display
   // limit on a ranked list; every total is the full count.
-  const a = await aggregateVisits(env, ['class', 'path', 'ua']);
+  // D1 (Oct 19 2026): the fetchsplit dimension splits the same
+  // records into HTTP fetches (status outside 300–399) and redirect
+  // responses — the headline below is fetches; the redirect counts
+  // ride as additive keys and visits_window_records stays the
+  // all-records count the totals were computed over, so
+  // visits_total + redirects_total == visits_window_records exactly.
+  const a = await aggregateVisits(env, ['class', 'path', 'ua', 'fetchsplit']);
   const interest = {};
   for (const [p, c] of Object.entries(a.byPath)) {
     if (INTEREST.some(x => p.includes(x))) interest[p] = c;
@@ -96,7 +114,9 @@ async function readVisits(env) {
   return {
     total: a.total, byClass: a.byClass, topPaths: top(a.byPath, 10), interest: top(interest, 10),
     crawlersClaimed: a.crawlersClaimed,
-    fetchersClaimed: a.fetchersClaimed
+    fetchersClaimed: a.fetchersClaimed,
+    fetchesTotal: a.fetchesTotal, fetchesByClass: a.fetchesByClass,
+    redirectsTotal: a.redirectsTotal, redirectsByClass: a.redirectsByClass
   };
 }
 
@@ -108,10 +128,11 @@ export async function computeCounts(env) {
     signals_total: 0,
     humans_total: 0,
     visits_total: 0, visits_by_class: {},
+    redirects_total: 0, redirects_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: 0,
-    visits_window_note: 'Visit totals are computed over all recorded visits since Oct 17, 2026.',
+    visits_window_note: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
     counting_since: COUNTING_SINCE,
     updated: new Date().toISOString()
   };
@@ -137,17 +158,24 @@ export async function computeCounts(env) {
   catch (e) { out.humans_error = 'Human count store unavailable.'; }
   try {
     const v = await readVisits(env);
-    out.visits_total = v.total;
-    // The compatibility key tells the truth now: the totals above
-    // were computed over this many records — all of them.
+    // D1 (Oct 19 2026): visits_total is now HTTP FETCHES (content
+    // requests — records whose response was not a redirect), and
+    // visits_by_class is the fetches' class split. Redirect
+    // responses ride additively (redirects_total /
+    // redirects_by_class). visits_window_records stays the
+    // all-records count — the compatibility key tells the truth:
+    // visits_total + redirects_total == visits_window_records.
+    out.visits_total = v.fetchesTotal;
     out.visits_window_records = v.total;
-    out.visits_by_class = v.byClass;
+    out.visits_by_class = v.fetchesByClass;
+    out.redirects_total = v.redirectsTotal;
+    out.redirects_by_class = v.redirectsByClass;
     out.crawlers_claimed = v.crawlersClaimed;
     out.fetchers_claimed = v.fetchersClaimed;
     out.top_paths = v.topPaths;
     out.agent_interest_files = v.interest;
   }
-  catch (e) { out.visits_error = 'Visit store unavailable.'; }
+  catch (e) { out.visits_error = 'Request store unavailable.'; }
   return out;
 }
 

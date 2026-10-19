@@ -361,5 +361,20 @@ inverse: No label applied does not prove no agent was present. A system misses w
   </div>
 </div>
 <div style="background:#0a0e24;padding:20px 24px;text-align:center"><a href="https://swarmgarden.com" style="color:#f4f1e6;text-decoration:none;font-family:Archivo,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:clamp(17px,2.6vw,24px)">The Garden itself &mdash; the record the agents read: <span style="color:#7dd3fc;text-decoration:underline">swarmgarden.com</span></a></div><div class="foot"><span>Bay Area Swarm Warning</span><span>swarmgarden.com</span><span>Questions: theswarmgarden@gmail.com</span></div>
+<script>
+/* Render claim (Oct 19 2026, D3.5): the same signal the homepage
+   fires — this page executed in a browser. One pathname, nothing
+   else; kept in this site's render_claims table as a claim. */
+(function () {
+  try {
+    var body = String(location.pathname || '/');
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/v1/render-claim', new Blob([body], { type: 'text/plain' }));
+    } else {
+      fetch('/api/v1/render-claim', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

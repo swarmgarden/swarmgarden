@@ -47,16 +47,16 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { humanTotal, setHumanPaused } from '../lib/human.js';
 import { setRenderPaused } from '../lib/render.js';
 
-const BASIS = 'All recorded visits since Oct 17, 2026';
+const BASIS = VISITS_BASIS;
 
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday']);
+  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']);
   const recent = await readRecentVisits(env, 50); // newest first — display list only
   return { a, recent };
 }
@@ -85,6 +85,10 @@ function aggregate(a) {
     referrersGrouped: groupReferrers(a.byRef, a.total),
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
+    byVisitorEpoch: a.byVisitorEpoch,
+    fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
+    fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
+    truncatedDims: a.truncated_dims || [],
     edge: (a.byVia && a.byVia['edge']) || 0, beacon: 0 // the beacon write path is not carried over; every record is edge-written
   };
 }
@@ -116,7 +120,7 @@ export default async (req, env) => {
   }
   let loaded;
   try { loaded = await loadVisits(env); }
-  catch (e) { return new Response('Storage read failed. Visit records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
+  catch (e) { return new Response('Storage read failed. Request records are also in the Worker logs (search VISIT).', { status: 200, headers: { 'Content-Type': 'text/plain' } }); }
   const recs = loaded.recent; // newest first, at most 50 — display list
   const agg = aggregate(loaded.a);
   const asOf = new Date().toISOString();
@@ -128,6 +132,7 @@ export default async (req, env) => {
   if (url.searchParams.get('format') === 'json') {
     return new Response(JSON.stringify({
       arrivals_on_record: arrivals, humans_self_reported: humans, api_attempts: attempts, render_claims: renders,
+      truncated_dims: agg.truncatedDims,
       ...agg, visits: visitsBlock(agg, asOf), recent: recs
     }, null, 2), { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
@@ -150,27 +155,30 @@ export default async (req, env) => {
     '<li>Visitors&rsquo; Book: no visitors&rsquo; book on this site — the book is the Garden&rsquo;s.</li></ul>';
 
   // ---- Block B: visits (full-dataset aggregates) ----
-  html += '<h3>Visits — ' + agg.total + ' total recorded visits</h3>';
-  html += '<p>' + BASIS + ' · as of ' + esc(asOf) + '. All records edge-written. Everything below is requests, not arrivals.</p>';
+  html += '<h3>Requests — ' + agg.fetchesTotal + ' HTTP fetches · ' + agg.redirectsTotal + ' redirect responses (' + agg.total + ' recorded in all)</h3>';
+  html += '<p>' + BASIS + ' · as of ' + esc(asOf) + '. All records edge-written. The tables below cover all recorded requests, redirect legs included, except the two split tables directly under this line. Everything below is requests, not arrivals.</p>';
   html += '<p>Human/automation reads are classifications by claimed user-agent (single-source taxonomy) plus edge bot signals — a stated basis, not a certainty.</p>';
-  html += '<h4>Requests by claimed class</h4>' + countTable(esc, sortedPairs(agg.byClass), agg.total);
+  html += '<h4>HTTP fetches by claimed class</h4>' + countTable(esc, sortedPairs(agg.fetchesByClass), agg.fetchesTotal);
+  html += '<h4>Redirect responses by claimed class</h4>' + countTable(esc, sortedPairs(agg.redirectsByClass), agg.redirectsTotal);
+  html += '<h4>Requests by claimed class (all recorded, redirects included)</h4>' + countTable(esc, sortedPairs(agg.byClass), agg.total);
   html += '<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>';
-  html += '<h4>Agent-claimed visits, by purpose</h4>' + countTable(esc, sortedPairs(agg.byPurpose), agentClaimed);
+  html += '<h4>Agent-claimed requests, by purpose</h4>' + countTable(esc, sortedPairs(agg.byPurpose), agentClaimed);
   html += '<h4>Claimed crawlers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += '<h4>Claimed fetchers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
-  html += '<p>Names are read from the user-agent strings through the shared claimed-bot dictionary — claims, as announced by the visiting software itself.</p>';
+  html += '<p>Names are read from the user-agent strings through the shared claimed-bot dictionary — claims, as announced by the requesting software itself.</p>';
   html += '<h4>Behaviour labels (private working labels, computed from paths)</h4>' + countTable(esc, sortedPairs(agg.byBehaviour), agg.total);
   html += '<h4>Response status totals</h4>' + countTable(esc, sortedPairs(agg.byStatus), agg.total);
   html += '<h4>Named events</h4>' + countTable(esc, sortedPairs(agg.byEvent), agg.total);
   html += '<h4>Top pages</h4>' + countTable(esc, agg.topPaths, agg.total);
   html += '<h4>Agent-interest files</h4>' + countTable(esc, agg.interest, agg.total);
   html += '<p>Distinct paths read: <strong>' + agg.readDepth + '</strong>.</p>';
-  html += '<h4>Visits by day</h4>' + countTable(esc, Object.entries(agg.byDay).sort(), agg.total);
-  html += '<h4>Visits by country (top 12)</h4>' + countTable(esc, agg.topCountries, agg.total);
+  html += '<h4>Requests by day</h4>' + countTable(esc, Object.entries(agg.byDay).sort(), agg.total);
+  html += '<h4>Requests by country (top 12)</h4>' + countTable(esc, agg.topCountries, agg.total);
   html += '<p>Edge geography — a country is the network exit point, not the operator&rsquo;s home.</p>';
   html += '<h4>Top referrers</h4>' + referrerTableHtml(esc, agg.referrersGrouped, agg.total);
   html += '<h4>Address-range verdicts, by claimed name</h4>' + verdictTableHtml(esc, agg.byNameVerdict);
   html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
+  html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
 
   // ---- Channel knocks (B-b read) ----
   html += '<h3>Channel knocks — refused POST attempts</h3>';
@@ -185,7 +193,7 @@ export default async (req, env) => {
 
   // ---- Render-signalled (B-d read) ----
   html += '<h3>Render-signalled — pages reporting a render (claims)</h3>';
-  html += '<p>A page&rsquo;s own script posts a claim to /api/v1/render-claim after the page renders; the claim is kept in this site&rsquo;s own table and published under the name &ldquo;render-signalled&rdquo;: evidence a browser executed the page. It is forgeable in principle — anyone can post one by hand — and it is never an arrival: it enters neither the visit record, the counts, nor the ledger.</p>';
+  html += '<p>A page&rsquo;s own script posts a claim to /api/v1/render-claim after the page renders; the claim is kept in this site&rsquo;s own table and published under the name &ldquo;render-signalled&rdquo;: evidence a browser executed the page. It is forgeable in principle — anyone can post one by hand — and it is never an arrival: it enters neither the request record, the counts, nor the ledger.</p>';
   if (renders === null) html += '<p>Unavailable.</p>';
   else if (!renders.total) html += '<p>None recorded yet.</p>';
   else {

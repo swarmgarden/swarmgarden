@@ -15,10 +15,12 @@
 // first is what keeps this honest when a pull fails: the last
 // completed pull stays up, wearing its own as-of.
 //
-// Answered directly in the router, BEFORE the front door, like
-// the Advisory's data routes: reads of the record are not
-// visit-logged (a reader of the record does not write themselves
-// into it), and a data failure can never reach page serving.
+// Answered directly in the router, before the route table, like
+// the Advisory's data routes, so a data failure can never reach
+// page serving. Since D3.2 (Oct 19 2026) the router wraps the
+// response in the front door: each read writes one 'data-read'
+// visit record — the Oct 18 no-logging rule was reversed by the
+// measurement-accuracy build (see src/index.js).
 // Only the published file names answer — the whitelist is
 // extended by name, never by pattern; any other /data/* path
 // falls through to the Garden's ordinary handling (and its 404
@@ -32,10 +34,10 @@
 const DATA_BASE_DEFAULT = 'https://raw.githubusercontent.com/swarmgarden/swarmgarden/main';
 const DATA_FILES = ['garden.json', 'garden-claims.json', 'garden-recent.json',
   'garden-paths.json', 'garden-countries.json', 'garden-series.json', 'garden-responses.json',
-  'garden-knocks.json', 'garden-renders.json',
+  'garden-knocks.json', 'garden-renders.json', 'garden-rendering.json',
   'advisory.json', 'advisory-claims.json', 'advisory-recent.json',
   'advisory-paths.json', 'advisory-countries.json', 'advisory-series.json', 'advisory-responses.json',
-  'advisory-knocks.json', 'advisory-renders.json',
+  'advisory-knocks.json', 'advisory-renders.json', 'advisory-rendering.json',
   'status.json'];
 const REPO_DATA_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/data';
 const FRESH_MS = 10 * 60 * 1000; // publication cadence is hourly
