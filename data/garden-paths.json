@@ -1,25 +1,25 @@
 {
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:41:10 AM PT",
-  "generated_at_utc": "2026-10-19T17:41:10Z",
+  "generated_at_pt": "Oct 19, 2026, 10:47:13 AM PT",
+  "generated_at_utc": "2026-10-19T17:47:13Z",
   "rows": [
     {
-      "2xx": 644,
+      "2xx": 645,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/",
-      "visits": 644
+      "visits": 645
     },
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 129,
+      "4xx": 130,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/wp-admin/install.php",
-      "visits": 129
+      "visits": 130
     },
     {
       "2xx": 86,
@@ -95,12 +95,12 @@
     },
     {
       "2xx": 2,
-      "3xx": 40,
+      "3xx": 41,
       "4xx": 0,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/questions.html",
-      "visits": 42
+      "visits": 43
     },
     {
       "2xx": 40,
@@ -113,11 +113,20 @@
     },
     {
       "2xx": 2,
-      "3xx": 36,
+      "3xx": 37,
       "4xx": 0,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/registry.html",
+      "visits": 39
+    },
+    {
+      "2xx": 38,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/questions",
       "visits": 38
     },
     {
@@ -135,7 +144,16 @@
       "4xx": 0,
       "5xx": 0,
       "none_recorded": 0,
-      "path": "/questions",
+      "path": "/registry",
+      "visits": 37
+    },
+    {
+      "2xx": 2,
+      "3xx": 35,
+      "4xx": 0,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/reports.html",
       "visits": 37
     },
     {
@@ -145,24 +163,6 @@
       "5xx": 0,
       "none_recorded": 0,
       "path": "/api/v1/notes",
-      "visits": 36
-    },
-    {
-      "2xx": 36,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/registry",
-      "visits": 36
-    },
-    {
-      "2xx": 2,
-      "3xx": 34,
-      "4xx": 0,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/reports.html",
       "visits": 36
     },
     {
@@ -234,6 +234,15 @@
       "4xx": 0,
       "5xx": 0,
       "none_recorded": 0,
+      "path": "/.netlify/functions/counts",
+      "visits": 24
+    },
+    {
+      "2xx": 24,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "none_recorded": 0,
       "path": "/utilities/garden-state/v1",
       "visits": 24
     },
@@ -245,15 +254,6 @@
       "none_recorded": 0,
       "path": "/participate.md",
       "visits": 22
-    },
-    {
-      "2xx": 20,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/.netlify/functions/counts",
-      "visits": 20
     },
     {
       "2xx": 20,
@@ -339,11 +339,11 @@
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 16,
+      "4xx": 17,
       "5xx": 0,
       "none_recorded": 0,
-      "path": "/config.json",
-      "visits": 16
+      "path": "/shop/wp-includes/wlwmanifest.xml",
+      "visits": 17
     },
     {
       "2xx": 0,
@@ -351,7 +351,7 @@
       "4xx": 16,
       "5xx": 0,
       "none_recorded": 0,
-      "path": "/shop/wp-includes/wlwmanifest.xml",
+      "path": "/config.json",
       "visits": 16
     },
     {
@@ -429,10 +429,55 @@
     {
       "2xx": 0,
       "3xx": 0,
+      "4xx": 13,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/wp1/wp-includes/wlwmanifest.xml",
+      "visits": 13
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 13,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/wp2/wp-includes/wlwmanifest.xml",
+      "visits": 13
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 12,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/2019/wp-includes/wlwmanifest.xml",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 12,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/blog/wp-includes/wlwmanifest.xml",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
       "4xx": 12,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/sito/wp-includes/wlwmanifest.xml",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 12,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/test/wp-includes/wlwmanifest.xml",
       "visits": 12
     },
     {
@@ -447,55 +492,10 @@
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 12,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/wp1/wp-includes/wlwmanifest.xml",
-      "visits": 12
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 12,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/wp2/wp-includes/wlwmanifest.xml",
-      "visits": 12
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 11,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/2019/wp-includes/wlwmanifest.xml",
-      "visits": 11
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
       "4xx": 11,
       "5xx": 0,
       "none_recorded": 0,
       "path": "/actuator/env",
-      "visits": 11
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 11,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/blog/wp-includes/wlwmanifest.xml",
-      "visits": 11
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 11,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/test/wp-includes/wlwmanifest.xml",
       "visits": 11
     },
     {
@@ -535,6 +535,15 @@
       "visits": 10
     },
     {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 10,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/cms/wp-includes/wlwmanifest.xml",
+      "visits": 10
+    },
+    {
       "2xx": 10,
       "3xx": 0,
       "4xx": 0,
@@ -542,15 +551,6 @@
       "none_recorded": 0,
       "path": "/reports.md",
       "visits": 10
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 9,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/cms/wp-includes/wlwmanifest.xml",
-      "visits": 9
     },
     {
       "2xx": 0,
@@ -586,6 +586,15 @@
       "5xx": 0,
       "none_recorded": 0,
       "path": "/news/wp-includes/wlwmanifest.xml",
+      "visits": 9
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/site/wp-includes/wlwmanifest.xml",
       "visits": 9
     },
     {
@@ -667,15 +676,6 @@
       "5xx": 0,
       "none_recorded": 0,
       "path": "/server-status",
-      "visits": 8
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 8,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/site/wp-includes/wlwmanifest.xml",
       "visits": 8
     },
     {
@@ -847,6 +847,15 @@
       "5xx": 0,
       "none_recorded": 0,
       "path": "/.env.staging",
+      "visits": 5
+    },
+    {
+      "2xx": 5,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "none_recorded": 0,
+      "path": "/.netlify/functions/ledger",
       "visits": 5
     },
     {
@@ -1117,15 +1126,6 @@
       "5xx": 0,
       "none_recorded": 0,
       "path": "/.gitlab-ci.yml",
-      "visits": 3
-    },
-    {
-      "2xx": 3,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "none_recorded": 0,
-      "path": "/.netlify/functions/ledger",
       "visits": 3
     },
     {
