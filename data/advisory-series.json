@@ -9,12 +9,12 @@
       "unknown": 392
     },
     {
-      "agent-claimed": 12,
-      "automation": 208,
-      "browser": 636,
+      "agent-claimed": 13,
+      "automation": 219,
+      "browser": 647,
       "day": "2026-10-18",
-      "total": 1021,
-      "unknown": 165
+      "total": 1048,
+      "unknown": 169
     }
   ],
   "class_note": "Visits by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications.",
@@ -25,16 +25,16 @@
     "unknown"
   ],
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 5:12:50 PM PT",
-  "generated_at_utc": "2026-10-19T00:12:50Z",
+  "generated_at_pt": "Oct 18, 2026, 6:12:42 PM PT",
+  "generated_at_utc": "2026-10-19T01:12:42Z",
   "site": "advisory",
   "unavailable_notes": [],
   "visitor_days": [
     {
       "day": "2026-10-18",
-      "digest_requests": 648,
-      "distinct_visitors": 188,
-      "repeat_requests": 506
+      "digest_requests": 675,
+      "distinct_visitors": 200,
+      "repeat_requests": 525
     }
   ],
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (UTC date, network address, user-agent) under a per-site secret: it links a visitor's requests within a day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. Shared network egress understates the count; rotating egress overstates it."
