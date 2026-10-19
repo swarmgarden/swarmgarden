@@ -1,0 +1,54 @@
+{
+  "by_class": [
+    {
+      "class": "browser",
+      "pageviews": 807,
+      "rendered": 0
+    },
+    {
+      "class": "automation",
+      "pageviews": 261,
+      "rendered": 0
+    },
+    {
+      "class": "unknown",
+      "pageviews": 97,
+      "rendered": 0
+    },
+    {
+      "class": "agent-claimed",
+      "pageviews": 33,
+      "rendered": 0
+    }
+  ],
+  "by_day": [
+    {
+      "day": "2026-10-17",
+      "pageviews": 624,
+      "rendered": 0,
+      "rendered_share": "0.0%"
+    },
+    {
+      "day": "2026-10-18",
+      "pageviews": 400,
+      "rendered": 0,
+      "rendered_share": "0.0%"
+    },
+    {
+      "day": "2026-10-19",
+      "pageviews": 174,
+      "rendered": 0,
+      "rendered_share": "0.0%"
+    }
+  ],
+  "coverage": "UTC hours 2026-10-17T21:00Z \u2192 2026-10-19T17:00Z of recorded pageviews in this pull.",
+  "era_note": "Companion (asset) collection began Oct 18, 2026; the join is computed from Oct 19, 2026 \u2014 no silent backfill: pageviews from before companion collection cannot match and count as unrendered.",
+  "format": "swarm-garden-data/v1",
+  "generated_at_pt": "Oct 19, 2026, 10:36:15 AM PT",
+  "generated_at_utc": "2026-10-19T17:36:15Z",
+  "method": "A pageview (a status-200 read of an HTML page) counts as rendered when a companion (asset) record exists with the same visitor digest, the companion's referring page equal to the pageview's path, and the same UTC hour. The digest join is exact; the time join is hour-granular, so the rendered count is an upper bound within the hour, never a per-request certainty. A companion record proves a browser-class fetch of the page's own assets happened \u2014 strong evidence of a render, not a screenshot. Digest values are never published.",
+  "pageviews": 1198,
+  "rendered": 0,
+  "rendered_share": "0.0%",
+  "site": "advisory"
+}

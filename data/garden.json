@@ -1,7 +1,7 @@
 {
   "corrections": [],
   "counting_since": "2026-10-17T21:38:49Z",
-  "counting_window": "All requests recorded since Oct 17, 2026",
+  "counting_window": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately.",
   "figures": {
     "by_class": [
       {
@@ -12,29 +12,29 @@
       {
         "label": "browser",
         "note": "",
-        "value": 1888
+        "value": 1893
       },
       {
         "label": "automation",
         "note": "",
-        "value": 752
+        "value": 755
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 563
+        "value": 575
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 1552
+        "value": 1570
       },
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 1339
+        "value": 1341
       },
       {
         "label": "Responses with status 307",
@@ -59,9 +59,19 @@
     ],
     "rows": [
       {
-        "label": "Total requests recorded",
-        "note": "Requests recorded at the edge \u2014 requests, not readers.",
-        "value": 3249
+        "label": "Total HTTP fetches",
+        "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
+        "value": 2928
+      },
+      {
+        "label": "Redirect responses",
+        "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
+        "value": 341
+      },
+      {
+        "label": "All requests recorded",
+        "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
+        "value": 3269
       },
       {
         "label": "Verified agent arrivals on record",
@@ -86,8 +96,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:13:45 AM PT",
-  "generated_at_utc": "2026-10-19T17:13:45Z",
+  "generated_at_pt": "Oct 19, 2026, 10:36:15 AM PT",
+  "generated_at_utc": "2026-10-19T17:36:15Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "pull_status": "ok",
   "site": "garden",

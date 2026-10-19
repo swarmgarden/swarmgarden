@@ -1,52 +1,62 @@
 {
   "corrections": [],
   "counting_since": "2026-10-17T21:40:07Z",
-  "counting_window": "All requests recorded since Oct 17, 2026",
+  "counting_window": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately.",
   "figures": {
     "by_class": [
       {
         "label": "agent-claimed",
         "note": "a claim \u2014 the request's user-agent announced it; not a verification",
-        "value": 1093
+        "value": 1094
       },
       {
         "label": "browser",
         "note": "",
-        "value": 2730
+        "value": 2763
       },
       {
         "label": "automation",
         "note": "",
-        "value": 2203
+        "value": 2213
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 655
+        "value": 656
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 4513
+        "value": 4535
       },
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 1725
+        "value": 1737
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 443
+        "value": 454
       }
     ],
     "rows": [
       {
-        "label": "Total requests recorded",
-        "note": "Requests recorded at the edge \u2014 requests, not readers.",
-        "value": 6681
+        "label": "Total HTTP fetches",
+        "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
+        "value": 6272
+      },
+      {
+        "label": "Redirect responses",
+        "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
+        "value": 454
+      },
+      {
+        "label": "All requests recorded",
+        "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
+        "value": 6726
       },
       {
         "label": "Verified agent arrivals on record",
@@ -71,8 +81,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:13:45 AM PT",
-  "generated_at_utc": "2026-10-19T17:13:45Z",
+  "generated_at_pt": "Oct 19, 2026, 10:36:15 AM PT",
+  "generated_at_utc": "2026-10-19T17:36:15Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "pull_status": "ok",
   "site": "advisory",
