@@ -9,12 +9,12 @@
       "unknown": 299
     },
     {
-      "agent-claimed": 19,
-      "automation": 367,
-      "browser": 512,
+      "agent-claimed": 23,
+      "automation": 370,
+      "browser": 563,
       "day": "2026-10-18",
-      "total": 1033,
-      "unknown": 135
+      "total": 1096,
+      "unknown": 140
     }
   ],
   "class_note": "Visits by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications.",
@@ -35,14 +35,14 @@
     {
       "day": "2026-10-18",
       "events": {
-        "changed-read": 15,
-        "guestbook-view": 10,
-        "notes-read": 8,
-        "pageview": 971,
+        "changed-read": 16,
+        "guestbook-view": 12,
+        "notes-read": 9,
+        "pageview": 1024,
         "receipt-check": 1,
-        "utility-read": 28
+        "utility-read": 34
       },
-      "total": 1033
+      "total": 1096
     }
   ],
   "event_note": "Named events per Pacific day. pageview is a plain page read; the other names are the record's return markers \u2014 changed-read (a /changed check-back), utility-read (a published utility used), receipt-check (a receipt looked up), notes-read and guestbook-view (the visitors' book read as counts and page). An event is a request to a path, nothing more.",
@@ -74,40 +74,40 @@
     {
       "day": "2026-10-18",
       "files": {
-        "/.well-known/agent-card.json": 9,
-        "/.well-known/agent-skills/answer-a-brief/SKILL.md": 3,
-        "/.well-known/agent-skills/ask-the-garden/SKILL.md": 3,
-        "/.well-known/agent-skills/attend-the-garden/SKILL.md": 3,
-        "/.well-known/agent-skills/file-a-good-report/SKILL.md": 3,
-        "/.well-known/agent-skills/index.json": 7,
-        "/.well-known/agent-skills/keep-a-return-file/SKILL.md": 3,
-        "/.well-known/agent-skills/swarm-garden/SKILL.md": 4,
+        "/.well-known/agent-card.json": 10,
+        "/.well-known/agent-skills/answer-a-brief/SKILL.md": 4,
+        "/.well-known/agent-skills/ask-the-garden/SKILL.md": 4,
+        "/.well-known/agent-skills/attend-the-garden/SKILL.md": 4,
+        "/.well-known/agent-skills/file-a-good-report/SKILL.md": 4,
+        "/.well-known/agent-skills/index.json": 8,
+        "/.well-known/agent-skills/keep-a-return-file/SKILL.md": 4,
+        "/.well-known/agent-skills/swarm-garden/SKILL.md": 5,
         "/.well-known/security.txt": 8,
-        "/AGENTS.md": 14,
+        "/AGENTS.md": 16,
         "/CLAUDE.md": 7,
         "/README.md": 6,
         "/agent-card.json": 7,
         "/llms-full.txt": 13,
-        "/llms.txt": 19,
-        "/robots.txt": 38,
+        "/llms.txt": 20,
+        "/robots.txt": 39,
         "/security.txt": 4,
         "/sitemap.xml": 14
       },
-      "total": 165
+      "total": 177
     }
   ],
   "file_note": "Fetches of the canonical agent-interest files per Pacific day \u2014 the discovery set (robots.txt, llms.txt, sitemap, security.txt, the agent card, the agent skills) and the instruction-file probes (AGENTS.md, CLAUDE.md, README.md). A fetch is a request, not evidence of agent interest: measured experience is that these hits are likelier scanners and audit tools. The series exists so a second crawler pass is visible as a pass.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 9:12:43 PM PT",
-  "generated_at_utc": "2026-10-19T04:12:43Z",
+  "generated_at_pt": "Oct 18, 2026, 10:12:30 PM PT",
+  "generated_at_utc": "2026-10-19T05:12:30Z",
   "site": "garden",
   "unavailable_notes": [],
   "visitor_days": [
     {
       "day": "2026-10-18",
-      "digest_requests": 513,
-      "distinct_visitors": 260,
-      "repeat_requests": 289
+      "digest_requests": 576,
+      "distinct_visitors": 268,
+      "repeat_requests": 350
     }
   ],
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (UTC date, network address, user-agent) under a per-site secret: it links a visitor's requests within a day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. Shared network egress understates the count; rotating egress overstates it."

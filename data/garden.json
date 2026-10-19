@@ -7,44 +7,44 @@
       {
         "label": "agent-claimed",
         "note": "a claim \u2014 the request's user-agent announced it; not a verification",
-        "value": 42
+        "value": 44
       },
       {
         "label": "browser",
         "note": "",
-        "value": 1134
+        "value": 1173
       },
       {
         "label": "automation",
         "note": "",
-        "value": 629
+        "value": 634
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 434
+        "value": 439
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 1309
+        "value": 1342
       },
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 618
+        "value": 625
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 300
+        "value": 308
       },
       {
         "label": "Responses with status 400",
         "note": "",
-        "value": 7
+        "value": 10
       },
       {
         "label": "Responses with status 503",
@@ -56,7 +56,7 @@
       {
         "label": "Total recorded visits",
         "note": "Requests recorded at the edge \u2014 requests, not readers.",
-        "value": 2239
+        "value": 2290
       },
       {
         "label": "Verified agent arrivals on record",
@@ -81,11 +81,14 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 9:12:43 PM PT",
-  "generated_at_utc": "2026-10-19T04:12:43Z",
+  "generated_at_pt": "Oct 18, 2026, 10:12:30 PM PT",
+  "generated_at_utc": "2026-10-19T05:12:30Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
-  "pull_status": "ok",
+  "pull_status": "degraded",
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
-  "unavailable_notes": []
+  "unavailable_notes": [
+    "The channel-knocks pull failed this hour; that file was not refreshed.",
+    "The render-claims pull failed this hour; that file was not refreshed."
+  ]
 }
