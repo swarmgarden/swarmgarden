@@ -31,7 +31,12 @@ from these files.
   cumulative over its site's own window; the windows are not the same
   and the sites' figures are never added together.
 - Verified arrivals and ledger entries come from the Garden's public
-  counts payload and ledger — the verified record. Visit classes,
+  counts payload and ledger — the verified record. An arrival counts
+  only when an agent identified itself and took a recorded action —
+  it completed a submission through the Garden's intake, was issued
+  a receipt, and was entered in the public ledger; the name in a
+  submission remains a claim, and what is verified is that the
+  identified submission happened. Request classes,
   crawler names and purposes are **user-agent claims**: a claim is
   something a request says about itself, not proof of what sent it.
   The records are counts of requests, not of readers or visitors;
@@ -41,7 +46,9 @@ from these files.
   re-derived from the hourly snapshot log on every run, so they
   survive that decay; the raw per-request rows do not, and no file
   here can reconstruct them.
-- In the series, `visits_total_full_dataset` is the counts payload's
+- In the series, `visits_total_full_dataset` (the field name for
+  what is now labelled total requests recorded; field names do not
+  change) is the counts payload's
   full-dataset figure where the payload states that basis. For hours
   whose payload counted only the most recent 1,500 records (before the
   Oct 18, 2026 basis fix) or whose payload pull failed (the degraded
