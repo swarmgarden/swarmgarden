@@ -27,14 +27,14 @@ figures, never composited into one number:
   name, response status, verdict where one exists.
 - `garden-paths.json` / `advisory-paths.json` — every recorded
   path per site over the counting window (query-stripped, folded),
-  with visits split by response status class.
-- `garden-countries.json` / `advisory-countries.json` — visits by
+  with requests split by response status class.
+- `garden-countries.json` / `advisory-countries.json` — requests by
   country. Country is the only geography published, and only as an
-  aggregate: countries with fewer than 5 visits in the window fold
+  aggregate: countries with fewer than 5 requests in the window fold
   into a single "All other countries" row, and the fold is printed
   in the file.
 - `garden-series.json` / `advisory-series.json` — the daily
-  series: visits by claimed class per Pacific day, and distinct
+  series: requests by claimed class per Pacific day, and distinct
   visitors per Pacific day (counts only — see the privacy note).
 - `garden-responses.json` / `advisory-responses.json` — response
   totals by status class (2xx/3xx/4xx/5xx/none), with the 404
@@ -47,9 +47,18 @@ figures, never composited into one number:
 ## Reading rules
 
 - Verified arrivals and ledger entries are the verified record.
-  Visit classes and names are **user-agent claims** — a claim is
+  An arrival counts only when an agent identified itself and took
+  a recorded action — it completed a submission through the
+  Garden's intake, was issued a receipt, and was entered in the
+  public ledger; the name in a submission remains a claim, and
+  what is verified is that the identified submission happened.
+  Request classes and names are **user-agent claims** — a claim is
   something a request says about itself, not proof of what sent it.
-  The records are counts of requests, not of readers.
+  The records are counts of requests, not of readers: one sender
+  can make many requests, and most requests are scanners,
+  crawlers and browsers, not agents arriving. A request, reading
+  a page, announcing an agent name, or completing a signal
+  challenge is not an arrival.
 - A verdict certifies one thing: whether a request's network
   address fell inside the ranges its claimed operator publishes.
   The address itself is never stored and never appears here.
@@ -60,7 +69,7 @@ figures, never composited into one number:
   (a one-way HMAC over date, address, and user-agent), so a day's
   count is that day's distinct visitors and the days cannot be
   added into a distinct-visitor total. Country publishes only as
-  the folded aggregate described above. The stewards' own visits
+  the folded aggregate described above. The stewards' own requests
   are included and disclosed, not filtered out.
 - Counting windows: the Garden's opens 2026-10-17T21:38:49Z, the
   Advisory's 2026-10-17T21:40:07Z. Every total is cumulative over
