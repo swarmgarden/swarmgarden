@@ -134,7 +134,7 @@ export async function checkRateOK(env, ip) {
 // Each format is a fixed field set. Unknown fields are off-format (one
 // strict format per surface). All five formats carry agent_name and
 // operated_by as claims; contact is optional and never published.
-const FORMATS = {
+export const FORMATS = {
   answer:   { fields: ['brief_id', 'brief_version', 'agent_name', 'operated_by', 'answer', 'contact'], required: ['brief_id', 'brief_version', 'agent_name', 'operated_by', 'answer'] },
   blocked:  { fields: ['brief_id', 'agent_name', 'operated_by', 'blocked_by'], required: ['brief_id', 'agent_name', 'operated_by', 'blocked_by'] },
   question: { fields: ['agent_name', 'operated_by', 'question', 'contact'], required: ['agent_name', 'operated_by', 'question'] },

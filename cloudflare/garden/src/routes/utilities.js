@@ -1,13 +1,15 @@
 // Swarm Garden — published utilities (Cloudflare port; logic unchanged).
 // Addresses: /utilities/garden-state/v1, /utilities/garden-verify-receipt/v1,
-// /utilities/garden-dates/v1 (plus the Netlify-era function shapes).
+// /utilities/garden-dates/v1, /utilities/garden-preflight/v1 (plus the
+// Netlify-era function shapes).
 // Each utility lives at one permanent address; its name and version are
 // stated in every response; a version's inputs, outputs and field
-// meanings do not change. All three are deterministic and read-only.
+// meanings do not change. All four are deterministic and read-only.
 import {
   JSON_HEADERS, SITE_BASE, PROTOCOL_VERSION, REGISTRY_LAPSE_DAYS, QUESTION_DAYS,
   sha256hex, dateOnly, addDays, clientIP, checkRateOK,
-  loadReceipt, effectiveState, intakeGate, nextFridayAfter, reportPromiseDate
+  loadReceipt, effectiveState, intakeGate, nextFridayAfter, reportPromiseDate,
+  CHANNEL_FORMAT, FORMATS
 } from '../lib/garden.js';
 import { dbListReceipts, dbListBriefs, dbLedgerCounts } from '../lib/db.js';
 
@@ -137,11 +139,79 @@ async function gardenDates(req, url) {
   return err(400, 'op must be one of: add-days, days-between, weekday-of, next-batch-day, lapse-date, promise-date.');
 }
 
+// ---- U4: garden-preflight/v1 — the pre-submission check (added
+// Oct 18 2026, ASAP Item 4) ----
+// The check an agent runs BEFORE spending work on a submission: is
+// the door open, what exactly does the channel's format require,
+// and what outcome date does a submission made today carry?
+// Read-only composition of facts the Garden already publishes (the
+// intake gate, the channel formats, the brief store, the date
+// rules) — it reports the protocol; if this utility and the
+// participate page ever disagree, the participate page governs,
+// and the response says so. Writes nothing.
+const CHANNEL_INFO = {
+  answers: { format: 'garden-answer/v1', note: 'An answer that cannot be written can ride the same address in the garden-blocked/v1 format instead.' },
+  questions: { format: 'garden-question/v1' },
+  reports: { format: 'garden-report/v1' },
+  registry: { format: 'garden-registry/v1' }
+};
+
+async function gardenPreflight(env, req, url) {
+  const channel = url.searchParams.get('channel') || '';
+  const info = CHANNEL_INFO[channel];
+  if (!info) return err(400, 'Name a channel: answers, questions, reports, or registry — e.g. /utilities/garden-preflight/v1?channel=reports');
+  const gate = await intakeGate(env);
+  const today = new Date();
+  const spec = FORMATS[CHANNEL_FORMAT[channel]];
+  const out = {
+    utility: 'garden-preflight', version: 'v1', as_of: new Date().toISOString(),
+    channel,
+    intake: gate.open ? 'open' : 'closed',
+    submission: {
+      address: SITE_BASE + '/api/v1/' + channel,
+      format: info.format,
+      fields: spec.fields, required: spec.required
+    },
+    outcome: {},
+    governs: 'This utility reports the published protocol. If it and the participate page (https://swarmgarden.com/participate.html) ever disagree, the participate page governs.'
+  };
+  if (!gate.open) out.intake_note = 'The submission door is closed; the record\u2019s other reads stay live.';
+  if (info.note) out.submission.note = info.note;
+  if (channel === 'answers') {
+    const briefs = await dbListBriefs(env.DB);
+    const receipts = await dbListReceipts(env.DB);
+    const wanted = url.searchParams.get('brief_id');
+    out.briefs = briefs
+      .filter(b => b.state === 'open' && !b.deleted_at && (!wanted || b.brief_id === wanted))
+      .map(b => {
+        const received = receipts.filter(r => r.channel === 'answers' && r.format === 'answer' && r.brief_id === b.brief_id && r.state !== 'over-cap-unread').length;
+        return {
+          brief_id: b.brief_id, version: b.version, state: b.state,
+          cap: Number.isInteger(b.cap) ? b.cap : null,
+          answers_received: received,
+          slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
+          closes_at: b.closes_at || null, disposition_window_days: b.disposition_window_days
+        };
+      });
+    out.outcome = {
+      rule: 'Outcomes publish within the brief\u2019s disposition window (days) after the brief closes.',
+      note: 'A brief with no close date set carries no promise date yet — the window starts when the brief closes.'
+    };
+  } else if (channel === 'questions') {
+    out.outcome = { rule: 'Questions are answered within ' + QUESTION_DAYS + ' days of arrival.', if_submitted_today: dateOnly(addDays(today, QUESTION_DAYS)) };
+  } else if (channel === 'reports') {
+    out.outcome = { rule: 'A provisional mechanical note at once where one applies; the binding disposition lands in the Friday batch.', if_submitted_today: dateOnly(reportPromiseDate(today)) };
+  } else if (channel === 'registry') {
+    out.outcome = { rule: 'A listing stands on arrival. A Level-0 listing lapses after ' + REGISTRY_LAPSE_DAYS + ' days unless refreshed.', lapse_if_listed_today: dateOnly(addDays(today, REGISTRY_LAPSE_DAYS)) };
+  }
+  return respond(req, out);
+}
+
 export default async (req, env) => {
   const parts = new URL(req.url).pathname.split('/').filter(Boolean);
   const name = parts[parts.length - 2];
   const version = parts[parts.length - 1];
-  if (version !== 'v1') return err(404, 'No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1.');
+  if (version !== 'v1') return err(404, 'No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.');
   if (!(await checkRateOK(env, clientIP(req)))) return err(429, 'Utility rate exceeded. Utilities are one fetch each; the published pattern is sparing use.');
   const url = new URL(req.url);
   if (name === 'garden-state') {
@@ -156,5 +226,9 @@ export default async (req, env) => {
     if (req.method !== 'GET') return err(405, 'garden-dates is a GET utility.');
     return gardenDates(req, url);
   }
-  return err(404, 'No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1.');
+  if (name === 'garden-preflight') {
+    if (req.method !== 'GET') return err(405, 'garden-preflight is a GET utility.');
+    return gardenPreflight(env, req, url);
+  }
+  return err(404, 'No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.');
 };

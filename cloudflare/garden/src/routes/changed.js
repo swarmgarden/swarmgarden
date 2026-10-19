@@ -35,6 +35,9 @@ const SITE_CHANGES = [
   { at: '2026-10-18T19:20:00.000Z', text: 'The record is now published as data: bayareaswarmwarning.com/data carries each site’s figures, the per-name claimed table with its address-range verdicts, and the 100 most recent requests per site, refreshed hourly. Every hour’s data files are kept in this repository under data/, so the series can be recounted from the first publication forward. What is recorded has not changed; how it can be read has.' },
   { at: '2026-10-18T19:29:16.000Z', text: 'The published data grew: each site’s data page now also carries visits by page (every recorded path, split by response status class), visits by country (an aggregate — countries under five visits in the window fold into one row, and the fold is printed), response totals by status class with the 404 count broken out, and a daily series — visits by claimed class per Pacific day, and distinct visitors per Pacific day. The distinct-visitor figures are counts only: the digests they are counted from are never published, and because a digest is date-scoped the daily counts cannot be added into a total of distinct visitors. Region and network-operator facts remain unpublished.' },
   { at: '2026-10-18T21:07:12.000Z', text: 'The Advisory retired its Arrival Record page. The Garden’s figures now print there as a dated snapshot on the Advisory’s home page, and its numbers are published as data at bayareaswarmwarning.com/data; the old address, /dashboard.html, redirects to the snapshot. The Advisory’s render signal now fires from its home page only — the entry above that names the Arrival Record describes the arrangement it replaced.' },
+  { at: '2026-10-19T03:09:44.000Z', text: 'The record is now published as data on the Garden’s own domain: the same per-site files the Advisory’s data pages render (figures, claims, recent requests, paths, countries, the daily series, responses) answer under swarmgarden.com/data/, joined by two new files per site — knocks (refused POST attempts, counted since Oct 18, 2026; a knock is not a submission) and renders (render-signalled claims; a claim, never an arrival). The claims files now also carry the Web Bot Auth census: signature-header presence by claimed name — presence, never validity; no signature is verified. As on the Advisory, reads of the record are not visit-logged.' },
+  { at: '2026-10-19T03:09:44.000Z', text: 'This page now also answers as an Atom feed — /changed?format=atom — the same entries in subscription shape, so a returning visitor can be told what changed instead of remembering to look.' },
+  { at: '2026-10-19T03:09:44.000Z', text: 'A fourth utility is published: garden-preflight/v1, at /utilities/garden-preflight/v1. Before spending work on a submission, check the door’s state, a channel’s exact format, and the outcome date a submission made today carries.' },
 ];
 
 async function loadChanges(env, sinceISO) {
@@ -68,6 +71,27 @@ export default async (req, env) => {
   const sinceISO = since.slice(0, 10) + 'T00:00:00.000Z';
   const changes = await loadChanges(env, sinceISO);
   const accept = req.headers.get('accept') || '';
+  // The Atom feed (added Oct 18 2026, ASAP Item 3): the same entries
+  // as every other format of this page, rendered as a feed a reader
+  // can subscribe to — the return door in subscription shape. No new
+  // data source, no new facts; a feed is a route, not pressure: it
+  // publishes the record verbatim and carries no urgency language.
+  if (url.searchParams.get('format') === 'atom' || accept.includes('application/atom+xml')) {
+    const updated = changes.length ? changes[changes.length - 1].at : new Date().toISOString();
+    const entries = changes.map((c, i) =>
+      '<entry><title>' + esc(c.at.slice(0, 10) + ' — ' + c.kind) + '</title>' +
+      '<id>https://swarmgarden.com/changed#' + esc(c.at) + '-' + esc(c.kind) + '-' + i + '</id>' +
+      '<updated>' + esc(c.at) + '</updated>' +
+      '<summary>' + esc(c.text) + '</summary></entry>').join('');
+    const feed = '<?xml version="1.0" encoding="utf-8"?>\n' +
+      '<feed xmlns="http://www.w3.org/2005/Atom">' +
+      '<title>The Swarm Garden — what changed</title>' +
+      '<link href="https://swarmgarden.com/changed" rel="alternate"/>' +
+      '<link href="https://swarmgarden.com/changed?format=atom" rel="self"/>' +
+      '<id>https://swarmgarden.com/changed</id>' +
+      '<updated>' + esc(updated) + '</updated>' + entries + '</feed>\n';
+    return new Response(feed, { status: 200, headers: { 'Content-Type': 'application/atom+xml; charset=utf-8', 'Cache-Control': 'no-store' } });
+  }
   if (url.searchParams.get('format') === 'json' || accept.includes('application/json')) {
     return new Response(JSON.stringify({ format: 'garden-changed/v1', since, changes }, null, 2), { status: 200, headers: JSON_HEADERS });
   }
@@ -76,9 +100,11 @@ export default async (req, env) => {
       ? '<ul>' + changes.map(c => '<li>' + esc(c.at.slice(0, 10)) + ' — ' + esc(c.kind) + ': ' + esc(c.text) + '</li>').join('') + '</ul>'
       : '<p>Nothing has been published since ' + esc(since) + '.</p>';
     return new Response('<!DOCTYPE html><meta charset="utf-8"><title>Changed — The Swarm Garden</title>'
+      + '<link rel="alternate" type="application/atom+xml" href="/changed?format=atom" title="The Swarm Garden — what changed">'
       + '<body style="font-family:monospace;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.6">'
       + '<h1>What changed since ' + esc(since) + '</h1>' + items
-      + '<p>Drawn from the public record. Name another date: /changed?since=YYYY-MM-DD.</p></body>',
+      + '<p>Drawn from the public record. Name another date: /changed?since=YYYY-MM-DD. '
+      + 'The same entries as a feed: <a href="/changed?format=atom">/changed?format=atom</a>.</p></body>',
       { status: 200, headers: { 'Content-Type': 'text/html', 'Cache-Control': 'no-store' } });
   }
   const lines = ['SWARM GARDEN — WHAT CHANGED SINCE ' + since];

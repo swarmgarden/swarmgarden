@@ -2041,6 +2041,105 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   await dataW2.dispose();
 }
 
+// P2-ASAP (Oct 18 2026 evening): the ASAP build — the /changed Atom
+// feed, garden-preflight/v1, and the Garden's own /data/*.json.
+// Pins: the feed carries exactly the JSON format's entries for the
+// same since; preflight reports the published protocol (format
+// names, required fields, promise dates computed by the Garden's
+// own date rules) and refuses POSTs; the data files serve on the
+// Garden's domain from the published whitelist, and a data read
+// writes NO visit record (the Advisory's discipline, mirrored).
+{
+  let r = await req(open, 'https://swarmgarden.com/changed?format=json&since=2000-01-01');
+  const cj = await r.json();
+  r = await req(open, 'https://swarmgarden.com/changed?format=atom&since=2000-01-01');
+  const atom = await r.text();
+  checkP2('ASAP feed: /changed?format=atom answers an Atom feed whose entry count matches the JSON format for the same since',
+    r.status === 200 && (r.headers.get('content-type') || '').includes('application/atom+xml') &&
+    atom.startsWith('<?xml version="1.0" encoding="utf-8"?>') && atom.includes('<feed xmlns="http://www.w3.org/2005/Atom">') &&
+    (cj.changes || []).length >= 1 && (atom.match(/<entry>/g) || []).length === (cj.changes || []).length,
+    r.status + ' ' + atom.slice(0, 140));
+  r = await req(open, 'https://swarmgarden.com/changed?since=2000-01-01', { headers: { accept: 'application/atom+xml' } });
+  checkP2('ASAP feed: an Atom Accept header selects the feed too',
+    r.status === 200 && (r.headers.get('content-type') || '').includes('application/atom+xml'), String(r.status));
+
+  const UT2 = 'https://swarmgarden.com/utilities';
+  r = await req(open, UT2 + '/garden-preflight/v1?channel=reports');
+  const pf = await r.json();
+  checkP2('ASAP preflight: reports — open door, garden-report/v1 required fields, Friday promise date',
+    r.status === 200 && pf.utility === 'garden-preflight' && pf.intake === 'open' &&
+    pf.submission.format === 'garden-report/v1' && (pf.submission.required || []).includes('what_you_saw') &&
+    /^\d{4}-\d{2}-\d{2}$/.test(pf.outcome.if_submitted_today || '') &&
+    new Date(pf.outcome.if_submitted_today + 'T00:00:00Z').getUTCDay() === 5,
+    JSON.stringify(pf).slice(0, 200));
+  r = await req(open, UT2 + '/garden-preflight/v1?channel=questions');
+  const pq = await r.json();
+  const expectQ = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+  checkP2('ASAP preflight: questions — the promise date is today + 14 days',
+    r.status === 200 && pq.outcome.if_submitted_today === expectQ, JSON.stringify(pq).slice(0, 160));
+  r = await req(open, UT2 + '/garden-preflight/v1?channel=registry');
+  const pr = await r.json();
+  const expectR = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+  checkP2('ASAP preflight: registry — the lapse date for a listing made today is today + 90 days',
+    r.status === 200 && pr.outcome.lapse_if_listed_today === expectR, JSON.stringify(pr).slice(0, 160));
+  r = await req(open, UT2 + '/garden-preflight/v1?channel=answers&brief_id=TEST-001');
+  const pa = await r.json();
+  checkP2('ASAP preflight: answers — the seeded brief reports its cap state (cap 1, 1 received, 0 slots)',
+    r.status === 200 && ((pa.briefs || [])[0] || {}).slots_remaining === 0 && ((pa.briefs || [])[0] || {}).answers_received === 1,
+    JSON.stringify(pa).slice(0, 200));
+  r = await req(open, UT2 + '/garden-preflight/v1');
+  checkP2('ASAP preflight: no channel is a 400 (the channels are named in the utility\u2019s own error)', r.status === 400, String(r.status));
+  r = await post(open, UT2 + '/garden-preflight/v1?channel=reports', {}, IP2);
+  checkP2('ASAP preflight: POST is refused 405 (a read-only utility)', r.status === 405, String(r.status));
+
+  const fxData = JSON.stringify({
+    'garden.json': JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden', figures: { rows: [] } }),
+    'garden-knocks.json': JSON.stringify({ format: 'swarm-garden-data/v1', site: 'garden', total: 3, by_channel: { intake: 3 } }),
+    'status.json': JSON.stringify({ format: 'swarm-garden-data/v1', sites: {} })
+  });
+  const gDataW = await makeWorker({
+    script: path.join(HERE, 'build/garden-worker.mjs'), pubDir: path.join(GARDEN, 'public'),
+    schemaFile: path.join(GARDEN, 'schema.sql'),
+    bindings: { SITE_HOST: 'swarmgarden.com', AE_DATASET: 'garden_visits', ...SECRETS, INTAKE_OPEN: 'true', GUESTBOOK_OPEN: 'true', SIGNAL_OPEN: 'true', HUMAN_OPEN: 'true', DATA_INLINE: fxData }
+  });
+  const pollStats = async (w) => { for (let i = 0; i < 40; i++) { const sj = await (await req(w, 'https://swarmgarden.com/.netlify/functions/stats?k=test-stats-key&format=json')).json(); if ((sj.recent || []).length) return sj; await new Promise(res2 => setTimeout(res2, 150)); } return null; };
+  await req(gDataW, 'https://swarmgarden.com/robots.txt');
+  const before = await pollStats(gDataW);
+  const totalBefore = before ? before.total : null;
+  r = await req(gDataW, 'https://swarmgarden.com/data/garden.json');
+  const gj = await r.json();
+  checkP2('ASAP garden-data: /data/garden.json serves the published bundle on the Garden\u2019s own domain',
+    r.status === 200 && gj.site === 'garden' && gj.format === 'swarm-garden-data/v1', r.status + ' ' + JSON.stringify(gj).slice(0, 100));
+  r = await req(gDataW, 'https://swarmgarden.com/data/garden-knocks.json');
+  const gk = await r.json();
+  checkP2('ASAP garden-data: the v1.2 knocks file serves by name', r.status === 200 && gk.total === 3, r.status + ' ' + JSON.stringify(gk).slice(0, 100));
+  r = await req(gDataW, 'https://swarmgarden.com/data/garden-knocks2.json');
+  checkP2('ASAP garden-data: a near-miss name still 404s (whitelist by name, not by pattern)', r.status === 404, String(r.status));
+  r = await req(gDataW, 'https://swarmgarden.com/data/secrets.json');
+  checkP2('ASAP garden-data: an unpublished name 404s with the JSON error', r.status === 404, String(r.status));
+  const afterSj = await (await req(gDataW, 'https://swarmgarden.com/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+  checkP2('ASAP garden-data: data reads write NO visit — the recorded total is unmoved and no /data path is in the recent list',
+    totalBefore !== null && afterSj.total === totalBefore && !(afterSj.recent || []).some(x => (x.path || '').startsWith('/data/')),
+    String(totalBefore) + ' -> ' + String(afterSj.total));
+  await gDataW.dispose();
+
+  // Signature-Agent hostname (Item 5 stage ii): a signed request
+  // stores the header's HOSTNAME only; an unsigned one stores ''.
+  await req(open, 'https://swarmgarden.com/llms.txt', { headers: { 'user-agent': 'SigProbe/1.0', 'signature-agent': '"https://agent.example.com/bot"' } });
+  await req(open, 'https://swarmgarden.com/llms-full.txt', { headers: { 'user-agent': 'SigProbe/1.0' } });
+  let sigHit = null, plainHit = null;
+  for (let i = 0; i < 40 && (!sigHit || !plainHit); i++) {
+    const sj = await (await req(open, 'https://swarmgarden.com/.netlify/functions/stats?k=test-stats-key&format=json')).json();
+    sigHit = sigHit || (sj.recent || []).find(x => x.path === '/llms.txt' && (x.ua || '').includes('SigProbe'));
+    plainHit = plainHit || (sj.recent || []).find(x => x.path === '/llms-full.txt' && (x.ua || '').includes('SigProbe'));
+    if (!sigHit || !plainHit) await new Promise(res2 => setTimeout(res2, 150));
+  }
+  checkP2('ASAP sigagent: a Signature-Agent header stores its hostname (agent.example.com) on the visit record',
+    !!sigHit && sigHit.sigagent === 'agent.example.com' && sigHit.ba === 'present', JSON.stringify(sigHit));
+  checkP2('ASAP sigagent: an unsigned request stores an empty sigagent and ba absent',
+    !!plainHit && plainHit.sigagent === '' && plainHit.ba === 'absent', JSON.stringify(plainHit));
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();

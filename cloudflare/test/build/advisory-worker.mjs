@@ -2979,7 +2979,7 @@ async function visitorForRequest(env, req) {
 }
 
 // ../shared/visits.mjs
-var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor"];
+var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
@@ -3253,6 +3253,17 @@ function botAuthState(req) {
   if (bm && bm.verifiedBot) return "verified";
   return present ? "present" : "absent";
 }
+function sigAgentHost(req) {
+  const raw = req.headers.get("signature-agent") || "";
+  if (!raw) return "";
+  const first = raw.split(",")[0].trim().replace(/^"|"$/g, "");
+  try {
+    const host = new URL(first).hostname.toLowerCase();
+    return host && host.length <= 253 ? host : "";
+  } catch (e) {
+    return "";
+  }
+}
 function claimFields(req, ua) {
   const bot = claimedBot(ua);
   if (!bot) return { cname: "", ipverdict: "not-claimed", rangever: "" };
@@ -3279,6 +3290,7 @@ function buildVisitRecord(req, res, siteHost, event, visitor = "") {
     status: res.status,
     md: prefersMarkdown(req.headers.get("accept")) ? 1 : 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: "edge",
     event: event || "pageview",
     ...claimFields(req, ua),
@@ -3321,6 +3333,7 @@ function buildAssetRecord(req, res, siteHost, visitor = "") {
     status: res.status,
     md: 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: "edge",
     event: "asset",
     ...claimFields(req, ua),
@@ -4119,6 +4132,8 @@ var DATA_FILES = [
   "garden-countries.json",
   "garden-series.json",
   "garden-responses.json",
+  "garden-knocks.json",
+  "garden-renders.json",
   "advisory.json",
   "advisory-claims.json",
   "advisory-recent.json",
@@ -4126,6 +4141,8 @@ var DATA_FILES = [
   "advisory-countries.json",
   "advisory-series.json",
   "advisory-responses.json",
+  "advisory-knocks.json",
+  "advisory-renders.json",
   "status.json"
 ];
 var REPO_DATA_URL = "https://github.com/swarmgarden/swarmgarden/tree/main/data";

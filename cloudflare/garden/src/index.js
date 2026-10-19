@@ -31,6 +31,7 @@ import guestbookStewardRoute from './routes/guestbook.js';
 import { challengeRoute, signalRoute } from './routes/signal.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
+import dataJsonRoute from './routes/data.js';
 import { signpost404 } from './lib/signpost.js';
 export { Sequencer } from './lib/sequencer.js';
 
@@ -81,6 +82,27 @@ function route(pathname) {
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
+    // The published data files (added Oct 18 2026, ASAP Item 2):
+    // GET/HEAD /data/<published-name>.json answers directly here,
+    // before the route table and the front door — exactly the
+    // Advisory's discipline. Reads of the record are not
+    // visit-logged (a reader of the record does not write
+    // themselves into it) and never counted as knocks. Any other
+    // /data/* path, and any non-GET/HEAD method, falls through to
+    // the ordinary handling below (and its 404 signpost).
+    if ((req.method === 'GET' || req.method === 'HEAD')
+        && url.pathname.startsWith('/data/')) {
+      const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
+      if (jm) {
+        let res = await dataJsonRoute(req, env, ctx, jm[1]);
+        if (!res.headers.get('link')) {
+          const headers = new Headers(res.headers);
+          headers.set('Link', LINK_HEADER);
+          res = new Response(res.body, { status: res.status, headers });
+        }
+        return res;
+      }
+    }
     const handler = route(url.pathname);
     let res;
     if (handler) {

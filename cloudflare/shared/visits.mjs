@@ -69,10 +69,13 @@ import { claimedBot } from './behaviour.mjs';
 //   blob15  : cname (Oct 18 2026)      blob16: ipverdict
 //   blob17  : rangever
 //   blob18  : visitor (Oct 18 2026, lens spec B-e — the digest)
+//   blob19  : sigagent (Oct 18 2026, ASAP Item 5 stage ii — the
+//             Signature-Agent header's hostname only, a public
+//             claim the signer publishes about itself)
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-// (AE allowance is 20 blobs; 18 are used. New stored fields are a
+// (AE allowance is 20 blobs; 19 are used. New stored fields are a
 // finite resource — see the lens spec's blob-budget note.)
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor'];
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor', 'sigagent'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);

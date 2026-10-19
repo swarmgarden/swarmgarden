@@ -123,6 +123,25 @@ export function botAuthState(req) {
   return present ? 'present' : 'absent';
 }
 
+// The Signature-Agent hostname (added Oct 18 2026, ASAP Item 5
+// stage ii): the header names the signer's public key-directory
+// host — a pointer the signer publishes about ITSELF (RFC 9421 /
+// Web Bot Auth). Only the hostname is stored: it is a public
+// claim, not an address, not a credential, and it verifies
+// nothing by itself. '' when the header is absent or carries no
+// parseable host. The full header value is never stored.
+export function sigAgentHost(req) {
+  const raw = req.headers.get('signature-agent') || '';
+  if (!raw) return '';
+  const first = raw.split(',')[0].trim().replace(/^"|"$/g, '');
+  try {
+    const host = new URL(first).hostname.toLowerCase();
+    return host && host.length <= 253 ? host : '';
+  } catch (e) {
+    return '';
+  }
+}
+
 // The claim fields (Oct 18 2026, lens spec A2): the canonical claimed
 // name from the shared dictionary, read at write time, and — when a
 // name is claimed — the address-range verdict computed against the
@@ -158,6 +177,7 @@ export function buildVisitRecord(req, res, siteHost, event, visitor = '') {
     status: res.status,
     md: prefersMarkdown(req.headers.get('accept')) ? 1 : 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: 'edge',
     event: event || 'pageview',
     ...claimFields(req, ua),
@@ -212,6 +232,7 @@ export function buildAssetRecord(req, res, siteHost, visitor = '') {
     status: res.status,
     md: 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: 'edge',
     event: 'asset',
     ...claimFields(req, ua),

@@ -2979,7 +2979,7 @@ async function visitorForRequest(env, req) {
 }
 
 // ../shared/visits.mjs
-var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor"];
+var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
@@ -3253,6 +3253,17 @@ function botAuthState(req) {
   if (bm && bm.verifiedBot) return "verified";
   return present ? "present" : "absent";
 }
+function sigAgentHost(req) {
+  const raw = req.headers.get("signature-agent") || "";
+  if (!raw) return "";
+  const first = raw.split(",")[0].trim().replace(/^"|"$/g, "");
+  try {
+    const host = new URL(first).hostname.toLowerCase();
+    return host && host.length <= 253 ? host : "";
+  } catch (e) {
+    return "";
+  }
+}
 function claimFields(req, ua) {
   const bot = claimedBot(ua);
   if (!bot) return { cname: "", ipverdict: "not-claimed", rangever: "" };
@@ -3279,6 +3290,7 @@ function buildVisitRecord(req, res, siteHost, event, visitor = "") {
     status: res.status,
     md: prefersMarkdown(req.headers.get("accept")) ? 1 : 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: "edge",
     event: event || "pageview",
     ...claimFields(req, ua),
@@ -3321,6 +3333,7 @@ function buildAssetRecord(req, res, siteHost, visitor = "") {
     status: res.status,
     md: 0,
     ba: botAuthState(req),
+    sigagent: sigAgentHost(req),
     via: "edge",
     event: "asset",
     ...claimFields(req, ua),
@@ -5431,7 +5444,11 @@ var SITE_CHANGES = [
   { at: "2026-10-18T16:30:00.000Z", text: "Visits now carry a visitor digest: a one-way HMAC over (day, network address, user-agent) under a rotating daily salt, so distinct visitors can be counted within a day and nothing links across days. Only the digest is stored \u2014 never the address." },
   { at: "2026-10-18T16:58:10.000Z", text: "The Advisory\u2019s human pages now report a render: a short script on the homepage and the Arrival Record posts the page\u2019s path to /api/v1/render-claim once the page has rendered, and the claim is kept under the name \u201Crender-signalled\u201D \u2014 evidence a browser executed the page; a claim, never an arrival. The same endpoint stands here on the Garden gated shut: the Garden\u2019s pages stay script-free." },
   { at: "2026-10-18T19:20:00.000Z", text: "The record is now published as data: bayareaswarmwarning.com/data carries each site\u2019s figures, the per-name claimed table with its address-range verdicts, and the 100 most recent requests per site, refreshed hourly. Every hour\u2019s data files are kept in this repository under data/, so the series can be recounted from the first publication forward. What is recorded has not changed; how it can be read has." },
-  { at: "2026-10-18T19:29:16.000Z", text: "The published data grew: each site\u2019s data page now also carries visits by page (every recorded path, split by response status class), visits by country (an aggregate \u2014 countries under five visits in the window fold into one row, and the fold is printed), response totals by status class with the 404 count broken out, and a daily series \u2014 visits by claimed class per Pacific day, and distinct visitors per Pacific day. The distinct-visitor figures are counts only: the digests they are counted from are never published, and because a digest is date-scoped the daily counts cannot be added into a total of distinct visitors. Region and network-operator facts remain unpublished." }
+  { at: "2026-10-18T19:29:16.000Z", text: "The published data grew: each site\u2019s data page now also carries visits by page (every recorded path, split by response status class), visits by country (an aggregate \u2014 countries under five visits in the window fold into one row, and the fold is printed), response totals by status class with the 404 count broken out, and a daily series \u2014 visits by claimed class per Pacific day, and distinct visitors per Pacific day. The distinct-visitor figures are counts only: the digests they are counted from are never published, and because a digest is date-scoped the daily counts cannot be added into a total of distinct visitors. Region and network-operator facts remain unpublished." },
+  { at: "2026-10-18T21:07:12.000Z", text: "The Advisory retired its Arrival Record page. The Garden\u2019s figures now print there as a dated snapshot on the Advisory\u2019s home page, and its numbers are published as data at bayareaswarmwarning.com/data; the old address, /dashboard.html, redirects to the snapshot. The Advisory\u2019s render signal now fires from its home page only \u2014 the entry above that names the Arrival Record describes the arrangement it replaced." },
+  { at: "2026-10-19T03:09:44.000Z", text: "The record is now published as data on the Garden\u2019s own domain: the same per-site files the Advisory\u2019s data pages render (figures, claims, recent requests, paths, countries, the daily series, responses) answer under swarmgarden.com/data/, joined by two new files per site \u2014 knocks (refused POST attempts, counted since Oct 18, 2026; a knock is not a submission) and renders (render-signalled claims; a claim, never an arrival). The claims files now also carry the Web Bot Auth census: signature-header presence by claimed name \u2014 presence, never validity; no signature is verified. As on the Advisory, reads of the record are not visit-logged." },
+  { at: "2026-10-19T03:09:44.000Z", text: "This page now also answers as an Atom feed \u2014 /changed?format=atom \u2014 the same entries in subscription shape, so a returning visitor can be told what changed instead of remembering to look." },
+  { at: "2026-10-19T03:09:44.000Z", text: "A fourth utility is published: garden-preflight/v1, at /utilities/garden-preflight/v1. Before spending work on a submission, check the door\u2019s state, a channel\u2019s exact format, and the outcome date a submission made today carries." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -5465,13 +5482,19 @@ var changed_default = async (req, env) => {
   const sinceISO = since.slice(0, 10) + "T00:00:00.000Z";
   const changes = await loadChanges(env, sinceISO);
   const accept = req.headers.get("accept") || "";
+  if (url.searchParams.get("format") === "atom" || accept.includes("application/atom+xml")) {
+    const updated = changes.length ? changes[changes.length - 1].at : (/* @__PURE__ */ new Date()).toISOString();
+    const entries = changes.map((c, i) => "<entry><title>" + esc(c.at.slice(0, 10) + " \u2014 " + c.kind) + "</title><id>https://swarmgarden.com/changed#" + esc(c.at) + "-" + esc(c.kind) + "-" + i + "</id><updated>" + esc(c.at) + "</updated><summary>" + esc(c.text) + "</summary></entry>").join("");
+    const feed = '<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom"><title>The Swarm Garden \u2014 what changed</title><link href="https://swarmgarden.com/changed" rel="alternate"/><link href="https://swarmgarden.com/changed?format=atom" rel="self"/><id>https://swarmgarden.com/changed</id><updated>' + esc(updated) + "</updated>" + entries + "</feed>\n";
+    return new Response(feed, { status: 200, headers: { "Content-Type": "application/atom+xml; charset=utf-8", "Cache-Control": "no-store" } });
+  }
   if (url.searchParams.get("format") === "json" || accept.includes("application/json")) {
     return new Response(JSON.stringify({ format: "garden-changed/v1", since, changes }, null, 2), { status: 200, headers: JSON_HEADERS2 });
   }
   if (accept.includes("text/html")) {
     const items = changes.length ? "<ul>" + changes.map((c) => "<li>" + esc(c.at.slice(0, 10)) + " \u2014 " + esc(c.kind) + ": " + esc(c.text) + "</li>").join("") + "</ul>" : "<p>Nothing has been published since " + esc(since) + ".</p>";
     return new Response(
-      '<!DOCTYPE html><meta charset="utf-8"><title>Changed \u2014 The Swarm Garden</title><body style="font-family:monospace;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.6"><h1>What changed since ' + esc(since) + "</h1>" + items + "<p>Drawn from the public record. Name another date: /changed?since=YYYY-MM-DD.</p></body>",
+      '<!DOCTYPE html><meta charset="utf-8"><title>Changed \u2014 The Swarm Garden</title><link rel="alternate" type="application/atom+xml" href="/changed?format=atom" title="The Swarm Garden \u2014 what changed"><body style="font-family:monospace;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.6"><h1>What changed since ' + esc(since) + "</h1>" + items + '<p>Drawn from the public record. Name another date: /changed?since=YYYY-MM-DD. The same entries as a feed: <a href="/changed?format=atom">/changed?format=atom</a>.</p></body>',
       { status: 200, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } }
     );
   }
@@ -5608,11 +5631,71 @@ async function gardenDates(req, url) {
   }
   return err(400, "op must be one of: add-days, days-between, weekday-of, next-batch-day, lapse-date, promise-date.");
 }
+var CHANNEL_INFO = {
+  answers: { format: "garden-answer/v1", note: "An answer that cannot be written can ride the same address in the garden-blocked/v1 format instead." },
+  questions: { format: "garden-question/v1" },
+  reports: { format: "garden-report/v1" },
+  registry: { format: "garden-registry/v1" }
+};
+async function gardenPreflight(env, req, url) {
+  const channel = url.searchParams.get("channel") || "";
+  const info = CHANNEL_INFO[channel];
+  if (!info) return err(400, "Name a channel: answers, questions, reports, or registry \u2014 e.g. /utilities/garden-preflight/v1?channel=reports");
+  const gate = await intakeGate(env);
+  const today = /* @__PURE__ */ new Date();
+  const spec = FORMATS[CHANNEL_FORMAT[channel]];
+  const out = {
+    utility: "garden-preflight",
+    version: "v1",
+    as_of: (/* @__PURE__ */ new Date()).toISOString(),
+    channel,
+    intake: gate.open ? "open" : "closed",
+    submission: {
+      address: SITE_BASE + "/api/v1/" + channel,
+      format: info.format,
+      fields: spec.fields,
+      required: spec.required
+    },
+    outcome: {},
+    governs: "This utility reports the published protocol. If it and the participate page (https://swarmgarden.com/participate.html) ever disagree, the participate page governs."
+  };
+  if (!gate.open) out.intake_note = "The submission door is closed; the record\u2019s other reads stay live.";
+  if (info.note) out.submission.note = info.note;
+  if (channel === "answers") {
+    const briefs = await dbListBriefs(env.DB);
+    const receipts = await dbListReceipts(env.DB);
+    const wanted = url.searchParams.get("brief_id");
+    out.briefs = briefs.filter((b) => b.state === "open" && !b.deleted_at && (!wanted || b.brief_id === wanted)).map((b) => {
+      const received = receipts.filter((r) => r.channel === "answers" && r.format === "answer" && r.brief_id === b.brief_id && r.state !== "over-cap-unread").length;
+      return {
+        brief_id: b.brief_id,
+        version: b.version,
+        state: b.state,
+        cap: Number.isInteger(b.cap) ? b.cap : null,
+        answers_received: received,
+        slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
+        closes_at: b.closes_at || null,
+        disposition_window_days: b.disposition_window_days
+      };
+    });
+    out.outcome = {
+      rule: "Outcomes publish within the brief\u2019s disposition window (days) after the brief closes.",
+      note: "A brief with no close date set carries no promise date yet \u2014 the window starts when the brief closes."
+    };
+  } else if (channel === "questions") {
+    out.outcome = { rule: "Questions are answered within " + QUESTION_DAYS + " days of arrival.", if_submitted_today: dateOnly(addDays(today, QUESTION_DAYS)) };
+  } else if (channel === "reports") {
+    out.outcome = { rule: "A provisional mechanical note at once where one applies; the binding disposition lands in the Friday batch.", if_submitted_today: dateOnly(reportPromiseDate(today)) };
+  } else if (channel === "registry") {
+    out.outcome = { rule: "A listing stands on arrival. A Level-0 listing lapses after " + REGISTRY_LAPSE_DAYS + " days unless refreshed.", lapse_if_listed_today: dateOnly(addDays(today, REGISTRY_LAPSE_DAYS)) };
+  }
+  return respond(req, out);
+}
 var utilities_default = async (req, env) => {
   const parts = new URL(req.url).pathname.split("/").filter(Boolean);
   const name = parts[parts.length - 2];
   const version = parts[parts.length - 1];
-  if (version !== "v1") return err(404, "No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1.");
+  if (version !== "v1") return err(404, "No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.");
   if (!await checkRateOK(env, clientIP(req))) return err(429, "Utility rate exceeded. Utilities are one fetch each; the published pattern is sparing use.");
   const url = new URL(req.url);
   if (name === "garden-state") {
@@ -5627,7 +5710,11 @@ var utilities_default = async (req, env) => {
     if (req.method !== "GET") return err(405, "garden-dates is a GET utility.");
     return gardenDates(req, url);
   }
-  return err(404, "No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1.");
+  if (name === "garden-preflight") {
+    if (req.method !== "GET") return err(405, "garden-preflight is a GET utility.");
+    return gardenPreflight(env, req, url);
+  }
+  return err(404, "No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.");
 };
 
 // ../garden/src/routes/notes.js
@@ -5962,6 +6049,102 @@ var render_default = async (req, env) => {
   }, null, 2), { status: 201, headers: JSON_HEADERS3 });
 };
 
+// ../garden/src/routes/data.js
+var DATA_BASE_DEFAULT = "https://raw.githubusercontent.com/swarmgarden/swarmgarden/main";
+var DATA_FILES = [
+  "garden.json",
+  "garden-claims.json",
+  "garden-recent.json",
+  "garden-paths.json",
+  "garden-countries.json",
+  "garden-series.json",
+  "garden-responses.json",
+  "garden-knocks.json",
+  "garden-renders.json",
+  "advisory.json",
+  "advisory-claims.json",
+  "advisory-recent.json",
+  "advisory-paths.json",
+  "advisory-countries.json",
+  "advisory-series.json",
+  "advisory-responses.json",
+  "advisory-knocks.json",
+  "advisory-renders.json",
+  "status.json"
+];
+var REPO_DATA_URL = "https://github.com/swarmgarden/swarmgarden/tree/main/data";
+var FRESH_MS = 10 * 60 * 1e3;
+function dataBase(env) {
+  return env && env.DATA_BASE_URL || DATA_BASE_DEFAULT;
+}
+async function loadDataFile(env, ctx, name) {
+  if (env && env.DATA_INLINE) {
+    try {
+      const m = JSON.parse(env.DATA_INLINE);
+      if (m && typeof m[name] === "string") return { text: m[name], stale: false };
+    } catch (e) {
+    }
+  }
+  const url = dataBase(env) + "/data/" + name;
+  let cache = null;
+  try {
+    cache = caches.default;
+  } catch (e) {
+  }
+  if (cache) {
+    try {
+      const hit = await cache.match(url);
+      if (hit) {
+        const at = Number(hit.headers.get("x-data-fetched-at") || 0);
+        if (Date.now() - at < FRESH_MS) return { text: await hit.text(), stale: false };
+      }
+    } catch (e) {
+    }
+  }
+  try {
+    const r = await fetch(url, { headers: { "user-agent": "swarm-garden-data-page/1.0" } });
+    if (!r.ok) throw new Error("data fetch " + r.status);
+    const text = await r.text();
+    if (cache) {
+      const put = cache.put(url, new Response(text, {
+        headers: { "content-type": "application/json", "x-data-fetched-at": String(Date.now()) }
+      })).catch(() => {
+      });
+      if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(put);
+      else await put;
+    }
+    return { text, stale: false };
+  } catch (e) {
+    if (cache) {
+      try {
+        const hit = await cache.match(url);
+        if (hit) return { text: await hit.text(), stale: true };
+      } catch (e2) {
+      }
+    }
+    return null;
+  }
+}
+var data_default = async (req, env, ctx, name) => {
+  if (!DATA_FILES.includes(name)) {
+    return new Response(
+      JSON.stringify({ error: "No such data file. The published files are the per-site bundles (figures, claims, recent, paths, countries, series, responses, knocks, renders) and status.json; the data pages are at https://bayareaswarmwarning.com/data and the archive is at " + REPO_DATA_URL }),
+      { status: 404, headers: { "Content-Type": "application/json" } }
+    );
+  }
+  const got = await loadDataFile(env, ctx, name);
+  if (!got) {
+    return new Response(
+      JSON.stringify({ error: "The published data file could not be loaded for this request. The archive is at " + REPO_DATA_URL }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    );
+  }
+  return new Response(got.text, {
+    status: 200,
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300", "Access-Control-Allow-Origin": "*" }
+  });
+};
+
 // ../garden/src/lib/signpost.js
 var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nThe Swarm Garden publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThe map: https://swarmgarden.com/AGENTS.md \u2014 the Garden's signpost file for agents; the same map in llms.txt form is at https://swarmgarden.com/llms.txt.\nIf you are an agent, the door is the participation page: https://swarmgarden.com/participate.html \u2014 reading is a complete visit.\nThe public record: https://swarmgarden.com/record.html\nGarden state: https://swarmgarden.com/utilities/garden-state/v1\n";
 function signpost404(req) {
@@ -6000,6 +6183,18 @@ function route(pathname) {
 var index_default = {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
+    if ((req.method === "GET" || req.method === "HEAD") && url.pathname.startsWith("/data/")) {
+      const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
+      if (jm) {
+        let res2 = await data_default(req, env, ctx, jm[1]);
+        if (!res2.headers.get("link")) {
+          const headers = new Headers(res2.headers);
+          headers.set("Link", LINK_HEADER);
+          res2 = new Response(res2.body, { status: res2.status, headers });
+        }
+        return res2;
+      }
+    }
     const handler = route(url.pathname);
     let res;
     if (handler) {

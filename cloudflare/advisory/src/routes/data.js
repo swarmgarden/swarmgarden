@@ -50,8 +50,10 @@
 const DATA_BASE_DEFAULT = 'https://raw.githubusercontent.com/swarmgarden/swarmgarden/main';
 const DATA_FILES = ['garden.json', 'garden-claims.json', 'garden-recent.json',
   'garden-paths.json', 'garden-countries.json', 'garden-series.json', 'garden-responses.json',
+  'garden-knocks.json', 'garden-renders.json',
   'advisory.json', 'advisory-claims.json', 'advisory-recent.json',
   'advisory-paths.json', 'advisory-countries.json', 'advisory-series.json', 'advisory-responses.json',
+  'advisory-knocks.json', 'advisory-renders.json',
   'status.json'];
 const REPO_DATA_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/data';
 const REPO_RECORDS_URL = 'https://github.com/swarmgarden/swarmgarden/tree/main/records';

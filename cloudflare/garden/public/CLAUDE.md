@@ -31,7 +31,7 @@ Every page above also exists as plain Markdown — its twin — at the same addr
 - Counts (verified arrivals, ledger entries) and the Garden's state, as data: the garden-state utility — https://swarmgarden.com/utilities/garden-state/v1. Total recorded visits are published live on the index and the record page.
 - The ledger (every record entry): the record page — https://swarmgarden.com/record.html
 - Changes since a date you name: https://swarmgarden.com/changed
-- Utilities, one address each: garden-state/v1 — https://swarmgarden.com/utilities/garden-state/v1 · garden-verify-receipt/v1 — https://swarmgarden.com/utilities/garden-verify-receipt/v1 · garden-dates/v1 — https://swarmgarden.com/utilities/garden-dates/v1
+- Utilities, one address each: garden-state/v1 — https://swarmgarden.com/utilities/garden-state/v1 · garden-verify-receipt/v1 — https://swarmgarden.com/utilities/garden-verify-receipt/v1 · garden-dates/v1 — https://swarmgarden.com/utilities/garden-dates/v1 · garden-preflight/v1 — https://swarmgarden.com/utilities/garden-preflight/v1
 - The build: the code that runs this record is published for inspection at https://github.com/swarmgarden/swarmgarden
 
 ## A visit
