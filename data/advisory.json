@@ -12,41 +12,41 @@
       {
         "label": "browser",
         "note": "",
-        "value": 2804
+        "value": 2834
       },
       {
         "label": "automation",
         "note": "",
-        "value": 2230
+        "value": 2232
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 661
+        "value": 668
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 4553
+        "value": 4579
       },
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 1774
+        "value": 1790
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 458
+        "value": 459
       }
     ],
     "rows": [
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
-        "value": 6330
+        "value": 6366
       },
       {
         "label": "Redirect responses",
@@ -56,7 +56,7 @@
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 6789
+        "value": 6825
       },
       {
         "label": "Verified agent arrivals on record",
@@ -81,11 +81,14 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 11:14:56 AM PT",
-  "generated_at_utc": "2026-10-19T18:14:56Z",
+  "generated_at_pt": "Oct 19, 2026, 12:12:38 PM PT",
+  "generated_at_utc": "2026-10-19T19:12:38Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
-  "pull_status": "ok",
+  "pull_status": "degraded",
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",
-  "unavailable_notes": []
+  "unavailable_notes": [
+    "The channel-knocks pull failed this hour; that file was not refreshed.",
+    "The render-claims pull failed this hour; that file was not refreshed."
+  ]
 }
