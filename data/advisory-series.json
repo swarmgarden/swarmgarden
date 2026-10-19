@@ -9,12 +9,12 @@
       "unknown": 392
     },
     {
-      "agent-claimed": 21,
-      "automation": 240,
-      "browser": 663,
+      "agent-claimed": 23,
+      "automation": 244,
+      "browser": 720,
       "day": "2026-10-18",
-      "total": 1112,
-      "unknown": 188
+      "total": 1176,
+      "unknown": 189
     }
   ],
   "class_note": "Visits by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications.",
@@ -37,9 +37,9 @@
       "day": "2026-10-18",
       "events": {
         "arrival-board-view": 39,
-        "pageview": 1073
+        "pageview": 1137
       },
-      "total": 1112
+      "total": 1176
     }
   ],
   "event_note": "Named events per Pacific day. pageview is a plain page read; the other names are the record's return markers \u2014 changed-read (a /changed check-back), utility-read (a published utility used), receipt-check (a receipt looked up), notes-read and guestbook-view (the visitors' book read as counts and page). An event is a request to a path, nothing more.",
@@ -73,25 +73,25 @@
         "/agent-card.json": 1,
         "/llms-full.txt": 11,
         "/llms.txt": 9,
-        "/robots.txt": 38,
+        "/robots.txt": 42,
         "/security.txt": 4,
         "/sitemap.xml": 13
       },
-      "total": 125
+      "total": 129
     }
   ],
   "file_note": "Fetches of the canonical agent-interest files per Pacific day \u2014 the discovery set (robots.txt, llms.txt, sitemap, security.txt, the agent card, the agent skills) and the instruction-file probes (AGENTS.md, CLAUDE.md, README.md). A fetch is a request, not evidence of agent interest: measured experience is that these hits are likelier scanners and audit tools. The series exists so a second crawler pass is visible as a pass.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 7:50:44 PM PT",
-  "generated_at_utc": "2026-10-19T02:50:44Z",
+  "generated_at_pt": "Oct 18, 2026, 8:13:54 PM PT",
+  "generated_at_utc": "2026-10-19T03:13:54Z",
   "site": "advisory",
   "unavailable_notes": [],
   "visitor_days": [
     {
       "day": "2026-10-18",
-      "digest_requests": 739,
-      "distinct_visitors": 244,
-      "repeat_requests": 558
+      "digest_requests": 803,
+      "distinct_visitors": 253,
+      "repeat_requests": 618
     }
   ],
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (UTC date, network address, user-agent) under a per-site secret: it links a visitor's requests within a day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. Shared network egress understates the count; rotating egress overstates it."
