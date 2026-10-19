@@ -1,4 +1,19 @@
 {
+  "bot_auth": {
+    "absent_total": 2174,
+    "by_name": [
+      {
+        "name": "meta-webindexer",
+        "records_with_signature_headers": 5
+      },
+      {
+        "name": "(no claimed name)",
+        "records_with_signature_headers": 1
+      }
+    ],
+    "note": "Signature-header presence (Signature, Signature-Input, or Signature-Agent) by claimed name. Presence is a claim, not a verification: no signature has been verified, and the platform's verified-bot verdict cannot fire on this hosting tier.",
+    "present_total": 6
+  },
   "columns": [
     "name",
     "claimed",
@@ -10,25 +25,25 @@
   ],
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 18, 2026, 7:12:38 PM PT",
-  "generated_at_utc": "2026-10-19T02:12:38Z",
+  "generated_at_pt": "Oct 18, 2026, 7:50:44 PM PT",
+  "generated_at_utc": "2026-10-19T02:50:44Z",
   "rows": [
     {
-      "claimed": 19,
+      "claimed": 20,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 19,
-      "verified_share_of_checkable": "small n (19 checkable)",
+      "verified-range": 20,
+      "verified_share_of_checkable": "100.0%",
       "wrong-range": 0
     },
     {
-      "claimed": 7,
+      "claimed": 9,
       "name": "GoogleOther",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 7,
-      "verified_share_of_checkable": "small n (7 checkable)",
+      "verified-range": 9,
+      "verified_share_of_checkable": "small n (9 checkable)",
       "wrong-range": 0
     },
     {
