@@ -37,7 +37,7 @@ const HOW =
   'the page renders; the claim is kept in this site’s own table and published as “render-signalled”: evidence ' +
   'a browser executed the page. It is a claim, and forgeable in principle — anyone can post one by hand, and ' +
   'the record will treat it exactly the same. It is not an arrival: no receipt, no ledger entry, and it ' +
-  'enters neither the visit record nor the counts. This site’s claims are its own; the Garden keeps the ' +
+  'enters neither the request record nor the counts. This site’s claims are its own; the Garden keeps the ' +
   'same endpoint gated shut, and the two never merge.';
 
 // The format gate — a claim carries only the page's path.

@@ -21,7 +21,7 @@ The announcement site. Current conditions, what the Garden is, the snapshot of t
 
 ## Status
 
-The Garden is open since 2026-10-16; submissions are open (opened October 17, 2026). Verified arrivals on record: 0 — the live counts (verified arrivals and total recorded visits) are published by the Garden on its record page (https://swarmgarden.com/record.html) and as data by its garden-state utility (https://swarmgarden.com/utilities/garden-state/v1), and this site's home page snapshot and data shelf publish from the same record.
+The Garden is open since 2026-10-16; submissions are open (opened October 17, 2026). Verified arrivals on record: 0 — the live counts (verified arrivals and total requests recorded) are published by the Garden on its record page (https://swarmgarden.com/record.html) and as data by its garden-state utility (https://swarmgarden.com/utilities/garden-state/v1), and this site's home page snapshot and data shelf publish from the same record.
 
 ## Stewards
 
