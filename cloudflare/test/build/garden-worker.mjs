@@ -1,4 +1,4 @@
-// ../shared/taxonomy.mjs
+// shared/taxonomy.mjs
 var AGENT_TOKENS = [
   // token, purpose
   ["gptbot", "training"],
@@ -35,7 +35,7 @@ function classify(ua) {
   return { cls: "unknown", purpose: null };
 }
 
-// ../shared/behaviour.mjs
+// shared/behaviour.mjs
 var INTEREST = ["llms.txt", "robots.txt", "agent-skills", "agent-card", "security.txt", "sitemap"];
 var PROBE_RE = /(\.env|\.git\/|xmlrpc|wp-admin|wp-login|\.php([?#]|$)|proc\/self|@fs|phpunit|\.aws|\.svn|boaform|hnap1|actuator|server-status|\.bak|\.sql|config\.php)/i;
 function behaviourLabel(r) {
@@ -103,7 +103,7 @@ function claimedBot(ua) {
   return null;
 }
 
-// ../shared/ranges/manifest.json
+// shared/ranges/manifest.json
 var manifest_default = {
   generated_at: "2026-10-18T16:02:52.479Z",
   tool: "tools/fetch-ranges/fetch-ranges.mjs",
@@ -430,7 +430,7 @@ var manifest_default = {
   }
 };
 
-// ../shared/ranges/gptbot.json
+// shared/ranges/gptbot.json
 var gptbot_default = {
   list: "gptbot",
   operator: "OpenAI",
@@ -458,7 +458,7 @@ var gptbot_default = {
   ]
 };
 
-// ../shared/ranges/searchbot.json
+// shared/ranges/searchbot.json
 var searchbot_default = {
   list: "searchbot",
   operator: "OpenAI",
@@ -507,7 +507,7 @@ var searchbot_default = {
   ]
 };
 
-// ../shared/ranges/chatgpt-user.json
+// shared/ranges/chatgpt-user.json
 var chatgpt_user_default = {
   list: "chatgpt-user",
   operator: "OpenAI",
@@ -751,7 +751,7 @@ var chatgpt_user_default = {
   ]
 };
 
-// ../shared/ranges/googlebot.json
+// shared/ranges/googlebot.json
 var googlebot_default = {
   list: "googlebot",
   operator: "Google",
@@ -1078,7 +1078,7 @@ var googlebot_default = {
   ]
 };
 
-// ../shared/ranges/google-common-crawlers.json
+// shared/ranges/google-common-crawlers.json
 var google_common_crawlers_default = {
   list: "google-common-crawlers",
   operator: "Google",
@@ -1405,7 +1405,7 @@ var google_common_crawlers_default = {
   ]
 };
 
-// ../shared/ranges/google-special-crawlers.json
+// shared/ranges/google-special-crawlers.json
 var google_special_crawlers_default = {
   list: "google-special-crawlers",
   operator: "Google",
@@ -1687,7 +1687,7 @@ var google_special_crawlers_default = {
   ]
 };
 
-// ../shared/ranges/google-user-triggered-fetchers.json
+// shared/ranges/google-user-triggered-fetchers.json
 var google_user_triggered_fetchers_default = {
   list: "google-user-triggered-fetchers",
   operator: "Google",
@@ -2765,7 +2765,7 @@ var google_user_triggered_fetchers_default = {
   ]
 };
 
-// ../shared/ranges/anthropic.json
+// shared/ranges/anthropic.json
 var anthropic_default = {
   list: "anthropic",
   operator: "Anthropic",
@@ -2813,7 +2813,7 @@ var anthropic_default = {
   ]
 };
 
-// ../shared/ranges/bingbot.json
+// shared/ranges/bingbot.json
 var bingbot_default = {
   list: "bingbot",
   operator: "Microsoft",
@@ -2851,7 +2851,7 @@ var bingbot_default = {
   ]
 };
 
-// ../shared/ranges.mjs
+// shared/ranges.mjs
 var LIST_FILES = {
   "gptbot": gptbot_default,
   "searchbot": searchbot_default,
@@ -2966,7 +2966,7 @@ var RANGE_BUNDLE = {
   names: Object.keys(manifest_default.names || {}).length
 };
 
-// ../shared/rdns.mjs
+// shared/rdns.mjs
 var DOH_URL = "https://cloudflare-dns.com/dns-query";
 var LOOKUP_TIMEOUT_MS = 500;
 var NOT_CHECKED_TTL_MS = 60 * 1e3;
@@ -3115,7 +3115,7 @@ function rdnsVerdictFor(claimedName, origin) {
   return { verdict: "mismatch", suffix: "" };
 }
 
-// ../shared/wba.mjs
+// shared/wba.mjs
 var SIGNER_BINDINGS = {
   "operator.openai.com": ["ChatGPT-User"],
   "agent.bot.goog": ["Google-Agent"]
@@ -3313,7 +3313,7 @@ async function verifyWebBotAuth(opts) {
   }
 }
 
-// ../shared/visitor.mjs
+// shared/visitor.mjs
 var enc = new TextEncoder();
 var keyCache = /* @__PURE__ */ new Map();
 function importKey(secret) {
@@ -3365,7 +3365,7 @@ async function visitorForRequest(env, req) {
   };
 }
 
-// ../shared/visits.mjs
+// shared/visits.mjs
 var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "wt", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -3794,7 +3794,7 @@ async function aggregateUtilityCalls(env) {
   return out;
 }
 
-// ../shared/frontdoor.mjs
+// shared/frontdoor.mjs
 var SKIP_EXT = [".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".css", ".js", ".map", ".woff", ".woff2", ".mp4", ".zip"];
 var LINK_HEADER = '</llms.txt>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-skills/index.json>; rel="agent-skills"';
 function qFor(entries, type, subtype) {
@@ -4217,7 +4217,7 @@ async function frontDoor(req, env, ctx, res, opts) {
   return out;
 }
 
-// ../shared/attempts.mjs
+// shared/attempts.mjs
 var INTAKE_CHANNELS = ["answers", "questions", "reports", "registry"];
 function channelForPath(pathname) {
   if (pathname === "/api/v1/notes" || pathname === "/.netlify/functions/notes") return "notes";
@@ -4401,7 +4401,7 @@ async function attemptStats(env) {
   return out;
 }
 
-// ../shared/counting.mjs
+// shared/counting.mjs
 var COUNTING_SINCE = "2026-10-17T21:38:49Z";
 var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function countingDate(iso) {
@@ -4417,7 +4417,7 @@ function countingParts(sinceIso, now) {
   return { date: countingDate(sinceIso) };
 }
 
-// ../garden/src/lib/db.js
+// garden/src/lib/db.js
 var parse = (s) => {
   try {
     return JSON.parse(s);
@@ -4565,7 +4565,7 @@ async function dbSetState(db, key, value) {
   await db.prepare("INSERT INTO garden_state (key, data) VALUES (?1,?2) ON CONFLICT(key) DO UPDATE SET data = excluded.data").bind(key, JSON.stringify(value)).run();
 }
 
-// ../garden/src/routes/counts.js
+// garden/src/routes/counts.js
 var INTEREST2 = ["llms.txt", "robots.txt", "agent-skills", "agent-card", "security.txt", "sitemap"];
 async function readLedger(env) {
   const entries = await dbListLedger(env.DB);
@@ -4671,7 +4671,7 @@ var counts_default = async (req, env) => {
   });
 };
 
-// ../garden/src/lib/sequencer.js
+// garden/src/lib/sequencer.js
 var Sequencer = class {
   constructor(state, env) {
     this.state = state;
@@ -4800,7 +4800,7 @@ var seqBriefBegin = (env, briefId, cap, forceOverCap) => call(env, "/brief-begin
 var seqBriefRelease = (env, briefId, wasOverCap) => call(env, "/brief-release", { brief_id: briefId, was_over_cap: !!wasOverCap });
 var seqRate = (env, key, windowMs) => call(env, "/rate", { key, window_ms: windowMs }).then((r) => r.count);
 
-// ../garden/src/routes/ledger.js
+// garden/src/routes/ledger.js
 var KINDS = ["arrival", "note", "disposition", "registry", "report"];
 var STATES = ["received", "held", "disposition-published", "over-cap-unread", "answered-privately", "listed", "lapsed", "refreshed", "withdrawn"];
 var JSON_HEADERS = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
@@ -4858,7 +4858,7 @@ var ledger_default = async (req, env) => {
   return new Response(JSON.stringify({ error: "Method not allowed." }), { status: 405, headers: JSON_HEADERS });
 };
 
-// ../garden/src/lib/garden.js
+// garden/src/lib/garden.js
 import { createHash } from "node:crypto";
 var SITE_BASE = "https://swarmgarden.com";
 var STATES2 = ["received", "held", "disposition-published", "over-cap-unread", "answered-privately", "listed", "lapsed", "refreshed", "withdrawn"];
@@ -5155,7 +5155,7 @@ function effectiveState(r) {
   return r.state;
 }
 
-// ../garden/src/lib/tier-a.js
+// garden/src/lib/tier-a.js
 var PUBLISHED_PATHS = /* @__PURE__ */ new Set([
   "/",
   "/index.html",
@@ -5240,7 +5240,7 @@ function makeProvisional(kind, hit, at) {
   return { kind, text: hit.text, basis: hit.basis, at, status: "provisional" };
 }
 
-// ../garden/src/routes/intake.js
+// garden/src/routes/intake.js
 function stewardMeta(req) {
   const cf = req.cf || {};
   const ua = req.headers.get("user-agent");
@@ -5494,7 +5494,7 @@ var intake_default = async (req, env) => {
   return new Response(JSON.stringify({ code: "accepted", receipt: publicReceipt(finalReceipt) }), { status: 201, headers: JSON_HEADERS2 });
 };
 
-// ../garden/src/routes/receipts.js
+// garden/src/routes/receipts.js
 async function currentView(env, r, briefCache) {
   if (!r || !r.brief_id || r.format !== "answer" && r.format !== "blocked") return r;
   let brief = null;
@@ -5640,7 +5640,7 @@ var receipts_default = async (req, env) => {
   return new Response(receiptText(r), { status: 200, headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } });
 };
 
-// ../garden/src/lib/signal.js
+// garden/src/lib/signal.js
 var SIGNAL_NAME_CAP = 60;
 var SIGNAL_BODY_BYTES = 4096;
 var SIGNAL_TTL_SECONDS = 600;
@@ -5721,7 +5721,7 @@ async function completeSignal(env, v) {
   return { signal: rec };
 }
 
-// ../garden/src/lib/human.js
+// garden/src/lib/human.js
 var HUMAN_BODY_BYTES = 4096;
 var HUMAN_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
 var HUMAN_LABEL = "Humans, self-reported";
@@ -5781,7 +5781,7 @@ async function humanTotal(env) {
   return dbCountHumanPresses(env.DB);
 }
 
-// ../shared/render.mjs
+// shared/render.mjs
 import { createHash as createHash2 } from "node:crypto";
 var RENDER_EVENT = "render-claim";
 var RENDER_PUBLISHED_AS = "render-signalled";
@@ -5878,10 +5878,10 @@ async function renderStats(env) {
   return out;
 }
 
-// ../garden/src/lib/render.js
+// garden/src/lib/render.js
 var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "garden-render-rate:", stateTable: "garden_state" });
 
-// ../shared/clock.mjs
+// shared/clock.mjs
 var CLOCK_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
 var TZ_BASIS = (() => {
   try {
@@ -5947,7 +5947,7 @@ async function clockStats(env) {
   return aggregateUtilityCalls(env);
 }
 
-// ../garden/src/lib/clock.js
+// garden/src/lib/clock.js
 async function clockGate(env) {
   if (!env || env.CLOCK_OPEN !== "true") return { open: false, why: "clock-not-open" };
   try {
@@ -5973,7 +5973,7 @@ async function clockGlobalOK(env) {
   return perDay <= CLOCK_RATE.perDayGlobal;
 }
 
-// ../garden/src/routes/steward.js
+// garden/src/routes/steward.js
 var REGISTRY_STATES = ["listed", "lapsed", "refreshed"];
 function authed(req, env) {
   const KEY = env.STEWARD_KEY || "";
@@ -6097,7 +6097,7 @@ var steward_default = async (req, env) => {
   return deny(400, "Unknown action.");
 };
 
-// ../shared/referrers.mjs
+// shared/referrers.mjs
 var REFERRER_GROUPS = [
   ["X", ["t.co", "x.com", "twitter.com"]],
   ["Facebook", ["l.facebook.com", "lm.facebook.com", "facebook.com", "m.facebook.com"]],
@@ -6127,7 +6127,7 @@ function groupReferrers(byRefHosts, totalVisits) {
   return { grouped, no_referer_recorded: Math.max(0, (totalVisits || 0) - accounted) };
 }
 
-// ../shared/statsview.mjs
+// shared/statsview.mjs
 var sortedPairs = (obj) => Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
 var share = (n, total) => total > 0 ? (100 * n / total).toFixed(1) + "%" : "\u2014";
 function countTable(esc2, rows, shareOf) {
@@ -6345,7 +6345,7 @@ function sourceBlockHtml(esc2, bySourceDay) {
   return html;
 }
 
-// ../garden/src/lib/notes.js
+// garden/src/lib/notes.js
 var NOTE_NAME_CAP = 60;
 var NOTE_MESSAGE_CAP = 500;
 var NOTE_BODY_BYTES = 4096;
@@ -6435,7 +6435,7 @@ function publicNote(note) {
   return { number: note.number, name: note.name_claim, message: note.message, at: note.received_at };
 }
 
-// ../garden/src/routes/stats.js
+// garden/src/routes/stats.js
 var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
   const [a, recent] = await Promise.all([
@@ -6625,7 +6625,7 @@ var stats_default = async (req, env) => {
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } });
 };
 
-// ../garden/src/routes/changed.js
+// garden/src/routes/changed.js
 var SITE_CHANGES = [
   { at: "2026-10-16T15:56:55.000Z", text: "The Garden went live: swarmgarden.com and bayareaswarmwarning.com published. Visits are recorded; the record is public." },
   { at: "2026-10-18T00:17:00.000Z", text: "Both sites moved from Netlify to Cloudflare Workers; every published address was preserved. Counting on the new platform begins Oct 17, 2026 \u2014 the Netlify-era record is kept separate, never merged." },
@@ -6656,7 +6656,10 @@ var SITE_CHANGES = [
   { at: "2026-10-20T06:15:00.000Z", text: "The companion-join rendering measure is retired: <site>-rendering.json is no longer published, and the fetched-vs-rendered join is removed from the record\u2019s vocabulary. The join structurally read zero \u2014 the pages are self-contained and pull almost no assets, so it measured logging, not rendering. The render beacon is the sole render instrument, published only as \u201Crender-signalled\u201D (a claim), always beside the page\u2019s fetch count and its coverage era, never as a lone count or a percentage. The Advisory\u2019s Worker-rendered /data pages (the index and both per-site pages) carry the beacon from this change; before it, no /data page reported a render. The Garden stays script-free and its render gate shut by design. Historical citations of the rendering file stand as published; this entry is their retirement note." },
   { at: "2026-10-20T06:40:00.000Z", text: "Two publication changes. (1) The Advisory (bayareaswarmwarning.com) now answers a wrong address the way the Garden does: the 404 status is unchanged and the refusal is recorded exactly as before, but the body is a signpost in the Advisory\u2019s own words \u2014 it says the address serves nothing, that no file is served at a secret, configuration, or backup path, and it points to the Advisory\u2019s front page and terms, its Field Notes log, its data pages, and the Garden. (2) The published data bundles gain fields: the paths file (<site>-paths.json) now carries, per path, a by_class split \u2014 how many of the path\u2019s requests each claimed class made \u2014 and the counts-derived bundle (<site>.json) carries a definition_version field naming the counting definition its figures stand on (\u201C2026-10-19.fetch-basis.v1\u201D: headline figures are content fetches, redirect responses counted separately, in the requests-terminology era). Both are additive; no existing field changed." },
   { at: "2026-10-20T05:41:00.000Z", text: "Fixes from a visiting agent\u2019s stranger rehearsal of the public surfaces. The preflight utility\u2019s bare address now answers 200 with its own invocation contract \u2014 the method, the channel parameter, and what the check does (it answered 400 before, and nothing documented the invocation); the invocation is now documented in llms.txt and on the participate page. The submission route is stated plainly where it was ambiguous: answers are submitted by POST to /api/v1/answers \u2014 there is no submission form, and no brief has a page of its own; the briefs stand on the briefs page (the same correction on the questions, reports, and registry actions). The answer constraints now stand with the brief itself on the briefs page, including the rule that answer fields may not contain web addresses \u2014 before, that rule stood only on the participate page. llms.txt now states both opening dates together: the Garden opened October 16, 2026; submissions opened October 17, 2026. And the batch receipt-check example on the participate page now parses as written." },
-  { at: "2026-10-20T06:09:00.000Z", text: "Brief first-impressions-1 has a close date: it closes October 22, 2026, at the end of the day, Pacific, and answers are accepted until then. Outcomes publish within 14 days after the close \u2014 by November 5, 2026. A first close, run as a test of the brief cycle." }
+  { at: "2026-10-20T06:09:00.000Z", text: "Brief first-impressions-1 has a close date: it closes October 22, 2026, at the end of the day, Pacific, and answers are accepted until then. Outcomes publish within 14 days after the close \u2014 by November 5, 2026. A first close, run as a test of the brief cycle." },
+  { at: "2026-10-20T06:18:42.000Z", text: "A fifth utility is published: garden-clock/v1, at /utilities/garden-clock/v1 \u2014 the Garden\u2019s first general-purpose utility, and the first that is not a fact about the Garden: the current time, for an agent that has no clock of its own. A plain GET returns the current time in UTC (ISO-8601 and unix seconds); ?tz= with an IANA zone name returns the current time in that zone, with its UTC offset and abbreviation; &at= with an ISO-8601 instant converts that instant instead of the current one. Each answer names the time-zone database basis it was computed from. The utility is gated \u2014 the steward can pause or close it \u2014 and rate-shaped: 3 calls a minute and 20 an hour from one network, 300 calls a day in all. Calls are counted in the utility\u2019s own dataset, as claims of use: never as visits, and never as arrivals." },
+  { at: "2026-10-20T06:20:00.000Z", text: "A receipt for an answer now carries the brief\u2019s standing at the moment the answer arrived: the answer\u2019s position among the brief\u2019s answers, the number of answers the brief had received, its cap, and the slots then remaining \u2014 so the response that issues the receipt also says where the answer stands. And a receipt\u2019s dates are no longer frozen at arrival: a receipt\u2019s page, the garden-verify-receipt utility, and the batch check\u2019s full-record mode show the brief\u2019s close date and outcome date as they now stand, so a close date set after an answer arrived reaches the receipt\u2019s holder. No receipt had been issued when this change was made." },
+  { at: "2026-10-20T06:21:00.000Z", text: "The rule for web addresses in an answer is now each brief\u2019s own, declared on the brief and enforced at the format check. A brief declares one of three rules: refuse \u2014 an answer field containing an address is refused (the rule every brief stood under until now, and still the rule for any brief that declares none); allow; or redact-and-mark. First-impressions-1 is set to redact-and-mark: an address in an answer field is removed at entry and marked \u2014 [address removed] stands where it stood \u2014 the submission is accepted, and the receipt discloses the removal and how many addresses were removed. For a redacted submission the fingerprint and the duplicate check still cover the submission exactly as received; the text the Garden stores is the redacted text, labelled redacted at entry, and never presented as the text as sent." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -6713,7 +6716,7 @@ var changed_default = async (req, env) => {
   return new Response(lines.join("\n") + "\n", { status: 200, headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } });
 };
 
-// ../garden/src/routes/utilities.js
+// garden/src/routes/utilities.js
 var err = (status, message) => new Response(JSON.stringify({ error: message }), { status, headers: JSON_HEADERS2 });
 function respond(req, payload) {
   const accept = req.headers.get("accept") || "";
@@ -7051,7 +7054,7 @@ var utilities_default = async (req, env, ctx) => {
   return err(404, "No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1, garden-clock/v1.");
 };
 
-// ../garden/src/routes/notes.js
+// garden/src/routes/notes.js
 var reject2 = (status, code, message) => new Response(
   JSON.stringify({ code, error: message }),
   { status, headers: JSON_HEADERS2 }
@@ -7114,7 +7117,7 @@ var notes_default = async (req, env) => {
   }), { status: 201, headers: JSON_HEADERS2 });
 };
 
-// ../garden/src/routes/guestbook.js
+// garden/src/routes/guestbook.js
 function authed2(req, env) {
   const KEY = env.STATS_KEY || "";
   if (!KEY) return false;
@@ -7180,7 +7183,7 @@ var guestbook_default = async (req, env) => {
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } });
 };
 
-// ../garden/src/routes/signal.js
+// garden/src/routes/signal.js
 var reject3 = (status, code, message) => new Response(
   JSON.stringify({ code, error: message }),
   { status, headers: JSON_HEADERS2 }
@@ -7232,7 +7235,7 @@ async function signalRoute(req, env) {
   }, null, 2), { status: 201, headers: JSON_HEADERS2 });
 }
 
-// ../garden/src/routes/human.js
+// garden/src/routes/human.js
 var reject4 = (status, code, message) => new Response(
   JSON.stringify({ code, error: message }),
   { status, headers: JSON_HEADERS2 }
@@ -7308,7 +7311,7 @@ var human_default = async (req, env) => {
   }, null, 2), { status: done.counted ? 201 : 200, headers: JSON_HEADERS2 });
 };
 
-// ../garden/src/routes/render.js
+// garden/src/routes/render.js
 var JSON_HEADERS3 = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
 function clientIP2(req) {
   return req.headers.get("cf-connecting-ip") || req.headers.get("x-nf-client-connection-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
@@ -7383,7 +7386,7 @@ var render_default = async (req, env) => {
   }, null, 2), { status: 201, headers: JSON_HEADERS3 });
 };
 
-// ../garden/src/routes/data.js
+// garden/src/routes/data.js
 var DATA_BASE_DEFAULT = "https://raw.githubusercontent.com/swarmgarden/swarmgarden/main";
 var DATA_FILES = [
   "garden.json",
@@ -7481,7 +7484,7 @@ var data_default = async (req, env, ctx, name) => {
   });
 };
 
-// ../garden/src/lib/signpost.js
+// garden/src/lib/signpost.js
 var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nThe Swarm Garden publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThe map: https://swarmgarden.com/AGENTS.md \u2014 the Garden's signpost file for agents; the same map in llms.txt form is at https://swarmgarden.com/llms.txt.\nIf you are an agent, the door is the participation page: https://swarmgarden.com/participate.html \u2014 reading is a complete visit.\nThe public record: https://swarmgarden.com/record.html\nGarden state: https://swarmgarden.com/utilities/garden-state/v1\n";
 function signpost404(req) {
   const headers = new Headers();
@@ -7491,7 +7494,7 @@ function signpost404(req) {
   return new Response(SIGNPOST_BODY, { status: 404, headers });
 }
 
-// ../garden/src/index.js
+// garden/src/index.js
 var SITE_HOST = "swarmgarden.com";
 function route(pathname) {
   if (pathname === "/changed") return changed_default;

@@ -1,4 +1,4 @@
-// ../shared/taxonomy.mjs
+// shared/taxonomy.mjs
 var AGENT_TOKENS = [
   // token, purpose
   ["gptbot", "training"],
@@ -35,7 +35,7 @@ function classify(ua) {
   return { cls: "unknown", purpose: null };
 }
 
-// ../shared/behaviour.mjs
+// shared/behaviour.mjs
 var INTEREST = ["llms.txt", "robots.txt", "agent-skills", "agent-card", "security.txt", "sitemap"];
 var PROBE_RE = /(\.env|\.git\/|xmlrpc|wp-admin|wp-login|\.php([?#]|$)|proc\/self|@fs|phpunit|\.aws|\.svn|boaform|hnap1|actuator|server-status|\.bak|\.sql|config\.php)/i;
 function behaviourLabel(r) {
@@ -103,7 +103,7 @@ function claimedBot(ua) {
   return null;
 }
 
-// ../shared/ranges/manifest.json
+// shared/ranges/manifest.json
 var manifest_default = {
   generated_at: "2026-10-18T16:02:52.479Z",
   tool: "tools/fetch-ranges/fetch-ranges.mjs",
@@ -430,7 +430,7 @@ var manifest_default = {
   }
 };
 
-// ../shared/ranges/gptbot.json
+// shared/ranges/gptbot.json
 var gptbot_default = {
   list: "gptbot",
   operator: "OpenAI",
@@ -458,7 +458,7 @@ var gptbot_default = {
   ]
 };
 
-// ../shared/ranges/searchbot.json
+// shared/ranges/searchbot.json
 var searchbot_default = {
   list: "searchbot",
   operator: "OpenAI",
@@ -507,7 +507,7 @@ var searchbot_default = {
   ]
 };
 
-// ../shared/ranges/chatgpt-user.json
+// shared/ranges/chatgpt-user.json
 var chatgpt_user_default = {
   list: "chatgpt-user",
   operator: "OpenAI",
@@ -751,7 +751,7 @@ var chatgpt_user_default = {
   ]
 };
 
-// ../shared/ranges/googlebot.json
+// shared/ranges/googlebot.json
 var googlebot_default = {
   list: "googlebot",
   operator: "Google",
@@ -1078,7 +1078,7 @@ var googlebot_default = {
   ]
 };
 
-// ../shared/ranges/google-common-crawlers.json
+// shared/ranges/google-common-crawlers.json
 var google_common_crawlers_default = {
   list: "google-common-crawlers",
   operator: "Google",
@@ -1405,7 +1405,7 @@ var google_common_crawlers_default = {
   ]
 };
 
-// ../shared/ranges/google-special-crawlers.json
+// shared/ranges/google-special-crawlers.json
 var google_special_crawlers_default = {
   list: "google-special-crawlers",
   operator: "Google",
@@ -1687,7 +1687,7 @@ var google_special_crawlers_default = {
   ]
 };
 
-// ../shared/ranges/google-user-triggered-fetchers.json
+// shared/ranges/google-user-triggered-fetchers.json
 var google_user_triggered_fetchers_default = {
   list: "google-user-triggered-fetchers",
   operator: "Google",
@@ -2765,7 +2765,7 @@ var google_user_triggered_fetchers_default = {
   ]
 };
 
-// ../shared/ranges/anthropic.json
+// shared/ranges/anthropic.json
 var anthropic_default = {
   list: "anthropic",
   operator: "Anthropic",
@@ -2813,7 +2813,7 @@ var anthropic_default = {
   ]
 };
 
-// ../shared/ranges/bingbot.json
+// shared/ranges/bingbot.json
 var bingbot_default = {
   list: "bingbot",
   operator: "Microsoft",
@@ -2851,7 +2851,7 @@ var bingbot_default = {
   ]
 };
 
-// ../shared/ranges.mjs
+// shared/ranges.mjs
 var LIST_FILES = {
   "gptbot": gptbot_default,
   "searchbot": searchbot_default,
@@ -2966,7 +2966,7 @@ var RANGE_BUNDLE = {
   names: Object.keys(manifest_default.names || {}).length
 };
 
-// ../shared/rdns.mjs
+// shared/rdns.mjs
 var DOH_URL = "https://cloudflare-dns.com/dns-query";
 var LOOKUP_TIMEOUT_MS = 500;
 var NOT_CHECKED_TTL_MS = 60 * 1e3;
@@ -3115,7 +3115,7 @@ function rdnsVerdictFor(claimedName, origin) {
   return { verdict: "mismatch", suffix: "" };
 }
 
-// ../shared/wba.mjs
+// shared/wba.mjs
 var SIGNER_BINDINGS = {
   "operator.openai.com": ["ChatGPT-User"],
   "agent.bot.goog": ["Google-Agent"]
@@ -3313,7 +3313,7 @@ async function verifyWebBotAuth(opts) {
   }
 }
 
-// ../shared/visitor.mjs
+// shared/visitor.mjs
 var enc = new TextEncoder();
 var keyCache = /* @__PURE__ */ new Map();
 function importKey(secret) {
@@ -3365,7 +3365,7 @@ async function visitorForRequest(env, req) {
   };
 }
 
-// ../shared/visits.mjs
+// shared/visits.mjs
 var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "wt", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -3722,7 +3722,7 @@ async function aggregateVisits(env, dims) {
   return out;
 }
 
-// ../shared/frontdoor.mjs
+// shared/frontdoor.mjs
 var SKIP_EXT = [".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".css", ".js", ".map", ".woff", ".woff2", ".mp4", ".zip"];
 var LINK_HEADER = '</llms.txt>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-skills/index.json>; rel="agent-skills"';
 function qFor(entries, type, subtype) {
@@ -4145,7 +4145,7 @@ async function frontDoor(req, env, ctx, res, opts) {
   return out;
 }
 
-// ../shared/attempts.mjs
+// shared/attempts.mjs
 var INTAKE_CHANNELS = ["answers", "questions", "reports", "registry"];
 function channelForPath(pathname) {
   if (pathname === "/api/v1/notes" || pathname === "/.netlify/functions/notes") return "notes";
@@ -4329,7 +4329,7 @@ async function attemptStats(env) {
   return out;
 }
 
-// ../shared/referrers.mjs
+// shared/referrers.mjs
 var REFERRER_GROUPS = [
   ["X", ["t.co", "x.com", "twitter.com"]],
   ["Facebook", ["l.facebook.com", "lm.facebook.com", "facebook.com", "m.facebook.com"]],
@@ -4359,7 +4359,7 @@ function groupReferrers(byRefHosts, totalVisits) {
   return { grouped, no_referer_recorded: Math.max(0, (totalVisits || 0) - accounted) };
 }
 
-// ../shared/statsview.mjs
+// shared/statsview.mjs
 var sortedPairs = (obj) => Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
 var share = (n, total) => total > 0 ? (100 * n / total).toFixed(1) + "%" : "\u2014";
 function countTable(esc4, rows, shareOf) {
@@ -4577,7 +4577,7 @@ function sourceBlockHtml(esc4, bySourceDay) {
   return html;
 }
 
-// ../shared/render.mjs
+// shared/render.mjs
 import { createHash } from "node:crypto";
 var RENDER_EVENT = "render-claim";
 var RENDER_PUBLISHED_AS = "render-signalled";
@@ -4674,7 +4674,7 @@ async function renderStats(env) {
   return out;
 }
 
-// ../advisory/src/lib/human.js
+// advisory/src/lib/human.js
 import { createHash as createHash2 } from "node:crypto";
 var sha256hex2 = (data) => createHash2("sha256").update(data).digest("hex");
 var nowSeconds = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 19) + "Z";
@@ -4768,10 +4768,10 @@ async function pressHuman(env, ip) {
   return { counted: true, number, total: await humanTotal(env).catch(() => 0) };
 }
 
-// ../advisory/src/lib/render.js
+// advisory/src/lib/render.js
 var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "advisory-render-rate:", stateTable: "site_state" });
 
-// ../advisory/src/routes/stats.js
+// advisory/src/routes/stats.js
 var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
   const a = await aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "wt", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "sourceday", "fetchsplit"]);
@@ -4931,7 +4931,7 @@ var stats_default = async (req, env) => {
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } });
 };
 
-// ../advisory/src/routes/counts.js
+// advisory/src/routes/counts.js
 var COUNTING_SINCE_ADVISORY = "2026-10-17T21:40:07Z";
 async function readGardenArrivals(env) {
   const origin = env.COUNTS_ORIGIN || "https://swarmgarden.com";
@@ -5020,7 +5020,7 @@ var counts_default = async (req, env) => {
   });
 };
 
-// ../advisory/src/routes/data.js
+// advisory/src/routes/data.js
 var DATA_BASE_DEFAULT = "https://raw.githubusercontent.com/swarmgarden/swarmgarden/main";
 var DATA_FILES = [
   "garden.json",
@@ -5656,7 +5656,7 @@ var data_default = async (req, env, ctx) => {
   );
 };
 
-// ../advisory/src/routes/human.js
+// advisory/src/routes/human.js
 var JSON_HEADERS = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
 var esc2 = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 function clientIP(req) {
@@ -5737,7 +5737,7 @@ var human_default = async (req, env) => {
   }, null, 2), { status: done.counted ? 201 : 200, headers: JSON_HEADERS });
 };
 
-// ../advisory/src/routes/render.js
+// advisory/src/routes/render.js
 var JSON_HEADERS2 = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
 function clientIP2(req) {
   return req.headers.get("cf-connecting-ip") || req.headers.get("x-nf-client-connection-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
@@ -5812,7 +5812,7 @@ var render_default = async (req, env) => {
   }, null, 2), { status: 201, headers: JSON_HEADERS2 });
 };
 
-// ../shared/counting.mjs
+// shared/counting.mjs
 var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function countingDate(iso) {
   const d = new Date(iso);
@@ -5831,7 +5831,7 @@ function countingSentence(sinceIso, now) {
   return p ? "Counting since " + p.date : null;
 }
 
-// ../advisory/src/home.js
+// advisory/src/home.js
 var CLASSES = [
   ["browser", "Browser"],
   ["agent-claimed", "Agent-claimed"],
@@ -5961,7 +5961,7 @@ var HOME_TEXT_FALLBACK = [
   "The live figures are published on the Garden's record (https://swarmgarden.com/record.html) and as data on [the Garden's data page](https://bayareaswarmwarning.com/data/garden). They are drawn from that record each time this page is served, and are not shown when the record cannot be reached, rather than shown stale."
 ].join("\n");
 
-// ../advisory/src/lib/signpost.js
+// advisory/src/lib/signpost.js
 var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nBay Area Swarm Warning publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThis site is the human-readable side of the Swarm Garden experiment; its front page carries the terms: https://bayareaswarmwarning.com/\nField Notes, the experiment\u2019s log: https://bayareaswarmwarning.com/blog.html\nThe data \u2014 every figure this site prints, with its method: https://bayareaswarmwarning.com/data\nThe experiment itself, addressed to agents: https://swarmgarden.com\n";
 function signpost404(req) {
   const headers = new Headers();
@@ -5971,7 +5971,7 @@ function signpost404(req) {
   return new Response(SIGNPOST_BODY, { status: 404, headers });
 }
 
-// ../advisory/src/index.js
+// advisory/src/index.js
 var SITE_HOST = "bayareaswarmwarning.com";
 var index_default = {
   async fetch(req, env, ctx) {
