@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 9036,
+    "absent_total": 9051,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -38,22 +38,22 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 2351
+          "(none recorded)": 2356
         },
         "kind": "search-engine",
         "name": "Googlebot",
         "operator": "Google",
         "rdns": {
-          "match": 357,
+          "match": 362,
           "none": 5
         },
-        "rdns_era_records": 362,
-        "requests": 2334,
+        "rdns_era_records": 367,
+        "requests": 2339,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
           "unverifiable-no-list": 0,
-          "verified-range": 2329,
+          "verified-range": 2334,
           "wrong-range": 5
         },
         "verified_share_of_checkable": "99.8%",
@@ -61,22 +61,22 @@
       },
       {
         "by_purpose": {
-          "mixed": 521,
+          "mixed": 523,
           "other": 1244
         },
         "kind": "mixed",
         "name": "GoogleOther",
         "operator": "Google",
         "rdns": {
-          "match": 512
+          "match": 514
         },
-        "rdns_era_records": 512,
-        "requests": 1762,
+        "rdns_era_records": 514,
+        "requests": 1764,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
           "unverifiable-no-list": 0,
-          "verified-range": 1762,
+          "verified-range": 1764,
           "wrong-range": 0
         },
         "verified_share_of_checkable": "100.0%",
@@ -308,24 +308,24 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 20, 2026, 7:12:47 AM PT",
-  "generated_at_utc": "2026-10-20T14:12:47Z",
+  "generated_at_pt": "Oct 20, 2026, 8:12:35 AM PT",
+  "generated_at_utc": "2026-10-20T15:12:35Z",
   "rows": [
     {
-      "claimed": 2334,
+      "claimed": 2339,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 2329,
+      "verified-range": 2334,
       "verified_share_of_checkable": "99.8%",
       "wrong-range": 5
     },
     {
-      "claimed": 1762,
+      "claimed": 1764,
       "name": "GoogleOther",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 1762,
+      "verified-range": 1764,
       "verified_share_of_checkable": "100.0%",
       "wrong-range": 0
     },
@@ -480,12 +480,12 @@
         }
       },
       "2026-10-20": {
-        "digest_requests": 821,
-        "distinct_sources": 94,
+        "digest_requests": 835,
+        "distinct_sources": 99,
         "names_per_source": {
-          "0": 74,
+          "0": 78,
           "1": 10,
-          "2": 10,
+          "2": 11,
           "3": 0,
           "4+": 0
         },
@@ -505,7 +505,7 @@
             "4+": 0
           },
           "none": {
-            "0": 58,
+            "0": 62,
             "1": 5,
             "2": 0,
             "3": 0,
@@ -521,15 +521,15 @@
           "operator-crawler": {
             "0": 0,
             "1": 3,
-            "2": 10,
+            "2": 11,
             "3": 0,
             "4+": 0
           }
         },
         "sources_by_name": {
           "ChatGPT-User": 2,
-          "GoogleOther": 11,
-          "Googlebot": 13,
+          "GoogleOther": 12,
+          "Googlebot": 14,
           "Meta Web Indexer": 2,
           "PerplexityBot": 2
         }
@@ -547,8 +547,8 @@
           "(none recorded)": 8
         },
         "Google": {
-          "(none recorded)": 2351,
-          "mixed": 521,
+          "(none recorded)": 2356,
+          "mixed": 523,
           "other": 1244
         },
         "Meta": {
@@ -571,11 +571,11 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 753,
+        "cdn": 758,
         "cloud-hosting": 576,
         "education": 1,
-        "other": 3238,
-        "search-platform": 4464,
+        "other": 3241,
+        "search-platform": 4471,
         "telecom-isp": 26
       },
       "by_class": {
@@ -589,7 +589,7 @@
           "http-library/tool: python-aiohttp": 16,
           "http-library/tool: python-httpx": 4,
           "http-library/tool: python-requests": 25,
-          "named-crawler (dictionary)": 2381
+          "named-crawler (dictionary)": 2386
         },
         "browser": {
           "chrome": 3073,
@@ -597,7 +597,7 @@
           "firefox": 84,
           "opera": 6,
           "other-mozilla": 1,
-          "safari": 236
+          "safari": 239
         },
         "unknown": {
           "library/tool: scrapy": 2,
@@ -611,16 +611,16 @@
           "token: Roku": 1,
           "token: UrlScanList": 1,
           "token: facebookexternalhit": 12,
-          "token: http:": 195,
+          "token: http:": 198,
           "token: mukewang": 1,
           "token: siteradar": 3,
-          "token: swarm-garden-snapshot": 34
+          "token: swarm-garden-snapshot": 36
         }
       },
       "header_profile": {
         "browser-like": 58,
-        "minimal": 84,
-        "partial": 1052
+        "minimal": 85,
+        "partial": 1066
       },
       "headless_markers_by_class": {
         "automation": 1
@@ -628,28 +628,28 @@
       "origin_category": {
         "cloud-hosting": 82,
         "named-other": 51,
-        "none": 192,
+        "none": 199,
         "not-checked": 1,
-        "operator-crawler": 868
+        "operator-crawler": 876
       },
       "protocol": {
-        "h1.1": 1141,
+        "h1.1": 1156,
         "h2": 34,
         "h3": 19
       },
       "ua_completeness": {
         "comment-no-version": 2,
         "empty": 7,
-        "full": 8280,
-        "product+version": 570,
-        "product-only": 199
+        "full": 8290,
+        "product+version": 572,
+        "product-only": 202
       },
       "ua_family": {
         "axios": 4,
         "curl": 444,
         "go-http-client": 5,
         "headless-chrome": 1,
-        "other": 8557,
+        "other": 8572,
         "python-aiohttp": 16,
         "python-httpx": 4,
         "python-requests": 25,
