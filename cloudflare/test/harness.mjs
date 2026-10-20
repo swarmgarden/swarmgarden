@@ -1877,6 +1877,35 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     dataAdvHtml.includes('/api/v1/render-claim'),
     'index ' + dataIndexHtml.includes('/api/v1/render-claim') + ' garden ' + dataGardenHtml.includes('/api/v1/render-claim') + ' adv ' + dataAdvHtml.includes('/api/v1/render-claim'));
 
+  // W11 (Oct 19 2026): the Field Notes posts are collapsed cards in
+  // most-recent-first order under the pinned premise — header +
+  // blurb visible, the rest inside the post's details, nothing
+  // removed from the served page; jump links run both directions
+  // and a script opens the entry a link lands in.
+  {
+    const at = (needle) => blogHtml.indexOf(needle);
+    checkP2('W11 blog: post order is premise, Oct 19 update, Oct 19 report, Oct 17, Oct 16, Oct 15 (most recent first under the pinned premise)',
+      at('What this experiment is') > -1 &&
+      at('What this experiment is') < at('Update, later on Oct 19') &&
+      at('Update, later on Oct 19') < at('Traffic, Oct 17') &&
+      at('Traffic, Oct 17') < at('What the record can and cannot show') &&
+      at('What the record can and cannot show') < at('Both sites go live') &&
+      at('Both sites go live') < at('The counting rules, written first'), 'order');
+    const entries = blogHtml.split('Read the full entry').length - 1;
+    const premiseZone = blogHtml.slice(at('What this experiment is'), at('Earliest entries'));
+    checkP2('W11 blog: five collapsed entries plus the report PDF details; the pinned premise stays expanded (no details in its zone)',
+      entries === 5 && blogHtml.includes('Read the full report (PDF') && !premiseZone.includes('<details'),
+      'entries ' + entries);
+    checkP2('W11 blog: each collapsed post keeps header + blurb visible BEFORE its details (update lead checked), jump links run both directions, and the hash-opening script rides the page',
+      at('the post below this one') > at('Update, later on Oct 19') &&
+      at('the post below this one') < at('Read the full entry') &&
+      blogHtml.includes('href="#post-2026-10-15">Earliest entries') &&
+      blogHtml.includes('href="#post-2026-10-19-update">Latest entries') &&
+      blogHtml.includes('openForHash') && blogHtml.includes('id="post-2026-10-15"') &&
+      blogHtml.includes('id="humans-2026-10-17"'),
+      'w11 structure');
+  }
+
   // The keyed stats page carries the figure, under its ruled name.
   const aStats = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();
   checkP2('render: stats JSON carries render_claims (total + by page)',
