@@ -873,6 +873,12 @@ const CLIENT_JS = `<script>
 
 // ---------------------------------------------------------------- routes
 
+// The bundle loader, exported for the homepage snapshot renderer
+// (src/home.js): the home page's bundle-drawn figures come through
+// the same loader, the same edge cache and the same stale semantics
+// as these data pages — one plumbing, two surfaces.
+export { loadJson as loadDataJson };
+
 export async function dataJsonRoute(req, env, ctx, name) {
   if (!DATA_FILES.includes(name)) {
     return new Response(JSON.stringify({ error: 'No such data file. The published files are listed at https://bayareaswarmwarning.com/data' }),

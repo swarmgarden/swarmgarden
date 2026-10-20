@@ -15,11 +15,10 @@ import { frontDoor, servePage, LINK_HEADER } from '../../shared/frontdoor.mjs';
 import { logAttempt, channelForPath } from '../../shared/attempts.mjs';
 import statsRoute from './routes/stats.js';
 import countsRoute from './routes/counts.js';
-import dataRoute, { dataJsonRoute } from './routes/data.js';
+import dataRoute, { dataJsonRoute, loadDataJson } from './routes/data.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
-import { humanTotal } from './lib/human.js';
-import { counterBlockHtml, counterBlockText, COUNTER_TEXT_FALLBACK } from './counter.js';
+import { homeSnapshotHtml, homeSnapshotText, HOME_TEXT_FALLBACK } from './home.js';
 
 const SITE_HOST = 'bayareaswarmwarning.com';
 
@@ -162,15 +161,26 @@ export default {
       }
       return countsPromise;
     };
-    // This site's own human self-report total, read in-process from
-    // this Worker's own D1 (never from the Garden's payload — the
-    // two sites' numbers never merge). Read once per page serve;
-    // a failed read yields null and the counter simply carries no
-    // humans line — never a zero-fill, never a stale figure.
-    let humansPromise = null;
-    const getHumansLocal = () => {
-      if (!humansPromise) humansPromise = humanTotal(env).catch(() => null);
-      return humansPromise;
+    // The homepage snapshot (Oct 19 2026): the front door's counter
+    // slots carry the serve-time snapshot block (src/home.js) on the
+    // home page and its Markdown twin. Its bundle-drawn figures load
+    // through the data pages' own loader (routes/data.js) — the same
+    // edge cache and stale semantics; a failed bundle load yields a
+    // null leg and an explained absence in the block, never a
+    // zero-fill. Loads happen only for home-page serves.
+    const isHome = url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/index.md';
+    let bundlesPromise = null;
+    const getBundles = () => {
+      if (!bundlesPromise) {
+        bundlesPromise = (async () => {
+          const one = (name) => loadDataJson(env, ctx, name).catch(() => null);
+          const [responses, paths, series] = await Promise.all([
+            one('garden-responses.json'), one('garden-paths.json'), one('garden-series.json')
+          ]);
+          return { responses, paths, series };
+        })();
+      }
+      return bundlesPromise;
     };
     return frontDoor(req, env, ctx, res, {
       siteHost: SITE_HOST,
@@ -179,12 +189,14 @@ export default {
         return c ? c.arrivals_on_record : null;
       },
       getCounterBlock: async () => {
+        if (!isHome) return null;
         const c = await getCounts();
-        return c ? counterBlockHtml(c, await getHumansLocal()) : null;
+        return c ? homeSnapshotHtml(c, await getBundles()) : null;
       },
       getCounterText: async () => {
+        if (!isHome) return '';
         const c = await getCounts();
-        return c ? counterBlockText(c, await getHumansLocal()) : COUNTER_TEXT_FALLBACK;
+        return c ? homeSnapshotText(c, await getBundles()) : HOME_TEXT_FALLBACK;
       }
     });
   }

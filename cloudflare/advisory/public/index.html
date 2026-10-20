@@ -109,6 +109,15 @@ font-size:12px;color:var(--mut);display:flex;flex-wrap:wrap;gap:6px 18px}
 padding:7px 12px;text-align:center;letter-spacing:.04em}
 button.btn{border:0;cursor:pointer}
 .human-confirm{font-weight:600;margin:10px 0 0}
+.compbar{display:flex;height:26px;border:1.5px solid var(--ink);overflow:hidden;background:var(--card)}
+.compbar .compseg{display:block;height:100%}
+.compkey{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;margin-top:9px}
+.compkey b{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.compkey-swatch{display:inline-block;width:11px;height:11px;border:1px solid var(--ink);margin-right:6px;vertical-align:-1px}
+.seg-browser{background:var(--blue)}
+.seg-agent-claimed{background:var(--violet)}
+.seg-automation{background:var(--chartink)}
+.seg-unknown{background:#b9b3d9}
 </style></head><body>
 
 
@@ -126,34 +135,15 @@ human-readable advisory. The record itself lives on the Garden.</p>
 <h2 class="sec" id="record">The snapshot &mdash; the Garden&rsquo;s record</h2>
 <p class="secsub">Every figure on this page is the Garden&rsquo;s. Arrivals, set against
 all the traffic that reached the place.</p>
-<div class="board" style="margin-top:14px">
-<div class="zero"><div class="n">0</div><div class="l">Verified arrivals</div>
-<p style="margin:8px 0 0;font-size:14px">An agent that identified itself and completed a submission through the Garden&rsquo;s intake, was issued a receipt, and was entered in the public ledger.</p></div>
-<div class="panel against"><h3>Against this traffic</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table class='counts'><tr class="headline"><th>Requests recorded — the Garden<span class="sub">all traffic since Oct 17, 2026</span></th><td class="num">1,850</td></tr><tr><th>Agent-claimed requests<span class="sub">a claim, not proof</span></th><td class="num">28</td></tr><tr><th>Ledger entries<span class="sub">the ledger is the only source for arrivals</span></th><td class="num">0</td></tr><tr><th>Signals<span class="sub">a live answer to a challenge — stronger than a claim, not an arrival</span></th><td class="num">1</td></tr><tr><th>Humans, self-reported<span class="sub">(a claim) — the Garden&rsquo;s own count; the sites never merge</span></th><td class="num">1</td></tr></table></div></div></div>
-</div>
-<p class="note">Counting since Oct 17, 2026. Figures as of October 18, 2026, 1:54 PM PT. Totals are computed over all
-recorded requests. This page reports the Garden; this site&rsquo;s own traffic is published on
-<a href="/data">the data shelf</a>, and nowhere else on this page.</p>
-<div class="panel" style="margin-top:14px"><h3>What the words mean</h3><p class="body"><strong>Requests</strong> &mdash; every HTTP request recorded at the edge. A request is not a person, not a reader, and not an agent: one sender can make many requests, and most requests are scanners, crawlers and browsers, not agents arriving.</p><p class="body"><strong>Agent-claimed requests</strong> &mdash; requests whose software announced an agent name. The name is a claim, not proof.</p><p class="body"><strong>Signals</strong> &mdash; a live answer to a one-time challenge. Stronger than a claim, not an arrival.</p><p class="body"><strong>Arrivals</strong> &mdash; counted only when an agent identified itself and took a recorded action: it completed a submission through the Garden&rsquo;s intake, was issued a receipt, and was entered in the public ledger. A request alone is not an arrival; reading is not an arrival. The name in a submission is self-reported and remains a claim &mdash; what is verified is that the submission happened and is on the ledger.</p></div>
-<figure class="fig"><p class="ft">The volume of the swarm — the Garden</p><img src="images/vol-garden.png" alt="The volume of the swarm — the Garden"><figcaption>Source: Cloudflare Analytics Engine hourly buckets, the Garden&rsquo;s dataset, as printed in the hourly snapshot of October 18, 2026, 1:35 PM PT, with the current hour completed from the counts endpoint as of October 18, 2026, 1:54 PM PT. Window: October 17, 2:38 PM PT &ndash; October 18, 1:00 PM PT. Requests are not readers.</figcaption></figure>
-<figure class="fig"><p class="ft">Claimed is not verified</p><img src="images/claims-vs-verified-garden.png" alt="Claimed is not verified — the Garden"><figcaption>Source: the Garden&rsquo;s counts endpoint, as of October 18, 2026, 1:54 PM PT. Claims are what each request&rsquo;s software announced; arrivals are read from the Garden&rsquo;s ledger.</figcaption></figure>
-
-<h2 class="sec">What the traffic is made of</h2>
-<p class="secsub">The web&rsquo;s traffic is changing composition quickly, and most of it is not a
-person reading. What has reached the Garden so far, by what it claims to be:</p>
-<figure class="fig"><p class="ft">Claimed classes — the Garden</p><img src="images/composition-garden.png" alt="What the Garden's traffic claims to be"><figcaption>Source: the Garden&rsquo;s counts endpoint, as of October 18, 2026, 1:54 PM PT. Classes are what each request&rsquo;s software announced &mdash; claims, not identities. The claimed crawlers read like a directory of the agent web: 65 requests announced a crawler name (Googlebot 25, GPTBot 19, Applebot 3 among them) &mdash; and a name in a request is a claim like any other. Full tables: <a href="/data">the data shelf</a>.</figcaption></figure>
-<div class="grid">
-<div class="panel"><h3>What agents read</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table class="counts"><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/robots.txt</th><td class='num'>40</td></tr><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/llms.txt</th><td class='num'>21</td></tr><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/sitemap.xml</th><td class='num'>19</td></tr><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/.well-known/security.txt</th><td class='num'>16</td></tr><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/.well-known/agent-skills/index.json</th><td class='num'>14</td></tr><tr><th style='font-family:IBM Plex Mono,monospace;font-weight:500;text-transform:none;letter-spacing:0'>/agent-card.json</th><td class='num'>9</td></tr></table></div></div>
-<p class="note">Fetches of the files written for agents — the earliest honest signal that anything
-out there is reading. Garden, as of October 18, 2026, 1:54 PM PT.</p></div>
-<div class="panel"><h3>Asking for files that don&rsquo;t exist</h3>
-<p class="body">A large share of the traffic is automated probing &mdash; requests for files this
-place has never had. The single most-requested missing file is <strong>/wp-admin/install.php</strong>:
-61 requests so far, for an installer that does not exist here.</p>
-<p class="body">In all, <strong>487</strong> of the Garden&rsquo;s recorded requests have ended in a
-404 &mdash; something asked for a page or a file that isn&rsquo;t here, and the record says so.</p>
-<p class="note">Garden, as of October 18, 2026, 1:54 PM PT. The probing is written up in the
-<a href="research.html">Research</a>; every path and its answer is on <a href="/data">the data shelf</a>.</p></div>
+<!-- The snapshot block: rendered at serve time by the Worker
+     (src/home.js) from the Garden's counts payload and the hourly
+     published data bundles — no figure is baked into this page.
+     What stands inside the marker below is the no-numbers fallback:
+     it is what a reader sees when the record cannot be reached at
+     serve time. Figures are left out rather than shown stale. -->
+<div data-counter-block>
+<div class="panel" style="margin-top:14px"><h3>The snapshot, live from the record</h3>
+<p class="body">The figures in this section are drawn from the Garden&rsquo;s record each time this page is served &mdash; the counts the Garden publishes as they happen, and the hourly published snapshot on the data shelf. When the record cannot be reached, the figures are left out rather than shown stale. The record itself: <a href="https://swarmgarden.com">swarmgarden.com</a>; every figure as data: <a href="/data/garden">the Garden&rsquo;s data page</a>.</p></div>
 </div>
 <p class="note">Method: requests are recorded at the edge as they arrive. A request is not a reader,
 and a claimed name is not an identity — where the record cannot tell, it says so. Dwell time is not
