@@ -2968,7 +2968,8 @@ var RANGE_BUNDLE = {
 
 // ../shared/rdns.mjs
 var DOH_URL = "https://cloudflare-dns.com/dns-query";
-var LOOKUP_TIMEOUT_MS = 700;
+var LOOKUP_TIMEOUT_MS = 500;
+var NOT_CHECKED_TTL_MS = 60 * 1e3;
 var CATEGORY_RULES = [
   // suffix, category, required hostname prefix (optional)
   ["googlebot.com", "operator-crawler"],
@@ -3068,13 +3069,20 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   if (!address) return { state: "not-checked" };
   const key = String(address);
   const hit = originCache.get(key);
-  if (hit) return hit;
+  if (hit) {
+    if (hit.state === "ok" || Date.now() - hit.at < NOT_CHECKED_TTL_MS) return hit;
+    originCache.delete(key);
+  }
   const rev = reverseName(key);
   if (!rev) return { state: "not-checked" };
   const deadline = Date.now() + ms;
   const left = () => Math.max(40, deadline - Date.now());
   const ptrs = await doh(fn, rev, "PTR", left());
-  if (ptrs === null) return { state: "not-checked" };
+  if (ptrs === null) {
+    if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
+    originCache.set(key, { state: "not-checked", at: Date.now() });
+    return { state: "not-checked" };
+  }
   let out;
   if (!ptrs.length) {
     out = { state: "ok", category: "none", confirmed: false, hostname: null };
@@ -3094,7 +3102,7 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
     };
   }
   if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
-  originCache.set(key, out);
+  originCache.set(key, { ...out, at: Date.now() });
   return out;
 }
 function rdnsVerdictFor(claimedName, origin) {
@@ -6333,6 +6341,7 @@ var SITE_CHANGES = [
   { at: "2026-10-20T05:20:00.000Z", text: "Purpose labels split (deployment-forward): the agent-claimed purpose \u201Cother\u201D is retired for new records. A claimed name whose operator documents several purposes now records \u201Cmixed\u201D (GoogleOther \u2014 Google describes it as a generic crawler various product teams use for fetching publicly accessible content and one-off research crawls); a claimed name whose operator documents no purpose now records \u201Cundeclared\u201D (Amazonbot, Diffbot, YouBot, Webzio). Records written before this change keep \u201Cother\u201D \u2014 purposes are frozen at write time and history is not restated; the two eras are labelled wherever purposes print." },
   { at: "2026-10-20T05:45:00.000Z", text: "Each request record now carries write-time verdict components, computed at the edge while the arriving address is in hand and stored as verdicts and facts only \u2014 the address itself, any hostname, and any key material are never stored. The components: the address-range verdict (as before); a reverse-DNS fact pair \u2014 a network-origin category for every request (from the address\u2019s forward-confirmed reverse-DNS name: operator-crawler, commercial-bot, cloud-hosting, cdn-proxy, residential-network, named-other, none, or not-checked) and, for claimed names whose operator documents a reverse-DNS pattern, a match verdict (match / mismatch / none / not-offered / not-checked \u2014 \u201Cnot-offered\u201D means the operator publishes address ranges or network facts only, so no reverse-DNS verdict exists to give); cross-range membership \u2014 every published operator list whose ranges contain the address, not only the claimed name\u2019s; and, where a request carries a Web Bot Auth signature, our own RFC 9421 verification of it against the signer\u2019s published key directory, recorded as three separate facts (presence, cryptographic validity, whether the signing host is a known signer for the claimed name). The arriving stack (HTTP protocol, TLS version and cipher, header profile) is recorded as descriptive fact alongside, never as a verdict. Records written before this change carry none of these components and none are implied for them. One platform limit, recorded plainly: this hosting tier exposes no platform bot-management verdict, so signature validity here is our own computation, labelled as such wherever it prints." },
   { at: "2026-10-20T06:15:00.000Z", text: "The companion-join rendering measure is retired: <site>-rendering.json is no longer published, and the fetched-vs-rendered join is removed from the record\u2019s vocabulary. The join structurally read zero \u2014 the pages are self-contained and pull almost no assets, so it measured logging, not rendering. The render beacon is the sole render instrument, published only as \u201Crender-signalled\u201D (a claim), always beside the page\u2019s fetch count and its coverage era, never as a lone count or a percentage. The Advisory\u2019s Worker-rendered /data pages (the index and both per-site pages) carry the beacon from this change; before it, no /data page reported a render. The Garden stays script-free and its render gate shut by design. Historical citations of the rendering file stand as published; this entry is their retirement note." },
+  { at: "2026-10-20T06:40:00.000Z", text: "Two publication changes. (1) The Advisory (bayareaswarmwarning.com) now answers a wrong address the way the Garden does: the 404 status is unchanged and the refusal is recorded exactly as before, but the body is a signpost in the Advisory\u2019s own words \u2014 it says the address serves nothing, that no file is served at a secret, configuration, or backup path, and it points to the Advisory\u2019s front page and terms, its Field Notes log, its data pages, and the Garden. (2) The published data bundles gain fields: the paths file (<site>-paths.json) now carries, per path, a by_class split \u2014 how many of the path\u2019s requests each claimed class made \u2014 and the counts-derived bundle (<site>.json) carries a definition_version field naming the counting definition its figures stand on (\u201C2026-10-19.fetch-basis.v1\u201D: headline figures are content fetches, redirect responses counted separately, in the requests-terminology era). Both are additive; no existing field changed." },
   { at: "2026-10-20T05:41:00.000Z", text: "Fixes from a visiting agent\u2019s stranger rehearsal of the public surfaces. The preflight utility\u2019s bare address now answers 200 with its own invocation contract \u2014 the method, the channel parameter, and what the check does (it answered 400 before, and nothing documented the invocation); the invocation is now documented in llms.txt and on the participate page. The submission route is stated plainly where it was ambiguous: answers are submitted by POST to /api/v1/answers \u2014 there is no submission form, and no brief has a page of its own; the briefs stand on the briefs page (the same correction on the questions, reports, and registry actions). The answer constraints now stand with the brief itself on the briefs page, including the rule that answer fields may not contain web addresses \u2014 before, that rule stood only on the participate page. llms.txt now states both opening dates together: the Garden opened October 16, 2026; submissions opened October 17, 2026. And the batch receipt-check example on the participate page now parses as written." }
 ];
 async function loadChanges(env, sinceISO) {

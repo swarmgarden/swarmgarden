@@ -2968,7 +2968,8 @@ var RANGE_BUNDLE = {
 
 // ../shared/rdns.mjs
 var DOH_URL = "https://cloudflare-dns.com/dns-query";
-var LOOKUP_TIMEOUT_MS = 700;
+var LOOKUP_TIMEOUT_MS = 500;
+var NOT_CHECKED_TTL_MS = 60 * 1e3;
 var CATEGORY_RULES = [
   // suffix, category, required hostname prefix (optional)
   ["googlebot.com", "operator-crawler"],
@@ -3068,13 +3069,20 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   if (!address) return { state: "not-checked" };
   const key = String(address);
   const hit = originCache.get(key);
-  if (hit) return hit;
+  if (hit) {
+    if (hit.state === "ok" || Date.now() - hit.at < NOT_CHECKED_TTL_MS) return hit;
+    originCache.delete(key);
+  }
   const rev = reverseName(key);
   if (!rev) return { state: "not-checked" };
   const deadline = Date.now() + ms;
   const left = () => Math.max(40, deadline - Date.now());
   const ptrs = await doh(fn, rev, "PTR", left());
-  if (ptrs === null) return { state: "not-checked" };
+  if (ptrs === null) {
+    if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
+    originCache.set(key, { state: "not-checked", at: Date.now() });
+    return { state: "not-checked" };
+  }
   let out;
   if (!ptrs.length) {
     out = { state: "ok", category: "none", confirmed: false, hostname: null };
@@ -3094,7 +3102,7 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
     };
   }
   if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
-  originCache.set(key, out);
+  originCache.set(key, { ...out, at: Date.now() });
   return out;
 }
 function rdnsVerdictFor(claimedName, origin) {
@@ -5951,6 +5959,16 @@ var HOME_TEXT_FALLBACK = [
   "The live figures are published on the Garden's record (https://swarmgarden.com/record.html) and as data on [the Garden's data page](https://bayareaswarmwarning.com/data/garden). They are drawn from that record each time this page is served, and are not shown when the record cannot be reached, rather than shown stale."
 ].join("\n");
 
+// ../advisory/src/lib/signpost.js
+var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nBay Area Swarm Warning publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThis site is the human-readable side of the Swarm Garden experiment; its front page carries the terms: https://bayareaswarmwarning.com/\nField Notes, the experiment\u2019s log: https://bayareaswarmwarning.com/blog.html\nThe data \u2014 every figure this site prints, with its method: https://bayareaswarmwarning.com/data\nThe experiment itself, addressed to agents: https://swarmgarden.com\n";
+function signpost404(req) {
+  const headers = new Headers();
+  headers.set("Content-Type", "text/plain; charset=utf-8");
+  headers.set("Cache-Control", "private, no-store");
+  if (req.method === "HEAD") return new Response(null, { status: 404, headers });
+  return new Response(SIGNPOST_BODY, { status: 404, headers });
+}
+
 // ../advisory/src/index.js
 var SITE_HOST = "bayareaswarmwarning.com";
 var index_default = {
@@ -6018,11 +6036,12 @@ var index_default = {
       }
       return res2;
     }
-    const res = await servePage(req, env);
+    let res = await servePage(req, env);
     if (req.method !== "GET" && req.method !== "HEAD" && res.status >= 400) {
       const w = logAttempt(env, req, res, channelForPath(url.pathname) || "unrouted");
       if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(w);
     }
+    if (res.status === 404) res = signpost404(req);
     let countsPromise = null;
     const getCounts = () => {
       if (!countsPromise) {

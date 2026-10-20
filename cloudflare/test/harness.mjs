@@ -1093,10 +1093,11 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     counterBlockText(fake, 7).includes('- Humans, self-reported: 7'), counterBlockText(fake, 7));
 }
 
-// P2-11: the signpost 404 (Oct 18 2026) — Garden only. A missing
-// page keeps status 404 (and its visit record) but its body is the
-// signpost; route refusals keep their own bodies; the Advisory
-// keeps the default empty 404.
+// P2-11: the signpost 404 (Oct 18 2026) — a missing page keeps
+// status 404 (and its visit record) but its body is the signpost;
+// route refusals keep their own bodies. The Advisory gained the
+// same treatment in its own copy on Oct 19 2026 (W9); until then
+// this section pinned its default empty 404.
 {
   const G = 'https://swarmgarden.com';
   const env404 = await req(open, G + '/.env', { headers: { 'user-agent': 'SignpostProbe/1.0' } });
@@ -1143,7 +1144,9 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   }
   checkP2('signpost: the 404 is logged as a visit record with status 404',
     !!sRec && sRec.status === 404 && sRec.method === 'GET', JSON.stringify(sRec));
-  // Garden ONLY: the Advisory keeps the default empty 404.
+  // W9 (Oct 19 2026): the Advisory answers with its own signpost —
+  // same treatment, its own copy and pointers (terms/home, Field
+  // Notes, the data pages, the Garden). Status stays 404.
   const advS = await makeWorker({
     script: path.join(HERE, 'build/advisory-worker.mjs'), pubDir: path.join(ADVISORY, 'public'),
     schemaFile: path.join(ADVISORY, 'schema.sql'),
@@ -1151,8 +1154,20 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   });
   const adv404 = await req(advS, 'https://bayareaswarmwarning.com/.env');
   const advBody = await adv404.text();
-  checkP2('signpost: the Advisory is untouched — its 404 carries no signpost',
-    adv404.status === 404 && !advBody.includes('nothing is served at this address'), adv404.status + ' ' + advBody.slice(0, 80));
+  checkP2('W9 signpost (Advisory): /.env answers 404 with a text/plain signpost in the Advisory\u2019s own copy',
+    adv404.status === 404 && (adv404.headers.get('content-type') || '').includes('text/plain') &&
+    advBody.includes('nothing is served at this address') &&
+    advBody.includes('Bay Area Swarm Warning publishes everything it has'), adv404.status + ' ' + advBody.slice(0, 80));
+  checkP2('W9 signpost (Advisory): the body points to the terms/home, Field Notes, the data, and the Garden — and to no Garden-only pointer',
+    advBody.includes('https://bayareaswarmwarning.com/') && advBody.includes('https://bayareaswarmwarning.com/blog.html') &&
+    advBody.includes('https://bayareaswarmwarning.com/data') && advBody.includes('https://swarmgarden.com') &&
+    !advBody.includes('participate.html') && !advBody.includes('/.netlify/'), advBody);
+  const advNoRot = advBody.replace(/https?:\/\/\S+/g, '').replace(/404/g, '');
+  checkP2('W9 signpost (Advisory): no digits that can rot (only the 404 and the URLs)',
+    !/\d/.test(advNoRot), JSON.stringify(advNoRot));
+  const advHead = await req(advS, 'https://bayareaswarmwarning.com/.env', { method: 'HEAD' });
+  checkP2('W9 signpost (Advisory): HEAD answers 404, text/plain, no body',
+    advHead.status === 404 && (await advHead.text()) === '', String(advHead.status));
   await advS.dispose();
 }
 

@@ -19,6 +19,7 @@ import dataRoute, { dataJsonRoute, loadDataJson } from './routes/data.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
 import { homeSnapshotHtml, homeSnapshotText, HOME_TEXT_FALLBACK } from './home.js';
+import { signpost404 } from './lib/signpost.js';
 
 const SITE_HOST = 'bayareaswarmwarning.com';
 
@@ -132,7 +133,7 @@ export default {
       }
       return res;
     }
-    const res = await servePage(req, env);
+    let res = await servePage(req, env);
     // Unrouted POSTs (lens spec B-b): a non-GET/HEAD request with no
     // route, refused by the page branch, is a knock too. Widened
     // (Oct 19 2026, D3.3): ANY refusal status counts (>= 400, not
@@ -142,6 +143,13 @@ export default {
       const w = logAttempt(env, req, res, channelForPath(url.pathname) || 'unrouted');
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
     }
+    // The signpost 404 (Oct 19 2026, W9): a page-branch 404 keeps
+    // its status — and its visit record — but its body points back
+    // to this site's terms, its log, its data, and the Garden
+    // (lib/signpost.js, mirroring the Garden's treatment in this
+    // site's own copy). Route responses never reach this line, so
+    // the channels' own refusals stand.
+    if (res.status === 404) res = signpost404(req);
     // The Garden's published counts, fetched once per page serve; the
     // front-door callbacks (arrivals spans, the homepage counter block
     // and its Markdown-twin text) all read the same result. A failed

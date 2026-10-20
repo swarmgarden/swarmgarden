@@ -39,7 +39,8 @@
 import { sameAddress } from './ranges.mjs';
 
 const DOH_URL = 'https://cloudflare-dns.com/dns-query';
-const LOOKUP_TIMEOUT_MS = 700;
+const LOOKUP_TIMEOUT_MS = 500;
+const NOT_CHECKED_TTL_MS = 60 * 1000;
 
 // ---- category table (registrable suffix -> category) ----
 // A maintained pattern table, deliberately small: a suffix not in
@@ -167,7 +168,15 @@ export async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   if (!address) return { state: 'not-checked' };
   const key = String(address);
   const hit = originCache.get(key);
-  if (hit) return hit;
+  if (hit) {
+    // 'ok' results live for the isolate's life; a not-checked
+    // outcome is cached only briefly (an address's resolvability
+    // does not change minute to minute, and re-burning the whole
+    // deadline on every request from an unresolvable address
+    // would tax the write path for no information).
+    if (hit.state === 'ok' || Date.now() - hit.at < NOT_CHECKED_TTL_MS) return hit;
+    originCache.delete(key);
+  }
   const rev = reverseName(key);
   if (!rev) return { state: 'not-checked' };
   // One deadline for the whole lookup (PTR + forward pair share
@@ -175,7 +184,11 @@ export async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   const deadline = Date.now() + ms;
   const left = () => Math.max(40, deadline - Date.now());
   const ptrs = await doh(fn, rev, 'PTR', left());
-  if (ptrs === null) return { state: 'not-checked' };
+  if (ptrs === null) {
+    if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
+    originCache.set(key, { state: 'not-checked', at: Date.now() });
+    return { state: 'not-checked' };
+  }
   let out;
   if (!ptrs.length) {
     out = { state: 'ok', category: 'none', confirmed: false, hostname: null };
@@ -194,7 +207,7 @@ export async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
     };
   }
   if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
-  originCache.set(key, out);
+  originCache.set(key, { ...out, at: Date.now() });
   return out;
 }
 
