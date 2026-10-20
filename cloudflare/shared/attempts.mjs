@@ -34,11 +34,16 @@ const INTAKE_CHANNELS = ['answers', 'questions', 'reports', 'registry'];
 // Map a request path to its attempt channel, or null when the path is
 // not one of the published channels (steward routes and other keyed
 // surfaces are not channels — their traffic is not counted here).
+// The utilities mapping (Oct 19 2026, D3.3): a refused POST to a
+// utility path previously mapped to no channel and vanished; the
+// utilities are published channels and their refusals count on
+// their own channel.
 export function channelForPath(pathname) {
   if (pathname === '/api/v1/notes' || pathname === '/.netlify/functions/notes') return 'notes';
   if (pathname === '/api/v1/signal' || pathname === '/api/v1/signal/challenge') return 'signal';
   if (pathname === '/api/v1/human-press') return 'human-press';
   if (pathname === '/api/v1/render-claim') return 'render-claim';
+  if (pathname.startsWith('/utilities/') || pathname.startsWith('/.netlify/functions/utilities/')) return 'utilities';
   if (pathname.startsWith('/api/v1/')) {
     const seg = pathname.split('/').filter(Boolean).pop();
     return INTAKE_CHANNELS.includes(seg) ? seg : 'intake-other';

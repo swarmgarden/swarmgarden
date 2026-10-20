@@ -2963,23 +2963,35 @@ function importKey(secret) {
   }
   return p;
 }
-async function visitorDigest(secret, utcDate, ip, ua) {
+async function visitorDigest(secret, period, ip, ua) {
   if (!secret || !ip) return "";
   const key = await importKey(secret);
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(utcDate + "|" + ip + "|" + (ua || "")));
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(period + "|" + ip + "|" + (ua || "")));
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
+var PT_PARTS = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit" });
+function pacificPeriods(now = /* @__PURE__ */ new Date()) {
+  const parts = PT_PARTS.formatToParts(now);
+  const g = (t) => (parts.find((p) => p.type === t) || {}).value || "";
+  const month = g("year") + "-" + g("month");
+  return { day: month + "-" + g("day"), month };
 }
 async function visitorForRequest(env, req) {
   const secret = env && env.VISITOR_DIGEST_SECRET || "";
-  if (!secret) return "";
+  if (!secret) return { visitor: "", visitorepoch: "" };
   const ip = req.headers.get("cf-connecting-ip");
-  if (!ip) return "";
+  if (!ip) return { visitor: "", visitorepoch: "" };
   const ua = (req.headers.get("user-agent") || "").slice(0, 400);
-  return visitorDigest(secret, (/* @__PURE__ */ new Date()).toISOString().slice(0, 10), ip.trim(), ua);
+  const { day, month } = pacificPeriods();
+  const addr = ip.trim();
+  return {
+    visitor: await visitorDigest(secret, day, addr, ua),
+    visitorepoch: await visitorDigest(secret, month, addr, ua)
+  };
 }
 
 // ../shared/visits.mjs
-var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent"];
+var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
@@ -3126,32 +3138,38 @@ async function aggregateVisits(env, dims) {
   const out = {};
   const ae = aeConfigured(env);
   const host = String(env.SITE_HOST || "").replace(/'/g, "");
-  const runGroup = async (dim) => {
+  const truncated = [];
+  const runGroup = async (dim, target) => {
     const [key, aeExpr, d1Path, skip] = AGG_DIMS[dim];
     let rows;
     if (ae) {
       const expr = dim === "day" ? "substring(blob1, 1, 10)" : aeExpr;
       rows = await aeSql(env, "SELECT " + expr + " AS k, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY k LIMIT " + GROUP_LIMIT);
+      if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
     } else {
       const expr = dim === "day" ? "substr(json_extract(data, '$.t'), 1, 10)" : "json_extract(data, '" + d1Path + "')";
       const { results } = await env.DB.prepare("SELECT " + expr + " AS k, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k").all();
       rows = results || [];
     }
-    out[key] = foldGroups(rows, skip);
-    return out[key];
+    target[key] = foldGroups(rows, skip);
+    return target[key];
   };
-  if (ae) {
-    const rows = await aeSql(env, "SELECT count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "'");
-    out.total = rows.length ? Number(rows[0].c || 0) : 0;
-  } else {
+  const AGG_WAVE = 4;
+  const totalJob = async () => {
+    if (ae) {
+      const rows = await aeSql(env, "SELECT count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "'");
+      return { total: rows.length ? Number(rows[0].c || 0) : 0 };
+    }
     const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET).first();
-    out.total = row ? Number(row.c || 0) : 0;
-  }
-  for (const dim of dims) {
+    return { total: row ? Number(row.c || 0) : 0 };
+  };
+  const dimJob = async (dim) => {
+    const part = {};
     if (dim === "nameverdict") {
       let rows;
       if (ae) {
         rows = await aeSql(env, "SELECT blob15 AS n, blob16 AS v, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY n, v LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
           "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY n, v"
@@ -3165,20 +3183,62 @@ async function aggregateVisits(env, dims) {
         m[n] = m[n] || {};
         m[n][v] = (m[n][v] || 0) + Number(r.c || 0);
       }
-      out.byNameVerdict = m;
+      part.byNameVerdict = m;
     } else if (dim === "visitorday") {
       let rows;
       if (ae) {
         rows = await aeSql(env, "SELECT blob18 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY v, h LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
           "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
         ).all();
         rows = results || [];
       }
-      out.byVisitorDay = foldVisitorDays(rows);
+      part.byVisitorDay = foldVisitorDays(rows);
+    } else if (dim === "visitorepoch") {
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, "SELECT blob20 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY v, h LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
+        ).all();
+        rows = results || [];
+      }
+      part.byVisitorEpoch = foldVisitorDays(rows);
+    } else if (dim === "fetchsplit") {
+      let rows;
+      if (ae) {
+        rows = await aeSql(env, "SELECT blob6 AS cls, double1 AS s, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY cls, s LIMIT " + GROUP_LIMIT);
+        if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY cls, s"
+        ).all();
+        rows = results || [];
+      }
+      const fetchesByClass = {}, redirectsByClass = {};
+      let fetchesTotal = 0, redirectsTotal = 0;
+      for (const r of rows) {
+        const cls = r.cls || "";
+        const s = Number(r.s);
+        const c = Number(r.c || 0);
+        if (Number.isInteger(s) && s >= 300 && s <= 399) {
+          redirectsByClass[cls] = (redirectsByClass[cls] || 0) + c;
+          redirectsTotal += c;
+        } else {
+          fetchesByClass[cls] = (fetchesByClass[cls] || 0) + c;
+          fetchesTotal += c;
+        }
+      }
+      part.fetchesByClass = fetchesByClass;
+      part.fetchesTotal = fetchesTotal;
+      part.redirectsByClass = redirectsByClass;
+      part.redirectsTotal = redirectsTotal;
     } else if (dim === "ua") {
-      const byUa = await runGroup("ua");
+      const byUa = await runGroup("ua", {});
       const crawlers = {}, fetchers = {};
       for (const [ua, c] of Object.entries(byUa)) {
         const bot = claimedBot(ua);
@@ -3187,11 +3247,10 @@ async function aggregateVisits(env, dims) {
       }
       const top = (obj, n) => Object.fromEntries(Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n));
       const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
-      out.crawlersClaimed = { total: sum(crawlers), by_name: top(crawlers, 10) };
-      out.fetchersClaimed = { total: sum(fetchers), by_name: top(fetchers, 10) };
-      delete out.byUa;
+      part.crawlersClaimed = { total: sum(crawlers), by_name: top(crawlers, 10) };
+      part.fetchersClaimed = { total: sum(fetchers), by_name: top(fetchers, 10) };
     } else if (dim === "ref") {
-      const byRefRaw = await runGroup("ref");
+      const byRefRaw = await runGroup("ref", {});
       const byRef = {};
       for (const [ref, c] of Object.entries(byRefRaw)) {
         try {
@@ -3200,11 +3259,21 @@ async function aggregateVisits(env, dims) {
         } catch (e) {
         }
       }
-      out.byRef = byRef;
+      part.byRef = byRef;
     } else {
-      await runGroup(dim);
+      await runGroup(dim, part);
     }
+    return part;
+  };
+  const jobFns = [totalJob, ...dims.map((d) => () => dimJob(d))];
+  const parts = [];
+  for (let i = 0; i < jobFns.length; i += AGG_WAVE) {
+    parts.push(...await Promise.all(
+      jobFns.slice(i, i + AGG_WAVE).map((f) => f())
+    ));
   }
+  for (const part of parts) Object.assign(out, part);
+  out.truncated_dims = truncated;
   return out;
 }
 
@@ -3270,10 +3339,11 @@ function claimFields(req, ua) {
   const v = verdictFor(bot.name, req.headers.get("cf-connecting-ip"));
   return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
 }
-function buildVisitRecord(req, res, siteHost, event, visitor = "") {
+function buildVisitRecord(req, res, siteHost, event, digests = {}) {
   const url = new URL(req.url);
   const ua = (req.headers.get("user-agent") || "").slice(0, 400);
   const { cls, purpose } = classify(ua);
+  const dg = digests && typeof digests === "object" ? digests : { visitor: digests || "" };
   return {
     t: (/* @__PURE__ */ new Date()).toISOString(),
     site: siteHost,
@@ -3294,16 +3364,19 @@ function buildVisitRecord(req, res, siteHost, event, visitor = "") {
     via: "edge",
     event: event || "pageview",
     ...claimFields(req, ua),
-    // The visitor digest (lens spec B-e), computed by the caller
-    // (frontDoor) — '' when no secret is provisioned on this Worker
-    // or the request carried no cf-connecting-ip.
-    visitor: visitor || ""
+    // The visitor digests (lens spec B-e; epoch digest added Oct 19
+    // 2026, D2), computed by the caller (frontDoor) — '' when no
+    // secret is provisioned on this Worker or the request carried
+    // no cf-connecting-ip.
+    visitor: dg.visitor || "",
+    visitorepoch: dg.visitorepoch || ""
   };
 }
+var KEYED_UNLOGGED = ["/.netlify/functions/stats", "/.netlify/functions/steward", "/.netlify/functions/guestbook"];
 function shouldLog(req) {
   if (req.method !== "GET" && req.method !== "HEAD") return false;
   const p = new URL(req.url).pathname;
-  if (p.startsWith("/.netlify/")) return false;
+  if (KEYED_UNLOGGED.some((k) => p === k || p.startsWith(k + "/"))) return false;
   if (SKIP_EXT.some((e) => p.endsWith(e))) return false;
   return true;
 }
@@ -3314,9 +3387,10 @@ function shouldLogAsset(req) {
   if (p.startsWith("/.netlify/")) return false;
   return COMPANION_EXT.some((e) => p.endsWith(e));
 }
-function buildAssetRecord(req, res, siteHost, visitor = "") {
+function buildAssetRecord(req, res, siteHost, digests = {}) {
   const url = new URL(req.url);
   const ua = (req.headers.get("user-agent") || "").slice(0, 400);
+  const dg = digests && typeof digests === "object" ? digests : { visitor: digests || "" };
   return {
     t: (/* @__PURE__ */ new Date()).toISOString(),
     site: siteHost,
@@ -3337,10 +3411,11 @@ function buildAssetRecord(req, res, siteHost, visitor = "") {
     via: "edge",
     event: "asset",
     ...claimFields(req, ua),
-    // Companion records carry the digest too (lens spec B-e: the
+    // Companion records carry the digests too (lens spec B-e: the
     // field rides the visit record "and B-a's companion records"),
     // so the render join can be exact rather than ASN-approximate.
-    visitor: visitor || ""
+    visitor: dg.visitor || "",
+    visitorepoch: dg.visitorepoch || ""
   };
 }
 function eventForPath(pathname) {
@@ -3348,9 +3423,21 @@ function eventForPath(pathname) {
   if (pathname === "/guestbook.html" || pathname === "/guestbook") return "guestbook-view";
   if (pathname.startsWith("/utilities/")) return "utility-read";
   if (pathname.startsWith("/api/v1/receipts") || pathname.startsWith("/receipts/")) return "receipt-check";
-  if (pathname === "/changed") return "changed-read";
-  if (pathname === "/api/v1/notes") return "notes-read";
+  if (pathname === "/changed" || pathname === "/.netlify/functions/changed") return "changed-read";
+  if (pathname === "/api/v1/notes" || pathname === "/api/v1/notes/") return "notes-read";
+  if (pathname === "/data" || pathname.startsWith("/data/")) return "data-read";
+  if (pathname === "/.netlify/functions/counts") return "counts-read";
+  if (pathname === "/.netlify/functions/ledger") return "ledger-read";
+  if (pathname === "/api/v1/signal/challenge") return "signal-challenge-read";
+  if (pathname === "/api/v1/render-claim") return "render-howto-read";
   return "pageview";
+}
+function changedEventForResponse(event, res) {
+  if (event !== "changed-read") return event;
+  const ct = res && res.headers && res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return "changed-read-json";
+  if (ct.includes("application/atom+xml")) return "changed-read-atom";
+  return event;
 }
 async function servePage(req, env) {
   const url = new URL(req.url);
@@ -3493,7 +3580,8 @@ async function frontDoor(req, env, ctx, res, opts) {
   }
   if (shouldLog(req)) {
     const visitor = await visitorForRequest(env, req);
-    const record = buildVisitRecord(req, out, opts.siteHost, eventForPath(url.pathname), visitor);
+    const event = changedEventForResponse(eventForPath(url.pathname), out);
+    const record = buildVisitRecord(req, out, opts.siteHost, event, visitor);
     const write = writeVisit(env, record).then(() => {
       try {
         console.log("VISIT " + JSON.stringify(record));
@@ -3526,6 +3614,7 @@ function channelForPath(pathname) {
   if (pathname === "/api/v1/signal" || pathname === "/api/v1/signal/challenge") return "signal";
   if (pathname === "/api/v1/human-press") return "human-press";
   if (pathname === "/api/v1/render-claim") return "render-claim";
+  if (pathname.startsWith("/utilities/") || pathname.startsWith("/.netlify/functions/utilities/")) return "utilities";
   if (pathname.startsWith("/api/v1/")) {
     const seg = pathname.split("/").filter(Boolean).pop();
     return INTAKE_CHANNELS.includes(seg) ? seg : "intake-other";
@@ -3774,7 +3863,7 @@ async function countOverCap(env, receiptNumbers) {
   return n;
 }
 async function readVisits(env) {
-  const a = await aggregateVisits(env, ["class", "path", "ua"]);
+  const a = await aggregateVisits(env, ["class", "path", "ua", "fetchsplit"]);
   const interest = {};
   for (const [p, c] of Object.entries(a.byPath)) {
     if (INTEREST2.some((x) => p.includes(x))) interest[p] = c;
@@ -3786,7 +3875,11 @@ async function readVisits(env) {
     topPaths: top(a.byPath, 10),
     interest: top(interest, 10),
     crawlersClaimed: a.crawlersClaimed,
-    fetchersClaimed: a.fetchersClaimed
+    fetchersClaimed: a.fetchersClaimed,
+    fetchesTotal: a.fetchesTotal,
+    fetchesByClass: a.fetchesByClass,
+    redirectsTotal: a.redirectsTotal,
+    redirectsByClass: a.redirectsByClass
   };
 }
 async function computeCounts(env) {
@@ -3798,10 +3891,12 @@ async function computeCounts(env) {
     humans_total: 0,
     visits_total: 0,
     visits_by_class: {},
+    redirects_total: 0,
+    redirects_by_class: {},
     crawlers_claimed: { total: 0, by_name: {} },
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: 0,
-    visits_window_note: "Visit totals are computed over all recorded visits since Oct 17, 2026.",
+    visits_window_note: "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately.",
     counting_since: COUNTING_SINCE,
     updated: (/* @__PURE__ */ new Date()).toISOString()
   };
@@ -3825,15 +3920,17 @@ async function computeCounts(env) {
   }
   try {
     const v = await readVisits(env);
-    out.visits_total = v.total;
+    out.visits_total = v.fetchesTotal;
     out.visits_window_records = v.total;
-    out.visits_by_class = v.byClass;
+    out.visits_by_class = v.fetchesByClass;
+    out.redirects_total = v.redirectsTotal;
+    out.redirects_by_class = v.redirectsByClass;
     out.crawlers_claimed = v.crawlersClaimed;
     out.fetchers_claimed = v.fetchersClaimed;
     out.top_paths = v.topPaths;
     out.agent_interest_files = v.interest;
   } catch (e) {
-    out.visits_error = "Visit store unavailable.";
+    out.visits_error = "Request store unavailable.";
   }
   return out;
 }
@@ -5115,8 +5212,10 @@ function verdictTableHtml(esc2, byNameVerdict) {
   return h + "</table>";
 }
 var DIGEST_NAME = "Distinct visitor digests (one day; unlinked across days)";
-var DIGEST_NOTE = "A digest count is an approximation, not a census: shared egress (a NAT household, a corporate proxy) collapses distinct counts down; egress rotation inflates them up. Equal digests mean the same (day, egress address, user-agent) triple \u2014 never the same person. Nothing links across days: the date is inside the keyed message, so digests from a previous day cannot be recomputed or matched.";
-var DIGEST_ERA_NOTE = "The series begins with the first digest-bearing record (the Oct 18, 2026 deployment); earlier records carry no digest and none is implied for them. Records whose request reached the edge without an address header carry no digest either and sit outside this series.";
+var DIGEST_NOTE = "A digest count is an approximation, not a census: shared egress (a NAT household, a corporate proxy) collapses distinct counts down; egress rotation inflates them up. Equal digests mean the same (Pacific day, egress address, user-agent) triple \u2014 never the same person. Nothing links across days in this series: the Pacific date is inside the keyed message, so digests from a previous day cannot be recomputed or matched.";
+var DIGEST_ERA_NOTE = "The series begins with the first digest-bearing record (the Oct 18, 2026 deployment); earlier records carry no digest and none is implied for them. Records whose request reached the edge without an address header carry no digest either and sit outside this series. Era note (Oct 19, 2026): the first day\u2019s digests (Oct 18, 2026) were keyed on the UTC date, so that day\u2019s Pacific fold straddles two digest days and reads high; from Oct 19, 2026 the daily digest is keyed on the Pacific date itself.";
+var EPOCH_NAME = "Distinct visitor digests (epoch: one Pacific calendar month; linked across days within the month)";
+var EPOCH_NOTE = "The epoch digest links a visitor\u2019s requests across the days of one Pacific calendar month, so a distinct count can span a week or the month \u2014 the daily series above cannot measure that span at all. The rows below count distinct epoch digests per Pacific day; a multi-day distinct count is NOT the sum of its days (one digest spans days by design) \u2014 span counts are computed over the epoch grouping by the hourly snapshot. Same approximation directions as the daily series: shared egress collapses the count down, egress rotation inflates it up, and a changed user-agent string counts as a new digest. The series begins with the Oct 19, 2026 deployment; earlier records carry no epoch digest.";
 function visitorDigestDays(byVisitorDay) {
   return Object.entries(byVisitorDay || {}).sort().map(([day, d]) => ({
     day,
@@ -5136,12 +5235,30 @@ function visitorDigestTableHtml(esc2, byVisitorDay) {
   }
   return h + "</table>";
 }
+function visitorEpochDays(byVisitorEpoch) {
+  return visitorDigestDays(byVisitorEpoch);
+}
+function visitorEpochTableHtml(esc2, byVisitorEpoch) {
+  const days = Object.entries(byVisitorEpoch || {}).sort();
+  let h = "<p>" + esc2(EPOCH_NAME) + ". " + esc2(EPOCH_NOTE) + "</p>";
+  if (!days.length) return h + "<p>No epoch-digest-bearing records yet.</p>";
+  h += '<table border="1" cellspacing="0" cellpadding="4"><tr><th>day (Pacific)</th><th>distinct epoch digests</th><th>epoch-digest-bearing requests</th><th>requests from digests seen more than once that day</th><th>repeat share</th></tr>';
+  for (const [day, d] of days) {
+    h += "<tr><td>" + esc2(day) + "</td><td>" + d.distinct + "</td><td>" + d.digest_requests + "</td><td>" + d.repeat_requests + "</td><td>" + (d.digest_requests > 0 ? (100 * d.repeat_requests / d.digest_requests).toFixed(1) + "%" : "\u2014") + "</td></tr>";
+  }
+  return h + "</table>";
+}
+var VISITS_BASIS = "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately";
 function visitsBlock(agg, asOf) {
   return {
-    basis: "All recorded visits since Oct 17, 2026",
+    basis: VISITS_BASIS,
     as_of: asOf,
     total: agg.total,
+    fetches_total: agg.fetchesTotal,
+    redirects_total: agg.redirectsTotal,
     by_class: agg.byClass,
+    by_class_fetches: agg.fetchesByClass,
+    by_class_redirects: agg.redirectsByClass,
     by_purpose: agg.byPurpose,
     crawlers_claimed: agg.crawlersClaimed,
     fetchers_claimed: agg.fetchersClaimed,
@@ -5159,7 +5276,9 @@ function visitsBlock(agg, asOf) {
     },
     by_verdict: agg.byVerdict,
     verdicts_by_name: verdictRows(agg.byNameVerdict),
-    visitor_digests: { name: DIGEST_NAME, days: visitorDigestDays(agg.byVisitorDay) }
+    visitor_digests: { name: DIGEST_NAME, days: visitorDigestDays(agg.byVisitorDay) },
+    visitor_epochs: { name: EPOCH_NAME, days: visitorEpochDays(agg.byVisitorEpoch) },
+    truncated_dims: agg.truncatedDims || []
   };
 }
 function referrerTableHtml(esc2, groupedRefs, total) {
@@ -5171,7 +5290,7 @@ function referrerTableHtml(esc2, groupedRefs, total) {
     h += "<tr><td>" + esc2(g.name) + " <span>(" + hosts + ")</span></td><td>" + g.count + "</td><td>" + share(g.count, total) + "</td></tr>";
   }
   h += "<tr><td>No referer recorded</td><td>" + groupedRefs.no_referer_recorded + "</td><td>" + share(groupedRefs.no_referer_recorded, total) + "</td></tr></table>";
-  h += "<p>The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host. Platform figures are a <strong>lower bound</strong>. &ldquo;No referer recorded&rdquo; is this site&rsquo;s total recorded visits minus the grouped referrer hosts; the residual also absorbs the rare unparseable referer. The visit datasets record GET/HEAD requests \u2014 referrer figures describe page traffic, not POSTs to the intake, signal, notes or press endpoints.</p>";
+  h += "<p>The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host. Platform figures are a <strong>lower bound</strong>. &ldquo;No referer recorded&rdquo; is this site&rsquo;s total requests recorded minus the grouped referrer hosts; the residual also absorbs the rare unparseable referer. The request records cover GET/HEAD requests \u2014 referrer figures describe page traffic, not POSTs to the intake, signal, notes or press endpoints.</p>";
   return h;
 }
 
@@ -5266,10 +5385,13 @@ function publicNote(note) {
 }
 
 // ../garden/src/routes/stats.js
-var BASIS = "All recorded visits since Oct 17, 2026";
+var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "via", "ua", "verdict", "nameverdict", "visitorday"]);
-  const recent = await readRecentVisits(env, 50);
+  const [a, recent] = await Promise.all([
+    aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "via", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "fetchsplit"]),
+    readRecentVisits(env, 50)
+    // newest first — display list only
+  ]);
   return { a, recent };
 }
 function aggregate(a) {
@@ -5300,7 +5422,13 @@ function aggregate(a) {
     fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict,
     byNameVerdict: a.byNameVerdict,
-    byVisitorDay: a.byVisitorDay
+    byVisitorDay: a.byVisitorDay,
+    byVisitorEpoch: a.byVisitorEpoch,
+    fetchesTotal: a.fetchesTotal,
+    redirectsTotal: a.redirectsTotal,
+    fetchesByClass: a.fetchesByClass,
+    redirectsByClass: a.redirectsByClass,
+    truncatedDims: a.truncated_dims || []
   };
 }
 var stats_default = async (req, env) => {
@@ -5311,16 +5439,18 @@ var stats_default = async (req, env) => {
   try {
     loaded = await loadVisits(env);
   } catch (e) {
-    return new Response("Storage read failed. Visit records are also in the Worker logs (search VISIT).", { status: 200, headers: { "Content-Type": "text/plain" } });
+    return new Response("Storage read failed. Request records are also in the Worker logs (search VISIT).", { status: 200, headers: { "Content-Type": "text/plain" } });
   }
   const recs = loaded.recent;
   const agg = aggregate(loaded.a);
   const asOf = (/* @__PURE__ */ new Date()).toISOString();
-  const entries = await dbListLedger(env.DB).catch(() => null);
-  const receipts = await dbListReceipts(env.DB).catch(() => null);
+  const [entries, receipts, humans, signals] = await Promise.all([
+    dbListLedger(env.DB).catch(() => null),
+    dbListReceipts(env.DB).catch(() => null),
+    dbCountHumanPresses(env.DB).catch(() => null),
+    dbCountSignals(env.DB).catch(() => null)
+  ]);
   const arrivals = entries ? entries.filter((e) => e.kind === "arrival").length : null;
-  const humans = await dbCountHumanPresses(env.DB).catch(() => null);
-  const signals = await dbCountSignals(env.DB).catch(() => null);
   let book = null;
   try {
     const notes = await dbListNotes(env.DB);
@@ -5332,8 +5462,10 @@ var stats_default = async (req, env) => {
     };
   } catch (e) {
   }
-  const attempts = await attemptStats(env).catch(() => null);
-  const renders = await renderStats(env).catch(() => null);
+  const [attempts, renders] = await Promise.all([
+    attemptStats(env).catch(() => null),
+    renderStats(env).catch(() => null)
+  ]);
   const lanes = {};
   const states = {};
   if (receipts) for (const r of receipts) {
@@ -5349,6 +5481,7 @@ var stats_default = async (req, env) => {
       guestbook: book,
       api_attempts: attempts,
       render_claims: renders,
+      truncated_dims: agg.truncatedDims,
       ...agg,
       submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
       visits: visitsBlock(agg, asOf),
@@ -5380,26 +5513,29 @@ var stats_default = async (req, env) => {
     }
   }
   html += "<p>Visitors&rsquo; Book (counts only \u2014 contents are the steward&rsquo;s own reading, never an agent workflow&rsquo;s): " + (book === null ? "unavailable" : "published <strong>" + book.published + "</strong> \xB7 held (flagged) <strong>" + book.held_flagged + "</strong> \xB7 awaiting publication <strong>" + book.awaiting_publication + "</strong>") + ".</p>";
-  html += "<h3>Visits \u2014 " + agg.total + " total recorded visits</h3>";
-  html += "<p>" + BASIS + " \xB7 as of " + esc2(asOf) + ". All records edge-written (" + agg.edge + " via edge log, " + agg.beacon + " via legacy beacon). Everything below is requests, not arrivals.</p>";
-  html += "<h4>Requests by claimed class</h4>" + countTable(esc2, sortedPairs(agg.byClass), agg.total);
+  html += "<h3>Requests \u2014 " + agg.fetchesTotal + " HTTP fetches \xB7 " + agg.redirectsTotal + " redirect responses (" + agg.total + " recorded in all)</h3>";
+  html += "<p>" + BASIS + " \xB7 as of " + esc2(asOf) + ". All records edge-written (" + agg.edge + " via edge log, " + agg.beacon + " via legacy beacon). The tables below cover all recorded requests, redirect legs included, except the two split tables directly under this line. Everything below is requests, not arrivals.</p>";
+  html += "<h4>HTTP fetches by claimed class</h4>" + countTable(esc2, sortedPairs(agg.fetchesByClass), agg.fetchesTotal);
+  html += "<h4>Redirect responses by claimed class</h4>" + countTable(esc2, sortedPairs(agg.redirectsByClass), agg.redirectsTotal);
+  html += "<h4>Requests by claimed class (all recorded, redirects included)</h4>" + countTable(esc2, sortedPairs(agg.byClass), agg.total);
   html += "<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>";
-  html += "<h4>Agent-claimed visits, by purpose</h4>" + countTable(esc2, sortedPairs(agg.byPurpose), agentClaimed);
+  html += "<h4>Agent-claimed requests, by purpose</h4>" + countTable(esc2, sortedPairs(agg.byPurpose), agentClaimed);
   html += "<h4>Claimed crawlers by name (top 10)</h4>" + countTable(esc2, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += "<h4>Claimed fetchers by name (top 10)</h4>" + countTable(esc2, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
-  html += "<p>Names are read from the user-agent strings through the shared claimed-bot dictionary \u2014 claims, as announced by the visiting software itself.</p>";
+  html += "<p>Names are read from the user-agent strings through the shared claimed-bot dictionary \u2014 claims, as announced by the requesting software itself.</p>";
   html += "<h4>Behaviour labels (private working labels, computed from paths)</h4>" + countTable(esc2, sortedPairs(agg.byBehaviour), agg.total);
   html += "<h4>Response status totals</h4>" + countTable(esc2, sortedPairs(agg.byStatus), agg.total);
   html += "<h4>Named events</h4>" + countTable(esc2, sortedPairs(agg.byEvent), agg.total);
   html += "<h4>Top pages</h4>" + countTable(esc2, agg.topPaths, agg.total);
   html += "<h4>Agent-interest files</h4>" + countTable(esc2, agg.interest, agg.total);
   html += "<p>Distinct paths read: <strong>" + agg.readDepth + "</strong>.</p>";
-  html += "<h4>Visits by day</h4>" + countTable(esc2, Object.entries(agg.byDay).sort(), agg.total);
-  html += "<h4>Visits by country (top 12)</h4>" + countTable(esc2, agg.topCountries, agg.total);
+  html += "<h4>Requests by day</h4>" + countTable(esc2, Object.entries(agg.byDay).sort(), agg.total);
+  html += "<h4>Requests by country (top 12)</h4>" + countTable(esc2, agg.topCountries, agg.total);
   html += "<p>Edge geography \u2014 a country is the network exit point, not the operator&rsquo;s home.</p>";
   html += "<h4>Top referrers</h4>" + referrerTableHtml(esc2, agg.referrersGrouped, agg.total);
   html += "<h4>Address-range verdicts, by claimed name</h4>" + verdictTableHtml(esc2, agg.byNameVerdict);
   html += "<h4>Distinct visitor digests, by day (Pacific)</h4>" + visitorDigestTableHtml(esc2, agg.byVisitorDay);
+  html += "<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>" + visitorEpochTableHtml(esc2, agg.byVisitorEpoch);
   html += "<h3>Channel knocks \u2014 refused POST attempts</h3>";
   if (attempts === null) html += "<p>Unavailable.</p>";
   else if (!attempts.total) html += "<p>None recorded. (Successful POSTs are not written here \u2014 each channel counts its own; request bodies are never stored.)</p>";
@@ -5448,7 +5584,8 @@ var SITE_CHANGES = [
   { at: "2026-10-18T21:07:12.000Z", text: "The Advisory retired its Arrival Record page. The Garden\u2019s figures now print there as a dated snapshot on the Advisory\u2019s home page, and its numbers are published as data at bayareaswarmwarning.com/data; the old address, /dashboard.html, redirects to the snapshot. The Advisory\u2019s render signal now fires from its home page only \u2014 the entry above that names the Arrival Record describes the arrangement it replaced." },
   { at: "2026-10-19T03:09:44.000Z", text: "The record is now published as data on the Garden\u2019s own domain: the same per-site files the Advisory\u2019s data pages render (figures, claims, recent requests, paths, countries, the daily series, responses) answer under swarmgarden.com/data/, joined by two new files per site \u2014 knocks (refused POST attempts, counted since Oct 18, 2026; a knock is not a submission) and renders (render-signalled claims; a claim, never an arrival). The claims files now also carry the Web Bot Auth census: signature-header presence by claimed name \u2014 presence, never validity; no signature is verified. As on the Advisory, reads of the record are not visit-logged." },
   { at: "2026-10-19T03:09:44.000Z", text: "This page now also answers as an Atom feed \u2014 /changed?format=atom \u2014 the same entries in subscription shape, so a returning visitor can be told what changed instead of remembering to look." },
-  { at: "2026-10-19T03:09:44.000Z", text: "A fourth utility is published: garden-preflight/v1, at /utilities/garden-preflight/v1. Before spending work on a submission, check the door\u2019s state, a channel\u2019s exact format, and the outcome date a submission made today carries." }
+  { at: "2026-10-19T03:09:44.000Z", text: "A fourth utility is published: garden-preflight/v1, at /utilities/garden-preflight/v1. Before spending work on a submission, check the door\u2019s state, a channel\u2019s exact format, and the outcome date a submission made today carries." },
+  { at: "2026-10-19T17:08:00.000Z", text: "Counting labels clarified on the human-facing pages and published data: what was labelled \u201Cvisits\u201D in figures is now labelled \u201Crequests\u201D \u2014 a request record is an HTTP request logged at the edge, not a reader. \u201CArrivals\u201D now always carries its definition: an agent that identified itself and took a recorded action (a completed intake submission, a receipt issued, and an entry in the public ledger). No numbers, field names, or counting rules changed." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -5983,7 +6120,7 @@ var reject5 = (status, code, message) => new Response(
   JSON.stringify({ code, error: message }),
   { status, headers: JSON_HEADERS3 }
 );
-var HOW = "This endpoint stands gated shut on the Garden: no Garden page carries the script that fires it \u2014 the Garden\u2019s pages stay script-free for their readers \u2014 so a POST here is refused, and the refusal is counted like any channel knock. The instrument is the Advisory\u2019s: its homepage posts the page path to the counterpart address there after rendering, and the claim is published as \u201Crender-signalled\u201D: evidence a browser executed the page. A claim, forgeable in principle; not an arrival; no receipt; it enters neither the visit record, the counts, nor the ledger. The endpoint exists on both sites so the record\u2019s shape is one shape; the two sites\u2019 claims never merge.";
+var HOW = "This endpoint stands gated shut on the Garden: no Garden page carries the script that fires it \u2014 the Garden\u2019s pages stay script-free for their readers \u2014 so a POST here is refused, and the refusal is counted like any channel knock. The instrument is the Advisory\u2019s: its homepage posts the page path to the counterpart address there after rendering, and the claim is published as \u201Crender-signalled\u201D: evidence a browser executed the page. A claim, forgeable in principle; not an arrival; no receipt; it enters neither the request record, the counts, nor the ledger. The endpoint exists on both sites so the record\u2019s shape is one shape; the two sites\u2019 claims never merge.";
 async function parseClaim(req) {
   const buf = new Uint8Array(await req.arrayBuffer());
   if (buf.byteLength > RENDER_BODY_BYTES) return { status: 413, problem: "Claim exceeds the size limit." };
@@ -6061,6 +6198,7 @@ var DATA_FILES = [
   "garden-responses.json",
   "garden-knocks.json",
   "garden-renders.json",
+  "garden-rendering.json",
   "advisory.json",
   "advisory-claims.json",
   "advisory-recent.json",
@@ -6070,6 +6208,7 @@ var DATA_FILES = [
   "advisory-responses.json",
   "advisory-knocks.json",
   "advisory-renders.json",
+  "advisory-rendering.json",
   "status.json"
 ];
 var REPO_DATA_URL = "https://github.com/swarmgarden/swarmgarden/tree/main/data";
@@ -6187,6 +6326,7 @@ var index_default = {
       const jm = url.pathname.match(/^\/data\/([a-z0-9\-]+\.json)$/);
       if (jm) {
         let res2 = await data_default(req, env, ctx, jm[1]);
+        res2 = await frontDoor(req, env, ctx, res2, { siteHost: SITE_HOST, getArrivals: null });
         if (!res2.headers.get("link")) {
           const headers = new Headers(res2.headers);
           headers.set("Link", LINK_HEADER);
@@ -6216,8 +6356,8 @@ var index_default = {
       return res;
     }
     res = await servePage(req, env);
-    if (req.method !== "GET" && req.method !== "HEAD" && res.status === 404) {
-      const w = logAttempt(env, req, res, "unrouted");
+    if (req.method !== "GET" && req.method !== "HEAD" && res.status >= 400) {
+      const w = logAttempt(env, req, res, channelForPath(url.pathname) || "unrouted");
       if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(w);
     }
     if (res.status === 404) res = signpost404(req);
