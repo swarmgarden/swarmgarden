@@ -12,29 +12,29 @@
       {
         "label": "browser",
         "note": "",
-        "value": 2121
+        "value": 2131
       },
       {
         "label": "automation",
         "note": "",
-        "value": 881
+        "value": 887
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 846
+        "value": 874
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 2004
+        "value": 2047
       },
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 1517
+        "value": 1519
       },
       {
         "label": "Responses with status 307",
@@ -61,7 +61,7 @@
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
-        "value": 3528
+        "value": 3570
       },
       {
         "label": "Redirect responses",
@@ -71,7 +71,7 @@
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 3916
+        "value": 3958
       },
       {
         "label": "Verified agent arrivals on record",
@@ -96,11 +96,14 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 8:12:48 PM PT",
-  "generated_at_utc": "2026-10-20T03:12:48Z",
+  "generated_at_pt": "Oct 19, 2026, 9:12:36 PM PT",
+  "generated_at_utc": "2026-10-20T04:12:36Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
-  "pull_status": "ok",
+  "pull_status": "degraded",
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
-  "unavailable_notes": []
+  "unavailable_notes": [
+    "The channel-knocks pull failed this hour; that file was not refreshed.",
+    "The render-claims pull failed this hour; that file was not refreshed."
+  ]
 }
