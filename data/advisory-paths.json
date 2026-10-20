@@ -1,7 +1,7 @@
 {
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 20, 2026, 12:18:10 AM PT",
-  "generated_at_utc": "2026-10-20T07:18:10Z",
+  "generated_at_pt": "Oct 20, 2026, 12:19:01 AM PT",
+  "generated_at_utc": "2026-10-20T07:19:01Z",
   "rows": [
     {
       "2xx": 909,
@@ -1666,6 +1666,20 @@
       "4xx": 10,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 1,
+        "automation": 3,
+        "browser": 6
+      },
+      "none_recorded": 0,
+      "path": "/.hg/dirstate",
+      "visits": 10
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 10,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 4,
         "browser": 2
@@ -1942,20 +1956,6 @@
       },
       "none_recorded": 0,
       "path": "/.git/logs/HEAD",
-      "visits": 9
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 9,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 1,
-        "automation": 2,
-        "browser": 6
-      },
-      "none_recorded": 0,
-      "path": "/.hg/dirstate",
       "visits": 9
     },
     {
@@ -10329,6 +10329,18 @@
       "visits": 3
     },
     {
+      "2xx": 3,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "automation": 3
+      },
+      "none_recorded": 0,
+      "path": "/data/status.json",
+      "visits": 3
+    },
+    {
       "2xx": 0,
       "3xx": 0,
       "4xx": 3,
@@ -11040,6 +11052,18 @@
       "4xx": 0,
       "5xx": 0,
       "by_class": {
+        "automation": 2
+      },
+      "none_recorded": 0,
+      "path": "/data/advisory-knocks.json",
+      "visits": 2
+    },
+    {
+      "2xx": 2,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 1,
         "browser": 1
       },
@@ -11084,18 +11108,6 @@
       },
       "none_recorded": 0,
       "path": "/data/garden-claims.json",
-      "visits": 2
-    },
-    {
-      "2xx": 2,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "automation": 2
-      },
-      "none_recorded": 0,
-      "path": "/data/status.json",
       "visits": 2
     },
     {
@@ -12188,18 +12200,6 @@
       },
       "none_recorded": 0,
       "path": "/core/app/.env",
-      "visits": 1
-    },
-    {
-      "2xx": 1,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "automation": 1
-      },
-      "none_recorded": 0,
-      "path": "/data/advisory-knocks.json",
       "visits": 1
     },
     {
