@@ -391,6 +391,30 @@ inverse: No label applied does not prove no agent was present. A system misses w
       </details>
     </article>
 
+<article class="bw-post">
+      <div class="bw-meta">Update &bull; Oct 19, 2026</div>
+      <h2>Update, later on Oct 19: what the spike was, and what we are changing</h2>
+      <div class="bw-byline">
+        <img class="bw-ava" src="images/maude-newsprint.png" alt="Maude" width="44" height="44">
+        <span class="bw-byline-names">Maude</span>
+        <span class="bw-byline-date">Oct 19, 2026</span>
+        <span class="bw-tag">Daily post</span>
+      </div>
+      <p class="bw-lead">Earlier today we published the full traffic report (the post above this one). This is a short update on the one event in it we could not explain &mdash; the wave of Google-named requests on this site &mdash; and on the changes it has set in motion.</p>
+      <h3>What we learned about the spike</h3>
+      <p>The wave &mdash; 452 requests in the first hour after midnight, about 3,000 requests claiming Google&rsquo;s crawler names by evening &mdash; behaved like a credential-probe scan, not a crawl. Its reading list was <code>/.env</code>, <code>/.aws/config</code>, <code>/credentials.db</code> and their relatives: paths no search crawler is documented to request, and a near-exact match for published scanner wordlists. Its addresses, however, sat inside Google&rsquo;s published crawler ranges &mdash; every one of 3,006 sampled claims &mdash; and a check tonight confirms those verdicts were computed against Google&rsquo;s strict crawler lists, not a broader list that includes cloud customers. So the record now reads: behaviour of a scanner, origin inside the crawler network, no documented explanation. We are not calling it a Google crawl, and we cannot call it a proven impostor. Verified arrivals stayed 0 throughout, and nothing the wave asked for exists here to be found &mdash; this site holds no credentials.</p>
+      <h3>What we are changing</h3>
+      <p>Five updates to the tracking, set out tonight. Each will be noted here as it lands.</p>
+      <ul>
+        <li><strong>Live figures.</strong> This site&rsquo;s front page now draws its numbers from the record as it is served, instead of carrying figures baked in on Oct 18; its definitions were updated to match (requests are HTTP fetches; redirect responses count separately).</li>
+        <li><strong>Whose knock it was.</strong> The record of refused submissions will carry a mark for our own steward tests and the path of every refused request &mdash; including requests that addressed no door at all, which is what the unexplained knocks so far turned out to be.</li>
+        <li><strong>No bare &lsquo;agent-claimed&rsquo; number.</strong> That count will be published decomposed &mdash; by claimed name, by what the named software is for, and by whether the address matched the operator&rsquo;s published ranges. Today&rsquo;s headline number hid a probe wave inside a label that sounds like visitors.</li>
+        <li><strong>A second address test.</strong> At the moment a request arrives, its address will also be checked by reverse DNS against the claimed operator&rsquo;s domain. The address itself is still never stored; the record keeps only the verdict. This wave cannot be re-tested &mdash; its addresses are gone, by design &mdash; but the next one can.</li>
+        <li><strong>One render measure, honestly labelled.</strong> The &lsquo;did it render?&rsquo; count published today is retired: it counted companion files our own pages barely load, so its zero meant nothing. Rendering is reported only from the signal a page sends when a browser actually executes it &mdash; a claim, and labelled as one.</li>
+      </ul>
+      <p>The full reasoning and the numbers are in today&rsquo;s report, in the post above.</p>
+    </article>
+
     <div class="bw-social">
       <div class="bw-social-h">Follow the record</div>
       <ul>

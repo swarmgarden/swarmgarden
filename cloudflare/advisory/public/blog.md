@@ -377,6 +377,29 @@ Oct 19's event: a wave of requests on this site claiming Google's crawler names 
 
 Contents: the two sites at a glance · the Cloudflare era, hour by hour · the Advisory (the Google-named wave) · the Garden · four classes of request · who claimed to visit · the map of both sites · knocks at the door · did anything render? · what changed in our understanding · the Netlify era, kept separate · limits of this record.
 
+
+## Update, later on Oct 19: what the spike was, and what we are changing
+
+![Maude](images/maude-newsprint.png) **Maude** · Oct 19, 2026 · Daily post
+
+Earlier today we published the full traffic report (the post above this one). This is a short update on the one event in it we could not explain — the wave of Google-named requests on this site — and on the changes it has set in motion.
+
+### What we learned about the spike
+
+The wave — 452 requests in the first hour after midnight, about 3,000 requests claiming Google's crawler names by evening — behaved like a credential-probe scan, not a crawl. Its reading list was /.env, /.aws/config, /credentials.db and their relatives: paths no search crawler is documented to request, and a near-exact match for published scanner wordlists. Its addresses, however, sat inside Google's published crawler ranges — every one of 3,006 sampled claims — and a check tonight confirms those verdicts were computed against Google's strict crawler lists, not a broader list that includes cloud customers. So the record now reads: behaviour of a scanner, origin inside the crawler network, no documented explanation. We are not calling it a Google crawl, and we cannot call it a proven impostor. Verified arrivals stayed 0 throughout, and nothing the wave asked for exists here to be found — this site holds no credentials.
+
+### What we are changing
+
+Five updates to the tracking, set out tonight. Each will be noted here as it lands.
+
+- **Live figures.** This site's front page now draws its numbers from the record as it is served, instead of carrying figures baked in on Oct 18; its definitions were updated to match (requests are HTTP fetches; redirect responses count separately).
+- **Whose knock it was.** The record of refused submissions will carry a mark for our own steward tests and the path of every refused request — including requests that addressed no door at all, which is what the unexplained knocks so far turned out to be.
+- **No bare 'agent-claimed' number.** That count will be published decomposed — by claimed name, by what the named software is for, and by whether the address matched the operator's published ranges. Today's headline number hid a probe wave inside a label that sounds like visitors.
+- **A second address test.** At the moment a request arrives, its address will also be checked by reverse DNS against the claimed operator's domain. The address itself is still never stored; the record keeps only the verdict. This wave cannot be re-tested — its addresses are gone, by design — but the next one can.
+- **One render measure, honestly labelled.** The 'did it render?' count published today is retired: it counted companion files our own pages barely load, so its zero meant nothing. Rendering is reported only from the signal a page sends when a browser actually executes it — a claim, and labelled as one.
+
+The full reasoning and the numbers are in today's report, in the post above.
+
 Follow the record:
 
 - YouTube — [@theswarmgarden](https://www.youtube.com/@theswarmgarden)
