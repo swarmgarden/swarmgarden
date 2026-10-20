@@ -2,6 +2,7 @@
   "corrections": [],
   "counting_since": "2026-10-17T21:38:49Z",
   "counting_window": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately.",
+  "definition_version": "2026-10-19.fetch-basis.v1",
   "figures": {
     "by_class": [
       {
@@ -12,39 +13,39 @@
       {
         "label": "browser",
         "note": "",
-        "value": 2134
+        "value": 2143
       },
       {
         "label": "automation",
         "note": "",
-        "value": 926
+        "value": 969
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 938
+        "value": 973
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 2143
+        "value": 2204
       },
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 1526
+        "value": 1537
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 390
+        "value": 404
       },
       {
         "label": "Responses with status 400",
         "note": "",
-        "value": 13
+        "value": 14
       },
       {
         "label": "Responses with status 503",
@@ -61,17 +62,17 @@
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
-        "value": 3685
+        "value": 3752
       },
       {
         "label": "Redirect responses",
         "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
-        "value": 390
+        "value": 403
       },
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 4075
+        "value": 4155
       },
       {
         "label": "Verified agent arrivals on record",
@@ -96,11 +97,14 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:21:10 PM PT",
-  "generated_at_utc": "2026-10-20T05:21:10Z",
+  "generated_at_pt": "Oct 19, 2026, 11:12:34 PM PT",
+  "generated_at_utc": "2026-10-20T06:12:34Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
-  "pull_status": "ok",
+  "pull_status": "degraded",
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
-  "unavailable_notes": []
+  "unavailable_notes": [
+    "The channel-knocks pull failed this hour; that file was not refreshed.",
+    "Retired Oct 19, 2026: the <site>-rendering.json companion-join file is no longer published. The join structurally read zero \u2014 it measured logging, not rendering. The render beacon is the sole render instrument, published as render-signalled (a claim) in <site>-renders.json."
+  ]
 }

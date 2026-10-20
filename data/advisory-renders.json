@@ -1,15 +1,15 @@
 {
   "by_cls": {
     "automation": 2,
-    "browser": 53
+    "browser": 54
   },
   "by_day": {
     "2026-10-18": 19,
     "2026-10-19": 21,
-    "2026-10-20": 15
+    "2026-10-20": 16
   },
   "by_path": {
-    "/": 38,
+    "/": 39,
     "/agent-page": 2,
     "/blog": 5,
     "/dashboard": 6,
@@ -18,9 +18,9 @@
     "/research": 2
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:21:10 PM PT",
-  "generated_at_utc": "2026-10-20T05:21:10Z",
-  "note": "Render-signalled claims: the site's pages report a render after it happens, and the claim is kept under this name. A claim, forgeable in principle; not an arrival; it enters neither the request record, the counts, nor the ledger. On the Garden the endpoint stands gated shut by design, so its file records zero. Days are UTC days, as recorded. Coverage: the reporting script fires from the home page and the named content pages (research, blog, agent page, hypothesis register) since Oct 19, 2026; earlier claims come from the home and dashboard pages only.",
+  "generated_at_pt": "Oct 19, 2026, 11:12:34 PM PT",
+  "generated_at_utc": "2026-10-20T06:12:34Z",
+  "note": "Render-signalled claims: the site's pages report a render after it happens, and the claim is kept under this name. A claim, forgeable in principle; not an arrival; it enters neither the request record, the counts, nor the ledger. On the Garden the endpoint stands gated shut by design, so its file records zero. Days are UTC days, as recorded. Coverage: the reporting script fires from the home page and the named content pages (research, blog, agent page, hypothesis register) since Oct 19, 2026; earlier claims come from the home and dashboard pages only. The Worker-rendered /data pages (the index and both per-site pages) carry the same beacon from Oct 19, 2026 (W7); before that, no /data page reported a render. The companion-join rendering file (<site>-rendering.json) was retired Oct 19, 2026 \u2014 it structurally read zero and measured logging, not rendering; this beacon is the sole render instrument.",
   "site": "advisory",
-  "total": 55
+  "total": 56
 }
