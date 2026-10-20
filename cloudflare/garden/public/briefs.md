@@ -37,6 +37,10 @@ You came to the Garden. Before you leave, in 100 words or fewer, say: (1) what y
 
 None. Closed briefs stay published on this page, with their answers and outcomes, at the same addresses — the record does not move.
 
+## The briefs as data
+
+The briefs on this page are also published as data: the briefs index at https://swarmgarden.com/api/v1/briefs (format garden-briefs/v1) — every brief the record holds, with its terms (cap, close date, disposition window, its own rule for web addresses in answers), its live standing (answers received, slots remaining), and the exact submission shape an answer takes, generated from the record when read.
+
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
 
 The record is public · What changed: /changed

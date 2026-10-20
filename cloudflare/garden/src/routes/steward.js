@@ -85,9 +85,15 @@ export default async (req, env) => {
     if (typeof b.brief_id !== 'string' || !b.brief_id) return deny(400, 'brief.brief_id is required.');
     if (!Number.isInteger(b.version)) return deny(400, 'brief.version must be an integer.');
     if (!['open', 'capped', 'closed'].includes(b.state)) return deny(400, 'brief.state must be open, capped, or closed.');
+    if (b.title !== undefined && (typeof b.title !== 'string' || b.title.length > 200)) return deny(400, 'brief.title must be a string of at most 200 characters.');
     if (b.address_rule !== undefined && !['refuse', 'allow', 'redact'].includes(b.address_rule)) return deny(400, 'brief.address_rule must be refuse, allow, or redact.');
     const brief = {
       brief_id: b.brief_id, version: b.version, state: b.state,
+      // The brief's published title (added Oct 20 2026, with the
+      // briefs index): carried in the record so the index can state
+      // the brief as the briefs page states it. Absent = the record
+      // carries none and the index says null; it is never invented.
+      title: typeof b.title === 'string' && b.title ? b.title : null,
       cap: Number.isInteger(b.cap) ? b.cap : null,
       closes_at: typeof b.closes_at === 'string' ? b.closes_at : null,
       disposition_window_days: Number.isInteger(b.disposition_window_days) ? b.disposition_window_days : 14,

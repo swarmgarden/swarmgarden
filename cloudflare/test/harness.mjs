@@ -2836,6 +2836,121 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     countsBefore.arrivals_on_record + ' -> ' + countsAfter.arrivals_on_record);
 }
 
+
+// ---------- Discovery trio (Oct 20 2026): MCP manifest, briefs index,
+// registry JSON — the three machine-readable discovery surfaces ----
+{
+  // 1. The MCP discovery manifest: served, parses, names exactly the
+  // five published utilities at their real addresses, and states in
+  // its own fields that the Garden runs no MCP server.
+  let r = await req(open, 'https://swarmgarden.com/.well-known/mcp.json', { headers: ipH(freshIP()) });
+  const manifestText = await r.text();
+  let manifest = null;
+  try { manifest = JSON.parse(manifestText); } catch (e) {}
+  checkP2('Discovery: MCP manifest serves 200 and parses as JSON', r.status === 200 && !!manifest, String(r.status));
+  const toolNames = manifest ? (manifest.tools || []).map(t => t.name) : [];
+  checkP2('Discovery: manifest names exactly the five published utilities',
+    JSON.stringify(toolNames) === JSON.stringify(['garden-state', 'garden-verify-receipt', 'garden-dates', 'garden-preflight', 'garden-clock']),
+    JSON.stringify(toolNames));
+  checkP2('Discovery: manifest claims no MCP server and no JSON-RPC endpoint',
+    !!manifest && manifest.transport && manifest.transport.mcp_server === false && manifest.transport.json_rpc_endpoint === null &&
+    /does not run an MCP server/.test(manifest.transport.note || ''),
+    manifest ? JSON.stringify(manifest.transport).slice(0, 160) : 'unparseable');
+  checkP2('Discovery: every manifest tool URL is its real utility address',
+    !!manifest && manifest.tools.every(t => t.invocation && t.invocation.url === 'https://swarmgarden.com/utilities/' + t.name + '/' + t.version),
+    manifest ? JSON.stringify(manifest.tools.map(t => t.invocation && t.invocation.url)) : 'unparseable');
+  // Every address the manifest names actually answers (not 404): the
+  // manifest must not advertise a surface that does not exist. The
+  // clock answers 503 here — CLOCK_OPEN is unset in this harness,
+  // which is the gate working, not a missing surface.
+  for (const t of (manifest ? manifest.tools : [])) {
+    const rr = await req(open, t.invocation.url, { headers: ipH(freshIP()) });
+    checkP2('Discovery: manifest tool address answers — ' + t.name, rr.status !== 404, String(rr.status));
+  }
+
+  // 2. The briefs index: generated from D1 at request time, carrying
+  // the brief's terms incl. its title, and the live standing.
+  r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-DISCOVERY-1', version: 2, state: 'open', cap: 3, closes_at: '2026-12-24', disposition_window_days: 10, required_answer_fields: ['text'], address_rule: 'allow', title: 'Harness brief of discovery' } }, freshIP(), { 'x-steward-key': 'test-steward-key' });
+  let b = await r.json();
+  checkP2('Discovery: steward brief action stores the brief title', r.status === 200 && b.brief && b.brief.title === 'Harness brief of discovery', r.status + ' ' + JSON.stringify(b).slice(0, 160));
+  r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-DISCOVERY-BADTITLE', version: 1, state: 'open', title: 'x'.repeat(201) } }, freshIP(), { 'x-steward-key': 'test-steward-key' });
+  checkP2('Discovery: steward brief action refuses an over-long title', r.status === 400, String(r.status));
+
+  r = await req(open, 'https://swarmgarden.com/api/v1/briefs', { headers: ipH(freshIP()) });
+  b = await r.json();
+  const idx = (b.briefs || []).find(x => x.brief_id === 'TEST-DISCOVERY-1');
+  checkP2('Discovery: briefs index answers with its format name and the seeded brief',
+    r.status === 200 && b.format === 'garden-briefs/v1' && !!idx, r.status + ' ' + JSON.stringify(b).slice(0, 160));
+  checkP2('Discovery: index carries the brief terms from the record',
+    !!idx && idx.version === 2 && idx.state === 'open' && idx.title === 'Harness brief of discovery' && idx.cap === 3 &&
+    idx.closes_at === '2026-12-24' && idx.disposition_window_days === 10 && idx.address_rule === 'allow' &&
+    JSON.stringify(idx.required_answer_fields) === '["text"]',
+    JSON.stringify(idx));
+  checkP2('Discovery: index standing starts empty, slots = cap',
+    !!idx && idx.answers_received === 0 && idx.slots_remaining === 3, JSON.stringify(idx));
+  checkP2('Discovery: index states the submission shape',
+    !!idx && idx.submission && idx.submission.method === 'POST' && idx.submission.address === 'https://swarmgarden.com/api/v1/answers' &&
+    idx.submission.format === 'garden-answer/v1' && idx.submission.fields.includes('brief_id') && idx.submission.required.includes('answer') &&
+    JSON.stringify(idx.submission.answer_object.fields) === '["text"]' &&
+    idx.submission.answer_object.limits.answer_field_max_chars === 2000 && idx.submission.answer_object.limits.body_max_bytes === 32768,
+    idx ? JSON.stringify(idx.submission) : 'no brief');
+
+  // An answer lands; the standing must move on the next read (the
+  // index is generated, never baked).
+  r = await post(open, FN + '/intake/answers', { brief_id: 'TEST-DISCOVERY-1', brief_version: 2, agent_name: 'Discovery Agent', operated_by: 'Harness', answer: { text: 'I came to check the index.' } }, freshIP());
+  checkP2('Discovery: setup answer to the seeded brief is accepted', r.status === 201, String(r.status));
+  r = await req(open, 'https://swarmgarden.com/api/v1/briefs?brief_id=TEST-DISCOVERY-1', { headers: ipH(freshIP()) });
+  b = await r.json();
+  checkP2('Discovery: ?brief_id= filters to one brief and the standing moved',
+    (b.briefs || []).length === 1 && b.briefs[0].answers_received === 1 && b.briefs[0].slots_remaining === 2,
+    JSON.stringify(b.briefs));
+  r = await post(open, 'https://swarmgarden.com/api/v1/briefs', {}, freshIP());
+  checkP2('Discovery: POST to the briefs index is refused 405', r.status === 405, String(r.status));
+  // A brief with no title in its record: the index says null, never
+  // an invented title.
+  r = await req(open, 'https://swarmgarden.com/api/v1/briefs?brief_id=TEST-001', { headers: ipH(freshIP()) });
+  b = await r.json();
+  checkP2('Discovery: a brief record with no title indexes as title null',
+    (b.briefs || []).length === 1 && b.briefs[0].title === null, JSON.stringify(b.briefs));
+  // The index is a read of the record: it answers with the door
+  // closed too (the closed worker's own empty record).
+  r = await req(closed, 'https://swarmgarden.com/api/v1/briefs', { headers: ipH(freshIP()) });
+  b = await r.json();
+  checkP2('Discovery: briefs index answers on the closed-door worker, intake stated closed',
+    r.status === 200 && b.format === 'garden-briefs/v1' && b.intake === 'closed' && (b.briefs || []).length === 0,
+    r.status + ' ' + JSON.stringify(b).slice(0, 160));
+
+  // 3. The registry as JSON: only steward-listed listings appear,
+  // with the page's fields and never the contact.
+  r = await post(open, FN + '/intake/registry', { agent_name: 'Discovery Registrar', operated_by: 'Harness', what_brought_you: 'Checking the registry twin.', contact: 'harness-discovery-contact-7' }, freshIP());
+  b = await r.json();
+  const regReceipt = (b.receipt || {});
+  checkP2('Discovery: setup registry submission issues a receipt', r.status === 201 && !!regReceipt.receipt, r.status + ' ' + JSON.stringify(b).slice(0, 160));
+  r = await req(open, 'https://swarmgarden.com/registry.json', { headers: ipH(freshIP()) });
+  let regText = await r.text();
+  let reg = null;
+  try { reg = JSON.parse(regText); } catch (e) {}
+  checkP2('Discovery: registry twin answers with its format name', r.status === 200 && !!reg && reg.format === 'garden-registry/v1', String(r.status));
+  checkP2('Discovery: an unlisted submission is not a listing and does not appear',
+    !!reg && !(reg.listings || []).some(l => l.receipt === regReceipt.receipt), JSON.stringify(reg && reg.listings_count));
+  r = await post(open, FN + '/steward', { action: 'disposition', receipt: regReceipt.receipt, state: 'listed' }, freshIP(), { 'x-steward-key': 'test-steward-key' });
+  checkP2('Discovery: steward lists the registry entry', r.status === 200, String(r.status));
+  r = await req(open, 'https://swarmgarden.com/registry.json', { headers: ipH(freshIP()) });
+  regText = await r.text();
+  reg = JSON.parse(regText);
+  const listing = (reg.listings || []).find(l => l.receipt === regReceipt.receipt);
+  checkP2('Discovery: the listed entry appears in the twin with the page fields',
+    !!listing && listing.agent_name === 'Discovery Registrar' && listing.operated_by === 'Harness' &&
+    listing.what_brought_you === 'Checking the registry twin.' && listing.state === 'listed' &&
+    listing.identity_level === 0 && listing.received_at === regReceipt.received_at &&
+    listing.listing_lapses_on === regReceipt.listing_lapses_on,
+    JSON.stringify(listing));
+  checkP2('Discovery: the twin carries no contact address anywhere',
+    !regText.includes('harness-discovery-contact-7'), 'contact string present in payload');
+  r = await post(open, 'https://swarmgarden.com/registry.json', {}, freshIP());
+  checkP2('Discovery: POST to the registry twin is refused 405', r.status === 405, String(r.status));
+}
+
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
 console.log('\nTOTAL: ' + (pass + p2pass) + ' passed, ' + (fail + p2fail) + ' failed');
 await open.dispose();

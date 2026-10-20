@@ -441,6 +441,8 @@ export function eventForPath(pathname) {
   if (pathname === '/.netlify/functions/ledger') return 'ledger-read';
   if (pathname === '/api/v1/signal/challenge') return 'signal-challenge-read';
   if (pathname === '/api/v1/render-claim') return 'render-howto-read';
+  if (pathname === '/api/v1/briefs') return 'briefs-read';
+  if (pathname === '/registry.json') return 'registry-read';
   return 'pageview';
 }
 

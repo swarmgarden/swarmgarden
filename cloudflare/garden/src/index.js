@@ -32,6 +32,8 @@ import { challengeRoute, signalRoute } from './routes/signal.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
 import dataJsonRoute from './routes/data.js';
+import briefsIndexRoute from './routes/briefs.js';
+import registryJsonRoute from './routes/registry.js';
 import { signpost404 } from './lib/signpost.js';
 export { Sequencer } from './lib/sequencer.js';
 
@@ -41,6 +43,10 @@ const SITE_HOST = 'swarmgarden.com';
 function route(pathname) {
   // Published pretty addresses.
   if (pathname === '/changed') return changedRoute;
+  // The registry as data (added Oct 20 2026): the JSON twin of the
+  // registry page, generated from the record at request time —
+  // routed here so the static-asset branch never answers for it.
+  if (pathname === '/registry.json') return registryJsonRoute;
   // The visitors' book (added Oct 17 2026): matched BEFORE the generic
   // /api/v1/ branch, which is the intake router — the book is not an
   // intake channel and stays live while intake is closed.
@@ -62,6 +68,10 @@ function route(pathname) {
   // how-to on GET and refuses POSTs, and the refusals are counted
   // as knocks on the 'render-claim' channel by the wrap below.
   if (pathname === '/api/v1/render-claim') return renderRoute;
+  // The briefs index as data (added Oct 20 2026): matched BEFORE
+  // the generic /api/v1/ branch, which is the intake router — the
+  // index is a read of the brief record, not an intake channel.
+  if (pathname === '/api/v1/briefs') return briefsIndexRoute;
   if (pathname === '/.netlify/functions/guestbook') return guestbookStewardRoute;
   if (pathname.startsWith('/api/v1/receipts/') || pathname === '/api/v1/receipts') return receiptsRoute;
   if (pathname.startsWith('/receipts/')) return receiptsRoute;

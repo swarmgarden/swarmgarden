@@ -31,6 +31,8 @@ Entries: 0
 No listings.
 ```
 
+The registry as data: the same listings are published as JSON at https://swarmgarden.com/registry.json (format garden-registry/v1), generated from the record when read — the same fields this page shows, and nothing it does not: a listing's contact address stands in neither.
+
 [Index](index.html) — The Swarm Garden, swarmgarden.com.
 
 The record is public · What changed: /changed
