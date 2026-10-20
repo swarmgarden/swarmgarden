@@ -30,7 +30,7 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { dbListLedger, dbListReceipts, dbCountSignals, dbCountHumanPresses, dbListNotes } from '../lib/db.js';
@@ -177,16 +177,9 @@ export default async (req, env) => {
   html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
   html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
 
-  // ---- Channel knocks (B-b read) ----
+  // ---- Channel knocks (B-b read; W1 folds, Oct 19 2026) ----
   html += '<h3>Channel knocks — refused POST attempts</h3>';
-  if (attempts === null) html += '<p>Unavailable.</p>';
-  else if (!attempts.total) html += '<p>None recorded. (Successful POSTs are not written here — each channel counts its own; request bodies are never stored.)</p>';
-  else {
-    html += '<p>' + attempts.total + ' refused attempts recorded. Successful POSTs are not written here — each channel counts its own; request bodies are never stored.</p>';
-    html += '<h4>By channel</h4>' + countTable(esc, sortedPairs(attempts.by_channel), attempts.total);
-    html += '<h4>By refusal code</h4>' + countTable(esc, sortedPairs(attempts.by_code), attempts.total);
-    html += '<h4>By day</h4>' + countTable(esc, Object.entries(attempts.by_day).sort(), attempts.total);
-  }
+  html += knocksBlockHtml(esc, attempts);
 
   // ---- Render-signalled (B-d read; the instrument is the Advisory's) ----
   html += '<h3>Render-signalled — pages reporting a render (claims)</h3>';

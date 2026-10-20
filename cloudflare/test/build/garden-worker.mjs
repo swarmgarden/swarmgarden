@@ -3625,6 +3625,26 @@ function channelForPath(pathname) {
   }
   return null;
 }
+var STEWARD_TEST_HEADER = "x-steward-test";
+function attemptOrigin(env, req) {
+  try {
+    const presented = req.headers.get(STEWARD_TEST_HEADER) || "";
+    const expected = env && (env.STEWARD_KEY || env.STATS_KEY) || "";
+    if (presented && expected && presented === expected) return "steward-test";
+  } catch (e) {
+  }
+  return "external";
+}
+function declaredContentLength(req) {
+  try {
+    const raw = req.headers.get("content-length");
+    if (raw === null || raw === void 0 || raw === "") return null;
+    const v = Number(raw);
+    return Number.isInteger(v) && v >= 0 ? v : null;
+  } catch (e) {
+    return null;
+  }
+}
 async function logAttempt(env, req, res, channel) {
   try {
     if (!env || !env.DB || !channel) return;
@@ -3640,7 +3660,7 @@ async function logAttempt(env, req, res, channel) {
     const bot = claimedBot(ua);
     const cf = req.cf || {};
     await env.DB.prepare(
-      "INSERT INTO api_attempts (t, route, channel, method, status, code, cls, cname, country, asn, as_org) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)"
+      "INSERT INTO api_attempts (t, route, channel, method, status, code, cls, cname, country, asn, as_org, origin, content_length) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)"
     ).bind(
       (/* @__PURE__ */ new Date()).toISOString(),
       new URL(req.url).pathname,
@@ -3652,23 +3672,122 @@ async function logAttempt(env, req, res, channel) {
       bot ? bot.name : "",
       cf.country ? String(cf.country) : "",
       cf.asn !== void 0 && cf.asn !== null ? String(cf.asn) : "",
-      cf.asOrganization ? String(cf.asOrganization) : ""
+      cf.asOrganization ? String(cf.asOrganization) : "",
+      attemptOrigin(env, req),
+      declaredContentLength(req)
     ).run();
   } catch (e) {
   }
 }
+var NO_CODE_LABEL = "no-code (non-JSON refusal)";
+var codeLabel = (code) => code ? code : NO_CODE_LABEL;
+var PT_DAY_PARTS2 = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit" });
+function ptDayOfUtcHour2(h) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(h || "")) return "";
+  const parts = PT_DAY_PARTS2.formatToParts(/* @__PURE__ */ new Date(h + ":00:00Z"));
+  const g = (t) => (parts.find((p) => p.type === t) || {}).value || "";
+  return g("year") + "-" + g("month") + "-" + g("day");
+}
+function lengthBucket(v) {
+  if (v === null || v === void 0 || v === "") return "not recorded";
+  const n = Number(v);
+  if (!Number.isFinite(n) || n < 0) return "not recorded";
+  if (n === 0) return "0";
+  if (n <= 100) return "1-100";
+  if (n <= 1e3) return "101-1000";
+  if (n <= 1e4) return "1001-10000";
+  return "over 10000";
+}
+var ROUTE_FOLD_TOP = 25;
+var UNROUTED_LIST_TOP = 50;
 async function attemptStats(env) {
-  const out = { total: 0, by_channel: {}, by_code: {}, by_day: {} };
+  const out = {
+    total: 0,
+    by_channel: {},
+    by_code: {},
+    by_day: {},
+    by_status: {},
+    by_route: {},
+    by_route_folded: 0,
+    distinct_routes: 0,
+    by_cls: {},
+    by_cname: {},
+    by_origin: {},
+    by_day_pt: {},
+    by_length: {},
+    by_channel_code: {},
+    unrouted_by_route: []
+  };
   if (!env || !env.DB) return out;
-  const fold = async (sql, key) => {
+  const fold = async (sql, key, labelCodes) => {
     const { results } = await env.DB.prepare(sql).all();
-    for (const r of results || []) out[key][r.k || ""] = Number(r.c || 0);
+    for (const r of results || []) {
+      const k = labelCodes ? codeLabel(r.k || "") : r.k === null || r.k === void 0 ? "" : String(r.k);
+      out[key][k] = (out[key][k] || 0) + Number(r.c || 0);
+    }
   };
   const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM api_attempts").first();
   out.total = row ? Number(row.c || 0) : 0;
   await fold("SELECT channel AS k, COUNT(*) AS c FROM api_attempts GROUP BY channel", "by_channel");
-  await fold("SELECT code AS k, COUNT(*) AS c FROM api_attempts GROUP BY code", "by_code");
+  await fold("SELECT code AS k, COUNT(*) AS c FROM api_attempts GROUP BY code", "by_code", true);
   await fold("SELECT substr(t, 1, 10) AS k, COUNT(*) AS c FROM api_attempts GROUP BY k", "by_day");
+  await fold("SELECT CAST(status AS TEXT) AS k, COUNT(*) AS c FROM api_attempts GROUP BY status", "by_status");
+  await fold("SELECT cls AS k, COUNT(*) AS c FROM api_attempts GROUP BY cls", "by_cls");
+  await fold("SELECT cname AS k, COUNT(*) AS c FROM api_attempts GROUP BY cname", "by_cname");
+  await fold("SELECT origin AS k, COUNT(*) AS c FROM api_attempts GROUP BY origin", "by_origin");
+  {
+    const { results } = await env.DB.prepare(
+      "SELECT route AS k, COUNT(*) AS c FROM api_attempts GROUP BY route ORDER BY c DESC, k ASC"
+    ).all();
+    const rows = results || [];
+    out.distinct_routes = rows.length;
+    let folded = 0;
+    rows.forEach((r, i) => {
+      if (i < ROUTE_FOLD_TOP) out.by_route[r.k || ""] = Number(r.c || 0);
+      else folded += Number(r.c || 0);
+    });
+    out.by_route_folded = folded;
+  }
+  {
+    const { results } = await env.DB.prepare(
+      "SELECT substr(t, 1, 13) AS h, COUNT(*) AS c FROM api_attempts GROUP BY h"
+    ).all();
+    for (const r of results || []) {
+      const day = ptDayOfUtcHour2(r.h || "");
+      if (day) out.by_day_pt[day] = (out.by_day_pt[day] || 0) + Number(r.c || 0);
+    }
+  }
+  {
+    const { results } = await env.DB.prepare(
+      "SELECT content_length AS v, COUNT(*) AS c FROM api_attempts GROUP BY content_length"
+    ).all();
+    for (const r of results || []) {
+      const k = lengthBucket(r.v);
+      out.by_length[k] = (out.by_length[k] || 0) + Number(r.c || 0);
+    }
+  }
+  {
+    const { results } = await env.DB.prepare(
+      "SELECT channel AS ch, code AS k, COUNT(*) AS c FROM api_attempts GROUP BY channel, code"
+    ).all();
+    for (const r of results || []) {
+      const ch = r.ch || "";
+      const m = out.by_channel_code[ch] || (out.by_channel_code[ch] = {});
+      const k = codeLabel(r.k || "");
+      m[k] = (m[k] || 0) + Number(r.c || 0);
+    }
+  }
+  {
+    const { results } = await env.DB.prepare(
+      "SELECT route AS route, cls AS cls, status AS status, COUNT(*) AS c FROM api_attempts WHERE channel = 'unrouted' GROUP BY route, cls, status ORDER BY c DESC, route ASC"
+    ).all();
+    out.unrouted_by_route = (results || []).slice(0, UNROUTED_LIST_TOP).map((r) => ({
+      route: r.route || "",
+      cls: r.cls || "",
+      status: Number(r.status || 0),
+      count: Number(r.c || 0)
+    }));
+  }
   return out;
 }
 
@@ -5281,6 +5400,52 @@ function visitsBlock(agg, asOf) {
     truncated_dims: agg.truncatedDims || []
   };
 }
+function knocksBlockHtml(esc2, attempts) {
+  let h = "";
+  if (attempts === null || attempts === void 0) return "<p>Unavailable.</p>";
+  if (!attempts.total) {
+    return "<p>None recorded. (Successful POSTs are not written here \u2014 each channel counts its own; request bodies are never stored.)</p>";
+  }
+  const origins = attempts.by_origin || {};
+  const originBits = Object.entries(origins).sort((a, b) => b[1] - a[1]).map(([k, v]) => esc2(k) + " " + v).join(" \xB7 ");
+  h += "<p>" + attempts.total + " refused attempts recorded" + (originBits ? " \u2014 by origin: " + originBits : "") + ". Successful POSTs are not written here \u2014 each channel counts its own; request bodies are never stored.</p>";
+  h += "<h4>By channel</h4>" + countTable(esc2, sortedPairs(attempts.by_channel), attempts.total);
+  h += "<h4>By refusal code</h4>" + countTable(esc2, sortedPairs(attempts.by_code), attempts.total);
+  const cross = attempts.by_channel_code || {};
+  const crossRows = [];
+  for (const ch of Object.keys(cross).sort()) {
+    for (const [code, c] of sortedPairs(cross[ch])) crossRows.push([ch + " \xD7 " + code, c]);
+  }
+  if (crossRows.length) {
+    h += "<h4>Channel \xD7 refusal code</h4>" + countTable(esc2, crossRows, attempts.total);
+  }
+  if (attempts.by_status && Object.keys(attempts.by_status).length) {
+    h += "<h4>By response status</h4>" + countTable(esc2, sortedPairs(attempts.by_status), attempts.total);
+  }
+  if (attempts.by_route && Object.keys(attempts.by_route).length) {
+    const rows = sortedPairs(attempts.by_route);
+    if (attempts.by_route_folded) rows.push(["(all other routes, folded)", attempts.by_route_folded]);
+    h += "<h4>By route (top " + Object.keys(attempts.by_route).length + " of " + (attempts.distinct_routes || Object.keys(attempts.by_route).length) + " distinct routes)</h4>" + countTable(esc2, rows, attempts.total);
+  }
+  if (attempts.unrouted_by_route && attempts.unrouted_by_route.length) {
+    h += '<h4>Unrouted knocks, by route</h4><table border="1" cellspacing="0" cellpadding="4"><tr><th>route</th><th>claimed class</th><th>status</th><th>count</th></tr>';
+    for (const r of attempts.unrouted_by_route) {
+      h += "<tr><td>" + esc2(r.route) + "</td><td>" + esc2(r.cls || "\u2014") + "</td><td>" + esc2(r.status) + "</td><td>" + r.count + "</td></tr>";
+    }
+    h += "</table>";
+  }
+  if (attempts.by_cls && Object.keys(attempts.by_cls).length) {
+    h += "<h4>By claimed class</h4>" + countTable(esc2, sortedPairs(attempts.by_cls), attempts.total);
+  }
+  if (attempts.by_length && Object.keys(attempts.by_length).length) {
+    h += "<h4>By declared body size (bytes; the size is recorded, never the body)</h4>" + countTable(esc2, sortedPairs(attempts.by_length), attempts.total);
+  }
+  h += "<h4>By day (UTC)</h4>" + countTable(esc2, Object.entries(attempts.by_day || {}).sort(), attempts.total);
+  if (attempts.by_day_pt && Object.keys(attempts.by_day_pt).length) {
+    h += "<h4>By day (Pacific)</h4>" + countTable(esc2, Object.entries(attempts.by_day_pt).sort(), attempts.total);
+  }
+  return h;
+}
 function referrerTableHtml(esc2, groupedRefs, total) {
   let h = "";
   if (!groupedRefs.grouped.length && !groupedRefs.no_referer_recorded) return "<p>None yet.</p>";
@@ -5537,14 +5702,7 @@ var stats_default = async (req, env) => {
   html += "<h4>Distinct visitor digests, by day (Pacific)</h4>" + visitorDigestTableHtml(esc2, agg.byVisitorDay);
   html += "<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>" + visitorEpochTableHtml(esc2, agg.byVisitorEpoch);
   html += "<h3>Channel knocks \u2014 refused POST attempts</h3>";
-  if (attempts === null) html += "<p>Unavailable.</p>";
-  else if (!attempts.total) html += "<p>None recorded. (Successful POSTs are not written here \u2014 each channel counts its own; request bodies are never stored.)</p>";
-  else {
-    html += "<p>" + attempts.total + " refused attempts recorded. Successful POSTs are not written here \u2014 each channel counts its own; request bodies are never stored.</p>";
-    html += "<h4>By channel</h4>" + countTable(esc2, sortedPairs(attempts.by_channel), attempts.total);
-    html += "<h4>By refusal code</h4>" + countTable(esc2, sortedPairs(attempts.by_code), attempts.total);
-    html += "<h4>By day</h4>" + countTable(esc2, Object.entries(attempts.by_day).sort(), attempts.total);
-  }
+  html += knocksBlockHtml(esc2, attempts);
   html += "<h3>Render-signalled \u2014 pages reporting a render (claims)</h3>";
   html += "<p>No page on the Garden fires this signal: the Garden&rsquo;s pages stay script-free for their readers, and the endpoint (POST /api/v1/render-claim) stands gated shut on this site. The instrument is the Advisory&rsquo;s \u2014 its homepage reports a render, published there as &ldquo;render-signalled&rdquo;: evidence a browser executed the page; a claim, never an arrival. This site&rsquo;s own table stands below; while the gate is shut it is empty by structure, not by measurement.</p>";
   if (renders === null) html += "<p>Unavailable.</p>";

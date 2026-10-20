@@ -1485,12 +1485,68 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     (att.by_channel.signal || 0) >= 1 && (att.by_channel['human-press'] || 0) >= 1 &&
     (att.by_channel.unrouted || 0) >= 1 && (att.by_code['off-format'] || 0) >= 2 && (att.by_code['unknown-nonce'] || 0) >= 1,
     JSON.stringify(att));
+  // W1 (Oct 19, 2026): the new read folds exist, are consistent with
+  // the total, and the '' code publishes under its honest label.
+  const sumVals = (o) => Object.values(o || {}).reduce((a, b) => a + b, 0);
+  checkP2('W1 attempts folds: by_status / by_day_pt / by_length each sum to the total; cross-tab carries channel × code',
+    !!att && sumVals(att.by_status) === att.total && sumVals(att.by_day_pt) === att.total &&
+    sumVals(att.by_length) === att.total &&
+    (((att.by_channel_code || {}).questions || {})['off-format'] || 0) >= 1 &&
+    (att.by_status['400'] || 0) >= 3,
+    JSON.stringify(att));
+  checkP2('W1 attempts folds: the empty code publishes as "no-code (non-JSON refusal)", never as an empty key; routes fold with a remainder count',
+    !!att && !Object.prototype.hasOwnProperty.call(att.by_code, '') &&
+    (att.by_code['no-code (non-JSON refusal)'] || 0) >= 1 &&
+    att.distinct_routes >= 5 && typeof att.by_route_folded === 'number' &&
+    sumVals(att.by_route) + att.by_route_folded === att.total &&
+    (att.unrouted_by_route || []).some(x => x.route.includes('/visit')),
+    JSON.stringify(att && { by_code: att.by_code, distinct_routes: att.distinct_routes, unrouted: att.unrouted_by_route }));
+  // W2 (Oct 19, 2026): provenance. The five knocks above carried no
+  // steward header, so every row so far is external; a refused POST
+  // carrying the steward key on the dedicated header labels itself.
+  checkP2('W2 attempts provenance: unheaded knocks are external',
+    !!att && (att.by_origin.external || 0) === att.total && !(att.by_origin['steward-test'] > 0),
+    JSON.stringify(att && att.by_origin));
   r = await post(open, 'https://swarmgarden.com/api/v1/questions', JSON.stringify({ agent_name: 'KnockCheck', operated_by: 'Harness', question: 'does a success write an attempt row?' }), freshIP());
   const okStatus = r.status; if (r.status === 201) await r.json();
   await new Promise(rr => setTimeout(rr, 500));
   const attAfter = await attemptsOf(open, FN);
   checkP2('attempts: a SUCCESSFUL POST writes no attempt row (each channel counts its own successes)',
     okStatus === 201 && !!attAfter && attAfter.total === att.total, 'status ' + okStatus + ', totals ' + (att && att.total) + ' -> ' + (attAfter && attAfter.total));
+  // W2 provenance writes (after the success check, whose total
+  // comparison they would otherwise move): a refused POST carrying
+  // the steward key on the dedicated header labels itself at write
+  // time; a wrong key stays external.
+  r = await post(open, 'https://swarmgarden.com/api/v1/human-press', { field: 2 }, freshIP(), { 'x-steward-test': 'test-steward-key' });
+  checkP2('W2 attempts provenance: the steward-labelled knock still refuses the same way (400)', r.status === 400, String(r.status));
+  let attW2 = null;
+  for (let i = 0; i < 40; i++) {
+    attW2 = await attemptsOf(open, FN);
+    if (attW2 && (attW2.by_origin['steward-test'] || 0) >= 1) break;
+    await new Promise(rr => setTimeout(rr, 150));
+  }
+  checkP2('W2 attempts provenance: the header-carrying knock is steward-test at write time',
+    !!attW2 && attW2.by_origin['steward-test'] === 1 && attW2.total === att.total + 1,
+    JSON.stringify(attW2 && attW2.by_origin));
+  r = await post(open, 'https://swarmgarden.com/api/v1/human-press', { field: 3 }, freshIP(), { 'x-steward-test': 'not-the-key' });
+  await new Promise(rr => setTimeout(rr, 600));
+  const attW2b = await attemptsOf(open, FN);
+  checkP2('W2 attempts provenance: a wrong key on the header is external',
+    !!attW2b && attW2b.by_origin['steward-test'] === 1 && (attW2b.by_origin.external || 0) === attW2.total,
+    JSON.stringify(attW2b && { by_origin: attW2b.by_origin, by_length: attW2b.by_length }));
+  // W2 content_length, unit-pinned against the parser itself: the
+  // harness's dispatchFetch sends chunked bodies (no Content-Length
+  // header reaches the Worker in Miniflare), so the e2e fold above
+  // honestly reads 'not recorded' here; on the wire, real POSTs
+  // carry the header and the same parser records the number.
+  const { declaredContentLength } = await import('../shared/attempts.mjs');
+  const clReq = (h) => new Request('https://swarmgarden.com/api/v1/notes', { method: 'POST', headers: h, body: '{}' });
+  checkP2('W2 content_length parser: a declared length parses; absent or garbage stays null (never a fabricated size)',
+    declaredContentLength(clReq({ 'content-length': '1234' })) === 1234 &&
+    declaredContentLength(clReq({})) === null &&
+    declaredContentLength(clReq({ 'content-length': 'abc' })) === null &&
+    declaredContentLength(clReq({ 'content-length': '-5' })) === null,
+    '');
   const attClosed0 = await attemptsOf(closed, FN);
   r = await post(closed, 'https://swarmgarden.com/api/v1/questions', JSON.stringify({ agent_name: 'Early', operated_by: 'Harness', question: 'too soon?' }), freshIP());
   const closedStatus = r.status; if (r.status !== 201) await r.json().catch(() => {});

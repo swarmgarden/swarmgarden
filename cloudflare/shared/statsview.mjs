@@ -162,6 +162,66 @@ export function visitsBlock(agg, asOf) {
   };
 }
 
+// The knock block (W1, Oct 19 2026 — plan A1/A3): refused POST
+// attempts with the folds the bare total could not answer. Reporting
+// rule (plan A3): a knock total is never printed alone — the origin
+// split (steward-test / external) rides with it, and external knocks
+// split channel-vs-unrouted in the tables below. A refusal RATE is
+// never printed here: the success join lives in the published knocks
+// bundle, and rate language stays banned until it has run a full day.
+export function knocksBlockHtml(esc, attempts) {
+  let h = '';
+  if (attempts === null || attempts === undefined) return '<p>Unavailable.</p>';
+  if (!attempts.total) {
+    return '<p>None recorded. (Successful POSTs are not written here — each channel counts its own; request bodies are never stored.)</p>';
+  }
+  const origins = attempts.by_origin || {};
+  const originBits = Object.entries(origins).sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => esc(k) + ' ' + v).join(' · ');
+  h += '<p>' + attempts.total + ' refused attempts recorded' +
+    (originBits ? ' — by origin: ' + originBits : '') +
+    '. Successful POSTs are not written here — each channel counts its own; request bodies are never stored.</p>';
+  h += '<h4>By channel</h4>' + countTable(esc, sortedPairs(attempts.by_channel), attempts.total);
+  h += '<h4>By refusal code</h4>' + countTable(esc, sortedPairs(attempts.by_code), attempts.total);
+  const cross = attempts.by_channel_code || {};
+  const crossRows = [];
+  for (const ch of Object.keys(cross).sort()) {
+    for (const [code, c] of sortedPairs(cross[ch])) crossRows.push([ch + ' × ' + code, c]);
+  }
+  if (crossRows.length) {
+    h += '<h4>Channel × refusal code</h4>' + countTable(esc, crossRows, attempts.total);
+  }
+  if (attempts.by_status && Object.keys(attempts.by_status).length) {
+    h += '<h4>By response status</h4>' + countTable(esc, sortedPairs(attempts.by_status), attempts.total);
+  }
+  if (attempts.by_route && Object.keys(attempts.by_route).length) {
+    const rows = sortedPairs(attempts.by_route);
+    if (attempts.by_route_folded) rows.push(['(all other routes, folded)', attempts.by_route_folded]);
+    h += '<h4>By route (top ' + Object.keys(attempts.by_route).length + ' of ' +
+      (attempts.distinct_routes || Object.keys(attempts.by_route).length) + ' distinct routes)</h4>' +
+      countTable(esc, rows, attempts.total);
+  }
+  if (attempts.unrouted_by_route && attempts.unrouted_by_route.length) {
+    h += '<h4>Unrouted knocks, by route</h4><table border="1" cellspacing="0" cellpadding="4"><tr><th>route</th><th>claimed class</th><th>status</th><th>count</th></tr>';
+    for (const r of attempts.unrouted_by_route) {
+      h += '<tr><td>' + esc(r.route) + '</td><td>' + esc(r.cls || '—') + '</td><td>' + esc(r.status) + '</td><td>' + r.count + '</td></tr>';
+    }
+    h += '</table>';
+  }
+  if (attempts.by_cls && Object.keys(attempts.by_cls).length) {
+    h += '<h4>By claimed class</h4>' + countTable(esc, sortedPairs(attempts.by_cls), attempts.total);
+  }
+  if (attempts.by_length && Object.keys(attempts.by_length).length) {
+    h += '<h4>By declared body size (bytes; the size is recorded, never the body)</h4>' +
+      countTable(esc, sortedPairs(attempts.by_length), attempts.total);
+  }
+  h += '<h4>By day (UTC)</h4>' + countTable(esc, Object.entries(attempts.by_day || {}).sort(), attempts.total);
+  if (attempts.by_day_pt && Object.keys(attempts.by_day_pt).length) {
+    h += '<h4>By day (Pacific)</h4>' + countTable(esc, Object.entries(attempts.by_day_pt).sort(), attempts.total);
+  }
+  return h;
+}
+
 // The referrer table (B1 §5): grouped name | count | share %, raw
 // hosts printed beside the grouped name, then the closing
 // "No referer recorded" line and the labels that ship with it.

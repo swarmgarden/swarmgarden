@@ -137,7 +137,9 @@ CREATE TABLE IF NOT EXISTS api_attempts (
   cname   TEXT NOT NULL DEFAULT '',     -- the UA's claimed dictionary name, if any
   country TEXT NOT NULL DEFAULT '',     -- edge facts, as on the visit record
   asn     TEXT NOT NULL DEFAULT '',
-  as_org  TEXT NOT NULL DEFAULT ''
+  as_org  TEXT NOT NULL DEFAULT '',
+  origin  TEXT NOT NULL DEFAULT 'external', -- W2 (Oct 19, 2026): 'steward-test' when the knock carried the steward key on the x-steward-test header, existing rows backfilled once from the Oct 18/19 build record
+  content_length INTEGER                -- W2 (Oct 19, 2026): the refused POST's declared Content-Length — a number, never the body, NULL before this build / when undeclared
 );
 
 -- Render claims (added Oct 18 2026, lens spec B-d): the same
