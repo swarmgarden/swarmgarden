@@ -163,6 +163,7 @@ export default async (req, env) => {
   html += '<h4>Requests by claimed class (all recorded, redirects included)</h4>' + countTable(esc, sortedPairs(agg.byClass), agg.total);
   html += '<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>';
   html += '<h4>Agent-claimed requests, by purpose</h4>' + countTable(esc, sortedPairs(agg.byPurpose), agentClaimed);
+  html += '<p>Purpose era (Oct 19, 2026, W4): purposes are frozen at write time. Records written before the split carry &lsquo;other&rsquo;; from that deployment the same names carry &lsquo;mixed&rsquo; (the operator documents several purposes) or &lsquo;undeclared&rsquo; (none documented). The eras print side by side and are never merged.</p>';
   html += '<h4>Claimed crawlers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += '<h4>Claimed fetchers by name (top 10)</h4>' + countTable(esc, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
   html += '<p>Names are read from the user-agent strings through the shared claimed-bot dictionary — claims, as announced by the requesting software itself.</p>';

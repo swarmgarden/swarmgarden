@@ -19,11 +19,11 @@ var AGENT_TOKENS = [
   ["google-agent", "user-triggered"],
   ["mistralai-user", "user-triggered"],
   ["duckassistbot", "user-triggered"],
-  ["googleother", "other"],
-  ["amazonbot", "other"],
-  ["diffbot", "other"],
-  ["youbot", "other"],
-  ["webzio", "other"]
+  ["googleother", "mixed"],
+  ["amazonbot", "undeclared"],
+  ["diffbot", "undeclared"],
+  ["youbot", "undeclared"],
+  ["webzio", "undeclared"]
 ];
 var AUTO_TOKENS = ["bot", "crawl", "spider", "curl", "wget", "python", "httpclient", "headless", "lighthouse", "uptime", "monitor", "pingdom", "statuscake", "axios", "node-fetch", "go-http", "java/", "okhttp"];
 function classify(ua) {
@@ -5685,6 +5685,7 @@ var stats_default = async (req, env) => {
   html += "<h4>Requests by claimed class (all recorded, redirects included)</h4>" + countTable(esc2, sortedPairs(agg.byClass), agg.total);
   html += "<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>";
   html += "<h4>Agent-claimed requests, by purpose</h4>" + countTable(esc2, sortedPairs(agg.byPurpose), agentClaimed);
+  html += "<p>Purpose era (Oct 19, 2026, W4): purposes are frozen at write time. Records written before the split carry &lsquo;other&rsquo;; from that deployment the same names carry &lsquo;mixed&rsquo; (the operator documents several purposes) or &lsquo;undeclared&rsquo; (none documented). The eras print side by side and are never merged.</p>";
   html += "<h4>Claimed crawlers by name (top 10)</h4>" + countTable(esc2, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += "<h4>Claimed fetchers by name (top 10)</h4>" + countTable(esc2, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
   html += "<p>Names are read from the user-agent strings through the shared claimed-bot dictionary \u2014 claims, as announced by the requesting software itself.</p>";
@@ -5743,7 +5744,9 @@ var SITE_CHANGES = [
   { at: "2026-10-19T03:09:44.000Z", text: "The record is now published as data on the Garden\u2019s own domain: the same per-site files the Advisory\u2019s data pages render (figures, claims, recent requests, paths, countries, the daily series, responses) answer under swarmgarden.com/data/, joined by two new files per site \u2014 knocks (refused POST attempts, counted since Oct 18, 2026; a knock is not a submission) and renders (render-signalled claims; a claim, never an arrival). The claims files now also carry the Web Bot Auth census: signature-header presence by claimed name \u2014 presence, never validity; no signature is verified. As on the Advisory, reads of the record are not visit-logged." },
   { at: "2026-10-19T03:09:44.000Z", text: "This page now also answers as an Atom feed \u2014 /changed?format=atom \u2014 the same entries in subscription shape, so a returning visitor can be told what changed instead of remembering to look." },
   { at: "2026-10-19T03:09:44.000Z", text: "A fourth utility is published: garden-preflight/v1, at /utilities/garden-preflight/v1. Before spending work on a submission, check the door\u2019s state, a channel\u2019s exact format, and the outcome date a submission made today carries." },
-  { at: "2026-10-19T17:08:00.000Z", text: "Counting labels clarified on the human-facing pages and published data: what was labelled \u201Cvisits\u201D in figures is now labelled \u201Crequests\u201D \u2014 a request record is an HTTP request logged at the edge, not a reader. \u201CArrivals\u201D now always carries its definition: an agent that identified itself and took a recorded action (a completed intake submission, a receipt issued, and an entry in the public ledger). No numbers, field names, or counting rules changed." }
+  { at: "2026-10-19T17:08:00.000Z", text: "Counting labels clarified on the human-facing pages and published data: what was labelled \u201Cvisits\u201D in figures is now labelled \u201Crequests\u201D \u2014 a request record is an HTTP request logged at the edge, not a reader. \u201CArrivals\u201D now always carries its definition: an agent that identified itself and took a recorded action (a completed intake submission, a receipt issued, and an entry in the public ledger). No numbers, field names, or counting rules changed." },
+  { at: "2026-10-20T05:05:00.000Z", text: "The knock record (refused POST attempts, published as <site>-knocks.json) grew folds and a provenance label: attempts now publish by route, response status, claimed class and claimed name, as a channel \xD7 refusal-code cross-tab, by Pacific day beside the UTC day, and split by origin \u2014 \u201Csteward-test\u201D (the stewards\u2019 own verification attempts, labelled at write time; the rows already on record were labelled once from the build record) versus \u201Cexternal\u201D. A refusal whose body was not JSON now publishes as \u201Cno-code (non-JSON refusal)\u201D instead of an empty code. Each channel\u2019s successes (receipts issued, notes, signals, presses \u2014 the channels\u2019 own counters) are joined in the same file, so a refusal count never stands alone; a refusal count is not a rate. A refused POST\u2019s declared body size is now recorded as a number \u2014 the size, never the body; bodies are still never stored." },
+  { at: "2026-10-20T05:20:00.000Z", text: "Purpose labels split (deployment-forward): the agent-claimed purpose \u201Cother\u201D is retired for new records. A claimed name whose operator documents several purposes now records \u201Cmixed\u201D (GoogleOther \u2014 Google describes it as a generic crawler various product teams use for fetching publicly accessible content and one-off research crawls); a claimed name whose operator documents no purpose now records \u201Cundeclared\u201D (Amazonbot, Diffbot, YouBot, Webzio). Records written before this change keep \u201Cother\u201D \u2014 purposes are frozen at write time and history is not restated; the two eras are labelled wherever purposes print." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];

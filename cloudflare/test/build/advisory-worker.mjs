@@ -19,11 +19,11 @@ var AGENT_TOKENS = [
   ["google-agent", "user-triggered"],
   ["mistralai-user", "user-triggered"],
   ["duckassistbot", "user-triggered"],
-  ["googleother", "other"],
-  ["amazonbot", "other"],
-  ["diffbot", "other"],
-  ["youbot", "other"],
-  ["webzio", "other"]
+  ["googleother", "mixed"],
+  ["amazonbot", "undeclared"],
+  ["diffbot", "undeclared"],
+  ["youbot", "undeclared"],
+  ["webzio", "undeclared"]
 ];
 var AUTO_TOKENS = ["bot", "crawl", "spider", "curl", "wget", "python", "httpclient", "headless", "lighthouse", "uptime", "monitor", "pingdom", "statuscake", "axios", "node-fetch", "go-http", "java/", "okhttp"];
 function classify(ua) {
@@ -4302,6 +4302,7 @@ var stats_default = async (req, env) => {
   html += "<h4>Requests by claimed class (all recorded, redirects included)</h4>" + countTable(esc4, sortedPairs(agg.byClass), agg.total);
   html += "<p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p>";
   html += "<h4>Agent-claimed requests, by purpose</h4>" + countTable(esc4, sortedPairs(agg.byPurpose), agentClaimed);
+  html += "<p>Purpose era (Oct 19, 2026, W4): purposes are frozen at write time. Records written before the split carry &lsquo;other&rsquo;; from that deployment the same names carry &lsquo;mixed&rsquo; (the operator documents several purposes) or &lsquo;undeclared&rsquo; (none documented). The eras print side by side and are never merged.</p>";
   html += "<h4>Claimed crawlers by name (top 10)</h4>" + countTable(esc4, sortedPairs(agg.crawlersClaimed.by_name), agg.total);
   html += "<h4>Claimed fetchers by name (top 10)</h4>" + countTable(esc4, sortedPairs(agg.fetchersClaimed.by_name), agg.total);
   html += "<p>Names are read from the user-agent strings through the shared claimed-bot dictionary \u2014 claims, as announced by the requesting software itself.</p>";

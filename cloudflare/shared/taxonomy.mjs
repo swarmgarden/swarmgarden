@@ -10,7 +10,24 @@
 //   training       — crawlers gathering corpora for model training
 //   search         — crawlers/fetchers building or serving search/AI answers
 //   user-triggered — fetchers acting on a specific user's request
-//   other          — agent-shaped claims that fit none of the above
+//   mixed          — the operator documents SEVERAL purposes for the
+//                    software (added Oct 19 2026, W4: the 'other'
+//                    split, adopting Cloudflare Radar's 2026 purpose
+//                    shape — Mixed Purpose beside Undeclared)
+//   undeclared     — the operator documents NO purpose for the
+//                    software (added Oct 19 2026, W4, same split)
+// Era note (W4): until this build the last four tokens below carried
+// purpose 'other'. Purposes are frozen at write time, so records
+// written before this deployment keep 'other' forever and the two
+// eras are labelled wherever purposes print — history is not
+// restated under the new labels. GoogleOther is 'mixed' on Google's
+// own documented description: "the generic crawler that may be used
+// by various product teams for fetching publicly accessible content…
+// one-off crawls for internal research and development" (Google,
+// common crawlers documentation) — various teams, various purposes,
+// declared. Amazonbot, Diffbot, YouBot and Webzio document no purpose
+// in the project's record, so they are 'undeclared' — the honest
+// label, not a judgement about the software.
 //
 // 'google-extended' and 'applebot-extended' are deliberately ABSENT:
 // they are robots.txt tokens, never user-agents. A log line claiming
@@ -36,11 +53,11 @@ export const AGENT_TOKENS = [
   ['google-agent', 'user-triggered'],
   ['mistralai-user', 'user-triggered'],
   ['duckassistbot', 'user-triggered'],
-  ['googleother', 'other'],
-  ['amazonbot', 'other'],
-  ['diffbot', 'other'],
-  ['youbot', 'other'],
-  ['webzio', 'other']
+  ['googleother', 'mixed'],
+  ['amazonbot', 'undeclared'],
+  ['diffbot', 'undeclared'],
+  ['youbot', 'undeclared'],
+  ['webzio', 'undeclared']
 ];
 export const AUTO_TOKENS = ['bot', 'crawl', 'spider', 'curl', 'wget', 'python', 'httpclient', 'headless', 'lighthouse', 'uptime', 'monitor', 'pingdom', 'statuscake', 'axios', 'node-fetch', 'go-http', 'java/', 'okhttp'];
 

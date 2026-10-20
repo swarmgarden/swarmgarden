@@ -464,6 +464,10 @@ check('taxonomy: Claude-User is user-triggered; Claude-SearchBot is search',
 check('taxonomy: a UA claiming Google-Extended is NOT agent-claimed (it is a robots token, never a UA)',
   classify('Google-Extended/1.0').cls !== 'agent-claimed', JSON.stringify(classify('Google-Extended/1.0')));
 check('taxonomy: python-requests is automation', classify('python-requests/2.31').cls === 'automation');
+check('W4 taxonomy: GoogleOther is purpose mixed (operator documents several purposes); Amazonbot/Diffbot/YouBot/Webzio are undeclared; no agent token still lands on other',
+  classify('GoogleOther/1.0').purpose === 'mixed' && classify('Amazonbot/1.0').purpose === 'undeclared' &&
+  classify('Diffbot/1.0').purpose === 'undeclared' && classify('YouBot/1.0').purpose === 'undeclared' &&
+  classify('Webzio/1.0').purpose === 'undeclared');
 
 // The edge is the visit writer now: a real page fetch through the
 // front door, then the stored record read back via the stats JSON.
