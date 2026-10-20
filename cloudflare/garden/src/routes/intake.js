@@ -17,7 +17,8 @@ import {
   JSON_HEADERS, MAX_BODY_BYTES, QUESTION_DAYS, REGISTRY_LAPSE_DAYS, HOLD_REVIEW_DAYS,
   PROMISE_PATHS, sha256hex, nowSeconds, dateOnly, addDays, canonicalJSON, clientIP,
   intakeGate, submissionRateOK, validateSubmission, screenHolds,
-  loadBrief, issueReceipt, saveReceipt, findByFingerprint, appendLedger, publicReceipt,
+  loadBrief, briefOutcomeDates, issueReceipt, saveReceipt, findByFingerprint, appendLedger, publicReceipt,
+  addressRuleOf, answerHasAddress, redactAnswerAddresses, ADDRESS_MARKER,
   nextFridayAfter, reportPromiseDate
 } from '../lib/garden.js';
 import { seqBriefBegin, seqBriefRelease } from '../lib/sequencer.js';
@@ -80,6 +81,11 @@ function promiseFor(channel, format, arrived, brief, overCap) {
   if (overCap) {
     return {
       promise_class: (format === 'blocked' ? 'blocked note' : 'answer') + ' — over the cap',
+      // The brief's own dates ride along even here (B4, Oct 20 2026):
+      // the state of THIS receipt is decided, but when the brief
+      // closes and when its outcomes publish are facts the submitter
+      // can act on, computed from the brief's stored terms.
+      ...(briefOutcomeDates(brief) || {}),
       check_after: dateOnly(d),
       check_after_reason: 'this receipt\u2019s state is already decided; it changes only if the brief\u2019s record changes.'
     };
@@ -115,14 +121,14 @@ function promiseFor(channel, format, arrived, brief, overCap) {
   // window after close. Before the brief closes the outcome date is
   // not yet computable — the receipt then carries the close date, or
   // says the outcome date is set at close (design §3.1).
-  const win = brief && Number.isInteger(brief.disposition_window_days) ? brief.disposition_window_days : 14;
+  const dates = briefOutcomeDates(brief);
   const out = {
     promise_path: PROMISE_PATHS.answers,
     promise_class: (format === 'blocked' ? 'blocked note' : 'answer') + ' — the brief\u2019s outcome window'
   };
-  if (brief && brief.closes_at) {
-    out.brief_closes_on = brief.closes_at;
-    out.outcome_published_by = dateOnly(addDays(new Date(brief.closes_at), win));
+  if (dates) {
+    out.brief_closes_on = dates.brief_closes_on;
+    out.outcome_published_by = dates.outcome_published_by;
     out.check_after = brief.closes_at;
     out.check_after_reason = 'the brief closes on this date and outcomes publish in the window after close; checking before this date returns the same state words.';
   } else {
@@ -187,7 +193,7 @@ export default async (req, env) => {
   // published capacity rule). A brief that is not open — unknown, capped,
   // or closed — still receives a receipt, in the published state words:
   // over-cap-unread. Its content is stored unread.
-  let brief = null, overCap = false, answerPosition = null;
+  let brief = null, overCap = false, answerPosition = null, answersRead = null, redaction = null;
   if (format === 'answer' || format === 'blocked') {
     brief = await loadBrief(env, sub.brief_id);
     const briefOpen = !!(brief && brief.state === 'open');
@@ -195,6 +201,34 @@ export default async (req, env) => {
       return reject(400, 'stale-version', 'This brief is at version ' + brief.version + '; the submission names version ' + sub.brief_version + '.');
     }
     if (format === 'answer') {
+      // The brief's own rule for web addresses in answer fields (A2;
+      // Caitria's ruling Oct 19 2026). Applied here — after the brief
+      // is read, before the cap reservation — because the format gate
+      // runs before the brief is known, and a refusal here consumes
+      // nothing, exactly like the gate's rejections. 'refuse' is the
+      // default (a brief that declares nothing, or no brief at all)
+      // and preserves the gate's old behaviour word for word.
+      // FINGERPRINT: the fingerprint above was taken over the
+      // submission as received, before any of this runs, and
+      // duplicate collapse already keyed on those bytes — 'redact'
+      // rewrites only the text that gets STORED, so a redacted
+      // submission stays recountable as sent and the stored text is
+      // never the as-sent text (the receipt says so; see below).
+      const rule = addressRuleOf(brief);
+      if (rule === 'refuse') {
+        if (answerHasAddress(sub.answer)) return reject(400, 'off-format', 'Answer fields may not contain web addresses.');
+      } else if (rule === 'redact') {
+        const rd = redactAnswerAddresses(sub.answer);
+        if (rd.removed > 0) {
+          sub.answer = rd.answer;
+          redaction = {
+            addresses_removed: rd.removed,
+            marker: ADDRESS_MARKER,
+            fingerprint_covers: 'the submission as received',
+            stored_text: 'redacted at entry'
+          };
+        }
+      }
       // The cap decision and the reservation, atomically, inside the
       // sequencer: over the cap when the brief is not open, or when the
       // read count has reached the cap. Begin consumes the arrival
@@ -203,6 +237,7 @@ export default async (req, env) => {
       const begun = await seqBriefBegin(env, sub.brief_id, briefOpen && Number.isInteger(brief.cap) ? brief.cap : null, !briefOpen);
       overCap = begun.over_cap;
       answerPosition = begun.position;
+      answersRead = begun.read;
       // The brief's required answer fields gate — and only bite when
       // the answer would be read (the Netlify code skipped the
       // rejection for over-cap answers, which are stored unread either
@@ -236,6 +271,31 @@ export default async (req, env) => {
     position: answerPosition,
     brief_state: brief ? brief.state : 'no such brief'
   } : null;
+  // The brief's standing at this answer's arrival (B4, Oct 20 2026):
+  // the answer's position among the brief's answers, the read count
+  // the atomic begin left behind (this answer included when it was
+  // read in; unchanged when it landed over the cap), and the cap it
+  // was read against — stated on the receipt itself, so a submitter
+  // who can persist nothing still leaves knowing where its answer
+  // stands. Blocked notes take no read slot and carry none of this.
+  const briefFacts = format === 'answer' ? (() => {
+    const cap = brief && Number.isInteger(brief.cap) ? brief.cap : null;
+    return {
+      answer_position: answerPosition,
+      answers_count: answersRead,
+      cap,
+      cap_remaining: cap === null ? null : Math.max(0, cap - answersRead)
+    };
+  })() : null;
+
+  const history = [{ at: arrived, state, note: overCap ? 'received over the cap; stored unread' : (holdKind ? 'held at an automated check' : 'received') }];
+  if (redaction) {
+    // The edit is disclosed on the receipt itself (A2): what was
+    // removed, what stands in its place, and which text the
+    // fingerprint covers — so no reader of this receipt can mistake
+    // the stored (redacted) text for the submission as sent.
+    history.push({ at: arrived, state, note: 'web addresses removed at entry: ' + redaction.addresses_removed + ' replaced with ' + ADDRESS_MARKER + ' under the brief\u2019s rule. The fingerprint covers the submission as received; the stored text is the redacted text.' });
+  }
 
   const receipt = await issueReceipt(env, {
     channel, format,
@@ -249,8 +309,10 @@ export default async (req, env) => {
     state, lane,
     ...(holdKind ? { hold_reason: holdKind, hold_review_by: dateOnly(addDays(new Date(arrived), HOLD_REVIEW_DAYS)) } : {}),
     ...(overCapFacts ? { over_cap: overCapFacts } : {}),
+    ...(briefFacts ? briefFacts : {}),
+    ...(redaction ? { redaction } : {}),
     ...promise,
-    history: [{ at: arrived, state, note: overCap ? 'received over the cap; stored unread' : (holdKind ? 'held at an automated check' : 'received') }],
+    history,
     // Steward-side diagnostics (meta_*): private, never published —
     // see stewardMeta above. The ledger entry below stays metadata
     // only and carries none of this.

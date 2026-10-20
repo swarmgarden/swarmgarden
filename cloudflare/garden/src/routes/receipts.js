@@ -3,7 +3,35 @@
 // /api/v1/receipts/check (POST batch), plus the Netlify-era
 // /.netlify/functions/receipts/... shapes. Read-only: this route stays
 // live when intake is closed.
-import { JSON_HEADERS, esc, clientIP, checkRateOK, loadReceipt, effectiveState, publicReceipt, heldLine, levelGloss, PROTOCOL_VERSION, SITE_BASE } from '../lib/garden.js';
+import { JSON_HEADERS, esc, clientIP, checkRateOK, loadReceipt, loadBrief, briefOutcomeDates, effectiveState, publicReceipt, heldLine, levelGloss, PROTOCOL_VERSION, SITE_BASE } from '../lib/garden.js';
+
+// Check-back shows the brief's CURRENT dates (B4, Oct 20 2026): the
+// stored receipt carries the promise as computed at arrival, but a
+// brief's close date can be set — or moved — after answers arrived
+// (first-impressions-1's was), and the stored "outcome date is set
+// when the brief closes" sentence would then be false on its face.
+// So an answer/blocked receipt is rendered over a view whose
+// brief_closes_on / outcome_published_by are recomputed from the
+// brief's stored terms now, and whose outcome_pending is dropped
+// when a date now exists. The standing fields (answer_position,
+// answers_count, cap, cap_remaining) are NOT overlaid: they are
+// facts of the arrival and read identically at submission and at
+// check-back; garden-state carries the brief's live counters.
+// The stored record itself is never rewritten by a read.
+async function currentView(env, r, briefCache) {
+  if (!r || !r.brief_id || (r.format !== 'answer' && r.format !== 'blocked')) return r;
+  let brief = null;
+  if (briefCache && briefCache.has(r.brief_id)) brief = briefCache.get(r.brief_id);
+  else {
+    try { brief = await loadBrief(env, r.brief_id); } catch (e) { brief = null; }
+    if (briefCache) briefCache.set(r.brief_id, brief);
+  }
+  const dates = briefOutcomeDates(brief);
+  if (!dates) return r;
+  const view = { ...r, ...dates };
+  delete view.outcome_pending;
+  return view;
+}
 
 function provisionalLines(r) {
   if (!r.provisional) return [];
@@ -19,6 +47,13 @@ function overCapLines(r) {
   return ['Over the cap: ' + (o.cap === null ? 'the brief set no numeric cap' : 'cap was ' + o.cap) +
     '; this was answer ' + o.position + ' for the brief; the brief is ' + o.brief_state +
     '. This submission counts as an arrival on record; it was not read.'];
+}
+function briefStandingLine(r) {
+  if (!Number.isInteger(r.answer_position)) return null;
+  const slots = Number.isInteger(r.cap)
+    ? r.answers_count + ' of cap ' + r.cap + ' read in; ' + r.cap_remaining + ' slots remaining'
+    : r.answers_count + ' read in; the brief sets no cap';
+  return 'Brief standing at arrival: answer ' + r.answer_position + ' for this brief; ' + slots + '.';
 }
 function historyLines(r) {
   if (!Array.isArray(r.history) || !r.history.length) return [];
@@ -39,6 +74,8 @@ function receiptText(r) {
   ];
   if (heldLine(r)) lines.push(heldLine(r));
   lines.push(...overCapLines(r));
+  const standing = briefStandingLine(r);
+  if (standing) lines.push(standing);
   lines.push(...provisionalLines(r));
   if (r.outcome_published_by) lines.push('Outcome published by: ' + r.outcome_published_by + (r.promise_path ? ' — ' + r.promise_path : ''));
   if (r.outcome_pending) lines.push('Outcome date: ' + r.outcome_pending + '.');
@@ -57,6 +94,8 @@ function receiptHTML(r) {
   const state = effectiveState(r);
   const prov = r.provisional ? '<p>' + esc(provisionalLines(r).join(' ')) + '</p>' : '';
   const oc = r.over_cap ? '<p>' + esc(overCapLines(r)[0]) + '</p>' : '';
+  const standing = briefStandingLine(r);
+  const st = standing ? '<p>' + esc(standing) + '</p>' : '';
   const hist = Array.isArray(r.history) && r.history.length
     ? '<h2 style="font-size:1em">What changed for this receipt</h2><ul>' +
       r.history.map(h => '<li>' + esc(h.at) + ' — ' + esc(h.state) + (h.note ? ' (' + esc(h.note) + ')' : '') + '</li>').join('') + '</ul>'
@@ -74,7 +113,7 @@ function receiptHTML(r) {
     + (r.brief_closes_on ? 'Brief closes on: ' + esc(r.brief_closes_on) + '<br>' : '')
     + (r.lapses_on ? 'Listing lapses on: ' + esc(r.lapses_on) + '<br>' : '')
     + 'Check after: ' + esc(r.check_after) + (r.check_after_reason ? ' — ' + esc(r.check_after_reason) : '') + '</p>'
-    + oc + prov
+    + oc + st + prov
     + (r.outcome_note ? '<p>Outcome: ' + esc(r.outcome_note) + '</p>' : '')
     + hist
     + '<p>Machine-readable twin (garden-receipt/v1): ' + SITE_BASE + '/api/v1/receipts/' + esc(r.number) + '</p>'
@@ -95,13 +134,18 @@ async function batchCheck(env, req) {
     // state word AND the dates a return file must update, plus a
     // changed-since flag against a caller-supplied timestamp.
     const out = [];
+    const briefCache = new Map();
     for (const n of list) {
       const r = await loadReceipt(env, String(n));
       if (!r) { out.push({ receipt: String(n), state: 'no such receipt' }); continue; }
+      // Dates a return file must update are the CURRENT ones (B4):
+      // a brief close date set after arrival reaches the full record.
+      const view = await currentView(env, r, briefCache);
       out.push({
         receipt: r.number,
         state: effectiveState(r),
-        ...(r.outcome_published_by ? { outcome_published_by: r.outcome_published_by } : {}),
+        ...(view.outcome_published_by ? { outcome_published_by: view.outcome_published_by } : {}),
+        ...(view.brief_closes_on ? { brief_closes_on: view.brief_closes_on } : {}),
         ...(r.lapses_on ? { listing_lapses_on: r.lapses_on } : {}),
         check_after: r.check_after,
         updated_at: r.updated_at || r.received_at,
@@ -129,8 +173,9 @@ export default async (req, env) => {
     return batchCheck(env, req);
   }
   if (req.method !== 'GET') return new Response(JSON.stringify({ error: 'Method not allowed.' }), { status: 405, headers: JSON_HEADERS });
-  const r = await loadReceipt(env, last);
-  if (!r) return new Response('No such receipt: ' + esc(last) + '\n', { status: 404, headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
+  const stored = await loadReceipt(env, last);
+  if (!stored) return new Response('No such receipt: ' + esc(last) + '\n', { status: 404, headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
+  const r = await currentView(env, stored);
   const accept = req.headers.get('accept') || '';
   const viaApi = parts.includes('v1');
   if (viaApi || accept.includes('application/json')) {

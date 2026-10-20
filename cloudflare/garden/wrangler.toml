@@ -62,9 +62,19 @@ dataset = "garden_visits"
 binding = "ASSET_VISITS"
 dataset = "garden_asset_visits"
 
+# Utility-call records (added Oct 19 2026, garden-clock/v1): calls
+# to the clock land in this SEPARATE dataset, counted as claims of
+# use — they can never enter the visit totals or the arrival
+# record. Garden only; the Advisory has no clock and no such
+# binding.
+[[analytics_engine_datasets]]
+binding = "UTILITY_VISITS"
+dataset = "garden_utility_visits"
+
 [vars]
 SITE_HOST = "swarmgarden.com"
 AE_DATASET = "garden_visits"
+UTILITY_AE_DATASET = "garden_utility_visits"
 # The visitors' book (added Oct 17 2026, Caitria's ruling): unlike
 # INTAKE_OPEN, GUESTBOOK_OPEN is set HERE, in the file — opening the
 # book is the commission, so the value travels with the build. Kill
@@ -86,6 +96,14 @@ SIGNAL_OPEN = "true"
 # "true" and redeploy, or pause the count from the steward endpoint
 # (action human-pause); the published figure stays up either way.
 HUMAN_OPEN = "true"
+# The clock utility (added Oct 19 2026, Caitria's ruling: "Let's do
+# the clock"): like the book, the signal and the button, CLOCK_OPEN
+# is set HERE, in the file — opening the utility is the commission,
+# so the value travels with the build. Kill switch: set this to
+# anything but "true" and redeploy, or pause the clock from the
+# steward endpoint (action clock-pause); the utility's call counts
+# stay readable either way.
+CLOCK_OPEN = "true"
 # The render claim (added Oct 18 2026, lens spec B-d): RENDER_OPEN
 # is deliberately ABSENT here — unset = the endpoint stands gated
 # shut regardless of any steward pause flag. The Garden's pages

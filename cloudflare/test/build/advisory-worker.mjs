@@ -3431,7 +3431,7 @@ async function readFromD1(env, limit) {
     } catch (e) {
       return null;
     }
-  }).filter((r) => r && r.event !== "asset");
+  }).filter((r) => r && r.event !== "asset" && r.event !== "utility-call");
 }
 async function readFromAE(env, limit) {
   const cols = AE_BLOBS.map((_, i) => "blob" + (i + 1)).join(", ");
@@ -3473,7 +3473,7 @@ var AGG_DIMS = {
   cname: ["byCname", "blob15", "$.cname", (v) => !v],
   verdict: ["byVerdict", "blob16", "$.ipverdict", (v) => !v]
 };
-var D1_NOT_ASSET = "COALESCE(json_extract(data, '$.event'), '') != 'asset'";
+var D1_VISITS_ONLY = "COALESCE(json_extract(data, '$.event'), '') NOT IN ('asset', 'utility-call')";
 function foldGroups(rows, skip) {
   const map = {};
   for (const row of rows) {
@@ -3575,7 +3575,7 @@ async function aggregateVisits(env, dims) {
       if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
     } else {
       const expr = dim === "day" ? "substr(json_extract(data, '$.t'), 1, 10)" : "json_extract(data, '" + d1Path + "')";
-      const { results } = await env.DB.prepare("SELECT " + expr + " AS k, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k").all();
+      const { results } = await env.DB.prepare("SELECT " + expr + " AS k, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY k").all();
       rows = results || [];
     }
     target[key] = foldGroups(rows, skip);
@@ -3587,7 +3587,7 @@ async function aggregateVisits(env, dims) {
       const rows = await aeSql(env, "SELECT count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "'");
       return { total: rows.length ? Number(rows[0].c || 0) : 0 };
     }
-    const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET).first();
+    const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY).first();
     return { total: row ? Number(row.c || 0) : 0 };
   };
   const dimJob = async (dim) => {
@@ -3599,7 +3599,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY n, v"
+          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY n, v"
         ).all();
         rows = results || [];
       }
@@ -3618,7 +3618,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
+          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY v, h"
         ).all();
         rows = results || [];
       }
@@ -3630,7 +3630,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
+          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY v, h"
         ).all();
         rows = results || [];
       }
@@ -3648,7 +3648,7 @@ async function aggregateVisits(env, dims) {
         }
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k, h, nm"
+          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY k, h, nm"
         ).all();
         rows = (results || []).filter((r) => r.k);
       }
@@ -3660,7 +3660,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY cls, s"
+          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY cls, s"
         ).all();
         rows = results || [];
       }
@@ -3901,10 +3901,12 @@ function buildVisitRecord(req, res, siteHost, event, digests = {}, fields = null
   };
 }
 var KEYED_UNLOGGED = ["/.netlify/functions/stats", "/.netlify/functions/steward", "/.netlify/functions/guestbook"];
+var UTILITY_COUNTED_ELSEWHERE = ["/utilities/garden-clock/", "/.netlify/functions/utilities/garden-clock/"];
 function shouldLog(req) {
   if (req.method !== "GET" && req.method !== "HEAD") return false;
   const p = new URL(req.url).pathname;
   if (KEYED_UNLOGGED.some((k) => p === k || p.startsWith(k + "/"))) return false;
+  if (UTILITY_COUNTED_ELSEWHERE.some((k) => p.startsWith(k))) return false;
   if (SKIP_EXT.some((e) => p.endsWith(e))) return false;
   return true;
 }

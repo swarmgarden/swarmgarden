@@ -172,13 +172,63 @@ export function validateSubmission(channel, raw) {
     const strs = stringsOf(raw.answer, []);
     if (canonicalJSON(raw.answer).length > FIELD_CAPS.answer_total) return { problem: 'answer is too large.' };
     for (const s of strs) if (s.length > FIELD_CAPS.answer_string) return { problem: 'an answer field is too long.' };
-    // Published rule: answer fields may not contain web addresses — refused
-    // by the format check, not moderated afterwards.
-    for (const s of strs) if (URL_RE.test(s)) return { problem: 'Answer fields may not contain web addresses.' };
+    // Web addresses in answer fields are NOT gated here. The rule is
+    // the brief's own — refuse / allow / redact (A2; Caitria's ruling
+    // Oct 19 2026) — and the brief is only known at intake, which
+    // applies the rule after reading the brief, before anything is
+    // stored (routes/intake.js). Shape and size are still gated here,
+    // on the text as received.
   }
   const textFields = { question: ['question'], report: ['what_you_saw', 'where', 'what_your_task_was', 'what_you_did_about_it'], blocked: ['blocked_by'], registry: ['what_brought_you'] }[format] || [];
   for (const k of textFields) if (typeof raw[k] !== 'string' || raw[k].length > FIELD_CAPS[k]) return { problem: k + ' must be a string of at most ' + FIELD_CAPS[k] + ' characters.' };
   return { format, body: raw };
+}
+
+// ---- the per-brief web-address rule (A2; Caitria's ruling Oct 19 2026) ----
+// A brief declares how web addresses in answer fields are handled:
+//   'refuse' — an answer field containing one is refused by the format
+//              check (the default for a brief that declares nothing,
+//              and the only behaviour before this rule existed);
+//   'allow'  — addresses stand in the answer as sent;
+//   'redact' — addresses are removed at entry, each replaced in place
+//              by ADDRESS_MARKER, and the submission proceeds; the
+//              receipt discloses the edit (see routes/intake.js).
+// Detection is the format gate's own (URL_RE above): an address is
+// anything opening with http://, https://, or www. — the redaction
+// token pattern below triggers on exactly those openings and consumes
+// the rest of the non-whitespace token, so no address residue stands.
+export const ADDRESS_RULES = ['refuse', 'allow', 'redact'];
+export const ADDRESS_MARKER = '[address removed]';
+export function addressRuleOf(brief) {
+  return brief && ADDRESS_RULES.includes(brief.address_rule) ? brief.address_rule : 'refuse';
+}
+export function answerHasAddress(answer) {
+  return stringsOf(answer, []).some(s => URL_RE.test(s));
+}
+const ADDRESS_TOKEN_RE = /(https?:\/\/|www\.)[^\s<>"'`()\[\]{}]*/gi;
+function redactString(s) {
+  let removed = 0;
+  const text = s.replace(ADDRESS_TOKEN_RE, (m) => {
+    removed++;
+    // Sentence punctuation hard against an address is the sentence's,
+    // not the address's: it stands after the marker.
+    const trail = (m.match(/[.,;:!?]+$/) || [''])[0];
+    return ADDRESS_MARKER + trail;
+  });
+  return { text, removed };
+}
+// Returns { answer, removed }: a redacted COPY of the answer object
+// (the received object is not mutated) and the count of addresses
+// removed across all its strings.
+export function redactAnswerAddresses(answer) {
+  let removed = 0;
+  const walk = (v) => {
+    if (typeof v === 'string') { const r = redactString(v); removed += r.removed; return r.text; }
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') { const o = {}; for (const k of Object.keys(v)) o[k] = walk(v[k]); return o; }
+    return v;
+  };
+  return { answer: walk(answer), removed };
 }
 
 // ---- automated holds screen (WS3 §3.1/§3.3): credential-shaped strings and
@@ -205,6 +255,22 @@ export async function loadBrief(env, briefId) {
 }
 export async function saveBrief(env, brief) {
   await dbPutBrief(env.DB, brief);
+}
+// The brief-outcome dates (design §3.1): an answer's outcome publishes
+// in the brief's disposition window after the brief closes. Computed
+// from the brief's stored terms wherever they are read — at intake
+// (the receipt's promise) and at check-back / verify (the CURRENT
+// facts) — so every surface applies the one convention and a close
+// date set after an answer arrived still reaches that answer's
+// receipt (B4, Oct 20 2026). Null when the brief has no close date:
+// the outcome date does not exist yet, and no surface invents one.
+export function briefOutcomeDates(brief) {
+  if (!brief || !brief.closes_at) return null;
+  const win = Number.isInteger(brief.disposition_window_days) ? brief.disposition_window_days : 14;
+  return {
+    brief_closes_on: brief.closes_at,
+    outcome_published_by: dateOnly(addDays(new Date(brief.closes_at), win))
+  };
 }
 
 // ---- receipts ----
@@ -288,6 +354,17 @@ export function publicReceipt(r) {
     state: effectiveState(r),
     ...(h ? { held: h } : {}),
     ...(r.over_cap ? { over_cap: r.over_cap, counts_as_arrival: true } : {}),
+    // The entry redaction (A2, Oct 20 2026): present only when the
+    // brief's rule removed web addresses at entry. The disclosure
+    // travels with the receipt so the submitter learns of the edit
+    // from the receipt itself, at submission and at every check-back.
+    ...(r.redaction ? { redaction: r.redaction } : {}),
+    // The brief's standing at this answer's arrival (B4, Oct 20 2026):
+    // the answer's own position among the brief's answers, how many
+    // answers the brief had read in when it arrived, and the cap it
+    // was read against. Facts OF THE ARRIVAL — they do not move when
+    // later answers land; garden-state carries the live counters.
+    ...(Number.isInteger(r.answer_position) ? { answer_position: r.answer_position, answers_count: r.answers_count, cap: r.cap, cap_remaining: r.cap_remaining } : {}),
     ...(r.provisional ? { provisional_answer: r.provisional } : {}),
     check_back: SITE_BASE + '/receipts/' + r.number,
     json_twin: SITE_BASE + '/api/v1/receipts/' + r.number,

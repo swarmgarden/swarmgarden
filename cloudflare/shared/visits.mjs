@@ -186,6 +186,39 @@ export async function writeAssetVisit(env, record) {
   return 'd1-fallback';
 }
 
+// Utility-call writes (garden-clock/v1, Oct 19 2026): the same
+// separate-store discipline as the asset companions. A clock call is
+// a claim of use, never a visit and never an arrival, so its records
+// live in their own Analytics Engine dataset (the UTILITY_VISITS
+// binding, dataset garden_utility_visits) and are read back only by
+// aggregateUtilityCalls below. The D1 fallback has no third store:
+// fallback rows land in visit_log under event 'utility-call', and
+// every visit read EXCLUDES that event on that path (D1_VISITS_ONLY
+// and readFromD1's filter — the same correctness trap, pinned by the
+// harness). The record shape is the visit record's shape (the
+// AE_BLOBS budget is shared): path carries the utility's published
+// address, event is 'utility-call', and the purpose slot carries the
+// operation the caller asked for ('now' or 'convert') — inside this
+// dataset that slot is the operation key, documented here and in the
+// build note. Caller inputs are never stored: the requested zone
+// name and instant appear in no field.
+export async function writeUtilityVisit(env, record) {
+  if (aeConfigured(env) && env.UTILITY_VISITS) {
+    env.UTILITY_VISITS.writeDataPoint({
+      indexes: [record.site || ''],
+      blobs: AE_BLOBS.map(k => {
+        const v = record[k];
+        return v === null || v === undefined ? '' : String(v);
+      }),
+      doubles: aeDoubles(record)
+    });
+    return 'analytics-engine-utility';
+  }
+  await env.DB.prepare('INSERT INTO visit_log (t, data) VALUES (?1, ?2)')
+    .bind(record.t, JSON.stringify(record)).run();
+  return 'd1-fallback';
+}
+
 async function aeSql(env, sql) {
   const res = await fetch(
     'https://api.cloudflare.com/client/v4/accounts/' + env.AE_ACCOUNT_ID + '/analytics_engine/sql',
@@ -200,10 +233,12 @@ async function readFromD1(env, limit) {
   const { results } = await env.DB.prepare('SELECT data FROM visit_log ORDER BY id DESC LIMIT ?1')
     .bind(limit).all();
   // Newest first, as written; callers that aggregate sort as needed.
-  // Asset-companion rows (event 'asset', D1 fallback only — see
-  // writeAssetVisit) are not visit records and never display as such.
+  // Asset-companion rows (event 'asset') and utility-call rows
+  // (event 'utility-call', both D1 fallback only — see writeAssetVisit
+  // and writeUtilityVisit) are not visit records and never display
+  // as such.
   return (results || []).map(r => { try { return JSON.parse(r.data); } catch (e) { return null; } })
-    .filter(r => r && r.event !== 'asset');
+    .filter(r => r && r.event !== 'asset' && r.event !== 'utility-call');
 }
 
 async function readFromAE(env, limit) {
@@ -331,12 +366,13 @@ const AGG_DIMS = {
   verdict: ['byVerdict', 'blob16', '$.ipverdict', v => !v]
 };
 
-// On the D1 fallback path, asset-companion rows share the visit_log
-// table (writeAssetVisit) and must be excluded from every visit
+// On the D1 fallback path, asset-companion rows (event 'asset') and
+// utility-call rows (event 'utility-call', writeUtilityVisit below)
+// share the visit_log table and must be excluded from every visit
 // aggregate, or the headline totals silently inflate (lens spec B-a's
 // correctness trap). The AE path needs no filter: the datasets are
 // physically separate there.
-const D1_NOT_ASSET = "COALESCE(json_extract(data, '$.event'), '') != 'asset'";
+const D1_VISITS_ONLY = "COALESCE(json_extract(data, '$.event'), '') NOT IN ('asset', 'utility-call')";
 
 function foldGroups(rows, skip) {
   const map = {};
@@ -456,7 +492,7 @@ export async function aggregateVisits(env, dims) {
       const expr = dim === 'day'
         ? "substr(json_extract(data, '$.t'), 1, 10)"
         : "json_extract(data, '" + d1Path + "')";
-      const { results } = await env.DB.prepare('SELECT ' + expr + ' AS k, COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET + ' GROUP BY k').all();
+      const { results } = await env.DB.prepare('SELECT ' + expr + ' AS k, COUNT(*) AS c FROM visit_log WHERE ' + D1_VISITS_ONLY + ' GROUP BY k').all();
       rows = results || [];
     }
     target[key] = foldGroups(rows, skip);
@@ -490,7 +526,7 @@ export async function aggregateVisits(env, dims) {
       const rows = await aeSql(env, 'SELECT count() AS c FROM ' + env.AE_DATASET + " WHERE index1 = '" + host + "'");
       return { total: rows.length ? Number(rows[0].c || 0) : 0 };
     }
-    const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM visit_log WHERE ' + D1_NOT_ASSET).first();
+    const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM visit_log WHERE ' + D1_VISITS_ONLY).first();
     return { total: row ? Number(row.c || 0) : 0 };
   };
 
@@ -508,7 +544,7 @@ export async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY n, v').all();
+          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + ' GROUP BY n, v').all();
         rows = results || [];
       }
       const m = {};
@@ -532,7 +568,7 @@ export async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
+          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + ' GROUP BY v, h').all();
         rows = results || [];
       }
       part.byVisitorDay = foldVisitorDays(rows);
@@ -548,7 +584,7 @@ export async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY v, h').all();
+          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + ' GROUP BY v, h').all();
         rows = results || [];
       }
       part.byVisitorEpoch = foldVisitorDays(rows);
@@ -573,7 +609,7 @@ export async function aggregateVisits(env, dims) {
         }
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY k, h, nm').all();
+          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + ' GROUP BY k, h, nm').all();
         rows = (results || []).filter(r => r.k);
       }
       part.bySourceDay = foldSourceDays(rows);
@@ -590,7 +626,7 @@ export async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY cls, s').all();
+          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + ' GROUP BY cls, s').all();
         rows = results || [];
       }
       const fetchesByClass = {}, redirectsByClass = {};
@@ -647,5 +683,70 @@ export async function aggregateVisits(env, dims) {
   // truncated (D3.4) — surfaced, never silently exact. Empty on the
   // D1 fallback path, whose groupings carry no LIMIT.
   out.truncated_dims = truncated;
+  return out;
+}
+
+// ---- Utility-call aggregates (garden-clock/v1, Oct 19 2026) ----
+// The read side of writeUtilityVisit: exact folds over the utility
+// dataset (AE path) or over visit_log's 'utility-call' rows (D1
+// fallback). The folds mirror the render-claims reader's shape:
+// total answered requests, served (HTTP 200) vs refused, by status,
+// by operation (the purpose slot — see writeUtilityVisit), by
+// claimed class, by UTC day, and the B9 visitor-digest series folded
+// to Pacific days (distinct callers per day, with the digest series'
+// stated caveats). A clock call is a claim of use — these figures
+// never join the visit aggregates above.
+export async function aggregateUtilityCalls(env) {
+  const out = {
+    total: 0, served: 0, refused: 0,
+    by_status: {}, by_op: {}, by_cls: {}, by_day: {}, by_visitor_day: {}
+  };
+  const foldStatus = (s, c) => {
+    const k = String(Math.round(Number(s)));
+    out.by_status[k] = (out.by_status[k] || 0) + c;
+    out.total += c;
+    if (k === '200') out.served += c;
+  };
+  const foldKey = (target, k, c) => {
+    const key = k === null || k === undefined ? '' : String(k);
+    target[key] = (target[key] || 0) + c;
+  };
+  if (aeConfigured(env) && env.UTILITY_AE_DATASET) {
+    const host = String(env.SITE_HOST || '').replace(/'/g, '');
+    const ds = env.UTILITY_AE_DATASET;
+    const where = " WHERE index1 = '" + host + "'";
+    const jobs = [
+      async () => (await aeSql(env, 'SELECT double1 AS s, count() AS c FROM ' + ds + where + ' GROUP BY s LIMIT ' + GROUP_LIMIT))
+        .forEach(r => foldStatus(r.s, Number(r.c || 0))),
+      async () => (await aeSql(env, 'SELECT blob7 AS k, count() AS c FROM ' + ds + where + ' GROUP BY k LIMIT ' + GROUP_LIMIT))
+        .forEach(r => foldKey(out.by_op, r.k, Number(r.c || 0))),
+      async () => (await aeSql(env, 'SELECT blob6 AS k, count() AS c FROM ' + ds + where + ' GROUP BY k LIMIT ' + GROUP_LIMIT))
+        .forEach(r => foldKey(out.by_cls, r.k, Number(r.c || 0))),
+      async () => (await aeSql(env, 'SELECT substring(blob1, 1, 10) AS k, count() AS c FROM ' + ds + where + ' GROUP BY k LIMIT ' + GROUP_LIMIT))
+        .forEach(r => foldKey(out.by_day, r.k, Number(r.c || 0))),
+      async () => {
+        const rows = await aeSql(env, 'SELECT blob18 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM ' + ds + where + ' GROUP BY v, h LIMIT ' + GROUP_LIMIT);
+        out.by_visitor_day = foldVisitorDays(rows);
+      }
+    ];
+    // Same wave discipline as aggregateVisits (see its note): small
+    // concurrent waves, never a full parallel burst.
+    for (let i = 0; i < jobs.length; i += 4) await Promise.all(jobs.slice(i, i + 4).map(f => f()));
+  } else {
+    const { results } = await env.DB.prepare('SELECT data FROM visit_log').all();
+    const vRows = [];
+    for (const row of results || []) {
+      let r = null;
+      try { r = JSON.parse(row.data); } catch (e) {}
+      if (!r || r.event !== 'utility-call') continue;
+      foldStatus(r.status, 1);
+      foldKey(out.by_op, r.purpose, 1);
+      foldKey(out.by_cls, r.cls, 1);
+      foldKey(out.by_day, String(r.t || '').slice(0, 10), 1);
+      vRows.push({ v: r.visitor || '', h: String(r.t || '').slice(0, 13), c: 1 });
+    }
+    out.by_visitor_day = foldVisitorDays(vRows);
+  }
+  out.refused = out.total - out.served;
   return out;
 }

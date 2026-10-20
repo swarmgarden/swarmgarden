@@ -33,6 +33,7 @@ import { groupReferrers } from '../../../shared/referrers.mjs';
 import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, wtBlockHtml, sourceBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
+import { clockStats } from '../../../shared/clock.mjs';
 import { dbListLedger, dbListReceipts, dbCountSignals, dbCountHumanPresses, dbListNotes } from '../lib/db.js';
 import { isPublicNote } from '../lib/notes.js';
 
@@ -106,9 +107,10 @@ export default async (req, env) => {
       awaiting_publication: notes.filter(n => n.status === 'pending' && !isPublicNote(n, nowIso)).length
     };
   } catch (e) { /* counts unavailable: the section says so */ }
-  const [attempts, renders] = await Promise.all([
+  const [attempts, renders, clock] = await Promise.all([
     attemptStats(env).catch(() => null),
-    renderStats(env).catch(() => null)
+    renderStats(env).catch(() => null),
+    clockStats(env).catch(() => null)
   ]);
   const lanes = {};
   const states = {};
@@ -118,7 +120,7 @@ export default async (req, env) => {
     return new Response(JSON.stringify({
       arrivals_on_record: arrivals, humans_total: humans, signals_total: signals,
       ledger_entries: entries ? entries.length : null,
-      guestbook: book, api_attempts: attempts, render_claims: renders,
+      guestbook: book, api_attempts: attempts, render_claims: renders, clock_calls: clock,
       truncated_dims: agg.truncatedDims,
       ...agg, submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
       visits: visitsBlock(agg, asOf), recent: recs
@@ -198,6 +200,21 @@ export default async (req, env) => {
     html += '<h4>By page</h4>' + countTable(esc, sortedPairs(renders.by_path), renders.total);
     html += '<h4>By day</h4>' + countTable(esc, Object.entries(renders.by_day).sort(), renders.total);
     html += '<h4>By claimed class</h4>' + countTable(esc, sortedPairs(renders.by_cls), renders.total);
+  }
+
+  // ---- Clock calls (garden-clock/v1; counted in their own store) ----
+  html += '<h3>Clock calls — the time utility (claims of use)</h3>';
+  html += '<p>Calls to garden-clock/v1, the Garden&rsquo;s general time utility, counted in the utility&rsquo;s own dataset from its launch (Oct 19, 2026): a call is a claim of use — not a request in the totals above, not a visit, not an arrival. Every answered call is recorded with its operation and its outcome status; the zone or instant a caller asked for is an input and is never stored. Served = answered 200; refused = the gate, the rate shape, the daily cap, or a malformed call answering instead.</p>';
+  if (clock === null) html += '<p>Unavailable.</p>';
+  else if (!clock.total) html += '<p>None recorded yet.</p>';
+  else {
+    const clockAgentClaimed = (clock.by_cls && clock.by_cls['agent-claimed']) || 0;
+    html += '<p>' + clock.total + ' calls answered: <strong>' + clock.served + ' served</strong> · ' + clock.refused + ' refused. Agent-claimed share of calls: <strong>' + clockAgentClaimed + '</strong> of ' + clock.total + ' (by the claimed-class rules — a claim, not a verification).</p>';
+    html += '<h4>By operation</h4>' + countTable(esc, sortedPairs(clock.by_op), clock.total);
+    html += '<h4>By outcome status</h4>' + countTable(esc, sortedPairs(clock.by_status), clock.total);
+    html += '<h4>By day (UTC)</h4>' + countTable(esc, Object.entries(clock.by_day).sort(), clock.total);
+    html += '<h4>By claimed class</h4>' + countTable(esc, sortedPairs(clock.by_cls), clock.total);
+    html += '<h4>Distinct callers, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, clock.by_visitor_day);
   }
 
   // ---- Recent 50 (display only) ----

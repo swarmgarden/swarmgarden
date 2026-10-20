@@ -1,17 +1,27 @@
 // Swarm Garden — published utilities (Cloudflare port; logic unchanged).
 // Addresses: /utilities/garden-state/v1, /utilities/garden-verify-receipt/v1,
-// /utilities/garden-dates/v1, /utilities/garden-preflight/v1 (plus the
-// Netlify-era function shapes).
+// /utilities/garden-dates/v1, /utilities/garden-preflight/v1,
+// /utilities/garden-clock/v1 (plus the Netlify-era function shapes).
 // Each utility lives at one permanent address; its name and version are
 // stated in every response; a version's inputs, outputs and field
-// meanings do not change. All four are deterministic and read-only.
+// meanings do not change. All five are deterministic and read-only.
+// The clock (U5) is the one general-purpose utility of the family —
+// not a fact about the Garden but a fact about the world, for any
+// agent that has no clock of its own; it is gated and counted on its
+// own terms (see gardenClock below).
 import {
   JSON_HEADERS, SITE_BASE, PROTOCOL_VERSION, REGISTRY_LAPSE_DAYS, QUESTION_DAYS,
   sha256hex, dateOnly, addDays, clientIP, checkRateOK,
-  loadReceipt, effectiveState, intakeGate, nextFridayAfter, reportPromiseDate,
+  loadReceipt, loadBrief, briefOutcomeDates, effectiveState, intakeGate, nextFridayAfter, reportPromiseDate,
+  addressRuleOf,
   CHANNEL_FORMAT, FORMATS
 } from '../lib/garden.js';
 import { dbListReceipts, dbListBriefs, dbLedgerCounts } from '../lib/db.js';
+import { clockGate, clockRateOK, clockGlobalOK } from '../lib/clock.js';
+import { isValidZone, zoneInfo, TZ_BASIS } from '../../../shared/clock.mjs';
+import { buildVisitRecord, writeTimeFields } from '../../../shared/frontdoor.mjs';
+import { visitorForRequest, sourceDigestForRequest } from '../../../shared/visitor.mjs';
+import { writeUtilityVisit } from '../../../shared/visits.mjs';
 
 const err = (status, message) => new Response(JSON.stringify({ error: message }), { status, headers: JSON_HEADERS });
 
@@ -42,7 +52,8 @@ async function gardenState(env, req, url) {
       answers_received: received,
       slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
       closes_at: b.closes_at || null,
-      disposition_window_days: b.disposition_window_days
+      disposition_window_days: b.disposition_window_days,
+      address_rule: addressRuleOf(b)
     });
   }
   return respond(req, {
@@ -80,11 +91,20 @@ async function gardenVerify(env, req, url) {
   if (!r) return respond(req, { utility: 'garden-verify-receipt', version: 'v1', receipt: String(receiptNo), result: 'no-such-receipt' });
   const candidate = (hash || sha256hex(text)).toLowerCase();
   const matches = candidate === r.fingerprint;
+  // For an answer or blocked-note receipt, the brief's CURRENT dates
+  // ride along (B4, Oct 20 2026) — recomputed from the brief's stored
+  // terms, so a close date set after the answer arrived is visible
+  // here too, exactly as on the receipt's own check-back surface.
+  let briefDates = null;
+  if ((r.format === 'answer' || r.format === 'blocked') && r.brief_id) {
+    try { briefDates = briefOutcomeDates(await loadBrief(env, r.brief_id)); } catch (e) { briefDates = null; }
+  }
   return respond(req, {
     utility: 'garden-verify-receipt', version: 'v1',
     receipt: r.number,
     result: matches ? 'matches' : 'does-not-match',
-    state: effectiveState(r)
+    state: effectiveState(r),
+    ...(briefDates || {})
   });
 }
 
@@ -226,7 +246,8 @@ async function gardenPreflight(env, req, url) {
           cap: Number.isInteger(b.cap) ? b.cap : null,
           answers_received: received,
           slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
-          closes_at: b.closes_at || null, disposition_window_days: b.disposition_window_days
+          closes_at: b.closes_at || null, disposition_window_days: b.disposition_window_days,
+          address_rule: addressRuleOf(b)
         };
       });
     out.outcome = {
@@ -243,11 +264,107 @@ async function gardenPreflight(env, req, url) {
   return respond(req, out);
 }
 
-export default async (req, env) => {
+// ---- U5: garden-clock/v1 — the time utility (added Oct 19 2026;
+// the agent-utilities research pass's first pick, Caitria's ruling
+// the same evening) ----
+// The general-purpose utility: the current time, for an agent that
+// has no clock of its own. Two operations, both GET, parameters
+// only: now (no parameters — the current UTC time) and convert
+// (tz=<IANA zone name> — the current time in that zone; at=<ISO-8601
+// instant> — that instant instead of the current one). Deterministic
+// Intl arithmetic; no model anywhere near it.
+//
+// Its own terms, unlike the Garden-fact utilities above:
+//   - gated: CLOCK_OPEN + the steward pause flag (lib/clock.js);
+//     closed answers 503 with the refusal code, like a closed door.
+//   - rate-shaped to the render claim's precedent (3/min + 20/hr
+//     per network, 300/day global) on top of the family-wide
+//     checkRateOK the dispatcher applies first.
+//   - counted in its own store from the first call: every answered
+//     request writes one utility-call record (operation + status,
+//     the B9 caller digest, the claimed class — never the requested
+//     zone or instant, never the caller's address) to the utility
+//     dataset, and the front door writes NO visit record for this
+//     address (shared/frontdoor.mjs), so a call is countable per
+//     day and never counts as a visit or an arrival.
+function recordClockCall(env, req, ctx, op, status) {
+  const run = (async () => {
+    try {
+      const digests = await visitorForRequest(env, req);
+      digests.srcdigest = await sourceDigestForRequest(env, req);
+      const fields = await writeTimeFields(req, { network: false });
+      const record = buildVisitRecord(req, { status }, env.SITE_HOST || '', 'utility-call', digests, fields);
+      record.purpose = op; // inside the utility dataset, the purpose slot carries the operation
+      await writeUtilityVisit(env, record);
+    } catch (e) { /* counting never breaks the answer */ }
+  })();
+  if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(run);
+  return run;
+}
+
+const AT_SHAPE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:?\d{2})$/;
+
+async function gardenClock(env, req, url, ctx) {
+  const tzParam = url.searchParams.get('tz');
+  const atParam = url.searchParams.get('at');
+  const op = (tzParam || atParam) ? 'convert' : 'now';
+  const answer = (res) => { recordClockCall(env, req, ctx, op, res.status); return res; };
+  const refuse = (status, message, code) => answer(new Response(
+    JSON.stringify({ utility: 'garden-clock', version: 'v1', error: message, code }),
+    { status, headers: JSON_HEADERS }));
+
+  const gate = await clockGate(env);
+  if (!gate.open) {
+    return refuse(503,
+      gate.why === 'clock-paused' ? 'The clock is paused by the steward.' : 'The clock is not currently open.',
+      gate.why);
+  }
+  let zone = 'UTC';
+  if (tzParam !== null && tzParam !== '') {
+    if (!isValidZone(tzParam)) {
+      return answer(err(400, 'tz must be an IANA time zone name — e.g. UTC, America/New_York, Europe/London, Asia/Tokyo. "' + tzParam.slice(0, 100) + '" is not a zone name this runtime knows.'));
+    }
+    zone = tzParam;
+  }
+  let instant = new Date();
+  if (atParam !== null && atParam !== '') {
+    const parsed = AT_SHAPE.test(atParam) ? new Date(atParam) : null;
+    if (!parsed || isNaN(parsed.getTime())) {
+      return answer(err(400, 'at must be an ISO-8601 instant with an offset — e.g. 2026-10-20T12:00:00Z. "' + atParam.slice(0, 100) + '" does not parse as one.'));
+    }
+    instant = parsed;
+  }
+  const ip = clientIP(req);
+  if (!(await clockRateOK(env, ip))) {
+    return refuse(429, 'Clock rate exceeded: at most 3 calls a minute, 20 an hour from one network.', 'clock-rate');
+  }
+  if (!(await clockGlobalOK(env))) {
+    return refuse(429, 'The clock\u2019s daily cap of 300 calls is reached. It resets at UTC midnight.', 'clock-day-cap');
+  }
+  const base = {
+    utility: 'garden-clock', version: 'v1', op,
+    utc: instant.toISOString(),
+    unix: Math.floor(instant.getTime() / 1000),
+    unix_ms: instant.getTime(),
+    tz_database: TZ_BASIS
+  };
+  if (op === 'now') {
+    return answer(respond(req, {
+      ...base,
+      convert: 'GET ?tz=<IANA zone name> for the current time in that zone (e.g. ?tz=America/New_York); add &at=<ISO-8601 instant> to convert a given instant instead.'
+    }));
+  }
+  const info = zoneInfo(instant, zone);
+  const out = { ...base, zone, local: info.local, utc_offset: info.offset };
+  if (info.abbreviation) out.abbreviation = info.abbreviation;
+  return answer(respond(req, out));
+}
+
+export default async (req, env, ctx) => {
   const parts = new URL(req.url).pathname.split('/').filter(Boolean);
   const name = parts[parts.length - 2];
   const version = parts[parts.length - 1];
-  if (version !== 'v1') return err(404, 'No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.');
+  if (version !== 'v1') return err(404, 'No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1, garden-clock/v1.');
   if (!(await checkRateOK(env, clientIP(req)))) return err(429, 'Utility rate exceeded. Utilities are one fetch each; the published pattern is sparing use.');
   const url = new URL(req.url);
   if (name === 'garden-state') {
@@ -266,5 +383,9 @@ export default async (req, env) => {
     if (req.method !== 'GET') return err(405, 'garden-preflight is a GET utility.');
     return gardenPreflight(env, req, url);
   }
-  return err(404, 'No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.');
+  if (name === 'garden-clock') {
+    if (req.method !== 'GET') return err(405, 'garden-clock is a GET utility.');
+    return gardenClock(env, req, url, ctx);
+  }
+  return err(404, 'No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1, garden-clock/v1.');
 };

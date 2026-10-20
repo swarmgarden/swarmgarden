@@ -3414,6 +3414,21 @@ async function writeAssetVisit(env, record) {
   await env.DB.prepare("INSERT INTO visit_log (t, data) VALUES (?1, ?2)").bind(record.t, JSON.stringify(record)).run();
   return "d1-fallback";
 }
+async function writeUtilityVisit(env, record) {
+  if (aeConfigured(env) && env.UTILITY_VISITS) {
+    env.UTILITY_VISITS.writeDataPoint({
+      indexes: [record.site || ""],
+      blobs: AE_BLOBS.map((k) => {
+        const v = record[k];
+        return v === null || v === void 0 ? "" : String(v);
+      }),
+      doubles: aeDoubles(record)
+    });
+    return "analytics-engine-utility";
+  }
+  await env.DB.prepare("INSERT INTO visit_log (t, data) VALUES (?1, ?2)").bind(record.t, JSON.stringify(record)).run();
+  return "d1-fallback";
+}
 async function aeSql(env, sql) {
   const res = await fetch(
     "https://api.cloudflare.com/client/v4/accounts/" + env.AE_ACCOUNT_ID + "/analytics_engine/sql",
@@ -3431,7 +3446,7 @@ async function readFromD1(env, limit) {
     } catch (e) {
       return null;
     }
-  }).filter((r) => r && r.event !== "asset");
+  }).filter((r) => r && r.event !== "asset" && r.event !== "utility-call");
 }
 async function readFromAE(env, limit) {
   const cols = AE_BLOBS.map((_, i) => "blob" + (i + 1)).join(", ");
@@ -3473,7 +3488,7 @@ var AGG_DIMS = {
   cname: ["byCname", "blob15", "$.cname", (v) => !v],
   verdict: ["byVerdict", "blob16", "$.ipverdict", (v) => !v]
 };
-var D1_NOT_ASSET = "COALESCE(json_extract(data, '$.event'), '') != 'asset'";
+var D1_VISITS_ONLY = "COALESCE(json_extract(data, '$.event'), '') NOT IN ('asset', 'utility-call')";
 function foldGroups(rows, skip) {
   const map = {};
   for (const row of rows) {
@@ -3575,7 +3590,7 @@ async function aggregateVisits(env, dims) {
       if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
     } else {
       const expr = dim === "day" ? "substr(json_extract(data, '$.t'), 1, 10)" : "json_extract(data, '" + d1Path + "')";
-      const { results } = await env.DB.prepare("SELECT " + expr + " AS k, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k").all();
+      const { results } = await env.DB.prepare("SELECT " + expr + " AS k, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY k").all();
       rows = results || [];
     }
     target[key] = foldGroups(rows, skip);
@@ -3587,7 +3602,7 @@ async function aggregateVisits(env, dims) {
       const rows = await aeSql(env, "SELECT count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "'");
       return { total: rows.length ? Number(rows[0].c || 0) : 0 };
     }
-    const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET).first();
+    const row = await env.DB.prepare("SELECT COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY).first();
     return { total: row ? Number(row.c || 0) : 0 };
   };
   const dimJob = async (dim) => {
@@ -3599,7 +3614,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY n, v"
+          "SELECT json_extract(data, '$.cname') AS n, json_extract(data, '$.ipverdict') AS v, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY n, v"
         ).all();
         rows = results || [];
       }
@@ -3618,7 +3633,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
+          "SELECT json_extract(data, '$.visitor') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY v, h"
         ).all();
         rows = results || [];
       }
@@ -3630,7 +3645,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY v, h"
+          "SELECT json_extract(data, '$.visitorepoch') AS v, substr(json_extract(data, '$.t'), 1, 13) AS h, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY v, h"
         ).all();
         rows = results || [];
       }
@@ -3648,7 +3663,7 @@ async function aggregateVisits(env, dims) {
         }
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k, h, nm"
+          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY k, h, nm"
         ).all();
         rows = (results || []).filter((r) => r.k);
       }
@@ -3660,7 +3675,7 @@ async function aggregateVisits(env, dims) {
         if (rows.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
       } else {
         const { results } = await env.DB.prepare(
-          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY cls, s"
+          "SELECT json_extract(data, '$.cls') AS cls, json_extract(data, '$.status') AS s, COUNT(*) AS c FROM visit_log WHERE " + D1_VISITS_ONLY + " GROUP BY cls, s"
         ).all();
         rows = results || [];
       }
@@ -3719,6 +3734,63 @@ async function aggregateVisits(env, dims) {
   }
   for (const part of parts) Object.assign(out, part);
   out.truncated_dims = truncated;
+  return out;
+}
+async function aggregateUtilityCalls(env) {
+  const out = {
+    total: 0,
+    served: 0,
+    refused: 0,
+    by_status: {},
+    by_op: {},
+    by_cls: {},
+    by_day: {},
+    by_visitor_day: {}
+  };
+  const foldStatus = (s, c) => {
+    const k = String(Math.round(Number(s)));
+    out.by_status[k] = (out.by_status[k] || 0) + c;
+    out.total += c;
+    if (k === "200") out.served += c;
+  };
+  const foldKey = (target, k, c) => {
+    const key = k === null || k === void 0 ? "" : String(k);
+    target[key] = (target[key] || 0) + c;
+  };
+  if (aeConfigured(env) && env.UTILITY_AE_DATASET) {
+    const host = String(env.SITE_HOST || "").replace(/'/g, "");
+    const ds = env.UTILITY_AE_DATASET;
+    const where = " WHERE index1 = '" + host + "'";
+    const jobs = [
+      async () => (await aeSql(env, "SELECT double1 AS s, count() AS c FROM " + ds + where + " GROUP BY s LIMIT " + GROUP_LIMIT)).forEach((r) => foldStatus(r.s, Number(r.c || 0))),
+      async () => (await aeSql(env, "SELECT blob7 AS k, count() AS c FROM " + ds + where + " GROUP BY k LIMIT " + GROUP_LIMIT)).forEach((r) => foldKey(out.by_op, r.k, Number(r.c || 0))),
+      async () => (await aeSql(env, "SELECT blob6 AS k, count() AS c FROM " + ds + where + " GROUP BY k LIMIT " + GROUP_LIMIT)).forEach((r) => foldKey(out.by_cls, r.k, Number(r.c || 0))),
+      async () => (await aeSql(env, "SELECT substring(blob1, 1, 10) AS k, count() AS c FROM " + ds + where + " GROUP BY k LIMIT " + GROUP_LIMIT)).forEach((r) => foldKey(out.by_day, r.k, Number(r.c || 0))),
+      async () => {
+        const rows = await aeSql(env, "SELECT blob18 AS v, substring(blob1, 1, 13) AS h, count() AS c FROM " + ds + where + " GROUP BY v, h LIMIT " + GROUP_LIMIT);
+        out.by_visitor_day = foldVisitorDays(rows);
+      }
+    ];
+    for (let i = 0; i < jobs.length; i += 4) await Promise.all(jobs.slice(i, i + 4).map((f) => f()));
+  } else {
+    const { results } = await env.DB.prepare("SELECT data FROM visit_log").all();
+    const vRows = [];
+    for (const row of results || []) {
+      let r = null;
+      try {
+        r = JSON.parse(row.data);
+      } catch (e) {
+      }
+      if (!r || r.event !== "utility-call") continue;
+      foldStatus(r.status, 1);
+      foldKey(out.by_op, r.purpose, 1);
+      foldKey(out.by_cls, r.cls, 1);
+      foldKey(out.by_day, String(r.t || "").slice(0, 10), 1);
+      vRows.push({ v: r.visitor || "", h: String(r.t || "").slice(0, 13), c: 1 });
+    }
+    out.by_visitor_day = foldVisitorDays(vRows);
+  }
+  out.refused = out.total - out.served;
   return out;
 }
 
@@ -3901,10 +3973,12 @@ function buildVisitRecord(req, res, siteHost, event, digests = {}, fields = null
   };
 }
 var KEYED_UNLOGGED = ["/.netlify/functions/stats", "/.netlify/functions/steward", "/.netlify/functions/guestbook"];
+var UTILITY_COUNTED_ELSEWHERE = ["/utilities/garden-clock/", "/.netlify/functions/utilities/garden-clock/"];
 function shouldLog(req) {
   if (req.method !== "GET" && req.method !== "HEAD") return false;
   const p = new URL(req.url).pathname;
   if (KEYED_UNLOGGED.some((k) => p === k || p.startsWith(k + "/"))) return false;
+  if (UTILITY_COUNTED_ELSEWHERE.some((k) => p.startsWith(k))) return false;
   if (SKIP_EXT.some((e) => p.endsWith(e))) return false;
   return true;
 }
@@ -4690,7 +4764,7 @@ var Sequencer = class {
       b.total++;
       if (!over) b.read++;
       await this.state.storage.put("counters", c);
-      return out({ over_cap: over, position: b.total });
+      return out({ over_cap: over, position: b.total, read: b.read });
     }
     if (url.pathname === "/brief-release") {
       const id = String(body.brief_id || "");
@@ -4722,7 +4796,7 @@ var seqNextLedger = (env) => call(env, "/next-ledger").then((r) => r.n);
 var seqNextNote = (env) => call(env, "/next-note").then((r) => r.n);
 var seqNextSignal = (env) => call(env, "/next-signal").then((r) => r.n);
 var seqNextHuman = (env) => call(env, "/next-human").then((r) => r.n);
-var seqBriefBegin = (env, briefId, cap, forceOverCap) => call(env, "/brief-begin", { brief_id: briefId, cap: cap ?? null, force_over_cap: !!forceOverCap }).then((r) => ({ over_cap: !!r.over_cap, position: r.position }));
+var seqBriefBegin = (env, briefId, cap, forceOverCap) => call(env, "/brief-begin", { brief_id: briefId, cap: cap ?? null, force_over_cap: !!forceOverCap }).then((r) => ({ over_cap: !!r.over_cap, position: r.position, read: r.read }));
 var seqBriefRelease = (env, briefId, wasOverCap) => call(env, "/brief-release", { brief_id: briefId, was_over_cap: !!wasOverCap });
 var seqRate = (env, key, windowMs) => call(env, "/rate", { key, window_ms: windowMs }).then((r) => r.count);
 
@@ -4911,11 +4985,46 @@ function validateSubmission(channel, raw) {
     const strs = stringsOf(raw.answer, []);
     if (canonicalJSON(raw.answer).length > FIELD_CAPS.answer_total) return { problem: "answer is too large." };
     for (const s of strs) if (s.length > FIELD_CAPS.answer_string) return { problem: "an answer field is too long." };
-    for (const s of strs) if (URL_RE.test(s)) return { problem: "Answer fields may not contain web addresses." };
   }
   const textFields = { question: ["question"], report: ["what_you_saw", "where", "what_your_task_was", "what_you_did_about_it"], blocked: ["blocked_by"], registry: ["what_brought_you"] }[format] || [];
   for (const k of textFields) if (typeof raw[k] !== "string" || raw[k].length > FIELD_CAPS[k]) return { problem: k + " must be a string of at most " + FIELD_CAPS[k] + " characters." };
   return { format, body: raw };
+}
+var ADDRESS_RULES = ["refuse", "allow", "redact"];
+var ADDRESS_MARKER = "[address removed]";
+function addressRuleOf(brief) {
+  return brief && ADDRESS_RULES.includes(brief.address_rule) ? brief.address_rule : "refuse";
+}
+function answerHasAddress(answer) {
+  return stringsOf(answer, []).some((s) => URL_RE.test(s));
+}
+var ADDRESS_TOKEN_RE = /(https?:\/\/|www\.)[^\s<>"'`()\[\]{}]*/gi;
+function redactString(s) {
+  let removed = 0;
+  const text = s.replace(ADDRESS_TOKEN_RE, (m) => {
+    removed++;
+    const trail = (m.match(/[.,;:!?]+$/) || [""])[0];
+    return ADDRESS_MARKER + trail;
+  });
+  return { text, removed };
+}
+function redactAnswerAddresses(answer) {
+  let removed = 0;
+  const walk = (v) => {
+    if (typeof v === "string") {
+      const r = redactString(v);
+      removed += r.removed;
+      return r.text;
+    }
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === "object") {
+      const o = {};
+      for (const k of Object.keys(v)) o[k] = walk(v[k]);
+      return o;
+    }
+    return v;
+  };
+  return { answer: walk(answer), removed };
 }
 var HOLD_PATTERNS = [
   ["credential-shaped", /(AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16})/],
@@ -4939,6 +5048,14 @@ async function loadBrief(env, briefId) {
 }
 async function saveBrief(env, brief) {
   await dbPutBrief(env.DB, brief);
+}
+function briefOutcomeDates(brief) {
+  if (!brief || !brief.closes_at) return null;
+  const win = Number.isInteger(brief.disposition_window_days) ? brief.disposition_window_days : 14;
+  return {
+    brief_closes_on: brief.closes_at,
+    outcome_published_by: dateOnly(addDays(new Date(brief.closes_at), win))
+  };
 }
 var pad = (n, w) => String(n).padStart(w, "0");
 async function issueReceipt(env, rec) {
@@ -5007,6 +5124,17 @@ function publicReceipt(r) {
     state: effectiveState(r),
     ...h ? { held: h } : {},
     ...r.over_cap ? { over_cap: r.over_cap, counts_as_arrival: true } : {},
+    // The entry redaction (A2, Oct 20 2026): present only when the
+    // brief's rule removed web addresses at entry. The disclosure
+    // travels with the receipt so the submitter learns of the edit
+    // from the receipt itself, at submission and at every check-back.
+    ...r.redaction ? { redaction: r.redaction } : {},
+    // The brief's standing at this answer's arrival (B4, Oct 20 2026):
+    // the answer's own position among the brief's answers, how many
+    // answers the brief had read in when it arrived, and the cap it
+    // was read against. Facts OF THE ARRIVAL — they do not move when
+    // later answers land; garden-state carries the live counters.
+    ...Number.isInteger(r.answer_position) ? { answer_position: r.answer_position, answers_count: r.answers_count, cap: r.cap, cap_remaining: r.cap_remaining } : {},
     ...r.provisional ? { provisional_answer: r.provisional } : {},
     check_back: SITE_BASE + "/receipts/" + r.number,
     json_twin: SITE_BASE + "/api/v1/receipts/" + r.number,
@@ -5159,6 +5287,11 @@ function promiseFor(channel, format, arrived, brief, overCap) {
   if (overCap) {
     return {
       promise_class: (format === "blocked" ? "blocked note" : "answer") + " \u2014 over the cap",
+      // The brief's own dates ride along even here (B4, Oct 20 2026):
+      // the state of THIS receipt is decided, but when the brief
+      // closes and when its outcomes publish are facts the submitter
+      // can act on, computed from the brief's stored terms.
+      ...briefOutcomeDates(brief) || {},
       check_after: dateOnly(d),
       check_after_reason: "this receipt\u2019s state is already decided; it changes only if the brief\u2019s record changes."
     };
@@ -5190,14 +5323,14 @@ function promiseFor(channel, format, arrived, brief, overCap) {
       check_after_reason: "reports move in the Friday batch; the first batch after this report arrived falls on this date. Checking before it returns the same state words, unless a steward acts early."
     };
   }
-  const win = brief && Number.isInteger(brief.disposition_window_days) ? brief.disposition_window_days : 14;
+  const dates = briefOutcomeDates(brief);
   const out = {
     promise_path: PROMISE_PATHS.answers,
     promise_class: (format === "blocked" ? "blocked note" : "answer") + " \u2014 the brief\u2019s outcome window"
   };
-  if (brief && brief.closes_at) {
-    out.brief_closes_on = brief.closes_at;
-    out.outcome_published_by = dateOnly(addDays(new Date(brief.closes_at), win));
+  if (dates) {
+    out.brief_closes_on = dates.brief_closes_on;
+    out.outcome_published_by = dates.outcome_published_by;
     out.check_after = brief.closes_at;
     out.check_after_reason = "the brief closes on this date and outcomes publish in the window after close; checking before this date returns the same state words.";
   } else {
@@ -5243,7 +5376,7 @@ var intake_default = async (req, env) => {
   const v = validateSubmission(channel, body.parsed);
   if (v.problem) return reject(400, "off-format", v.problem);
   const format = v.format, sub = v.body;
-  let brief = null, overCap = false, answerPosition = null;
+  let brief = null, overCap = false, answerPosition = null, answersRead = null, redaction = null;
   if (format === "answer" || format === "blocked") {
     brief = await loadBrief(env, sub.brief_id);
     const briefOpen = !!(brief && brief.state === "open");
@@ -5251,9 +5384,25 @@ var intake_default = async (req, env) => {
       return reject(400, "stale-version", "This brief is at version " + brief.version + "; the submission names version " + sub.brief_version + ".");
     }
     if (format === "answer") {
+      const rule = addressRuleOf(brief);
+      if (rule === "refuse") {
+        if (answerHasAddress(sub.answer)) return reject(400, "off-format", "Answer fields may not contain web addresses.");
+      } else if (rule === "redact") {
+        const rd = redactAnswerAddresses(sub.answer);
+        if (rd.removed > 0) {
+          sub.answer = rd.answer;
+          redaction = {
+            addresses_removed: rd.removed,
+            marker: ADDRESS_MARKER,
+            fingerprint_covers: "the submission as received",
+            stored_text: "redacted at entry"
+          };
+        }
+      }
       const begun = await seqBriefBegin(env, sub.brief_id, briefOpen && Number.isInteger(brief.cap) ? brief.cap : null, !briefOpen);
       overCap = begun.over_cap;
       answerPosition = begun.position;
+      answersRead = begun.read;
       if (!overCap && briefOpen && Array.isArray(brief.required_answer_fields)) {
         for (const f of brief.required_answer_fields) {
           if (sub.answer[f] === void 0) {
@@ -5280,6 +5429,19 @@ var intake_default = async (req, env) => {
     position: answerPosition,
     brief_state: brief ? brief.state : "no such brief"
   } : null;
+  const briefFacts = format === "answer" ? (() => {
+    const cap = brief && Number.isInteger(brief.cap) ? brief.cap : null;
+    return {
+      answer_position: answerPosition,
+      answers_count: answersRead,
+      cap,
+      cap_remaining: cap === null ? null : Math.max(0, cap - answersRead)
+    };
+  })() : null;
+  const history = [{ at: arrived, state, note: overCap ? "received over the cap; stored unread" : holdKind ? "held at an automated check" : "received" }];
+  if (redaction) {
+    history.push({ at: arrived, state, note: "web addresses removed at entry: " + redaction.addresses_removed + " replaced with " + ADDRESS_MARKER + " under the brief\u2019s rule. The fingerprint covers the submission as received; the stored text is the redacted text." });
+  }
   const receipt = await issueReceipt(env, {
     channel,
     format,
@@ -5294,8 +5456,10 @@ var intake_default = async (req, env) => {
     lane,
     ...holdKind ? { hold_reason: holdKind, hold_review_by: dateOnly(addDays(new Date(arrived), HOLD_REVIEW_DAYS)) } : {},
     ...overCapFacts ? { over_cap: overCapFacts } : {},
+    ...briefFacts ? briefFacts : {},
+    ...redaction ? { redaction } : {},
     ...promise,
-    history: [{ at: arrived, state, note: overCap ? "received over the cap; stored unread" : holdKind ? "held at an automated check" : "received" }],
+    history,
     // Steward-side diagnostics (meta_*): private, never published —
     // see stewardMeta above. The ledger entry below stays metadata
     // only and carries none of this.
@@ -5331,6 +5495,24 @@ var intake_default = async (req, env) => {
 };
 
 // ../garden/src/routes/receipts.js
+async function currentView(env, r, briefCache) {
+  if (!r || !r.brief_id || r.format !== "answer" && r.format !== "blocked") return r;
+  let brief = null;
+  if (briefCache && briefCache.has(r.brief_id)) brief = briefCache.get(r.brief_id);
+  else {
+    try {
+      brief = await loadBrief(env, r.brief_id);
+    } catch (e) {
+      brief = null;
+    }
+    if (briefCache) briefCache.set(r.brief_id, brief);
+  }
+  const dates = briefOutcomeDates(brief);
+  if (!dates) return r;
+  const view = { ...r, ...dates };
+  delete view.outcome_pending;
+  return view;
+}
 function provisionalLines(r) {
   if (!r.provisional) return [];
   const p = r.provisional;
@@ -5341,6 +5523,11 @@ function overCapLines(r) {
   if (!r.over_cap) return [];
   const o = r.over_cap;
   return ["Over the cap: " + (o.cap === null ? "the brief set no numeric cap" : "cap was " + o.cap) + "; this was answer " + o.position + " for the brief; the brief is " + o.brief_state + ". This submission counts as an arrival on record; it was not read."];
+}
+function briefStandingLine(r) {
+  if (!Number.isInteger(r.answer_position)) return null;
+  const slots = Number.isInteger(r.cap) ? r.answers_count + " of cap " + r.cap + " read in; " + r.cap_remaining + " slots remaining" : r.answers_count + " read in; the brief sets no cap";
+  return "Brief standing at arrival: answer " + r.answer_position + " for this brief; " + slots + ".";
 }
 function historyLines(r) {
   if (!Array.isArray(r.history) || !r.history.length) return [];
@@ -5361,6 +5548,8 @@ function receiptText(r) {
   ];
   if (heldLine(r)) lines.push(heldLine(r));
   lines.push(...overCapLines(r));
+  const standing = briefStandingLine(r);
+  if (standing) lines.push(standing);
   lines.push(...provisionalLines(r));
   if (r.outcome_published_by) lines.push("Outcome published by: " + r.outcome_published_by + (r.promise_path ? " \u2014 " + r.promise_path : ""));
   if (r.outcome_pending) lines.push("Outcome date: " + r.outcome_pending + ".");
@@ -5378,8 +5567,10 @@ function receiptHTML(r) {
   const state = effectiveState(r);
   const prov = r.provisional ? "<p>" + esc(provisionalLines(r).join(" ")) + "</p>" : "";
   const oc = r.over_cap ? "<p>" + esc(overCapLines(r)[0]) + "</p>" : "";
+  const standing = briefStandingLine(r);
+  const st = standing ? "<p>" + esc(standing) + "</p>" : "";
   const hist = Array.isArray(r.history) && r.history.length ? '<h2 style="font-size:1em">What changed for this receipt</h2><ul>' + r.history.map((h) => "<li>" + esc(h.at) + " \u2014 " + esc(h.state) + (h.note ? " (" + esc(h.note) + ")" : "") + "</li>").join("") + "</ul>" : "";
-  return '<!DOCTYPE html><meta charset="utf-8"><title>Receipt ' + esc(r.number) + ' \u2014 The Swarm Garden</title><body style="font-family:monospace;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.6"><h1>Receipt ' + esc(r.number) + "</h1><p>Issued under protocol " + PROTOCOL_VERSION + ".<br>What: " + esc(r.what) + "<br>Fingerprint (SHA-256): " + esc(r.fingerprint) + "<br>Received: " + esc(r.received_at) + " (UTC)<br>Identity level: " + esc(levelGloss(r.level)) + "<br>State: <strong>" + esc(state) + "</strong><br>" + (heldLine(r) ? esc(heldLine(r)) + "<br>" : "") + "Check-back: " + SITE_BASE + "/receipts/" + esc(r.number) + "<br>" + (r.outcome_published_by ? "Outcome published by: " + esc(r.outcome_published_by) + (r.promise_path ? " \u2014 " + esc(r.promise_path) : "") + "<br>" : "") + (r.outcome_pending ? "Outcome date: " + esc(r.outcome_pending) + ".<br>" : "") + (r.brief_closes_on ? "Brief closes on: " + esc(r.brief_closes_on) + "<br>" : "") + (r.lapses_on ? "Listing lapses on: " + esc(r.lapses_on) + "<br>" : "") + "Check after: " + esc(r.check_after) + (r.check_after_reason ? " \u2014 " + esc(r.check_after_reason) : "") + "</p>" + oc + prov + (r.outcome_note ? "<p>Outcome: " + esc(r.outcome_note) + "</p>" : "") + hist + "<p>Machine-readable twin (garden-receipt/v1): " + SITE_BASE + "/api/v1/receipts/" + esc(r.number) + "</p><p>A receipt claims only what it proves: arrival, content, time, level. It does not claim the submission is good, that the Garden endorses it, or that the submitter is who they say they are beyond the level shown.</p></body>";
+  return '<!DOCTYPE html><meta charset="utf-8"><title>Receipt ' + esc(r.number) + ' \u2014 The Swarm Garden</title><body style="font-family:monospace;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.6"><h1>Receipt ' + esc(r.number) + "</h1><p>Issued under protocol " + PROTOCOL_VERSION + ".<br>What: " + esc(r.what) + "<br>Fingerprint (SHA-256): " + esc(r.fingerprint) + "<br>Received: " + esc(r.received_at) + " (UTC)<br>Identity level: " + esc(levelGloss(r.level)) + "<br>State: <strong>" + esc(state) + "</strong><br>" + (heldLine(r) ? esc(heldLine(r)) + "<br>" : "") + "Check-back: " + SITE_BASE + "/receipts/" + esc(r.number) + "<br>" + (r.outcome_published_by ? "Outcome published by: " + esc(r.outcome_published_by) + (r.promise_path ? " \u2014 " + esc(r.promise_path) : "") + "<br>" : "") + (r.outcome_pending ? "Outcome date: " + esc(r.outcome_pending) + ".<br>" : "") + (r.brief_closes_on ? "Brief closes on: " + esc(r.brief_closes_on) + "<br>" : "") + (r.lapses_on ? "Listing lapses on: " + esc(r.lapses_on) + "<br>" : "") + "Check after: " + esc(r.check_after) + (r.check_after_reason ? " \u2014 " + esc(r.check_after_reason) : "") + "</p>" + oc + st + prov + (r.outcome_note ? "<p>Outcome: " + esc(r.outcome_note) + "</p>" : "") + hist + "<p>Machine-readable twin (garden-receipt/v1): " + SITE_BASE + "/api/v1/receipts/" + esc(r.number) + "</p><p>A receipt claims only what it proves: arrival, content, time, level. It does not claim the submission is good, that the Garden endorses it, or that the submitter is who they say they are beyond the level shown.</p></body>";
 }
 async function batchCheck(env, req) {
   let parsed = null;
@@ -5398,16 +5589,19 @@ async function batchCheck(env, req) {
   if (list.length > 100) return new Response(JSON.stringify({ error: "At most 100 receipt numbers per check." }), { status: 400, headers: JSON_HEADERS2 });
   if (full) {
     const out = [];
+    const briefCache = /* @__PURE__ */ new Map();
     for (const n of list) {
       const r = await loadReceipt(env, String(n));
       if (!r) {
         out.push({ receipt: String(n), state: "no such receipt" });
         continue;
       }
+      const view = await currentView(env, r, briefCache);
       out.push({
         receipt: r.number,
         state: effectiveState(r),
-        ...r.outcome_published_by ? { outcome_published_by: r.outcome_published_by } : {},
+        ...view.outcome_published_by ? { outcome_published_by: view.outcome_published_by } : {},
+        ...view.brief_closes_on ? { brief_closes_on: view.brief_closes_on } : {},
         ...r.lapses_on ? { listing_lapses_on: r.lapses_on } : {},
         check_after: r.check_after,
         updated_at: r.updated_at || r.received_at,
@@ -5434,8 +5628,9 @@ var receipts_default = async (req, env) => {
     return batchCheck(env, req);
   }
   if (req.method !== "GET") return new Response(JSON.stringify({ error: "Method not allowed." }), { status: 405, headers: JSON_HEADERS2 });
-  const r = await loadReceipt(env, last);
-  if (!r) return new Response("No such receipt: " + esc(last) + "\n", { status: 404, headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } });
+  const stored = await loadReceipt(env, last);
+  if (!stored) return new Response("No such receipt: " + esc(last) + "\n", { status: 404, headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } });
+  const r = await currentView(env, stored);
   const accept = req.headers.get("accept") || "";
   const viaApi = parts.includes("v1");
   if (viaApi || accept.includes("application/json")) {
@@ -5686,6 +5881,98 @@ async function renderStats(env) {
 // ../garden/src/lib/render.js
 var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "garden-render-rate:", stateTable: "garden_state" });
 
+// ../shared/clock.mjs
+var CLOCK_RATE = { perMinute: 3, perHour: 20, perDayGlobal: 300 };
+var TZ_BASIS = (() => {
+  try {
+    const v = typeof process !== "undefined" && process.versions || {};
+    if (v.tz) return "IANA time zone database " + v.tz + ", as carried by this runtime";
+    if (v.icu) return "IANA time zone database as carried by this runtime (ICU " + v.icu + ")";
+  } catch (e) {
+  }
+  return "IANA time zone database as carried by this runtime";
+})();
+var pad2 = (n) => String(n).padStart(2, "0");
+var dtfCache = /* @__PURE__ */ new Map();
+function formattersFor(timeZone) {
+  let f = dtfCache.get(timeZone);
+  if (f) return f;
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  });
+  const name = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" });
+  f = { parts, name };
+  if (dtfCache.size > 1024) dtfCache.clear();
+  dtfCache.set(timeZone, f);
+  return f;
+}
+function isValidZone(timeZone) {
+  if (typeof timeZone !== "string" || !timeZone || timeZone.length > 100) return false;
+  try {
+    formattersFor(timeZone);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function zoneInfo(instant, timeZone) {
+  const { parts, name } = formattersFor(timeZone);
+  const got = {};
+  for (const p of parts.formatToParts(instant)) got[p.type] = p.value;
+  const asUTCms = Date.UTC(
+    Number(got.year),
+    Number(got.month) - 1,
+    Number(got.day),
+    Number(got.hour),
+    Number(got.minute),
+    Number(got.second)
+  );
+  const disp = new Date(asUTCms);
+  const offsetMs = asUTCms - Math.floor(instant.getTime() / 1e3) * 1e3;
+  const sign = offsetMs < 0 ? "-" : "+";
+  const absSec = Math.abs(Math.round(offsetMs / 1e3));
+  const offset = sign + pad2(Math.floor(absSec / 3600)) + ":" + pad2(Math.floor(absSec % 3600 / 60)) + (absSec % 60 ? ":" + pad2(absSec % 60) : "");
+  const local = disp.getUTCFullYear() + "-" + pad2(disp.getUTCMonth() + 1) + "-" + pad2(disp.getUTCDate()) + "T" + pad2(disp.getUTCHours()) + ":" + pad2(disp.getUTCMinutes()) + ":" + pad2(disp.getUTCSeconds()) + offset;
+  const namePart = name.formatToParts(instant).find((p) => p.type === "timeZoneName");
+  return { local, offset, abbreviation: namePart ? namePart.value : null };
+}
+async function clockStats(env) {
+  return aggregateUtilityCalls(env);
+}
+
+// ../garden/src/lib/clock.js
+async function clockGate(env) {
+  if (!env || env.CLOCK_OPEN !== "true") return { open: false, why: "clock-not-open" };
+  try {
+    const st = await dbGetState(env.DB, "clock");
+    if (st && st.paused) return { open: false, why: "clock-paused" };
+  } catch (e) {
+  }
+  return { open: true };
+}
+async function setClockPaused(env, paused, by) {
+  await dbSetState(env.DB, "clock", { paused: !!paused, by: by || "steward", at: (/* @__PURE__ */ new Date()).toISOString() });
+}
+var clockIpDigest = (ip) => sha256hex("garden-clock-rate:" + String(ip || "unknown")).slice(0, 32);
+async function clockRateOK(env, ip) {
+  const k = clockIpDigest(ip);
+  const perMin = await seqRate(env, "clk-m:" + k + ":" + Math.floor(Date.now() / 6e4), 6e4);
+  if (perMin > CLOCK_RATE.perMinute) return false;
+  const perHour = await seqRate(env, "clk-h:" + k + ":" + Math.floor(Date.now() / 36e5), 36e5);
+  return perHour <= CLOCK_RATE.perHour;
+}
+async function clockGlobalOK(env) {
+  const perDay = await seqRate(env, "clk-day:" + (/* @__PURE__ */ new Date()).toISOString().slice(0, 10), 1728e5);
+  return perDay <= CLOCK_RATE.perDayGlobal;
+}
+
 // ../garden/src/routes/steward.js
 var REGISTRY_STATES = ["listed", "lapsed", "refreshed"];
 function authed(req, env) {
@@ -5728,11 +6015,16 @@ var steward_default = async (req, env) => {
     await setRenderPaused(env, body.action === "render-pause", "steward-endpoint");
     return new Response(JSON.stringify({ ok: true, render_paused: body.action === "render-pause" }), { status: 200, headers: JSON_HEADERS2 });
   }
+  if (body.action === "clock-pause" || body.action === "clock-resume") {
+    await setClockPaused(env, body.action === "clock-pause", "steward-endpoint");
+    return new Response(JSON.stringify({ ok: true, clock_paused: body.action === "clock-pause" }), { status: 200, headers: JSON_HEADERS2 });
+  }
   if (body.action === "brief") {
     const b = body.brief || {};
     if (typeof b.brief_id !== "string" || !b.brief_id) return deny(400, "brief.brief_id is required.");
     if (!Number.isInteger(b.version)) return deny(400, "brief.version must be an integer.");
     if (!["open", "capped", "closed"].includes(b.state)) return deny(400, "brief.state must be open, capped, or closed.");
+    if (b.address_rule !== void 0 && !["refuse", "allow", "redact"].includes(b.address_rule)) return deny(400, "brief.address_rule must be refuse, allow, or redact.");
     const brief = {
       brief_id: b.brief_id,
       version: b.version,
@@ -5741,6 +6033,12 @@ var steward_default = async (req, env) => {
       closes_at: typeof b.closes_at === "string" ? b.closes_at : null,
       disposition_window_days: Number.isInteger(b.disposition_window_days) ? b.disposition_window_days : 14,
       required_answer_fields: Array.isArray(b.required_answer_fields) ? b.required_answer_fields.filter((x) => typeof x === "string") : [],
+      // The brief's own rule for web addresses in answer fields (A2,
+      // Caitria's ruling Oct 19 2026): 'refuse' (the format check
+      // refuses them — the default, and the behaviour before this
+      // field existed), 'allow', or 'redact' (removed at entry and
+      // marked where they stood; the receipt discloses the edit).
+      address_rule: typeof b.address_rule === "string" ? b.address_rule : "refuse",
       updated_at: (/* @__PURE__ */ new Date()).toISOString()
     };
     await saveBrief(env, brief);
@@ -6217,9 +6515,10 @@ var stats_default = async (req, env) => {
     };
   } catch (e) {
   }
-  const [attempts, renders] = await Promise.all([
+  const [attempts, renders, clock] = await Promise.all([
     attemptStats(env).catch(() => null),
-    renderStats(env).catch(() => null)
+    renderStats(env).catch(() => null),
+    clockStats(env).catch(() => null)
   ]);
   const lanes = {};
   const states = {};
@@ -6236,6 +6535,7 @@ var stats_default = async (req, env) => {
       guestbook: book,
       api_attempts: attempts,
       render_claims: renders,
+      clock_calls: clock,
       truncated_dims: agg.truncatedDims,
       ...agg,
       submissions: receipts ? { total: receipts.length, by_lane: lanes, by_state: states } : null,
@@ -6306,6 +6606,19 @@ var stats_default = async (req, env) => {
     html += "<h4>By day</h4>" + countTable(esc2, Object.entries(renders.by_day).sort(), renders.total);
     html += "<h4>By claimed class</h4>" + countTable(esc2, sortedPairs(renders.by_cls), renders.total);
   }
+  html += "<h3>Clock calls \u2014 the time utility (claims of use)</h3>";
+  html += "<p>Calls to garden-clock/v1, the Garden&rsquo;s general time utility, counted in the utility&rsquo;s own dataset from its launch (Oct 19, 2026): a call is a claim of use \u2014 not a request in the totals above, not a visit, not an arrival. Every answered call is recorded with its operation and its outcome status; the zone or instant a caller asked for is an input and is never stored. Served = answered 200; refused = the gate, the rate shape, the daily cap, or a malformed call answering instead.</p>";
+  if (clock === null) html += "<p>Unavailable.</p>";
+  else if (!clock.total) html += "<p>None recorded yet.</p>";
+  else {
+    const clockAgentClaimed = clock.by_cls && clock.by_cls["agent-claimed"] || 0;
+    html += "<p>" + clock.total + " calls answered: <strong>" + clock.served + " served</strong> \xB7 " + clock.refused + " refused. Agent-claimed share of calls: <strong>" + clockAgentClaimed + "</strong> of " + clock.total + " (by the claimed-class rules \u2014 a claim, not a verification).</p>";
+    html += "<h4>By operation</h4>" + countTable(esc2, sortedPairs(clock.by_op), clock.total);
+    html += "<h4>By outcome status</h4>" + countTable(esc2, sortedPairs(clock.by_status), clock.total);
+    html += "<h4>By day (UTC)</h4>" + countTable(esc2, Object.entries(clock.by_day).sort(), clock.total);
+    html += "<h4>By claimed class</h4>" + countTable(esc2, sortedPairs(clock.by_cls), clock.total);
+    html += "<h4>Distinct callers, by day (Pacific)</h4>" + visitorDigestTableHtml(esc2, clock.by_visitor_day);
+  }
   html += '<h3>Most recent 50 requests</h3><table border="1" cellspacing="0" cellpadding="4"><tr><th>time (UTC)</th><th>class</th><th>purpose</th><th>behaviour</th><th>method</th><th>status</th><th>md</th><th>bot-auth</th><th>event</th><th>page</th><th>country</th><th>referrer</th><th>user-agent (as claimed)</th></tr>';
   for (const r of recs) html += "<tr><td>" + esc2(r.t) + "</td><td>" + esc2(r.cls) + "</td><td>" + esc2(r.purpose || "\u2014") + "</td><td>" + esc2(behaviourLabel(r)) + "</td><td>" + esc2(r.method || "\u2014") + "</td><td>" + esc2(r.status === null || r.status === void 0 ? "\u2014" : r.status) + "</td><td>" + esc2(r.md === null || r.md === void 0 ? "\u2014" : r.md) + "</td><td>" + esc2(r.ba || "\u2014") + "</td><td>" + esc2(r.event || "pageview") + "</td><td>" + esc2(r.path) + "</td><td>" + esc2(r.country) + "</td><td>" + esc2(r.ref) + "</td><td>" + esc2(r.ua) + "</td></tr>";
   html += "</table><p>Labels describe what each request&rsquo;s user-agent claims. A claim is not a verification.</p></body>";
@@ -6342,7 +6655,8 @@ var SITE_CHANGES = [
   { at: "2026-10-20T05:45:00.000Z", text: "Each request record now carries write-time verdict components, computed at the edge while the arriving address is in hand and stored as verdicts and facts only \u2014 the address itself, any hostname, and any key material are never stored. The components: the address-range verdict (as before); a reverse-DNS fact pair \u2014 a network-origin category for every request (from the address\u2019s forward-confirmed reverse-DNS name: operator-crawler, commercial-bot, cloud-hosting, cdn-proxy, residential-network, named-other, none, or not-checked) and, for claimed names whose operator documents a reverse-DNS pattern, a match verdict (match / mismatch / none / not-offered / not-checked \u2014 \u201Cnot-offered\u201D means the operator publishes address ranges or network facts only, so no reverse-DNS verdict exists to give); cross-range membership \u2014 every published operator list whose ranges contain the address, not only the claimed name\u2019s; and, where a request carries a Web Bot Auth signature, our own RFC 9421 verification of it against the signer\u2019s published key directory, recorded as three separate facts (presence, cryptographic validity, whether the signing host is a known signer for the claimed name). The arriving stack (HTTP protocol, TLS version and cipher, header profile) is recorded as descriptive fact alongside, never as a verdict. Records written before this change carry none of these components and none are implied for them. One platform limit, recorded plainly: this hosting tier exposes no platform bot-management verdict, so signature validity here is our own computation, labelled as such wherever it prints." },
   { at: "2026-10-20T06:15:00.000Z", text: "The companion-join rendering measure is retired: <site>-rendering.json is no longer published, and the fetched-vs-rendered join is removed from the record\u2019s vocabulary. The join structurally read zero \u2014 the pages are self-contained and pull almost no assets, so it measured logging, not rendering. The render beacon is the sole render instrument, published only as \u201Crender-signalled\u201D (a claim), always beside the page\u2019s fetch count and its coverage era, never as a lone count or a percentage. The Advisory\u2019s Worker-rendered /data pages (the index and both per-site pages) carry the beacon from this change; before it, no /data page reported a render. The Garden stays script-free and its render gate shut by design. Historical citations of the rendering file stand as published; this entry is their retirement note." },
   { at: "2026-10-20T06:40:00.000Z", text: "Two publication changes. (1) The Advisory (bayareaswarmwarning.com) now answers a wrong address the way the Garden does: the 404 status is unchanged and the refusal is recorded exactly as before, but the body is a signpost in the Advisory\u2019s own words \u2014 it says the address serves nothing, that no file is served at a secret, configuration, or backup path, and it points to the Advisory\u2019s front page and terms, its Field Notes log, its data pages, and the Garden. (2) The published data bundles gain fields: the paths file (<site>-paths.json) now carries, per path, a by_class split \u2014 how many of the path\u2019s requests each claimed class made \u2014 and the counts-derived bundle (<site>.json) carries a definition_version field naming the counting definition its figures stand on (\u201C2026-10-19.fetch-basis.v1\u201D: headline figures are content fetches, redirect responses counted separately, in the requests-terminology era). Both are additive; no existing field changed." },
-  { at: "2026-10-20T05:41:00.000Z", text: "Fixes from a visiting agent\u2019s stranger rehearsal of the public surfaces. The preflight utility\u2019s bare address now answers 200 with its own invocation contract \u2014 the method, the channel parameter, and what the check does (it answered 400 before, and nothing documented the invocation); the invocation is now documented in llms.txt and on the participate page. The submission route is stated plainly where it was ambiguous: answers are submitted by POST to /api/v1/answers \u2014 there is no submission form, and no brief has a page of its own; the briefs stand on the briefs page (the same correction on the questions, reports, and registry actions). The answer constraints now stand with the brief itself on the briefs page, including the rule that answer fields may not contain web addresses \u2014 before, that rule stood only on the participate page. llms.txt now states both opening dates together: the Garden opened October 16, 2026; submissions opened October 17, 2026. And the batch receipt-check example on the participate page now parses as written." }
+  { at: "2026-10-20T05:41:00.000Z", text: "Fixes from a visiting agent\u2019s stranger rehearsal of the public surfaces. The preflight utility\u2019s bare address now answers 200 with its own invocation contract \u2014 the method, the channel parameter, and what the check does (it answered 400 before, and nothing documented the invocation); the invocation is now documented in llms.txt and on the participate page. The submission route is stated plainly where it was ambiguous: answers are submitted by POST to /api/v1/answers \u2014 there is no submission form, and no brief has a page of its own; the briefs stand on the briefs page (the same correction on the questions, reports, and registry actions). The answer constraints now stand with the brief itself on the briefs page, including the rule that answer fields may not contain web addresses \u2014 before, that rule stood only on the participate page. llms.txt now states both opening dates together: the Garden opened October 16, 2026; submissions opened October 17, 2026. And the batch receipt-check example on the participate page now parses as written." },
+  { at: "2026-10-20T06:09:00.000Z", text: "Brief first-impressions-1 has a close date: it closes October 22, 2026, at the end of the day, Pacific, and answers are accepted until then. Outcomes publish within 14 days after the close \u2014 by November 5, 2026. A first close, run as a test of the brief cycle." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -6428,7 +6742,8 @@ async function gardenState(env, req, url) {
       answers_received: received,
       slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
       closes_at: b.closes_at || null,
-      disposition_window_days: b.disposition_window_days
+      disposition_window_days: b.disposition_window_days,
+      address_rule: addressRuleOf(b)
     });
   }
   return respond(req, {
@@ -6466,12 +6781,21 @@ async function gardenVerify(env, req, url) {
   if (!r) return respond(req, { utility: "garden-verify-receipt", version: "v1", receipt: String(receiptNo), result: "no-such-receipt" });
   const candidate = (hash || sha256hex(text)).toLowerCase();
   const matches = candidate === r.fingerprint;
+  let briefDates = null;
+  if ((r.format === "answer" || r.format === "blocked") && r.brief_id) {
+    try {
+      briefDates = briefOutcomeDates(await loadBrief(env, r.brief_id));
+    } catch (e) {
+      briefDates = null;
+    }
+  }
   return respond(req, {
     utility: "garden-verify-receipt",
     version: "v1",
     receipt: r.number,
     result: matches ? "matches" : "does-not-match",
-    state: effectiveState(r)
+    state: effectiveState(r),
+    ...briefDates || {}
   });
 }
 var WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -6602,7 +6926,8 @@ async function gardenPreflight(env, req, url) {
         answers_received: received,
         slots_remaining: Number.isInteger(b.cap) ? Math.max(0, b.cap - received) : null,
         closes_at: b.closes_at || null,
-        disposition_window_days: b.disposition_window_days
+        disposition_window_days: b.disposition_window_days,
+        address_rule: addressRuleOf(b)
       };
     });
     out.outcome = {
@@ -6618,11 +6943,89 @@ async function gardenPreflight(env, req, url) {
   }
   return respond(req, out);
 }
-var utilities_default = async (req, env) => {
+function recordClockCall(env, req, ctx, op, status) {
+  const run = (async () => {
+    try {
+      const digests = await visitorForRequest(env, req);
+      digests.srcdigest = await sourceDigestForRequest(env, req);
+      const fields = await writeTimeFields(req, { network: false });
+      const record = buildVisitRecord(req, { status }, env.SITE_HOST || "", "utility-call", digests, fields);
+      record.purpose = op;
+      await writeUtilityVisit(env, record);
+    } catch (e) {
+    }
+  })();
+  if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(run);
+  return run;
+}
+var AT_SHAPE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:?\d{2})$/;
+async function gardenClock(env, req, url, ctx) {
+  const tzParam = url.searchParams.get("tz");
+  const atParam = url.searchParams.get("at");
+  const op = tzParam || atParam ? "convert" : "now";
+  const answer = (res) => {
+    recordClockCall(env, req, ctx, op, res.status);
+    return res;
+  };
+  const refuse2 = (status, message, code) => answer(new Response(
+    JSON.stringify({ utility: "garden-clock", version: "v1", error: message, code }),
+    { status, headers: JSON_HEADERS2 }
+  ));
+  const gate = await clockGate(env);
+  if (!gate.open) {
+    return refuse2(
+      503,
+      gate.why === "clock-paused" ? "The clock is paused by the steward." : "The clock is not currently open.",
+      gate.why
+    );
+  }
+  let zone = "UTC";
+  if (tzParam !== null && tzParam !== "") {
+    if (!isValidZone(tzParam)) {
+      return answer(err(400, 'tz must be an IANA time zone name \u2014 e.g. UTC, America/New_York, Europe/London, Asia/Tokyo. "' + tzParam.slice(0, 100) + '" is not a zone name this runtime knows.'));
+    }
+    zone = tzParam;
+  }
+  let instant = /* @__PURE__ */ new Date();
+  if (atParam !== null && atParam !== "") {
+    const parsed = AT_SHAPE.test(atParam) ? new Date(atParam) : null;
+    if (!parsed || isNaN(parsed.getTime())) {
+      return answer(err(400, 'at must be an ISO-8601 instant with an offset \u2014 e.g. 2026-10-20T12:00:00Z. "' + atParam.slice(0, 100) + '" does not parse as one.'));
+    }
+    instant = parsed;
+  }
+  const ip = clientIP(req);
+  if (!await clockRateOK(env, ip)) {
+    return refuse2(429, "Clock rate exceeded: at most 3 calls a minute, 20 an hour from one network.", "clock-rate");
+  }
+  if (!await clockGlobalOK(env)) {
+    return refuse2(429, "The clock\u2019s daily cap of 300 calls is reached. It resets at UTC midnight.", "clock-day-cap");
+  }
+  const base = {
+    utility: "garden-clock",
+    version: "v1",
+    op,
+    utc: instant.toISOString(),
+    unix: Math.floor(instant.getTime() / 1e3),
+    unix_ms: instant.getTime(),
+    tz_database: TZ_BASIS
+  };
+  if (op === "now") {
+    return answer(respond(req, {
+      ...base,
+      convert: "GET ?tz=<IANA zone name> for the current time in that zone (e.g. ?tz=America/New_York); add &at=<ISO-8601 instant> to convert a given instant instead."
+    }));
+  }
+  const info = zoneInfo(instant, zone);
+  const out = { ...base, zone, local: info.local, utc_offset: info.offset };
+  if (info.abbreviation) out.abbreviation = info.abbreviation;
+  return answer(respond(req, out));
+}
+var utilities_default = async (req, env, ctx) => {
   const parts = new URL(req.url).pathname.split("/").filter(Boolean);
   const name = parts[parts.length - 2];
   const version = parts[parts.length - 1];
-  if (version !== "v1") return err(404, "No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.");
+  if (version !== "v1") return err(404, "No such utility version. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1, garden-clock/v1.");
   if (!await checkRateOK(env, clientIP(req))) return err(429, "Utility rate exceeded. Utilities are one fetch each; the published pattern is sparing use.");
   const url = new URL(req.url);
   if (name === "garden-state") {
@@ -6641,7 +7044,11 @@ var utilities_default = async (req, env) => {
     if (req.method !== "GET") return err(405, "garden-preflight is a GET utility.");
     return gardenPreflight(env, req, url);
   }
-  return err(404, "No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1.");
+  if (name === "garden-clock") {
+    if (req.method !== "GET") return err(405, "garden-clock is a GET utility.");
+    return gardenClock(env, req, url, ctx);
+  }
+  return err(404, "No such utility. Published utilities: garden-state/v1, garden-verify-receipt/v1, garden-dates/v1, garden-preflight/v1, garden-clock/v1.");
 };
 
 // ../garden/src/routes/notes.js

@@ -341,10 +341,22 @@ export function buildVisitRecord(req, res, siteHost, event, digests = {}, fields
 // single blind spot in the record (the audit, D3).
 const KEYED_UNLOGGED = ['/.netlify/functions/stats', '/.netlify/functions/steward', '/.netlify/functions/guestbook'];
 
+// Utility addresses counted in their own store, never in the visit
+// record (added Oct 19 2026, garden-clock/v1): a clock call is a
+// claim of use, not a visit, so the utility's own route writes the
+// call to the utility dataset (shared/visits.mjs writeUtilityVisit)
+// and the front door writes nothing for the address — the two
+// exclusions together are what keep calls out of the visit totals
+// while keeping them countable. Every other utility keeps the
+// ordinary 'utility-read' visit record. The legacy function shape
+// of the same address is excluded the same way.
+const UTILITY_COUNTED_ELSEWHERE = ['/utilities/garden-clock/', '/.netlify/functions/utilities/garden-clock/'];
+
 export function shouldLog(req) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return false;
   const p = new URL(req.url).pathname;
   if (KEYED_UNLOGGED.some(k => p === k || p.startsWith(k + '/'))) return false;
+  if (UTILITY_COUNTED_ELSEWHERE.some(k => p.startsWith(k))) return false;
   if (SKIP_EXT.some(e => p.endsWith(e))) return false;
   return true;
 }

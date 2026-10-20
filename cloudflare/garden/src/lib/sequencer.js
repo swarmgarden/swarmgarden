@@ -158,7 +158,10 @@ export class Sequencer {
       b.total++;
       if (!over) b.read++;
       await this.state.storage.put('counters', c);
-      return out({ over_cap: over, position: b.total });
+      // `read` (the brief's read-slot count AFTER this begin) rides
+      // along so intake can state the brief's standing on the receipt
+      // it is about to issue (B4, Oct 20 2026) without a second call.
+      return out({ over_cap: over, position: b.total, read: b.read });
     }
     if (url.pathname === '/brief-release') {
       const id = String(body.brief_id || '');
@@ -194,7 +197,7 @@ export const seqNextSignal = (env) => call(env, '/next-signal').then(r => r.n);
 export const seqNextHuman = (env) => call(env, '/next-human').then(r => r.n);
 export const seqBriefBegin = (env, briefId, cap, forceOverCap) =>
   call(env, '/brief-begin', { brief_id: briefId, cap: cap ?? null, force_over_cap: !!forceOverCap })
-    .then(r => ({ over_cap: !!r.over_cap, position: r.position }));
+    .then(r => ({ over_cap: !!r.over_cap, position: r.position, read: r.read }));
 export const seqBriefRelease = (env, briefId, wasOverCap) =>
   call(env, '/brief-release', { brief_id: briefId, was_over_cap: !!wasOverCap });
 export const seqRate = (env, key, windowMs) =>

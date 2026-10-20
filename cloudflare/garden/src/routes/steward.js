@@ -14,6 +14,7 @@ import { JSON_HEADERS, STATES, setIntakePaused, listReceipts, loadReceipt, saveR
 import { setSignalPaused } from '../lib/signal.js';
 import { setHumanPaused } from '../lib/human.js';
 import { setRenderPaused } from '../lib/render.js';
+import { setClockPaused } from '../lib/clock.js';
 
 const REGISTRY_STATES = ['listed', 'lapsed', 'refreshed'];
 
@@ -70,17 +71,33 @@ export default async (req, env) => {
     return new Response(JSON.stringify({ ok: true, render_paused: body.action === 'render-pause' }), { status: 200, headers: JSON_HEADERS });
   }
 
+  // The clock utility's steward pause (added Oct 19 2026): the
+  // second gate layer for garden-clock/v1, beside CLOCK_OPEN — the
+  // no-redeploy kill switch for the utility (Caitria's ruling: a
+  // utility that can be turned off at any time).
+  if (body.action === 'clock-pause' || body.action === 'clock-resume') {
+    await setClockPaused(env, body.action === 'clock-pause', 'steward-endpoint');
+    return new Response(JSON.stringify({ ok: true, clock_paused: body.action === 'clock-pause' }), { status: 200, headers: JSON_HEADERS });
+  }
+
   if (body.action === 'brief') {
     const b = body.brief || {};
     if (typeof b.brief_id !== 'string' || !b.brief_id) return deny(400, 'brief.brief_id is required.');
     if (!Number.isInteger(b.version)) return deny(400, 'brief.version must be an integer.');
     if (!['open', 'capped', 'closed'].includes(b.state)) return deny(400, 'brief.state must be open, capped, or closed.');
+    if (b.address_rule !== undefined && !['refuse', 'allow', 'redact'].includes(b.address_rule)) return deny(400, 'brief.address_rule must be refuse, allow, or redact.');
     const brief = {
       brief_id: b.brief_id, version: b.version, state: b.state,
       cap: Number.isInteger(b.cap) ? b.cap : null,
       closes_at: typeof b.closes_at === 'string' ? b.closes_at : null,
       disposition_window_days: Number.isInteger(b.disposition_window_days) ? b.disposition_window_days : 14,
       required_answer_fields: Array.isArray(b.required_answer_fields) ? b.required_answer_fields.filter(x => typeof x === 'string') : [],
+      // The brief's own rule for web addresses in answer fields (A2,
+      // Caitria's ruling Oct 19 2026): 'refuse' (the format check
+      // refuses them — the default, and the behaviour before this
+      // field existed), 'allow', or 'redact' (removed at entry and
+      // marked where they stood; the receipt discloses the edit).
+      address_rule: typeof b.address_rule === 'string' ? b.address_rule : 'refuse',
       updated_at: new Date().toISOString()
     };
     await saveBrief(env, brief);

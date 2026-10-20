@@ -244,6 +244,10 @@ res = await post(open, FN + '/intake/answers', aBody, freshIP());
 body = await res.json();
 check('conforming answer accepted with receipt', res.status === 201 && body.code === 'accepted' && body.receipt.state === 'received', JSON.stringify(body).slice(0, 200));
 check('answer outcome due = brief close + window (2026-12-15)', body.receipt.outcome_published_by === '2026-12-15', JSON.stringify(body.receipt));
+check('B4 enriched receipt: answer carries its position, the answers count, the cap, and the cap remaining',
+  body.receipt.answer_position === 1 && body.receipt.answers_count === 1 && body.receipt.cap === 1 && body.receipt.cap_remaining === 0, JSON.stringify(body.receipt));
+check('B4 enriched receipt: the brief close date rides on the submission response',
+  body.receipt.brief_closes_on === '2026-12-01', JSON.stringify(body.receipt).slice(0, 240));
 
 res = await post(open, FN + '/intake/answers', aBody, freshIP());
 body = await res.json();
@@ -254,6 +258,10 @@ res = await post(open, FN + '/intake/answers', aBody2, freshIP());
 body = await res.json();
 check('second answer over cap=1: receipt issued, state over-cap-unread', res.status === 201 && body.receipt.state === 'over-cap-unread', JSON.stringify(body).slice(0, 200));
 const rOver = body.receipt || {};
+check('B4 enriched receipt: the over-cap answer carries the same standing fields (position 2, read count unmoved)',
+  rOver.answer_position === 2 && rOver.answers_count === 1 && rOver.cap === 1 && rOver.cap_remaining === 0, JSON.stringify(rOver));
+check('B4 enriched receipt: the over-cap receipt now carries the brief close + outcome dates too',
+  rOver.brief_closes_on === '2026-12-01' && rOver.outcome_published_by === '2026-12-15', JSON.stringify(rOver).slice(0, 240));
 
 res = await post(open, FN + '/intake/answers', { brief_id: 'TEST-001', brief_version: 99, agent_name: 'X', operated_by: 'Y', answer: { finding: 'stale' } }, IP2);
 body = await res.json();
@@ -443,6 +451,29 @@ check('batch full mode returns the full record per receipt',
 res = await post(open, FN + '/receipts/check', { receipts: ['000001'], full: true, since: '2999-01-01T00:00:00Z' }, IP2);
 body = await res.json();
 check('batch full mode: changed_since is false against a future timestamp', ((body.receipts || [])[0] || {}).changed_since === false, JSON.stringify(body).slice(0, 160));
+
+// ---------- 17b. B4 check-back currency: a close date set AFTER an
+// answer arrived reaches that answer's receipt (the B3 sequence —
+// first-impressions-1 got its close date the same way) ----------
+await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-003', version: 1, state: 'open', cap: 3, disposition_window_days: 14 } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+const aBody3 = JSON.stringify({ brief_id: 'TEST-003', brief_version: 1, agent_name: 'EarlyAnswerer', operated_by: 'Org', answer: { text: 'First impressions, before any close date existed.' } });
+res = await post(open, FN + '/intake/answers', aBody3, freshIP());
+body = await res.json();
+const rEarly = body.receipt || {};
+check('B4: an answer to a brief with no close date yet: standing fields present, outcome pending, no close/outcome dates invented',
+  res.status === 201 && rEarly.answer_position === 1 && rEarly.answers_count === 1 && rEarly.cap === 3 && rEarly.cap_remaining === 2 &&
+  typeof rEarly.outcome_pending === 'string' && !rEarly.brief_closes_on && !rEarly.outcome_published_by, JSON.stringify(rEarly));
+await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-003', version: 1, state: 'open', cap: 3, closes_at: '2026-12-01', disposition_window_days: 14 } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+res = await req(open, 'https://swarmgarden.com/api/v1/receipts/' + rEarly.receipt, { headers: ipH(IP2) });
+body = await res.json();
+check('B4: check-back after the close date was set: the earlier receipt now shows close + outcome dates, and the pending sentence is gone',
+  body.brief_closes_on === '2026-12-01' && body.outcome_published_by === '2026-12-15' && !body.outcome_pending, JSON.stringify(body).slice(0, 240));
+check('B4: check-back keeps the at-arrival standing fields (they are facts of the arrival, not a live counter)',
+  body.answer_position === 1 && body.answers_count === 1 && body.cap === 3 && body.cap_remaining === 2, JSON.stringify(body).slice(0, 240));
+res = await req(open, UT + '/garden-verify-receipt/v1?receipt=' + rEarly.receipt + '&sha256=' + sha(aBody3));
+body = await res.json();
+check('B4: verify-receipt mirrors the brief\u2019s current dates for an answer receipt',
+  body.result === 'matches' && body.brief_closes_on === '2026-12-01' && body.outcome_published_by === '2026-12-15', JSON.stringify(body));
 
 // ---------- 18. /changed after activity ----------
 res = await req(open, 'https://swarmgarden.com/changed?format=json&since=' + dOnly(new Date()));
@@ -2589,6 +2620,220 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     afterStats.length === settledCount,
     settledCount + ' -> ' + afterStats.length);
   await kA.dispose();
+}
+
+// garden-clock/v1 (Oct 19 2026): the general time utility. Pins:
+// the gate (CLOCK_OPEN absent → the gated channels' closed response,
+// 503 clock-not-open); the steward pause (clock-pause → 503
+// clock-paused; clock-resume → serving again); the now shape (ISO +
+// unix + unix_ms in agreement, the tz-database basis named,
+// no-store); conversion (a fixed instant in America/New_York in
+// January is exactly UTC-5 — deterministic); invalid tz / at → 400
+// naming the problem; POST → 405; the rate shape (3/min per network:
+// the 4th rapid call from one network is a 429); and the counting
+// contract — every answered call lands in the keyed stats'
+// clock_calls folds (total / served / refused, by operation, by
+// status, by claimed class, distinct callers per Pacific day via the
+// B9 digest) while the visit total does NOT move and no visit record
+// carries the clock's path: a call is a claim of use, never a visit
+// or an arrival.
+{
+  const CU = 'https://swarmgarden.com/utilities/garden-clock/v1';
+  const { shouldLog } = await import(path.join(ROOT, 'shared', 'frontdoor.mjs'));
+  checkP2('clock: the front door writes no visit record for the clock address (it is counted in its own store)',
+    shouldLog(new Request(CU)) === false &&
+    shouldLog(new Request('https://swarmgarden.com/utilities/garden-state/v1')) === true, '');
+
+  let r = await req(closed, CU);
+  let b = await r.json().catch(() => ({}));
+  checkP2('clock: CLOCK_OPEN absent → 503 clock-not-open (the gated-channel closed response)',
+    r.status === 503 && b.code === 'clock-not-open' && b.utility === 'garden-clock',
+    r.status + ' ' + JSON.stringify(b).slice(0, 120));
+
+  const clkW = await makeWorker({
+    script: path.join(HERE, 'build/garden-worker.mjs'), pubDir: path.join(GARDEN, 'public'),
+    schemaFile: path.join(GARDEN, 'schema.sql'),
+    bindings: { SITE_HOST: 'swarmgarden.com', AE_DATASET: 'garden_visits', ...SECRETS, INTAKE_OPEN: 'true', GUESTBOOK_OPEN: 'true', SIGNAL_OPEN: 'true', HUMAN_OPEN: 'true', CLOCK_OPEN: 'true', VISITOR_DIGEST_SECRET: 'garden-test-secret' }
+  });
+  const statsUrl = FN + '/stats?k=test-stats-key&format=json';
+  const pollClock = async (pred) => {
+    let sj = null;
+    for (let i = 0; i < 40; i++) {
+      sj = await (await req(clkW, statsUrl)).json();
+      if (sj.clock_calls && pred(sj.clock_calls)) return sj;
+      await new Promise(res2 => setTimeout(res2, 150));
+    }
+    return sj;
+  };
+  const before = await (await req(clkW, statsUrl)).json();
+  const visitsBefore = before.total;
+
+  const ipA = freshIP(), ipB = freshIP(), ipC = freshIP();
+  const uaA = 'ClockFixture/1.0';
+
+  // a. now (200)
+  const t0 = Date.now();
+  r = await req(clkW, CU, { headers: { 'user-agent': uaA, ...ipH(ipA) } });
+  b = await r.json();
+  const t1 = Date.now();
+  checkP2('clock now: 200 with the shape — ISO utc, unix + unix_ms agreeing, the tz-database basis named, no-store',
+    r.status === 200 && b.utility === 'garden-clock' && b.version === 'v1' && b.op === 'now' &&
+    typeof b.tz_database === 'string' && b.tz_database.includes('IANA') &&
+    b.unix_ms >= t0 - 5000 && b.unix_ms <= t1 + 5000 && b.unix === Math.floor(b.unix_ms / 1000) &&
+    new Date(b.utc).getTime() === b.unix_ms &&
+    (r.headers.get('cache-control') || '') === 'no-store',
+    r.status + ' ' + JSON.stringify(b).slice(0, 200) + ' basis=' + b.tz_database);
+
+  // b. convert: the current time in a zone (200)
+  r = await req(clkW, CU + '?tz=America/New_York', { headers: { 'user-agent': uaA, ...ipH(ipA) } });
+  b = await r.json();
+  checkP2('clock convert: ?tz=America/New_York — zone echoed, offset + abbreviation carried, local ends with its offset',
+    r.status === 200 && b.op === 'convert' && b.zone === 'America/New_York' &&
+    /^[+-]\d{2}:\d{2}$/.test(b.utc_offset || '') && typeof b.abbreviation === 'string' && b.abbreviation.length > 0 &&
+    (b.local || '').endsWith(b.utc_offset) && new Date(b.utc).getTime() === b.unix_ms,
+    r.status + ' ' + JSON.stringify(b).slice(0, 200));
+
+  // c. convert a fixed instant (200; deterministic — January in New York is EST, UTC-5)
+  r = await req(clkW, CU + '?at=2026-01-15T12:00:00Z&tz=America/New_York', { headers: { 'user-agent': 'GPTBot/1.2', ...ipH(ipA) } });
+  b = await r.json();
+  checkP2('clock convert: a fixed instant converts exactly (2026-01-15T12:00:00Z = 07:00 EST)',
+    r.status === 200 && b.local === '2026-01-15T07:00:00-05:00' && b.utc_offset === '-05:00' &&
+    b.abbreviation === 'EST' && b.unix === Math.floor(Date.parse('2026-01-15T12:00:00Z') / 1000),
+    r.status + ' ' + JSON.stringify(b).slice(0, 200));
+
+  // d/e. malformed calls refused 400 — and still recorded as calls
+  r = await req(clkW, CU + '?tz=Not/AZone', { headers: { 'user-agent': uaA, ...ipH(ipA) } });
+  b = await r.json().catch(() => ({}));
+  checkP2('clock: an invalid tz is a 400 naming the problem',
+    r.status === 400 && /tz must be an IANA/.test(b.error || ''), r.status + ' ' + JSON.stringify(b).slice(0, 140));
+  r = await req(clkW, CU + '?at=not-a-time', { headers: { 'user-agent': uaA, ...ipH(ipA) } });
+  b = await r.json().catch(() => ({}));
+  checkP2('clock: an invalid at is a 400 naming the problem',
+    r.status === 400 && /at must be an ISO-8601/.test(b.error || ''), r.status + ' ' + JSON.stringify(b).slice(0, 140));
+
+  // f. POST → 405 at the dispatcher (the handler never runs; no call recorded)
+  r = await post(clkW, CU, {}, ipA);
+  checkP2('clock: POST is refused 405 (a GET utility)', r.status === 405, String(r.status));
+
+  // g. the rate shape: 3/min from one network serve, the 4th is a 429
+  const statuses = [];
+  for (let i = 0; i < 4; i++) {
+    const rr = await req(clkW, CU, { headers: { 'user-agent': 'ClockFixture/2.0', ...ipH(ipB) } });
+    statuses.push(rr.status);
+  }
+  checkP2('clock rate: 3 calls a minute from one network serve; the 4th is a 429',
+    statuses.join(',') === '200,200,200,429', statuses.join(','));
+
+  // h. the steward pause: 503 clock-paused; resume serves again.
+  // (A third network: ipA and ipB have each spent their per-minute
+  // allowance by now — the rate shape working as designed.)
+  await post(clkW, FN + '/steward', { action: 'clock-pause' }, ipC, { 'x-steward-key': 'test-steward-key' });
+  r = await req(clkW, CU, { headers: { 'user-agent': uaA, ...ipH(ipC) } });
+  b = await r.json().catch(() => ({}));
+  checkP2('clock: steward clock-pause → 503 clock-paused',
+    r.status === 503 && b.code === 'clock-paused', r.status + ' ' + JSON.stringify(b).slice(0, 120));
+  await post(clkW, FN + '/steward', { action: 'clock-resume' }, ipC, { 'x-steward-key': 'test-steward-key' });
+  r = await req(clkW, CU, { headers: { 'user-agent': uaA, ...ipH(ipC) } });
+  checkP2('clock: steward clock-resume → the clock serves again', r.status === 200, String(r.status));
+
+  // Counting: a,b,c served (200) + d,e (400) + g (200,200,200,429) +
+  // h (503, 200) = 11 answered calls — served 7, refused 4; by op
+  // now 7 / convert 4; by status 200:7, 400:2, 429:1, 503:1;
+  // agent-claimed 1 (call c's GPTBot UA); distinct caller digests 4 —
+  // (ipA, uaA), (ipA, GPTBot), (ipB, ClockFixture/2.0), (ipC, uaA).
+  const sj = await pollClock(cc => cc.total >= 11);
+  const cc = sj.clock_calls || {};
+  checkP2('clock counting: every answered call is in the stats clock_calls folds (11 total, 7 served, 4 refused)',
+    cc.total === 11 && cc.served === 7 && cc.refused === 4, JSON.stringify(cc).slice(0, 200));
+  checkP2('clock counting: by op (now 7, convert 4), by status, agent-claimed share 1 (the GPTBot-UA call)',
+    cc.by_op && cc.by_op.now === 7 && cc.by_op.convert === 4 &&
+    cc.by_status && cc.by_status['200'] === 7 && cc.by_status['400'] === 2 && cc.by_status['429'] === 1 && cc.by_status['503'] === 1 &&
+    cc.by_cls && cc.by_cls['agent-claimed'] === 1, JSON.stringify(cc).slice(0, 240));
+  const callerDays = Object.values(cc.by_visitor_day || {});
+  const distinctCallers = callerDays.reduce((n, d) => n + (d.distinct || 0), 0);
+  const digestRequests = callerDays.reduce((n, d) => n + (d.digest_requests || 0), 0);
+  checkP2('clock counting: distinct callers by digest = 4 across 11 digest-bearing calls (B9 machinery, day-keyed)',
+    distinctCallers === 4 && digestRequests === 11, JSON.stringify(cc.by_visitor_day).slice(0, 200));
+  checkP2('clock counting: the visit total did NOT move and no recent-visit row carries the clock path',
+    sj.total === visitsBefore && !(sj.recent || []).some(x => (x.path || '').includes('garden-clock')),
+    'visits ' + visitsBefore + ' -> ' + sj.total);
+  await clkW.dispose();
+}
+
+// ---------- A2: the per-brief web-address rule (Caitria's ruling
+// Oct 19 2026) — refuse (default) / allow / redact-and-mark ----------
+{
+  const countsBefore = await (await req(open, FN + '/counts')).json();
+
+  let r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-A2-REDACT', version: 1, state: 'open', cap: 5, closes_at: '2026-12-01', disposition_window_days: 14, required_answer_fields: ['finding'], address_rule: 'redact' } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+  let b = await r.json();
+  checkP2('A2: steward can publish a brief with address_rule redact', r.status === 200 && b.ok === true && b.brief.address_rule === 'redact', JSON.stringify(b).slice(0, 160));
+
+  r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-A2-BAD', version: 1, state: 'open', address_rule: 'shred' } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+  checkP2('A2: an unknown address_rule is refused at brief publish (400)', r.status === 400, String(r.status));
+
+  r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-A2-DEFAULT', version: 1, state: 'open', cap: 5, closes_at: '2026-12-01', disposition_window_days: 14, required_answer_fields: ['finding'] } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+  b = await r.json();
+  checkP2('A2: a brief published without address_rule carries the default (refuse)', r.status === 200 && b.brief.address_rule === 'refuse', JSON.stringify(b).slice(0, 160));
+
+  // Redact: two addresses, sentence punctuation hard against both.
+  const redactBody = JSON.stringify({ brief_id: 'TEST-A2-REDACT', brief_version: 1, agent_name: 'Redactee', operated_by: 'Org', answer: { finding: 'Found it at https://example.com/x, and mirrored at www.example.org.' } });
+  r = await post(open, FN + '/intake/answers', redactBody, freshIP());
+  b = await r.json();
+  const rc = b.receipt || {};
+  checkP2('A2 redact: answer carrying addresses is accepted (201), state received', r.status === 201 && b.code === 'accepted' && rc.state === 'received', r.status + ' ' + JSON.stringify(b).slice(0, 200));
+  checkP2('A2 redact: receipt discloses the edit (count, marker, fingerprint basis, stored-text basis)',
+    !!rc.redaction && rc.redaction.addresses_removed === 2 && rc.redaction.marker === '[address removed]' &&
+    rc.redaction.fingerprint_covers === 'the submission as received' && rc.redaction.stored_text === 'redacted at entry',
+    JSON.stringify(rc.redaction));
+  checkP2('A2 redact: fingerprint covers the submission AS RECEIVED (the exact bytes sent)', rc.fingerprint === sha(redactBody), String(rc.fingerprint));
+  checkP2('A2 redact: history carries the disclosure note', Array.isArray(rc.history) && rc.history.some(h => (h.note || '').includes('web addresses removed at entry: 2 replaced with [address removed]')), JSON.stringify(rc.history));
+  const redactNum = rc.receipt;
+
+  r = await req(open, FN + '/steward', { headers: { 'x-steward-key': 'test-steward-key' } });
+  b = await r.json();
+  const stored = (b.queue || []).find(x => x.number === redactNum);
+  checkP2('A2 redact: the STORED submission is the redacted text, punctuation standing, no address residue',
+    !!stored && stored.submission.answer.finding === 'Found it at [address removed], and mirrored at [address removed].',
+    stored ? stored.submission.answer.finding : 'not in queue');
+  checkP2('A2 redact: the stored receipt record carries the redaction disclosure', !!stored && !!stored.redaction && stored.redaction.addresses_removed === 2, JSON.stringify(stored && stored.redaction));
+
+  r = await post(open, FN + '/intake/answers', redactBody, freshIP());
+  b = await r.json();
+  checkP2('A2 redact: exact resubmission collapses to the original receipt (collapse keys on the as-received bytes)',
+    r.status === 200 && b.code === 'duplicate' && b.receipt.receipt === redactNum && !!b.receipt.redaction, r.status + ' ' + JSON.stringify(b).slice(0, 160));
+
+  r = await req(open, 'https://swarmgarden.com/api/v1/receipts/' + redactNum, { headers: { accept: 'application/json', ...ipH(freshIP()) } });
+  b = await r.json();
+  checkP2('A2 redact: the receipt JSON twin carries the redaction disclosure at check-back', !!b.redaction && b.redaction.addresses_removed === 2, JSON.stringify(b.redaction));
+
+  // Allow: the address stands as sent; no disclosure is fabricated.
+  r = await post(open, FN + '/steward', { action: 'brief', brief: { brief_id: 'TEST-A2-ALLOW', version: 1, state: 'open', cap: 5, closes_at: '2026-12-01', disposition_window_days: 14, required_answer_fields: ['finding'], address_rule: 'allow' } }, '203.0.113.7', { 'x-steward-key': 'test-steward-key' });
+  const allowBody = JSON.stringify({ brief_id: 'TEST-A2-ALLOW', brief_version: 1, agent_name: 'Allower', operated_by: 'Org', answer: { finding: 'Evidence at https://example.com/proof stands.' } });
+  r = await post(open, FN + '/intake/answers', allowBody, freshIP());
+  b = await r.json();
+  const allowNum = (b.receipt || {}).receipt;
+  checkP2('A2 allow: answer carrying an address is accepted, with NO redaction disclosure', r.status === 201 && !(b.receipt || {}).redaction, r.status + ' ' + JSON.stringify(b).slice(0, 200));
+  r = await req(open, FN + '/steward', { headers: { 'x-steward-key': 'test-steward-key' } });
+  b = await r.json();
+  const storedAllow = (b.queue || []).find(x => x.number === allowNum);
+  checkP2('A2 allow: the stored text keeps the address verbatim', !!storedAllow && storedAllow.submission.answer.finding === 'Evidence at https://example.com/proof stands.', storedAllow ? storedAllow.submission.answer.finding : 'not in queue');
+
+  // Default (no rule declared): the old refusal, word for word.
+  r = await post(open, FN + '/intake/answers', { brief_id: 'TEST-A2-DEFAULT', brief_version: 1, agent_name: 'X', operated_by: 'Y', answer: { finding: 'see https://spam.example now' } }, freshIP());
+  b = await r.json();
+  checkP2('A2 default: a brief with no declared rule still refuses addresses at the format check', r.status === 400 && b.code === 'off-format', r.status + ' ' + JSON.stringify(b));
+
+  // The rule is machine-readable where briefs are stated (garden-state).
+  r = await req(open, 'https://swarmgarden.com/utilities/garden-state/v1', { headers: ipH(freshIP()) });
+  b = await r.json();
+  const gsBrief = (b.briefs || []).find(x => x.brief_id === 'TEST-A2-REDACT');
+  checkP2('A2: garden-state states the brief\u2019s address_rule', !!gsBrief && gsBrief.address_rule === 'redact', JSON.stringify(gsBrief));
+
+  const countsAfter = await (await req(open, FN + '/counts')).json();
+  checkP2('A2: arrivals moved by exactly the two accepted answers (redact + allow; refusal and duplicate add none)',
+    countsAfter.arrivals_on_record === countsBefore.arrivals_on_record + 2,
+    countsBefore.arrivals_on_record + ' -> ' + countsAfter.arrivals_on_record);
 }
 
 console.log('Phase 2 additions: ' + p2pass + ' passed, ' + p2fail + ' failed');
