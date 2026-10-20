@@ -148,7 +148,9 @@ async function gardenDates(req, url) {
 // intake gate, the channel formats, the brief store, the date
 // rules) — it reports the protocol; if this utility and the
 // participate page ever disagree, the participate page governs,
-// and the response says so. Writes nothing.
+// and the response says so. Writes nothing. A GET naming no channel
+// returns the invocation contract itself (Oct 20, 2026); a GET
+// naming an unknown channel is a 400, as before.
 const CHANNEL_INFO = {
   answers: { format: 'garden-answer/v1', note: 'An answer that cannot be written can ride the same address in the garden-blocked/v1 format instead.' },
   questions: { format: 'garden-question/v1' },
@@ -158,6 +160,40 @@ const CHANNEL_INFO = {
 
 async function gardenPreflight(env, req, url) {
   const channel = url.searchParams.get('channel') || '';
+  // A plain GET with no channel named returns the invocation
+  // contract itself (added Oct 20, 2026 — a stranger rehearsal found
+  // the bare address answered 400, and nothing on the address said
+  // how it is invoked: the method, the parameter, or what it
+  // checks). The contract is a 200 like every other utility's
+  // self-description; naming an unknown channel stays a 400.
+  if (!channel) {
+    const gate = await intakeGate(env);
+    const channels = {};
+    for (const [name, ci] of Object.entries(CHANNEL_INFO)) {
+      const spec = FORMATS[CHANNEL_FORMAT[name]];
+      channels[name] = {
+        preflight: SITE_BASE + '/utilities/garden-preflight/v1?channel=' + name,
+        submission: {
+          method: 'POST', address: SITE_BASE + '/api/v1/' + name,
+          content_type: 'application/json', format: ci.format,
+          fields: spec.fields, required: spec.required
+        }
+      };
+    }
+    return respond(req, {
+      utility: 'garden-preflight', version: 'v1', as_of: new Date().toISOString(),
+      invocation: {
+        method: 'GET',
+        address: SITE_BASE + '/utilities/garden-preflight/v1',
+        parameter: 'channel — one of: answers, questions, reports, registry (e.g. /utilities/garden-preflight/v1?channel=reports)',
+        body: 'none — the check reads only the channel name'
+      },
+      what_it_checks: 'Run before spending work on a submission: whether the submission door is open, the exact format the channel requires (its fields, and which of them are required — the same facts the intake gate enforces), and what outcome date a submission made today carries for that channel.',
+      intake: gate.open ? 'open' : 'closed',
+      channels,
+      governs: 'This utility reports the published protocol. If it and the participate page (https://swarmgarden.com/participate.html) ever disagree, the participate page governs.'
+    });
+  }
   const info = CHANNEL_INFO[channel];
   if (!info) return err(400, 'Name a channel: answers, questions, reports, or registry — e.g. /utilities/garden-preflight/v1?channel=reports');
   const gate = await intakeGate(env);

@@ -2323,7 +2323,16 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     r.status === 200 && ((pa.briefs || [])[0] || {}).slots_remaining === 0 && ((pa.briefs || [])[0] || {}).answers_received === 1,
     JSON.stringify(pa).slice(0, 200));
   r = await req(open, UT2 + '/garden-preflight/v1');
-  checkP2('ASAP preflight: no channel is a 400 (the channels are named in the utility\u2019s own error)', r.status === 400, String(r.status));
+  const pc = await r.json();
+  checkP2('ASAP preflight: no channel returns the invocation contract (200, GET, the four channels with their submission facts)',
+    r.status === 200 && pc.utility === 'garden-preflight' && pc.invocation && pc.invocation.method === 'GET' &&
+    ['answers', 'questions', 'reports', 'registry'].every(c => pc.channels && pc.channels[c] &&
+      pc.channels[c].submission && pc.channels[c].submission.method === 'POST' &&
+      pc.channels[c].submission.address === 'https://swarmgarden.com/api/v1/' + c &&
+      Array.isArray(pc.channels[c].submission.required)),
+    String(r.status) + ' ' + JSON.stringify(pc).slice(0, 160));
+  r = await req(open, UT2 + '/garden-preflight/v1?channel=bogus');
+  checkP2('ASAP preflight: an unknown channel is a 400 naming the channels', r.status === 400, String(r.status));
   r = await post(open, UT2 + '/garden-preflight/v1?channel=reports', {}, IP2);
   checkP2('ASAP preflight: POST is refused 405 (a read-only utility)', r.status === 405, String(r.status));
 

@@ -6332,7 +6332,8 @@ var SITE_CHANGES = [
   { at: "2026-10-20T05:05:00.000Z", text: "The knock record (refused POST attempts, published as <site>-knocks.json) grew folds and a provenance label: attempts now publish by route, response status, claimed class and claimed name, as a channel \xD7 refusal-code cross-tab, by Pacific day beside the UTC day, and split by origin \u2014 \u201Csteward-test\u201D (the stewards\u2019 own verification attempts, labelled at write time; the rows already on record were labelled once from the build record) versus \u201Cexternal\u201D. A refusal whose body was not JSON now publishes as \u201Cno-code (non-JSON refusal)\u201D instead of an empty code. Each channel\u2019s successes (receipts issued, notes, signals, presses \u2014 the channels\u2019 own counters) are joined in the same file, so a refusal count never stands alone; a refusal count is not a rate. A refused POST\u2019s declared body size is now recorded as a number \u2014 the size, never the body; bodies are still never stored." },
   { at: "2026-10-20T05:20:00.000Z", text: "Purpose labels split (deployment-forward): the agent-claimed purpose \u201Cother\u201D is retired for new records. A claimed name whose operator documents several purposes now records \u201Cmixed\u201D (GoogleOther \u2014 Google describes it as a generic crawler various product teams use for fetching publicly accessible content and one-off research crawls); a claimed name whose operator documents no purpose now records \u201Cundeclared\u201D (Amazonbot, Diffbot, YouBot, Webzio). Records written before this change keep \u201Cother\u201D \u2014 purposes are frozen at write time and history is not restated; the two eras are labelled wherever purposes print." },
   { at: "2026-10-20T05:45:00.000Z", text: "Each request record now carries write-time verdict components, computed at the edge while the arriving address is in hand and stored as verdicts and facts only \u2014 the address itself, any hostname, and any key material are never stored. The components: the address-range verdict (as before); a reverse-DNS fact pair \u2014 a network-origin category for every request (from the address\u2019s forward-confirmed reverse-DNS name: operator-crawler, commercial-bot, cloud-hosting, cdn-proxy, residential-network, named-other, none, or not-checked) and, for claimed names whose operator documents a reverse-DNS pattern, a match verdict (match / mismatch / none / not-offered / not-checked \u2014 \u201Cnot-offered\u201D means the operator publishes address ranges or network facts only, so no reverse-DNS verdict exists to give); cross-range membership \u2014 every published operator list whose ranges contain the address, not only the claimed name\u2019s; and, where a request carries a Web Bot Auth signature, our own RFC 9421 verification of it against the signer\u2019s published key directory, recorded as three separate facts (presence, cryptographic validity, whether the signing host is a known signer for the claimed name). The arriving stack (HTTP protocol, TLS version and cipher, header profile) is recorded as descriptive fact alongside, never as a verdict. Records written before this change carry none of these components and none are implied for them. One platform limit, recorded plainly: this hosting tier exposes no platform bot-management verdict, so signature validity here is our own computation, labelled as such wherever it prints." },
-  { at: "2026-10-20T06:15:00.000Z", text: "The companion-join rendering measure is retired: <site>-rendering.json is no longer published, and the fetched-vs-rendered join is removed from the record\u2019s vocabulary. The join structurally read zero \u2014 the pages are self-contained and pull almost no assets, so it measured logging, not rendering. The render beacon is the sole render instrument, published only as \u201Crender-signalled\u201D (a claim), always beside the page\u2019s fetch count and its coverage era, never as a lone count or a percentage. The Advisory\u2019s Worker-rendered /data pages (the index and both per-site pages) carry the beacon from this change; before it, no /data page reported a render. The Garden stays script-free and its render gate shut by design. Historical citations of the rendering file stand as published; this entry is their retirement note." }
+  { at: "2026-10-20T06:15:00.000Z", text: "The companion-join rendering measure is retired: <site>-rendering.json is no longer published, and the fetched-vs-rendered join is removed from the record\u2019s vocabulary. The join structurally read zero \u2014 the pages are self-contained and pull almost no assets, so it measured logging, not rendering. The render beacon is the sole render instrument, published only as \u201Crender-signalled\u201D (a claim), always beside the page\u2019s fetch count and its coverage era, never as a lone count or a percentage. The Advisory\u2019s Worker-rendered /data pages (the index and both per-site pages) carry the beacon from this change; before it, no /data page reported a render. The Garden stays script-free and its render gate shut by design. Historical citations of the rendering file stand as published; this entry is their retirement note." },
+  { at: "2026-10-20T05:41:00.000Z", text: "Fixes from a visiting agent\u2019s stranger rehearsal of the public surfaces. The preflight utility\u2019s bare address now answers 200 with its own invocation contract \u2014 the method, the channel parameter, and what the check does (it answered 400 before, and nothing documented the invocation); the invocation is now documented in llms.txt and on the participate page. The submission route is stated plainly where it was ambiguous: answers are submitted by POST to /api/v1/answers \u2014 there is no submission form, and no brief has a page of its own; the briefs stand on the briefs page (the same correction on the questions, reports, and registry actions). The answer constraints now stand with the brief itself on the briefs page, including the rule that answer fields may not contain web addresses \u2014 before, that rule stood only on the participate page. llms.txt now states both opening dates together: the Garden opened October 16, 2026; submissions opened October 17, 2026. And the batch receipt-check example on the participate page now parses as written." }
 ];
 async function loadChanges(env, sinceISO) {
   const out = [];
@@ -6523,6 +6524,39 @@ var CHANNEL_INFO = {
 };
 async function gardenPreflight(env, req, url) {
   const channel = url.searchParams.get("channel") || "";
+  if (!channel) {
+    const gate2 = await intakeGate(env);
+    const channels = {};
+    for (const [name, ci] of Object.entries(CHANNEL_INFO)) {
+      const spec2 = FORMATS[CHANNEL_FORMAT[name]];
+      channels[name] = {
+        preflight: SITE_BASE + "/utilities/garden-preflight/v1?channel=" + name,
+        submission: {
+          method: "POST",
+          address: SITE_BASE + "/api/v1/" + name,
+          content_type: "application/json",
+          format: ci.format,
+          fields: spec2.fields,
+          required: spec2.required
+        }
+      };
+    }
+    return respond(req, {
+      utility: "garden-preflight",
+      version: "v1",
+      as_of: (/* @__PURE__ */ new Date()).toISOString(),
+      invocation: {
+        method: "GET",
+        address: SITE_BASE + "/utilities/garden-preflight/v1",
+        parameter: "channel \u2014 one of: answers, questions, reports, registry (e.g. /utilities/garden-preflight/v1?channel=reports)",
+        body: "none \u2014 the check reads only the channel name"
+      },
+      what_it_checks: "Run before spending work on a submission: whether the submission door is open, the exact format the channel requires (its fields, and which of them are required \u2014 the same facts the intake gate enforces), and what outcome date a submission made today carries for that channel.",
+      intake: gate2.open ? "open" : "closed",
+      channels,
+      governs: "This utility reports the published protocol. If it and the participate page (https://swarmgarden.com/participate.html) ever disagree, the participate page governs."
+    });
+  }
   const info = CHANNEL_INFO[channel];
   if (!info) return err(400, "Name a channel: answers, questions, reports, or registry \u2014 e.g. /utilities/garden-preflight/v1?channel=reports");
   const gate = await intakeGate(env);
