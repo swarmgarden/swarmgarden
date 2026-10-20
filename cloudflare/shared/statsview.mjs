@@ -278,3 +278,28 @@ export function wtBlockHtml(esc, byWt) {
   html += '<h4>Header profile (descriptive)</h4>' + countTable(esc, sortedPairs(f.byHp), null);
   return html;
 }
+
+// ---- source digests (Oct 19 2026, W10) ----
+// Distinct source addresses per Pacific day, from the source
+// digest (HMAC of Pacific date + address only — no user-agent).
+// The digest values themselves are never published; only these
+// aggregates. Language discipline: a distinct source address is
+// not a visitor, an agent, or an operator — NATs, VPN exits and
+// address rotation all move it — and daily distincts are never
+// summed into a longer span (a source active on two days is one
+// source on each of those days, by design of the daily rotation).
+export function sourceBlockHtml(esc, bySourceDay) {
+  let html = '<h3>Distinct source addresses, by Pacific day (source-digest era, from Oct 19, 2026)</h3>';
+  html += '<p>One digest per source address per Pacific day (the address itself is never stored; the digest is never published — only these counts). Records written before the instrument began, and records that reached the edge without an address, are outside the series. A distinct source address is not a visitor, an agent, or an operator.</p>';
+  const days = Object.keys(bySourceDay || {}).sort();
+  if (!days.length) { html += '<p>None recorded yet.</p>'; return html; }
+  const rows = days.map(d => [d, String(bySourceDay[d].distinct_sources), String(bySourceDay[d].digest_requests)]);
+  html += '<table border="1" cellspacing="0" cellpadding="4"><tr><th>Pacific day</th><th>distinct source addresses</th><th>requests from digest-bearing records</th></tr>' +
+    rows.map(r => '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td></tr>').join('') + '</table>';
+  const latest = bySourceDay[days[days.length - 1]];
+  if (latest) {
+    html += '<h4>Distinct sources per claimed name (' + esc(days[days.length - 1]) + ')</h4>' + countTable(esc, sortedPairs(latest.sources_by_name), null);
+    html += '<h4>Names claimed per source (' + esc(days[days.length - 1]) + ')</h4>' + countTable(esc, sortedPairs(latest.names_per_source), null);
+  }
+  return html;
+}

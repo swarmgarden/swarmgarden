@@ -210,7 +210,12 @@ function methodBlock(siteLabel) {
     'row \u2014 the number folded is printed with the table, and no folded country is named. Distinct ' +
     'visitor digests are published as per-day counts (the series table below); the digests those counts ' +
     'are made from are never printed, and because a digest is date-scoped the per-day counts cannot be ' +
-    'added into a count of distinct digests over time.</p>' +
+    'added into a count of distinct digests over time. Since Oct 19, 2026 the record also keeps a ' +
+    'source digest per request — a one-way digest of the Pacific date and the source address only, ' +
+    'with no user-agent in it — published only as aggregates: distinct source addresses per Pacific ' +
+    'day, distinct sources per claimed name, and how many names one source claimed. A distinct source ' +
+    'address is not a visitor, an agent, or an operator, and the daily counts are never added into a ' +
+    'longer span.</p>' +
     '<p><strong>Not published, by design:</strong> referers are not printed; region and network-operator ' +
     'facts stay in the steward copy; and no raw network address exists anywhere in the record to print. ' +
     'Paths are printed with query strings stripped.</p>' +

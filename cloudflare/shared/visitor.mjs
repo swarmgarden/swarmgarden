@@ -91,6 +91,37 @@ export function pacificPeriods(now = new Date()) {
 // request reached the edge without a cf-connecting-ip header. The
 // user-agent is the record's own UA (the header, capped at 400
 // chars, as recorded).
+// The source digest (Oct 19 2026, W10 — approved by Caitria's
+// ruling the same evening): first 16 hex chars of the HMAC over
+// "src|<Pacific date>|<address>" under the SAME per-site secret as
+// the visitor digest, in a distinct message domain ("src|"), so
+// the two digests can never be compared or joined to each other.
+// Deliberately NO user-agent in the input: this digest identifies
+// a source ADDRESS for one Pacific day, nothing about a client.
+// It answers "how many distinct source addresses" and "how many
+// distinct sources claimed each name" — aggregate questions the
+// per-request record could not answer at all. The address is an
+// input to a one-way function and is discarded; the digest itself
+// is never published, only aggregates over it. Pacific-date
+// rotation matches the visitor digest's daily re-keying: a digest
+// links a source's requests within one Pacific day and nothing
+// across days. Returns '' when it cannot be computed.
+export async function sourceDigest(secret, pacificDay, ip) {
+  if (!secret || !ip) return '';
+  const key = await importKey(secret);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode('src|' + pacificDay + '|' + ip));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+export async function sourceDigestForRequest(env, req) {
+  const secret = (env && env.VISITOR_DIGEST_SECRET) || '';
+  if (!secret) return '';
+  const ip = req.headers.get('cf-connecting-ip');
+  if (!ip) return '';
+  const { day } = pacificPeriods();
+  return sourceDigest(secret, day, ip.trim());
+}
+
 export async function visitorForRequest(env, req) {
   const secret = (env && env.VISITOR_DIGEST_SECRET) || '';
   if (!secret) return { visitor: '', visitorepoch: '' };

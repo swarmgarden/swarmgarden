@@ -118,6 +118,33 @@ export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
 
+// The source digest's storage (Oct 19 2026, W10): the record's 20
+// text blobs are all allocated, so the 16-hex digest rides two
+// unused AE doubles losslessly — double3 = its first 8 hex chars
+// as an unsigned 32-bit integer, double4 = its last 8 (a uint32 is
+// exact in a float64). -1 when the record carries no digest (the
+// status/md null convention). Records written before W10 were
+// stored with only two doubles, so their double3/double4 read as
+// 0 — readers treat (<=0, <=0) as "no digest", which covers both
+// the -1 sentinel and the pre-W10 default. The digest VALUE is a
+// record-internal join key: it is never published, only aggregates
+// over it (distinct sources per Pacific day; sources per claimed
+// name; names per source).
+export function srcDoubles(record) {
+  const d = record && typeof record.srcdigest === 'string' ? record.srcdigest : '';
+  if (!/^[0-9a-f]{16}$/.test(d)) return [-1, -1];
+  return [parseInt(d.slice(0, 8), 16), parseInt(d.slice(8, 16), 16)];
+}
+
+function aeDoubles(record) {
+  const [hi, lo] = srcDoubles(record);
+  return [
+    Number.isInteger(record.status) ? record.status : -1,
+    (record.md === 0 || record.md === 1) ? record.md : -1,
+    hi, lo
+  ];
+}
+
 export async function writeVisit(env, record) {
   if (aeConfigured(env)) {
     env.VISITS.writeDataPoint({
@@ -126,10 +153,7 @@ export async function writeVisit(env, record) {
         const v = record[k];
         return v === null || v === undefined ? '' : String(v);
       }),
-      doubles: [
-        Number.isInteger(record.status) ? record.status : -1,
-        (record.md === 0 || record.md === 1) ? record.md : -1
-      ]
+      doubles: aeDoubles(record)
     });
     return 'analytics-engine';
   }
@@ -153,10 +177,7 @@ export async function writeAssetVisit(env, record) {
         const v = record[k];
         return v === null || v === undefined ? '' : String(v);
       }),
-      doubles: [
-        Number.isInteger(record.status) ? record.status : -1,
-        (record.md === 0 || record.md === 1) ? record.md : -1
-      ]
+      doubles: aeDoubles(record)
     });
     return 'analytics-engine-assets';
   }
@@ -373,6 +394,51 @@ function foldVisitorDays(rows) {
   return out;
 }
 
+// The source-digest folds (W10): (digest, UTC hour, claimed name,
+// count) rows -> per Pacific day: distinct sources, requests from
+// digest-bearing records, distinct sources per claimed name, and
+// the names-per-source distribution (how many distinct names one
+// source claimed that day; 0 = claimed none). Daily distincts are
+// per-day by construction and are never summed into longer spans.
+function foldSourceDays(rows) {
+  const days = {};
+  for (const row of rows) {
+    if (!row.k) continue;
+    const day = ptDayOfUtcHour(String(row.h || ''));
+    if (!day) continue;
+    const d = days[day] || (days[day] = { sources: new Map(), byName: new Map(), requests: 0 });
+    const c = Number(row.c || 0);
+    d.requests += c;
+    let s = d.sources.get(row.k);
+    if (!s) { s = { names: new Set(), n: 0 }; d.sources.set(row.k, s); }
+    s.n += c;
+    const nm = row.nm || '';
+    if (nm) {
+      s.names.add(nm);
+      let set = d.byName.get(nm);
+      if (!set) { set = new Set(); d.byName.set(nm, set); }
+      set.add(row.k);
+    }
+  }
+  const out = {};
+  for (const [day, d] of Object.entries(days)) {
+    const sourcesByName = {};
+    for (const [nm, set] of d.byName) sourcesByName[nm] = set.size;
+    const namesPerSource = { '0': 0, '1': 0, '2': 0, '3': 0, '4+': 0 };
+    for (const s of d.sources.values()) {
+      const k = s.names.size >= 4 ? '4+' : String(s.names.size);
+      namesPerSource[k] = (namesPerSource[k] || 0) + 1;
+    }
+    out[day] = {
+      distinct_sources: d.sources.size,
+      digest_requests: d.requests,
+      sources_by_name: sourcesByName,
+      names_per_source: namesPerSource
+    };
+  }
+  return out;
+}
+
 export async function aggregateVisits(env, dims) {
   const out = {};
   const ae = aeConfigured(env);
@@ -486,6 +552,31 @@ export async function aggregateVisits(env, dims) {
         rows = results || [];
       }
       part.byVisitorEpoch = foldVisitorDays(rows);
+    } else if (dim === 'sourceday') {
+      // The source-digest folds (W10, Oct 19 2026): (digest, UTC
+      // hour, claimed name) rows folded to Pacific days in code
+      // (foldSourceDays). On the AE path the digest arrives as its
+      // two doubles; the -1 sentinel and the pre-W10 zeros are
+      // skipped, so the series is digest-bearing records only,
+      // era-forward by construction. Digest values never leave
+      // this function — only the aggregates do.
+      let rows;
+      if (ae) {
+        const raw = await aeSql(env, 'SELECT double3 AS hi, double4 AS lo, substring(blob1, 1, 13) AS h, blob15 AS nm, count() AS c FROM ' + env.AE_DATASET +
+          " WHERE index1 = '" + host + "' GROUP BY hi, lo, h, nm LIMIT " + GROUP_LIMIT);
+        if (raw.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+        rows = [];
+        for (const r of raw) {
+          const hi = Number(r.hi), lo = Number(r.lo);
+          if (!(hi > 0 || lo > 0)) continue;
+          rows.push({ k: hi.toString(16).padStart(8, '0') + ':' + lo.toString(16).padStart(8, '0'), h: r.h, nm: r.nm || '', c: r.c });
+        }
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + ' GROUP BY k, h, nm').all();
+        rows = (results || []).filter(r => r.k);
+      }
+      part.bySourceDay = foldSourceDays(rows);
     } else if (dim === 'fetchsplit') {
       // The fetch/redirect split (D1, Oct 19 2026): one grouping
       // over (class × status). Redirect = stored status an integer

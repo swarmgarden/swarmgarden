@@ -3327,6 +3327,20 @@ function pacificPeriods(now = /* @__PURE__ */ new Date()) {
   const month = g("year") + "-" + g("month");
   return { day: month + "-" + g("day"), month };
 }
+async function sourceDigest(secret, pacificDay, ip) {
+  if (!secret || !ip) return "";
+  const key = await importKey(secret);
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode("src|" + pacificDay + "|" + ip));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
+async function sourceDigestForRequest(env, req) {
+  const secret = env && env.VISITOR_DIGEST_SECRET || "";
+  if (!secret) return "";
+  const ip = req.headers.get("cf-connecting-ip");
+  if (!ip) return "";
+  const { day } = pacificPeriods();
+  return sourceDigest(secret, day, ip.trim());
+}
 async function visitorForRequest(env, req) {
   const secret = env && env.VISITOR_DIGEST_SECRET || "";
   if (!secret) return { visitor: "", visitorepoch: "" };
@@ -3346,6 +3360,20 @@ var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method",
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
+function srcDoubles(record) {
+  const d = record && typeof record.srcdigest === "string" ? record.srcdigest : "";
+  if (!/^[0-9a-f]{16}$/.test(d)) return [-1, -1];
+  return [parseInt(d.slice(0, 8), 16), parseInt(d.slice(8, 16), 16)];
+}
+function aeDoubles(record) {
+  const [hi, lo] = srcDoubles(record);
+  return [
+    Number.isInteger(record.status) ? record.status : -1,
+    record.md === 0 || record.md === 1 ? record.md : -1,
+    hi,
+    lo
+  ];
+}
 async function writeVisit(env, record) {
   if (aeConfigured(env)) {
     env.VISITS.writeDataPoint({
@@ -3354,10 +3382,7 @@ async function writeVisit(env, record) {
         const v = record[k];
         return v === null || v === void 0 ? "" : String(v);
       }),
-      doubles: [
-        Number.isInteger(record.status) ? record.status : -1,
-        record.md === 0 || record.md === 1 ? record.md : -1
-      ]
+      doubles: aeDoubles(record)
     });
     return "analytics-engine";
   }
@@ -3372,10 +3397,7 @@ async function writeAssetVisit(env, record) {
         const v = record[k];
         return v === null || v === void 0 ? "" : String(v);
       }),
-      doubles: [
-        Number.isInteger(record.status) ? record.status : -1,
-        record.md === 0 || record.md === 1 ? record.md : -1
-      ]
+      doubles: aeDoubles(record)
     });
     return "analytics-engine-assets";
   }
@@ -3485,6 +3507,50 @@ function foldVisitorDays(rows) {
   }
   return out;
 }
+function foldSourceDays(rows) {
+  const days = {};
+  for (const row of rows) {
+    if (!row.k) continue;
+    const day = ptDayOfUtcHour(String(row.h || ""));
+    if (!day) continue;
+    const d = days[day] || (days[day] = { sources: /* @__PURE__ */ new Map(), byName: /* @__PURE__ */ new Map(), requests: 0 });
+    const c = Number(row.c || 0);
+    d.requests += c;
+    let s = d.sources.get(row.k);
+    if (!s) {
+      s = { names: /* @__PURE__ */ new Set(), n: 0 };
+      d.sources.set(row.k, s);
+    }
+    s.n += c;
+    const nm = row.nm || "";
+    if (nm) {
+      s.names.add(nm);
+      let set = d.byName.get(nm);
+      if (!set) {
+        set = /* @__PURE__ */ new Set();
+        d.byName.set(nm, set);
+      }
+      set.add(row.k);
+    }
+  }
+  const out = {};
+  for (const [day, d] of Object.entries(days)) {
+    const sourcesByName = {};
+    for (const [nm, set] of d.byName) sourcesByName[nm] = set.size;
+    const namesPerSource = { "0": 0, "1": 0, "2": 0, "3": 0, "4+": 0 };
+    for (const s of d.sources.values()) {
+      const k = s.names.size >= 4 ? "4+" : String(s.names.size);
+      namesPerSource[k] = (namesPerSource[k] || 0) + 1;
+    }
+    out[day] = {
+      distinct_sources: d.sources.size,
+      digest_requests: d.requests,
+      sources_by_name: sourcesByName,
+      names_per_source: namesPerSource
+    };
+  }
+  return out;
+}
 async function aggregateVisits(env, dims) {
   const out = {};
   const ae = aeConfigured(env);
@@ -3559,6 +3625,24 @@ async function aggregateVisits(env, dims) {
         rows = results || [];
       }
       part.byVisitorEpoch = foldVisitorDays(rows);
+    } else if (dim === "sourceday") {
+      let rows;
+      if (ae) {
+        const raw = await aeSql(env, "SELECT double3 AS hi, double4 AS lo, substring(blob1, 1, 13) AS h, blob15 AS nm, count() AS c FROM " + env.AE_DATASET + " WHERE index1 = '" + host + "' GROUP BY hi, lo, h, nm LIMIT " + GROUP_LIMIT);
+        if (raw.length >= GROUP_LIMIT && !truncated.includes(dim)) truncated.push(dim);
+        rows = [];
+        for (const r of raw) {
+          const hi = Number(r.hi), lo = Number(r.lo);
+          if (!(hi > 0 || lo > 0)) continue;
+          rows.push({ k: hi.toString(16).padStart(8, "0") + ":" + lo.toString(16).padStart(8, "0"), h: r.h, nm: r.nm || "", c: r.c });
+        }
+      } else {
+        const { results } = await env.DB.prepare(
+          "SELECT json_extract(data, '$.srcdigest') AS k, substr(json_extract(data, '$.t'), 1, 13) AS h, json_extract(data, '$.cname') AS nm, COUNT(*) AS c FROM visit_log WHERE " + D1_NOT_ASSET + " GROUP BY k, h, nm"
+        ).all();
+        rows = (results || []).filter((r) => r.k);
+      }
+      part.bySourceDay = foldSourceDays(rows);
     } else if (dim === "fetchsplit") {
       let rows;
       if (ae) {
@@ -3798,7 +3882,12 @@ function buildVisitRecord(req, res, siteHost, event, digests = {}, fields = null
     // secret is provisioned on this Worker or the request carried
     // no cf-connecting-ip.
     visitor: dg.visitor || "",
-    visitorepoch: dg.visitorepoch || ""
+    visitorepoch: dg.visitorepoch || "",
+    // The source digest (W10, Oct 19 2026): HMAC over the Pacific
+    // date + address only, no user-agent — see shared/visitor.mjs.
+    // Stored on the AE path as two doubles (shared/visits.mjs);
+    // the value itself is never published, only aggregates.
+    srcdigest: dg.srcdigest || ""
   };
 }
 var KEYED_UNLOGGED = ["/.netlify/functions/stats", "/.netlify/functions/steward", "/.netlify/functions/guestbook"];
@@ -4014,6 +4103,7 @@ async function frontDoor(req, env, ctx, res, opts) {
     const event = changedEventForResponse(eventForPath(url.pathname), out);
     const write = (async () => {
       const visitor = await visitorForRequest(env, req);
+      visitor.srcdigest = await sourceDigestForRequest(env, req);
       const fields = await writeTimeFields(req);
       const record = buildVisitRecord(req, out, opts.siteHost, event, visitor, fields);
       await writeVisit(env, record);
@@ -5929,6 +6019,23 @@ function wtBlockHtml(esc2, byWt) {
   html += "<h4>Header profile (descriptive)</h4>" + countTable(esc2, sortedPairs(f.byHp), null);
   return html;
 }
+function sourceBlockHtml(esc2, bySourceDay) {
+  let html = "<h3>Distinct source addresses, by Pacific day (source-digest era, from Oct 19, 2026)</h3>";
+  html += "<p>One digest per source address per Pacific day (the address itself is never stored; the digest is never published \u2014 only these counts). Records written before the instrument began, and records that reached the edge without an address, are outside the series. A distinct source address is not a visitor, an agent, or an operator.</p>";
+  const days = Object.keys(bySourceDay || {}).sort();
+  if (!days.length) {
+    html += "<p>None recorded yet.</p>";
+    return html;
+  }
+  const rows = days.map((d) => [d, String(bySourceDay[d].distinct_sources), String(bySourceDay[d].digest_requests)]);
+  html += '<table border="1" cellspacing="0" cellpadding="4"><tr><th>Pacific day</th><th>distinct source addresses</th><th>requests from digest-bearing records</th></tr>' + rows.map((r) => "<tr><td>" + esc2(r[0]) + "</td><td>" + esc2(r[1]) + "</td><td>" + esc2(r[2]) + "</td></tr>").join("") + "</table>";
+  const latest = bySourceDay[days[days.length - 1]];
+  if (latest) {
+    html += "<h4>Distinct sources per claimed name (" + esc2(days[days.length - 1]) + ")</h4>" + countTable(esc2, sortedPairs(latest.sources_by_name), null);
+    html += "<h4>Names claimed per source (" + esc2(days[days.length - 1]) + ")</h4>" + countTable(esc2, sortedPairs(latest.names_per_source), null);
+  }
+  return html;
+}
 
 // ../garden/src/lib/notes.js
 var NOTE_NAME_CAP = 60;
@@ -6024,7 +6131,7 @@ function publicNote(note) {
 var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
   const [a, recent] = await Promise.all([
-    aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "wt", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "fetchsplit"]),
+    aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "wt", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "sourceday", "fetchsplit"]),
     readRecentVisits(env, 50)
     // newest first — display list only
   ]);
@@ -6061,6 +6168,7 @@ function aggregate(a) {
     byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
     byWt: a.byWt,
+    bySourceDay: a.bySourceDay,
     fetchesTotal: a.fetchesTotal,
     redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass,
@@ -6174,6 +6282,7 @@ var stats_default = async (req, env) => {
   html += "<h4>Address-range verdicts, by claimed name</h4>" + verdictTableHtml(esc2, agg.byNameVerdict);
   html += "<h4>Distinct visitor digests, by day (Pacific)</h4>" + visitorDigestTableHtml(esc2, agg.byVisitorDay);
   html += "<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>" + visitorEpochTableHtml(esc2, agg.byVisitorEpoch);
+  html += sourceBlockHtml(esc2, agg.bySourceDay);
   html += wtBlockHtml(esc2, agg.byWt);
   html += "<h3>Channel knocks \u2014 refused POST attempts</h3>";
   html += knocksBlockHtml(esc2, attempts);

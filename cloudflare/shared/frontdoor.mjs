@@ -69,7 +69,7 @@ import { claimedBot } from './behaviour.mjs';
 import { verdictFor, crossRangeMembership } from './ranges.mjs';
 import { lookupNetworkOrigin, rdnsVerdictFor } from './rdns.mjs';
 import { verifyWebBotAuth } from './wba.mjs';
-import { visitorForRequest } from './visitor.mjs';
+import { visitorForRequest, sourceDigestForRequest } from './visitor.mjs';
 import { writeVisit, writeAssetVisit } from './visits.mjs';
 
 const SKIP_EXT = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.css', '.js', '.map', '.woff', '.woff2', '.mp4', '.zip'];
@@ -321,7 +321,12 @@ export function buildVisitRecord(req, res, siteHost, event, digests = {}, fields
     // secret is provisioned on this Worker or the request carried
     // no cf-connecting-ip.
     visitor: dg.visitor || '',
-    visitorepoch: dg.visitorepoch || ''
+    visitorepoch: dg.visitorepoch || '',
+    // The source digest (W10, Oct 19 2026): HMAC over the Pacific
+    // date + address only, no user-agent — see shared/visitor.mjs.
+    // Stored on the AE path as two doubles (shared/visits.mjs);
+    // the value itself is never published, only aggregates.
+    srcdigest: dg.srcdigest || ''
   };
 }
 
@@ -619,6 +624,7 @@ export async function frontDoor(req, env, ctx, res, opts) {
     // computation was awaited before the record was built).
     const write = (async () => {
       const visitor = await visitorForRequest(env, req);
+      visitor.srcdigest = await sourceDigestForRequest(env, req);
       const fields = await writeTimeFields(req);
       const record = buildVisitRecord(req, out, opts.siteHost, event, visitor, fields);
       await writeVisit(env, record);

@@ -488,6 +488,7 @@ check('visit record carries status, method, markdown flag, bot-auth presence, fo
 check('W6: the stored record carries the composite write-time string (wt) — GPTBot is rdns not-offered (ranges-only operator) — and the retired via field is gone',
   !!vRec && typeof vRec.wt === 'string' && vRec.wt.startsWith('1;rng=') && vRec.wt.includes(';rdns=not-offered;') && vRec.wt.includes(';hp=') && vRec.via === undefined, JSON.stringify(vRec && vRec.wt));
 
+
 // ---------- W6 unit pins: rDNS / cross-range / WBA / header profile ----------
 {
   const { lookupNetworkOrigin, rdnsVerdictFor } = await import(path.join(ROOT, 'shared', 'rdns.mjs'));
@@ -2384,8 +2385,19 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
 // in miniflare — it is staging-verify, like every AE-path item; the
 // D1 fallback path applies no LIMIT and never flags.)
 {
-  const { visitorDigest, pacificPeriods } = await import(path.join(ROOT, 'shared', 'visitor.mjs'));
+  const { visitorDigest, pacificPeriods, sourceDigest } = await import(path.join(ROOT, 'shared', 'visitor.mjs'));
+  const { srcDoubles } = await import(path.join(ROOT, 'shared', 'visits.mjs'));
   const { createHmac } = await import('node:crypto');
+  checkP2('W10 source digest: known-answer vector — HMAC over "src|<Pacific date>|<address>", no user-agent in the input',
+    (await sourceDigest('src-secret', '2026-10-19', '192.0.2.44')) ===
+    createHmac('sha256', 'src-secret').update('src|2026-10-19|192.0.2.44').digest('hex').slice(0, 16), '');
+  checkP2('W10 source digest: domain-separated from the visitor digest (same secret, date and address can never join)',
+    (await sourceDigest('src-secret', '2026-10-19', '192.0.2.44')) !==
+    (await visitorDigest('src-secret', '2026-10-19', '192.0.2.44', 'AnyUA/1.0')), '');
+  checkP2('W10 storage: the digest rides two AE doubles losslessly (uint32 halves); absent digest is the -1 sentinel',
+    JSON.stringify(srcDoubles({ srcdigest: '0123456789abcdef' })) === JSON.stringify([0x01234567, 0x89abcdef]) &&
+    JSON.stringify(srcDoubles({})) === JSON.stringify([-1, -1]) &&
+    JSON.stringify(srcDoubles({ srcdigest: 'not-a-digest' })) === JSON.stringify([-1, -1]), '');
   const ptParts = (d) => {
     const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
     const g = (t) => (parts.find(p => p.type === t) || {}).value || '';
@@ -2441,6 +2453,13 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
   checkP2('epoch e2e: a fresh record carries BOTH digests — visitor keyed on the Pacific day, visitorepoch keyed on the Pacific month',
     !!epRec && epRec.visitor === expDaily && epRec.visitorepoch === expEpoch && expDaily !== expEpoch &&
     !JSON.stringify(epRec).includes(epIp), JSON.stringify(epRec).slice(0, 200));
+  const expSrc = await sourceDigest('garden-test-secret', ptNow.day, epIp);
+  checkP2('W10 e2e: the same record carries the source digest — HMAC over "src|<Pacific day>|<address>", no user-agent in it, and it differs from the visitor digest on the same inputs',
+    !!epRec && epRec.srcdigest === expSrc && expSrc !== expDaily, JSON.stringify(epRec).slice(0, 200));
+  const srcDays = kStats.bySourceDay || {};
+  checkP2('W10 e2e: the keyed aggregate folds records into distinct source addresses per Pacific day — aggregates only, no digest value in the fold',
+    !!srcDays[ptNow.day] && srcDays[ptNow.day].distinct_sources >= 1 && typeof srcDays[ptNow.day].names_per_source === 'object' &&
+    !JSON.stringify(srcDays).includes(expSrc), JSON.stringify(srcDays));
   const epDays = (((kStats.visits || {}).visitor_epochs || {}).days || []);
   checkP2('epoch e2e: the stats JSON carries the epoch series (today: 1 distinct epoch digest, 1 request) and a truncated_dims array',
     epDays.some(d => d.day === ptNow.day && d.distinct_visitor_digests === 1 && d.digest_requests === 1) &&

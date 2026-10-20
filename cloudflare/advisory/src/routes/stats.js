@@ -47,7 +47,7 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, wtBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, wtBlockHtml, sourceBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { humanTotal, setHumanPaused } from '../lib/human.js';
@@ -56,7 +56,7 @@ import { setRenderPaused } from '../lib/render.js';
 const BASIS = VISITS_BASIS;
 
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'wt', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']);
+  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'wt', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'sourceday', 'fetchsplit']);
   const recent = await readRecentVisits(env, 50); // newest first — display list only
   return { a, recent };
 }
@@ -87,6 +87,7 @@ function aggregate(a) {
     byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
     byWt: a.byWt,
+    bySourceDay: a.bySourceDay,
     fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
@@ -181,6 +182,7 @@ export default async (req, env) => {
   html += '<h4>Address-range verdicts, by claimed name</h4>' + verdictTableHtml(esc, agg.byNameVerdict);
   html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
   html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
+  html += sourceBlockHtml(esc, agg.bySourceDay);
 
   // ---- Channel knocks (B-b read; W1 folds, Oct 19 2026) ----
   html += wtBlockHtml(esc, agg.byWt);
