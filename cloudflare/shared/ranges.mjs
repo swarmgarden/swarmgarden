@@ -171,6 +171,39 @@ export function claimedRangeMeta(name) {
   return (manifest.names || {})[name] || null;
 }
 
+// Address equality across textual forms (Oct 19 2026, W6): two
+// address strings are the same address when their parsed integers
+// agree — the forward-confirmation step of the rDNS verdict
+// (shared/rdns.mjs) compares a DNS answer against cf-connecting-ip,
+// and the two arrive in different textual forms (compressed vs
+// expanded IPv6, case). Unparseable input is never equal.
+export function sameAddress(a, b) {
+  const x = ipToBig(a), y = ipToBig(b);
+  if (!x || !y) return false;
+  return x.v === y.v && x.n === y.n;
+}
+
+// Cross-range membership (Oct 19 2026, W6 — Caitria's addendum):
+// test the arriving address against EVERY operator list in the
+// bundle, not only the claimed name's governing list, and return
+// the ids of all lists that contain it. A claim of one operator's
+// name from inside another operator's ranges is a first-class
+// finding the single-list verdict cannot express (claimed
+// ClaudeBot, address inside Google's common-crawler ranges).
+// Pure computation over the bundled lists; the address is used
+// transiently and discarded, exactly as in verdictFor. Returns
+// null when no verdict could be computed (no/unparseable address),
+// [] when the address is in no bundled list.
+export function crossRangeMembership(address) {
+  const ip = ipToBig(address);
+  if (!ip) return null;
+  const hits = [];
+  for (const [id, list] of Object.entries(PARSED_LISTS)) {
+    if (list.prefixes.some(p => inPrefix(ip, p))) hits.push(id);
+  }
+  return hits.sort();
+}
+
 export const RANGE_BUNDLE = {
   generated_at: manifest.generated_at || null,
   lists: Object.keys(PARSED_LISTS),

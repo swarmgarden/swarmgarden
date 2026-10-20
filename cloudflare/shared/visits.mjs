@@ -7,7 +7,7 @@ import { claimedBot } from './behaviour.mjs';
 //
 // A visit record is the Oct 17 classification shape:
 //   { t, site, path, ref, country, region, asn, asOrganization, ua,
-//     cls, purpose, method, status, md, ba, via, event }
+//     cls, purpose, method, status, md, ba, wt, event }
 // plus, from Oct 18 2026 (lens spec A2), the write-time claim fields
 //   { cname, ipverdict, rangever }
 // — the claimed-bot name and its address-range verdict, computed at
@@ -89,7 +89,11 @@ import { claimedBot } from './behaviour.mjs';
 //   blob3   : ref              blob8 : method ('' when null)
 //   blob4   : country          blob9 : ba ('' when null)
 //   blob5   : ua (<= 400 chars, as recorded)
-//   blob10  : via              blob11: event
+//   blob10  : wt (Oct 19 2026, W6 — the composite write-time
+//             string; see frontdoor.writeTimeFields. It carried
+//             'via' — the constant 'edge' — until this build; the
+//             era boundary is the value itself: 'edge' = pre-W6)
+//             blob11: event
 //   blob12  : region           blob13: asn (as string)
 //   blob14  : asOrganization
 //   blob15  : cname (Oct 18 2026)      blob16: ipverdict
@@ -101,12 +105,14 @@ import { claimedBot } from './behaviour.mjs';
 //   blob20  : visitorepoch (Oct 19 2026, D2 — the epoch visitor
 //             digest, keyed on the Pacific calendar month)
 //   double1 : status (-1 when null)   double2 : md (-1 when null)
-// Blob budget (stated accurately, Oct 19 2026): 20 of 20 allocated;
-// blob10 ('via', a constant since the beacon retired) is the
-// designated reclaim candidate — era-forward repurposing — if a
-// future field ever outranks it; otherwise a new field requires a
-// second dataset or a schema decision.
-const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'via', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor', 'sigagent', 'visitorepoch'];
+// Blob budget (stated accurately, Oct 19 2026): 20 of 20 allocated.
+// blob10 was RECLAIMED era-forward by W6 (Oct 19 2026): it carried
+// 'via' — the constant 'edge' since the beacon write path retired —
+// and now carries 'wt', the composite write-time string. Every
+// other blob is a live field; a further new field requires a
+// second dataset or a schema decision (the W10 source digest rides
+// two unused AE doubles instead — see writeVisit).
+const AE_BLOBS = ['t', 'path', 'ref', 'country', 'ua', 'cls', 'purpose', 'method', 'ba', 'wt', 'event', 'region', 'asn', 'asOrganization', 'cname', 'ipverdict', 'rangever', 'visitor', 'sigagent', 'visitorepoch'];
 
 export function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -222,7 +228,10 @@ export async function readRecentVisits(env, limit) {
 //   'ref'     -> byRef      (counts folded to the referrer's HOST,
 //                            exactly as the old in-code aggregate did)
 //   'event'   -> byEvent    (empty events excluded)
-//   'via'     -> byVia
+//   'wt'      -> byWt       (the composite write-time string, blob10;
+//                            pre-W6 records read 'edge' — the old
+//                            'via' value — and folds keep the eras
+//                            distinct by the value itself)
 //   'ua'      -> crawlersClaimed / fetchersClaimed: the stored UA
 //                strings grouped and counted first, then re-read
 //                through the shared claimed-bot dictionary
@@ -291,7 +300,7 @@ const AGG_DIMS = {
   path: ['byPath', 'blob2', '$.path', null],
   country: ['byCountry', 'blob4', '$.country', v => !v],
   event: ['byEvent', 'blob11', '$.event', v => !v],
-  via: ['byVia', 'blob10', '$.via', null],
+  wt: ['byWt', 'blob10', '$.wt', null],
   ref: ['byRef', 'blob3', '$.ref', v => !v],
   ua: ['byUa', 'blob5', '$.ua', null],
   // The verdict fields (Oct 18 2026, lens spec A4): records written

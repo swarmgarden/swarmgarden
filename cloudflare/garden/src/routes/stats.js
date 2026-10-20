@@ -30,7 +30,7 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, verdictRows, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, wtBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { dbListLedger, dbListReceipts, dbCountSignals, dbCountHumanPresses, dbListNotes } from '../lib/db.js';
@@ -43,7 +43,7 @@ async function loadVisits(env) {
   // they run concurrently (Oct 19, 2026 — the sequential chain was
   // the bulk of this route's ~5s; see shared/visits.mjs).
   const [a, recent] = await Promise.all([
-    aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']),
+    aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'wt', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']),
     readRecentVisits(env, 50) // newest first — display list only
   ]);
   return { a, recent };
@@ -56,15 +56,16 @@ function aggregate(a) {
     if (INTEREST.some(s => p.includes(s))) interest[p] = c;
   }
   const top = (obj, n) => Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n);
-  const edge = (a.byVia && a.byVia['edge']) || 0;
+  const edge = a.total; // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string — the old byVia read is retired with it
   return {
     total: a.total, byClass: a.byClass, byPurpose: a.byPurpose, byBehaviour, byStatus: a.byStatus, byDay: a.byDay,
-    topPaths: top(a.byPath, 12), interest: top(interest, 12), edge, beacon: a.total - edge, readDepth: Object.keys(a.byPath).length,
+    topPaths: top(a.byPath, 12), interest: top(interest, 12), edge, beacon: 0, readDepth: Object.keys(a.byPath).length,
     byEvent: a.byEvent, topCountries: top(a.byCountry, 12),
     referrersGrouped: groupReferrers(a.byRef, a.total),
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
+    byWt: a.byWt,
     fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || []
@@ -177,6 +178,9 @@ export default async (req, env) => {
   html += '<h4>Address-range verdicts, by claimed name</h4>' + verdictTableHtml(esc, agg.byNameVerdict);
   html += '<h4>Distinct visitor digests, by day (Pacific)</h4>' + visitorDigestTableHtml(esc, agg.byVisitorDay);
   html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
+
+  // ---- Write-time components (W6, Oct 19 2026) ----
+  html += wtBlockHtml(esc, agg.byWt);
 
   // ---- Channel knocks (B-b read; W1 folds, Oct 19 2026) ----
   html += '<h3>Channel knocks — refused POST attempts</h3>';

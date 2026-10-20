@@ -2946,11 +2946,362 @@ function verdictFor(name, address) {
   const stamp = list.creationTime ? String(list.creationTime).slice(0, 10) : "unstamped";
   return { verdict: hit ? "verified-range" : "wrong-range", rangever: entry.list + "@" + stamp };
 }
+function sameAddress(a, b) {
+  const x = ipToBig(a), y = ipToBig(b);
+  if (!x || !y) return false;
+  return x.v === y.v && x.n === y.n;
+}
+function crossRangeMembership(address) {
+  const ip = ipToBig(address);
+  if (!ip) return null;
+  const hits = [];
+  for (const [id, list] of Object.entries(PARSED_LISTS)) {
+    if (list.prefixes.some((p) => inPrefix(ip, p))) hits.push(id);
+  }
+  return hits.sort();
+}
 var RANGE_BUNDLE = {
   generated_at: manifest_default.generated_at || null,
   lists: Object.keys(PARSED_LISTS),
   names: Object.keys(manifest_default.names || {}).length
 };
+
+// ../shared/rdns.mjs
+var DOH_URL = "https://cloudflare-dns.com/dns-query";
+var LOOKUP_TIMEOUT_MS = 700;
+var CATEGORY_RULES = [
+  // suffix, category, required hostname prefix (optional)
+  ["googlebot.com", "operator-crawler"],
+  ["search.msn.com", "operator-crawler"],
+  ["applebot.apple.com", "operator-crawler"],
+  ["yandex.ru", "operator-crawler"],
+  ["yandex.net", "operator-crawler"],
+  ["yandex.com", "operator-crawler"],
+  ["google.com", "operator-crawler", "rate-limited-proxy-"],
+  ["ahrefs.com", "commercial-bot"],
+  ["semrush.com", "commercial-bot"],
+  ["googleusercontent.com", "cloud-hosting"],
+  ["compute.amazonaws.com", "cloud-hosting"],
+  ["amazonaws.com", "cloud-hosting"],
+  ["cloudapp.azure.com", "cloud-hosting"],
+  ["linode.com", "cloud-hosting"],
+  ["vultr.com", "cloud-hosting"],
+  ["ovh.net", "cloud-hosting"],
+  ["your-server.de", "cloud-hosting"],
+  ["cloudflare.com", "cdn-proxy"],
+  ["fastly.net", "cdn-proxy"],
+  ["cloudfront.net", "cdn-proxy"],
+  ["edgekey.net", "cdn-proxy"],
+  ["comcast.net", "residential-network"],
+  ["verizon.net", "residential-network"],
+  ["att.net", "residential-network"],
+  ["cox.net", "residential-network"],
+  ["rr.com", "residential-network"],
+  ["virginmedia.com", "residential-network"],
+  ["btcentralplus.com", "residential-network"]
+];
+function suffixMatch(host, suffix) {
+  return host === suffix || host.endsWith("." + suffix);
+}
+function categoryForHostname(host) {
+  const h = (host || "").toLowerCase();
+  if (!h) return "named-other";
+  for (const [suffix, category, prefix] of CATEGORY_RULES) {
+    if (suffixMatch(h, suffix) && (!prefix || h.startsWith(prefix))) return category;
+  }
+  return "named-other";
+}
+var RDNS_FOR_NAME = {
+  "Googlebot": [{ suffix: "googlebot.com" }],
+  "GoogleOther": [{ suffix: "googlebot.com" }],
+  "Google-Agent": [{ suffix: "googleusercontent.com" }, { suffix: "google.com", prefix: "google-proxy-" }],
+  "Bingbot": [{ suffix: "search.msn.com" }],
+  "Applebot": [{ suffix: "applebot.apple.com" }],
+  "YandexBot": [{ suffix: "yandex.ru" }, { suffix: "yandex.net" }, { suffix: "yandex.com" }]
+};
+function reverseName(address) {
+  const s = String(address || "").trim();
+  if (!s) return null;
+  if (s.includes(":")) {
+    const halves = s.split("::");
+    if (halves.length > 2) return null;
+    const left = halves[0] ? halves[0].split(":") : [];
+    const right = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+    const missing = 8 - (left.length + right.length);
+    if (missing < 0) return null;
+    const groups = [...left, ...Array(halves.length === 2 ? missing : 0).fill("0"), ...right];
+    if (groups.length !== 8) return null;
+    const nibbles = groups.map((g) => g.padStart(4, "0")).join("");
+    if (!/^[0-9a-fA-F]{32}$/.test(nibbles)) return null;
+    return nibbles.split("").reverse().join(".") + ".ip6.arpa";
+  }
+  const parts = s.split(".");
+  if (parts.length !== 4 || parts.some((p) => !/^\d{1,3}$/.test(p))) return null;
+  return parts.reverse().join(".") + ".in-addr.arpa";
+}
+async function doh(fetchFn, name, type, timeoutMs) {
+  const url = DOH_URL + "?name=" + encodeURIComponent(name) + "&type=" + type;
+  let timer = null;
+  try {
+    const timeout = new Promise((_, reject3) => {
+      timer = setTimeout(() => reject3(new Error("rdns lookup timeout")), timeoutMs);
+    });
+    const res = await Promise.race([
+      fetchFn(url, { headers: { "accept": "application/dns-json" } }),
+      timeout
+    ]);
+    if (!res || !res.ok) return null;
+    const json = await res.json();
+    if (!json || !Array.isArray(json.Answer)) return [];
+    return json.Answer.map((a) => String(a.data || "")).filter(Boolean);
+  } catch (e) {
+    return null;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+var originCache = /* @__PURE__ */ new Map();
+var ORIGIN_CACHE_MAX = 500;
+async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
+  const fn = fetchFn || fetch;
+  const ms = timeoutMs || LOOKUP_TIMEOUT_MS;
+  if (!address) return { state: "not-checked" };
+  const key = String(address);
+  const hit = originCache.get(key);
+  if (hit) return hit;
+  const rev = reverseName(key);
+  if (!rev) return { state: "not-checked" };
+  const ptrs = await doh(fn, rev, "PTR", ms);
+  if (ptrs === null) return { state: "not-checked" };
+  let out;
+  if (!ptrs.length) {
+    out = { state: "ok", category: "none", confirmed: false, hostname: null };
+  } else {
+    const hostname = ptrs[0].replace(/\.$/, "").toLowerCase();
+    const [aRecs, aaaaRecs] = await Promise.all([
+      doh(fn, hostname, "A", ms),
+      doh(fn, hostname, "AAAA", ms)
+    ]);
+    const answers = [...aRecs || [], ...aaaaRecs || []];
+    const confirmed = answers.some((ans) => sameAddress(ans, key));
+    out = {
+      state: "ok",
+      category: confirmed ? categoryForHostname(hostname) : "named-other",
+      confirmed,
+      hostname
+    };
+  }
+  if (originCache.size >= ORIGIN_CACHE_MAX) originCache.clear();
+  originCache.set(key, out);
+  return out;
+}
+function rdnsVerdictFor(claimedName, origin) {
+  const rules = RDNS_FOR_NAME[claimedName];
+  if (!rules) return { verdict: "not-offered", suffix: "" };
+  if (!origin || origin.state !== "ok") return { verdict: "not-checked", suffix: "" };
+  if (!origin.hostname) return { verdict: "none", suffix: "" };
+  const rule = rules.find((r) => suffixMatch(origin.hostname, r.suffix) && (!r.prefix || origin.hostname.startsWith(r.prefix)));
+  if (rule && origin.confirmed) return { verdict: "match", suffix: rule.suffix };
+  return { verdict: "mismatch", suffix: "" };
+}
+
+// ../shared/wba.mjs
+var SIGNER_BINDINGS = {
+  "operator.openai.com": ["ChatGPT-User"],
+  "agent.bot.goog": ["Google-Agent"]
+};
+function signerBinding(host, claimedName) {
+  if (!host) return "unbound";
+  const names = SIGNER_BINDINGS[host];
+  return names && names.includes(claimedName) ? "bound" : "unbound";
+}
+function splitTopLevel(header) {
+  const parts = [];
+  let depth = 0, inQ = false, cur = "";
+  for (let i = 0; i < header.length; i++) {
+    const c = header[i];
+    if (inQ) {
+      cur += c;
+      if (c === "\\" && i + 1 < header.length) cur += header[++i];
+      else if (c === '"') inQ = false;
+      continue;
+    }
+    if (c === '"') {
+      inQ = true;
+      cur += c;
+      continue;
+    }
+    if (c === "(") depth++;
+    if (c === ")") depth--;
+    if (c === "," && depth === 0) {
+      parts.push(cur);
+      cur = "";
+      continue;
+    }
+    cur += c;
+  }
+  if (cur.trim()) parts.push(cur);
+  return parts.map((p) => p.trim()).filter(Boolean);
+}
+function parseParams(str) {
+  const params = {};
+  for (const piece of str.split(";")) {
+    const p = piece.trim();
+    if (!p) continue;
+    const eq = p.indexOf("=");
+    if (eq === -1) {
+      params[p] = true;
+      continue;
+    }
+    const k = p.slice(0, eq).trim();
+    let v = p.slice(eq + 1).trim();
+    if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
+    params[k] = v;
+  }
+  return params;
+}
+function parseSignatureInput(header) {
+  const out = {};
+  if (!header) return out;
+  for (const entry of splitTopLevel(header)) {
+    const eq = entry.indexOf("=(");
+    if (eq === -1) continue;
+    const label = entry.slice(0, eq).trim();
+    let inQ = false, close = -1;
+    for (let i = eq + 1; i < entry.length; i++) {
+      const c = entry[i];
+      if (inQ) {
+        if (c === "\\") i++;
+        else if (c === '"') inQ = false;
+        continue;
+      }
+      if (c === '"') inQ = true;
+      else if (c === ")") {
+        close = i;
+        break;
+      }
+    }
+    if (close === -1) continue;
+    const inner = entry.slice(eq + 2, close);
+    const params = parseParams(entry.slice(close + 1));
+    const covered = [];
+    const re = /"([^"]+)"((?:;[^"])*?)(?=\s+"|\s*$)/g;
+    let m;
+    while ((m = re.exec(inner)) !== null) {
+      covered.push({ id: m[1], req: /;req\b/.test(m[2] || "") });
+    }
+    out[label] = { raw: entry.slice(eq + 1), covered, params };
+  }
+  return out;
+}
+function parseSignatureHeader(header) {
+  const out = {};
+  if (!header) return out;
+  for (const entry of splitTopLevel(header)) {
+    const eq = entry.indexOf("=");
+    if (eq === -1) continue;
+    let v = entry.slice(eq + 1).trim().replace(/^"|"$/g, "");
+    if (v.startsWith(":") && v.endsWith(":") && v.length > 1) v = v.slice(1, -1);
+    out[entry.slice(0, eq).trim()] = v;
+  }
+  return out;
+}
+var dirCache = /* @__PURE__ */ new Map();
+var DIR_TTL_MS = 10 * 60 * 1e3;
+var DIR_FAIL_TTL_MS = 60 * 1e3;
+async function fetchDirectoryKeys(host, fetchFn) {
+  const hit = dirCache.get(host);
+  const now = Date.now();
+  if (hit && now - hit.at < (hit.keys ? DIR_TTL_MS : DIR_FAIL_TTL_MS)) return hit.keys;
+  let keys = null;
+  try {
+    const res = await fetchFn(
+      "https://" + host + "/.well-known/http-message-signatures-directory",
+      { headers: { "accept": "application/json" } }
+    );
+    if (res && res.ok) {
+      const json = await res.json();
+      const arr = Array.isArray(json) ? json : json && Array.isArray(json.keys) ? json.keys : null;
+      if (arr) keys = arr.filter((k) => k && k.kty === "OKP" && k.crv === "Ed25519" && k.x);
+    }
+  } catch (e) {
+    keys = null;
+  }
+  dirCache.set(host, { at: now, keys });
+  return keys;
+}
+function b64ToBytes(b64) {
+  const s = String(b64).replace(/-/g, "+").replace(/_/g, "/");
+  const padded = s + "=".repeat((4 - s.length % 4) % 4);
+  const bin = atob(padded);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function verifyWebBotAuth(opts) {
+  const absent = { presence: "absent", validity: "absent", binding: "absent" };
+  try {
+    const sigHeader = opts.getHeader("signature");
+    const inputHeader = opts.getHeader("signature-input");
+    if (!sigHeader || !inputHeader) return absent;
+    const binding = signerBinding(opts.sigAgentHost, opts.claimedName);
+    const present = (v) => ({ presence: "present", validity: v, binding });
+    const inputs = parseSignatureInput(inputHeader);
+    const sigs = parseSignatureHeader(sigHeader);
+    const labels = Object.keys(inputs).filter((l) => sigs[l]);
+    if (!labels.length) return present("unverifiable");
+    const label = labels.find((l) => inputs[l].params.tag === "web-bot-auth") || labels[0];
+    const entry = inputs[label];
+    if (entry.params.alg !== "ed25519") return present("unverifiable");
+    if (entry.covered.some((c) => c.req)) return present("unverifiable");
+    if (!opts.sigAgentHost) return present("unverifiable");
+    const keys = await fetchDirectoryKeys(opts.sigAgentHost, opts.fetchFn || fetch);
+    if (!keys) return present("directory-unreachable");
+    const kid = entry.params.keyid;
+    const jwk = kid && keys.find((k) => k.kid === kid) || (keys.length === 1 ? keys[0] : null);
+    if (!jwk) return present("unverifiable");
+    const nowSec = opts.nowSec || Math.floor(Date.now() / 1e3);
+    const expires = Number(entry.params.expires || 0);
+    if (expires && expires < nowSec) return present("invalid");
+    const u = new URL(opts.url);
+    const lines = [];
+    for (const c of entry.covered) {
+      let value = null;
+      if (c.id === "@method") value = String(opts.method || "GET").toUpperCase();
+      else if (c.id === "@authority") value = u.host;
+      else if (c.id === "@path") value = u.pathname;
+      else if (c.id === "@query") value = u.search || "?";
+      else if (c.id === "@scheme") value = u.protocol.replace(":", "");
+      else if (c.id === "@request-target") value = u.pathname + u.search;
+      else if (c.id.startsWith("@")) return present("unverifiable");
+      else {
+        const hv = opts.getHeader(c.id);
+        if (hv === null || hv === void 0) return present("unverifiable");
+        value = String(hv).trim().replace(/\s+/g, " ");
+      }
+      lines.push('"' + c.id + '": ' + value);
+    }
+    lines.push('"@signature-params": ' + entry.raw);
+    const base = new TextEncoder().encode(lines.join("\n"));
+    let sigBytes;
+    try {
+      sigBytes = b64ToBytes(sigs[label]);
+    } catch (e) {
+      return present("invalid");
+    }
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      { kty: "OKP", crv: "Ed25519", x: jwk.x, ext: true },
+      { name: "Ed25519" },
+      false,
+      ["verify"]
+    );
+    const ok = await crypto.subtle.verify({ name: "Ed25519" }, key, sigBytes, base);
+    return present(ok ? "valid" : "invalid");
+  } catch (e) {
+    return { presence: "present", validity: "unverifiable", binding: "unbound" };
+  }
+}
 
 // ../shared/visitor.mjs
 var enc = new TextEncoder();
@@ -2991,7 +3342,7 @@ async function visitorForRequest(env, req) {
 }
 
 // ../shared/visits.mjs
-var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "via", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
+var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "wt", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
 }
@@ -3081,7 +3432,7 @@ var AGG_DIMS = {
   path: ["byPath", "blob2", "$.path", null],
   country: ["byCountry", "blob4", "$.country", (v) => !v],
   event: ["byEvent", "blob11", "$.event", (v) => !v],
-  via: ["byVia", "blob10", "$.via", null],
+  wt: ["byWt", "blob10", "$.wt", null],
   ref: ["byRef", "blob3", "$.ref", (v) => !v],
   ua: ["byUa", "blob5", "$.ua", null],
   // The verdict fields (Oct 18 2026, lens spec A4): records written
@@ -3339,11 +3690,87 @@ function claimFields(req, ua) {
   const v = verdictFor(bot.name, req.headers.get("cf-connecting-ip"));
   return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
 }
-function buildVisitRecord(req, res, siteHost, event, digests = {}) {
+function headerProfile(req) {
+  const hasSf = !!(req.headers.get("sec-fetch-mode") || req.headers.get("sec-fetch-site") || req.headers.get("sec-fetch-dest") || req.headers.get("sec-fetch-user"));
+  const hasAl = !!req.headers.get("accept-language");
+  const accept = req.headers.get("accept") || "";
+  const hasHtml = accept.includes("text/html");
+  if (hasSf && hasAl) return "browser-like";
+  if (!hasSf && !hasAl && !hasHtml) return "minimal";
+  return "partial";
+}
+function stackFacts(req) {
+  const cf = req.cf || {};
+  const proto = { "HTTP/1.0": "h1.0", "HTTP/1.1": "h1.1", "HTTP/2": "h2", "HTTP/3": "h3" }[cf.httpProtocol] || "unknown";
+  const tls = cf.tlsVersion ? String(cf.tlsVersion).replace(/^TLSv/i, "") : "-";
+  const cipher = cf.tlsCipher ? String(cf.tlsCipher).replace(/^TLS_/, "") : "-";
+  return { proto, tls, cipher };
+}
+var WBA_TIMEOUT_MS = 1500;
+async function writeTimeFields(req, opts = {}) {
+  const network = opts.network !== false;
+  const ua = (req.headers.get("user-agent") || "").slice(0, 400);
+  const base = claimFields(req, ua);
+  const address = req.headers.get("cf-connecting-ip");
+  const xrHits = address ? crossRangeMembership(address) : null;
+  const xr = xrHits === null ? "nc" : xrHits.length ? xrHits.join("+") : "-";
+  let org = "not-checked";
+  let rdns = base.cname ? "not-checked" : "na";
+  if (network && address) {
+    try {
+      const origin = await lookupNetworkOrigin(address, opts.fetchFn);
+      if (origin && origin.state === "ok") org = origin.category;
+      if (base.cname) rdns = rdnsVerdictFor(base.cname, origin).verdict;
+    } catch (e) {
+    }
+  }
+  let wba = "absent", wbav = "absent", wbab = "absent";
+  if (network && (req.headers.get("signature") || req.headers.get("signature-input"))) {
+    try {
+      let timer = null;
+      const timeout = new Promise((resolve) => {
+        timer = setTimeout(() => resolve({ presence: "present", validity: "unverifiable", binding: "unbound" }), WBA_TIMEOUT_MS);
+      });
+      const verdict = await Promise.race([
+        verifyWebBotAuth({
+          getHeader: (n) => req.headers.get(n),
+          method: req.method,
+          url: req.url,
+          sigAgentHost: sigAgentHost(req),
+          claimedName: base.cname,
+          fetchFn: opts.fetchFn
+        }),
+        timeout
+      ]);
+      if (timer) clearTimeout(timer);
+      wba = verdict.presence;
+      wbav = verdict.validity;
+      wbab = verdict.binding;
+    } catch (e) {
+      wba = "present";
+      wbav = "unverifiable";
+      wbab = "unbound";
+    }
+  }
+  const stk = stackFacts(req);
+  const hp = headerProfile(req);
+  const wt = "1;rng=" + base.ipverdict + ";rdns=" + rdns + ";org=" + org + ";xr=" + xr + ";wba=" + wba + ";wbav=" + wbav + ";wbab=" + wbab + ";proto=" + stk.proto + ";tls=" + stk.tls + ";cipher=" + stk.cipher + ";hp=" + hp;
+  return { ...base, wt };
+}
+function fallbackFields(req, ua) {
+  const base = claimFields(req, ua);
+  const stk = stackFacts(req);
+  return {
+    ...base,
+    wt: "1;rng=" + base.ipverdict + ";rdns=" + (base.cname ? "not-checked" : "na") + ";org=not-checked;xr=nc;wba=absent;wbav=absent;wbab=absent;proto=" + stk.proto + ";tls=" + stk.tls + ";cipher=" + stk.cipher + ";hp=" + headerProfile(req)
+  };
+}
+function buildVisitRecord(req, res, siteHost, event, digests = {}, fields = null) {
   const url = new URL(req.url);
   const ua = (req.headers.get("user-agent") || "").slice(0, 400);
   const { cls, purpose } = classify(ua);
   const dg = digests && typeof digests === "object" ? digests : { visitor: digests || "" };
+  const f = fields || fallbackFields(req, ua);
   return {
     t: (/* @__PURE__ */ new Date()).toISOString(),
     site: siteHost,
@@ -3361,9 +3788,11 @@ function buildVisitRecord(req, res, siteHost, event, digests = {}) {
     md: prefersMarkdown(req.headers.get("accept")) ? 1 : 0,
     ba: botAuthState(req),
     sigagent: sigAgentHost(req),
-    via: "edge",
+    wt: f.wt,
     event: event || "pageview",
-    ...claimFields(req, ua),
+    cname: f.cname,
+    ipverdict: f.ipverdict,
+    rangever: f.rangever,
     // The visitor digests (lens spec B-e; epoch digest added Oct 19
     // 2026, D2), computed by the caller (frontDoor) — '' when no
     // secret is provisioned on this Worker or the request carried
@@ -3387,10 +3816,11 @@ function shouldLogAsset(req) {
   if (p.startsWith("/.netlify/")) return false;
   return COMPANION_EXT.some((e) => p.endsWith(e));
 }
-function buildAssetRecord(req, res, siteHost, digests = {}) {
+function buildAssetRecord(req, res, siteHost, digests = {}, fields = null) {
   const url = new URL(req.url);
   const ua = (req.headers.get("user-agent") || "").slice(0, 400);
   const dg = digests && typeof digests === "object" ? digests : { visitor: digests || "" };
+  const f = fields || fallbackFields(req, ua);
   return {
     t: (/* @__PURE__ */ new Date()).toISOString(),
     site: siteHost,
@@ -3408,9 +3838,11 @@ function buildAssetRecord(req, res, siteHost, digests = {}) {
     md: 0,
     ba: botAuthState(req),
     sigagent: sigAgentHost(req),
-    via: "edge",
+    wt: f.wt,
     event: "asset",
-    ...claimFields(req, ua),
+    cname: f.cname,
+    ipverdict: f.ipverdict,
+    rangever: f.rangever,
     // Companion records carry the digests too (lens spec B-e: the
     // field rides the visit record "and B-a's companion records"),
     // so the render join can be exact rather than ASN-approximate.
@@ -3579,27 +4011,31 @@ async function frontDoor(req, env, ctx, res, opts) {
     out = await injectCounterText(out, opts.getCounterText);
   }
   if (shouldLog(req)) {
-    const visitor = await visitorForRequest(env, req);
     const event = changedEventForResponse(eventForPath(url.pathname), out);
-    const record = buildVisitRecord(req, out, opts.siteHost, event, visitor);
-    const write = writeVisit(env, record).then(() => {
+    const write = (async () => {
+      const visitor = await visitorForRequest(env, req);
+      const fields = await writeTimeFields(req);
+      const record = buildVisitRecord(req, out, opts.siteHost, event, visitor, fields);
+      await writeVisit(env, record);
       try {
         console.log("VISIT " + JSON.stringify(record));
       } catch (e) {
       }
-    }).catch(() => {
+    })().catch(() => {
     });
     if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(write);
     else await write;
   } else if (shouldLogAsset(req)) {
-    const visitor = await visitorForRequest(env, req);
-    const record = buildAssetRecord(req, out, opts.siteHost, visitor);
-    const write = writeAssetVisit(env, record).then(() => {
+    const write = (async () => {
+      const visitor = await visitorForRequest(env, req);
+      const fields = await writeTimeFields(req, { network: false });
+      const record = buildAssetRecord(req, out, opts.siteHost, visitor, fields);
+      await writeAssetVisit(env, record);
       try {
         console.log("ASSET " + JSON.stringify(record));
       } catch (e) {
       }
-    }).catch(() => {
+    })().catch(() => {
     });
     if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(write);
     else await write;
@@ -3986,6 +4422,41 @@ function referrerTableHtml(esc4, groupedRefs, total) {
   h += "<p>The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host. Platform figures are a <strong>lower bound</strong>. &ldquo;No referer recorded&rdquo; is this site&rsquo;s total requests recorded minus the grouped referrer hosts; the residual also absorbs the rare unparseable referer. The request records cover GET/HEAD requests \u2014 referrer figures describe page traffic, not POSTs to the intake, signal, notes or press endpoints.</p>";
   return h;
 }
+function parseWt(wt) {
+  if (typeof wt !== "string" || !wt.startsWith("1;")) return null;
+  const out = {};
+  for (const part of wt.slice(2).split(";")) {
+    const eq = part.indexOf("=");
+    if (eq > 0) out[part.slice(0, eq)] = part.slice(eq + 1);
+  }
+  return out;
+}
+function wtFold(byWt) {
+  const fold = { withComponents: 0, preEra: 0, byRdns: {}, byOrg: {}, byWbav: {}, byHp: {} };
+  for (const [wt, n] of Object.entries(byWt || {})) {
+    const c = parseWt(wt);
+    if (!c) {
+      fold.preEra += n;
+      continue;
+    }
+    fold.withComponents += n;
+    if (c.rdns) fold.byRdns[c.rdns] = (fold.byRdns[c.rdns] || 0) + n;
+    if (c.org) fold.byOrg[c.org] = (fold.byOrg[c.org] || 0) + n;
+    if (c.wba === "present" && c.wbav) fold.byWbav[c.wbav] = (fold.byWbav[c.wbav] || 0) + n;
+    if (c.hp) fold.byHp[c.hp] = (fold.byHp[c.hp] || 0) + n;
+  }
+  return fold;
+}
+function wtBlockHtml(esc4, byWt) {
+  const f = wtFold(byWt);
+  let html = "<h3>Write-time verdict components (from Oct 19, 2026)</h3>";
+  html += "<p>Computed at the moment a request arrived, while its address was in hand, and stored as verdicts and facts only \u2014 the address, any hostname, and any key material are discarded. Records written before this instrument existed (" + f.preEra + ") carry no components. The network-origin category names a network, never a person; &lsquo;residential-network&rsquo; is not evidence of a human. The header profile is a descriptive fold only, never a verdict.</p>";
+  html += "<h4>Claimed-operator reverse-DNS verdict (claimed names only)</h4>" + countTable(esc4, sortedPairs(f.byRdns), null);
+  html += "<h4>Network-origin category (every request)</h4>" + countTable(esc4, sortedPairs(f.byOrg), null);
+  html += "<h4>Web Bot Auth signature validity \u2014 our own RFC 9421 computation (signed requests only)</h4>" + countTable(esc4, sortedPairs(f.byWbav), null);
+  html += "<h4>Header profile (descriptive)</h4>" + countTable(esc4, sortedPairs(f.byHp), null);
+  return html;
+}
 
 // ../shared/render.mjs
 import { createHash } from "node:crypto";
@@ -4184,7 +4655,7 @@ var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } 
 // ../advisory/src/routes/stats.js
 var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "via", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "fetchsplit"]);
+  const a = await aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "wt", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "fetchsplit"]);
   const recent = await readRecentVisits(env, 50);
   return { a, recent };
 }
@@ -4228,14 +4699,15 @@ function aggregate(a) {
     byNameVerdict: a.byNameVerdict,
     byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
+    byWt: a.byWt,
     fetchesTotal: a.fetchesTotal,
     redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass,
     redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
-    edge: a.byVia && a.byVia["edge"] || 0,
+    edge: a.total,
     beacon: 0
-    // the beacon write path is not carried over; every record is edge-written
+    // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string
   };
 }
 var stats_default = async (req, env) => {
@@ -4319,6 +4791,7 @@ var stats_default = async (req, env) => {
   html += "<h4>Address-range verdicts, by claimed name</h4>" + verdictTableHtml(esc4, agg.byNameVerdict);
   html += "<h4>Distinct visitor digests, by day (Pacific)</h4>" + visitorDigestTableHtml(esc4, agg.byVisitorDay);
   html += "<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>" + visitorEpochTableHtml(esc4, agg.byVisitorEpoch);
+  html += wtBlockHtml(esc4, agg.byWt);
   html += "<h3>Channel knocks \u2014 refused POST attempts</h3>";
   html += knocksBlockHtml(esc4, attempts);
   html += "<h3>Render-signalled \u2014 pages reporting a render (claims)</h3>";

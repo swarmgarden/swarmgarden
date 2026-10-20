@@ -485,6 +485,76 @@ for (let i = 0; i < 30 && !vRec; i++) {
 }
 check('visit record carries status, method, markdown flag, bot-auth presence, forwarded country, class + purpose',
   !!vRec && vRec.status === 200 && vRec.method === 'GET' && vRec.md === 1 && vRec.ba === 'present' && vRec.country === 'US' && vRec.cls === 'agent-claimed' && vRec.purpose === 'training', JSON.stringify(vRec));
+check('W6: the stored record carries the composite write-time string (wt) — GPTBot is rdns not-offered (ranges-only operator) — and the retired via field is gone',
+  !!vRec && typeof vRec.wt === 'string' && vRec.wt.startsWith('1;rng=') && vRec.wt.includes(';rdns=not-offered;') && vRec.wt.includes(';hp=') && vRec.via === undefined, JSON.stringify(vRec && vRec.wt));
+
+// ---------- W6 unit pins: rDNS / cross-range / WBA / header profile ----------
+{
+  const { lookupNetworkOrigin, rdnsVerdictFor } = await import(path.join(ROOT, 'shared', 'rdns.mjs'));
+  const { crossRangeMembership } = await import(path.join(ROOT, 'shared', 'ranges.mjs'));
+  const { headerProfile } = await import(path.join(ROOT, 'shared', 'frontdoor.mjs'));
+  const dohStub = (mapping) => async (url) => {
+    const u = new URL(url);
+    const data = mapping[u.searchParams.get('name') + '|' + u.searchParams.get('type')] || [];
+    return { ok: true, json: async () => ({ Answer: data.map(d => ({ data: d })) }) };
+  };
+  const o1 = await lookupNetworkOrigin('66.249.66.1', dohStub({
+    '1.66.249.66.in-addr.arpa|PTR': ['crawl-66-249-66-1.googlebot.com.'],
+    'crawl-66-249-66-1.googlebot.com|A': ['66.249.66.1']
+  }));
+  const v1 = rdnsVerdictFor('Googlebot', o1);
+  check('W6 rdns: a forward-confirmed googlebot.com name yields category operator-crawler and verdict match with the documented suffix',
+    o1.state === 'ok' && o1.category === 'operator-crawler' && v1.verdict === 'match' && v1.suffix === 'googlebot.com', JSON.stringify(o1) + ' ' + JSON.stringify(v1));
+  const o2 = await lookupNetworkOrigin('9.9.9.9', dohStub({
+    '9.9.9.9.in-addr.arpa|PTR': ['crawl-9-9-9-9.googlebot.com.'],
+    'crawl-9-9-9-9.googlebot.com|A': ['1.2.3.4']
+  }));
+  check('W6 rdns: an UNCONFIRMED PTR earns no category and no match (a forged PTR cannot pass)',
+    o2.category === 'named-other' && rdnsVerdictFor('Googlebot', o2).verdict === 'mismatch', JSON.stringify(o2));
+  const o3 = await lookupNetworkOrigin('8.8.8.8', dohStub({}));
+  check('W6 rdns: no PTR record is none; a ranges-only operator (GPTBot) is not-offered even with a perfect origin — never mismatch',
+    o3.category === 'none' && rdnsVerdictFor('Googlebot', o3).verdict === 'none' && rdnsVerdictFor('GPTBot', o1).verdict === 'not-offered');
+  const o4 = await lookupNetworkOrigin('8.8.4.4', async () => { throw new Error('resolver down'); });
+  check('W6 rdns: a resolver failure lands in not-checked, never a negative state',
+    o4.state === 'not-checked' && rdnsVerdictFor('Bingbot', o4).verdict === 'not-checked');
+  const xr = crossRangeMembership('66.249.66.1');
+  check('W6 ranges: cross-range membership tests EVERY bundled list (a Google-range address matches regardless of any claim); an unlisted address matches none; garbage is not computed',
+    Array.isArray(xr) && xr.length >= 1 && Array.isArray(crossRangeMembership('73.1.2.3')) && crossRangeMembership('73.1.2.3').length === 0 && crossRangeMembership('not-an-ip') === null, JSON.stringify(xr));
+  check('W6 stack: header profile separates a browser-like header set from a bare one',
+    headerProfile(new Request('https://x.example/', { headers: { 'sec-fetch-mode': 'navigate', 'accept-language': 'en', 'accept': 'text/html' } })) === 'browser-like' &&
+    headerProfile(new Request('https://x.example/', { headers: {} })) === 'minimal');
+}
+{
+  const { verifyWebBotAuth } = await import(path.join(ROOT, 'shared', 'wba.mjs'));
+  const kp = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+  const jwkPub = await crypto.subtle.exportKey('jwk', kp.publicKey);
+  const nowS = Math.floor(Date.now() / 1000);
+  const inputVal = '("@authority" "signature-agent");created=' + nowS + ';expires=' + (nowS + 300) + ';keyid="test-key";alg="ed25519";tag="web-bot-auth"';
+  const base = '"@authority": signer-target.example\n"signature-agent": "https://operator.openai.com"\n"@signature-params": ' + inputVal;
+  const sigBytes = new Uint8Array(await crypto.subtle.sign({ name: 'Ed25519' }, kp.privateKey, new TextEncoder().encode(base)));
+  const sigB64 = Buffer.from(sigBytes).toString('base64');
+  const hdrs = {
+    'signature': 'sig1=:' + sigB64 + ':',
+    'signature-input': 'sig1=' + inputVal,
+    'signature-agent': '"https://operator.openai.com"'
+  };
+  const dirOk = async () => ({ ok: true, json: async () => ({ keys: [{ kty: 'OKP', crv: 'Ed25519', x: jwkPub.x, kid: 'test-key' }] }) });
+  const call = (over) => verifyWebBotAuth(Object.assign({
+    getHeader: n => hdrs[n] ?? null, method: 'GET', url: 'https://signer-target.example/page',
+    sigAgentHost: 'operator.openai.com', claimedName: 'ChatGPT-User', fetchFn: dirOk
+  }, over || {}));
+  const good = await call();
+  check('W6 wba: a correctly signed request verifies valid, and the host binding is a SEPARATE fact (bound for ChatGPT-User at operator.openai.com)',
+    good.presence === 'present' && good.validity === 'valid' && good.binding === 'bound', JSON.stringify(good));
+  const tampered = await call({ getHeader: n => (n === 'signature' ? 'sig1=:' + sigB64.slice(0, -4) + 'AAAA:' : hdrs[n] ?? null) });
+  check('W6 wba: a tampered signature verifies invalid (not unverifiable)', tampered.validity === 'invalid', JSON.stringify(tampered));
+  const noDir = await call({ sigAgentHost: 'dir-down.example', fetchFn: async () => { throw new Error('directory down'); } });
+  check('W6 wba: an unreachable key directory is its own state — never recorded as invalid',
+    noDir.validity === 'directory-unreachable', JSON.stringify(noDir));
+  const unbound = await call({ claimedName: 'ClaudeBot' });
+  check('W6 wba: validity can be valid while binding is unbound (the facts never blend)',
+    unbound.validity === 'valid' && unbound.binding === 'unbound', JSON.stringify(unbound));
+}
 
 // The beacon write path is retired (plan Decision 7): a forged client
 // POST creates no record.

@@ -47,7 +47,7 @@
 import { readRecentVisits, aggregateVisits } from '../../../shared/visits.mjs';
 import { behaviourLabel, INTEREST } from '../../../shared/behaviour.mjs';
 import { groupReferrers } from '../../../shared/referrers.mjs';
-import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
+import { countTable, sortedPairs, verdictTableHtml, referrerTableHtml, visitsBlock, visitorDigestTableHtml, visitorEpochTableHtml, knocksBlockHtml, wtBlockHtml, VISITS_BASIS } from '../../../shared/statsview.mjs';
 import { attemptStats } from '../../../shared/attempts.mjs';
 import { renderStats } from '../../../shared/render.mjs';
 import { humanTotal, setHumanPaused } from '../lib/human.js';
@@ -56,7 +56,7 @@ import { setRenderPaused } from '../lib/render.js';
 const BASIS = VISITS_BASIS;
 
 async function loadVisits(env) {
-  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'via', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']);
+  const a = await aggregateVisits(env, ['class', 'purpose', 'status', 'day', 'path', 'country', 'ref', 'event', 'wt', 'ua', 'verdict', 'nameverdict', 'visitorday', 'visitorepoch', 'fetchsplit']);
   const recent = await readRecentVisits(env, 50); // newest first — display list only
   return { a, recent };
 }
@@ -86,10 +86,11 @@ function aggregate(a) {
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
+    byWt: a.byWt,
     fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
-    edge: (a.byVia && a.byVia['edge']) || 0, beacon: 0 // the beacon write path is not carried over; every record is edge-written
+    edge: a.total, beacon: 0 // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string
   };
 }
 
@@ -182,6 +183,8 @@ export default async (req, env) => {
   html += '<h4>Distinct visitor digests (epoch), by day (Pacific)</h4>' + visitorEpochTableHtml(esc, agg.byVisitorEpoch);
 
   // ---- Channel knocks (B-b read; W1 folds, Oct 19 2026) ----
+  html += wtBlockHtml(esc, agg.byWt);
+
   html += '<h3>Channel knocks — refused POST attempts</h3>';
   html += knocksBlockHtml(esc, attempts);
 

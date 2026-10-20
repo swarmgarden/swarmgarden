@@ -42,7 +42,14 @@
 //      over (UTC date, cf-connecting-ip, user-agent) under a
 //      per-site secret. The address is an input to a one-way
 //      function and is discarded; the digest links a visitor's
-//      requests within one day and nothing across days.
+//      requests within one day and nothing across days. Since
+//      Oct 19 2026 (W6) records also carry the composite write-
+//      time string (wt): the range verdict, the rDNS origin
+//      category + claimed-operator match verdict, cross-range
+//      membership, our own Web Bot Auth validity facts, and the
+//      arriving stack facts — verdicts and facts computed while
+//      the address is in hand; the address itself, any hostname,
+//      and any key material are discarded (see writeTimeFields).
 //   4. Asset-companion logging (Oct 18 2026, lens spec B-a) — GET/HEAD
 //      requests for the companion set (.css/.js/.ico: the stylesheet,
 //      script and favicon a rendered page pulls) write a companion
@@ -59,7 +66,9 @@
 // not logged — see point 3).
 import { classify } from './taxonomy.mjs';
 import { claimedBot } from './behaviour.mjs';
-import { verdictFor } from './ranges.mjs';
+import { verdictFor, crossRangeMembership } from './ranges.mjs';
+import { lookupNetworkOrigin, rdnsVerdictFor } from './rdns.mjs';
+import { verifyWebBotAuth } from './wba.mjs';
 import { visitorForRequest } from './visitor.mjs';
 import { writeVisit, writeAssetVisit } from './visits.mjs';
 
@@ -105,14 +114,14 @@ function twinPath(pathname) {
   return null;
 }
 
-// Bot-auth verdict: on Cloudflare, for signers registered in the
-// Verified Bots program, the edge verifies the RFC 9421 signature and
-// exposes request.cf.botManagement.verifiedBot; where that is present
-// we record the verdict, otherwise header PRESENCE only (plan,
-// "Capabilities: Web Bot Auth: from presence to verdict"). The field
-// keeps the Netlify shape ('present'/'absent') and adds 'verified' /
-// 'present-invalid' only when the platform actually reports them —
-// STAGING-VERIFY which cf fields our tier exposes.
+// Bot-auth presence: header PRESENCE only in this field. (The
+// platform route to a verdict is closed on this account: a probe
+// Worker on Oct 18 2026 established that request.cf carries NO
+// botManagement object at all on the Workers Paid tier — it is an
+// Enterprise add-on — so verifiedBot / bot score are dark here and
+// no purchase was made. Signature VALIDITY is therefore computed
+// in-Worker at write time by shared/wba.mjs and recorded in the
+// composite write-time string, labelled our own computation.)
 export function botAuthState(req) {
   const present = !!(req.headers.get('signature') || req.headers.get('signature-input') || req.headers.get('signature-agent'));
   const bm = (req.cf && req.cf.botManagement) || null;
@@ -157,11 +166,136 @@ function claimFields(req, ua) {
   return { cname: bot.name, ipverdict: v.verdict, rangever: v.rangever };
 }
 
-export function buildVisitRecord(req, res, siteHost, event, digests = {}) {
+// ---- write-time fields (Oct 19 2026, W6) ----
+// The composite write-time string ('wt', stored in the record's
+// blob10 — the slot 'via' occupied, constant 'edge' since the
+// beacon write path retired; repurposed era-forward: records
+// written before this build carry 'edge' there and no components).
+// One string, semicolon-separated key=value components:
+//   rng     the address-range verdict (same value as ipverdict)
+//   rdns    the claimed-operator rDNS match verdict (shared/rdns):
+//           match / mismatch / none / not-offered / not-checked /
+//           na (no name claimed, so no operator check exists)
+//   org     the network-origin category for EVERY request, from
+//           the forward-confirmed rDNS name (shared/rdns) — a
+//           descriptive fact about the network, never a verdict on
+//           a claim and never evidence about a person
+//   xr      cross-range membership: every bundled operator list
+//           whose ranges contain the address ('-' = in none,
+//           'nc' = not computed: no address)
+//   wba     Web Bot Auth signature presence
+//   wbav    our own RFC 9421 validity computation (shared/wba):
+//           valid / invalid / unverifiable / directory-unreachable
+//   wbab    curated signer-host binding for the claimed name:
+//           bound / unbound
+//   proto / tls / cipher — the arriving stack (descriptive facts)
+//   hp      header profile: browser-like / partial / minimal — a
+//           DESCRIPTIVE fold only, never a verdict component
+//           (impersonation libraries spoof header sets wholesale)
+// rng/rdns/xr/wba* are the verdict components; org and the stack
+// facts are descriptive facts sharing the string because the
+// record's text slots are all allocated — sharing a string does
+// not make a fact a verdict. The raw material behind every
+// component (address, hostname, key, signature) is discarded in
+// this call; only the component tokens are stored.
+export function headerProfile(req) {
+  const hasSf = !!(req.headers.get('sec-fetch-mode') || req.headers.get('sec-fetch-site') ||
+    req.headers.get('sec-fetch-dest') || req.headers.get('sec-fetch-user'));
+  const hasAl = !!req.headers.get('accept-language');
+  const accept = req.headers.get('accept') || '';
+  const hasHtml = accept.includes('text/html');
+  if (hasSf && hasAl) return 'browser-like';
+  if (!hasSf && !hasAl && !hasHtml) return 'minimal';
+  return 'partial';
+}
+
+export function stackFacts(req) {
+  const cf = req.cf || {};
+  const proto = ({ 'HTTP/1.0': 'h1.0', 'HTTP/1.1': 'h1.1', 'HTTP/2': 'h2', 'HTTP/3': 'h3' })[cf.httpProtocol] || 'unknown';
+  const tls = cf.tlsVersion ? String(cf.tlsVersion).replace(/^TLSv/i, '') : '-';
+  const cipher = cf.tlsCipher ? String(cf.tlsCipher).replace(/^TLS_/, '') : '-';
+  return { proto, tls, cipher };
+}
+
+const WBA_TIMEOUT_MS = 1500;
+
+// writeTimeFields(req, { network }): the claim fields plus the
+// composite string. Async because the rDNS and WBA legs involve
+// bounded network reads; callers run it inside the waitUntil write
+// closure so the response never waits on it. With network:false
+// (asset companions) the network legs are skipped and their
+// components read not-checked — companions bound the lookup
+// budget; their join key (the visitor digest) is unaffected.
+export async function writeTimeFields(req, opts = {}) {
+  const network = opts.network !== false;
+  const ua = (req.headers.get('user-agent') || '').slice(0, 400);
+  const base = claimFields(req, ua);
+  const address = req.headers.get('cf-connecting-ip');
+  // cross-range membership: pure computation over bundled lists.
+  const xrHits = address ? crossRangeMembership(address) : null;
+  const xr = xrHits === null ? 'nc' : (xrHits.length ? xrHits.join('+') : '-');
+  // rDNS origin category + claimed-operator match verdict.
+  let org = 'not-checked';
+  let rdns = base.cname ? 'not-checked' : 'na';
+  if (network && address) {
+    try {
+      const origin = await lookupNetworkOrigin(address, opts.fetchFn);
+      if (origin && origin.state === 'ok') org = origin.category;
+      if (base.cname) rdns = rdnsVerdictFor(base.cname, origin).verdict;
+    } catch (e) { /* stays not-checked */ }
+  }
+  // Web Bot Auth validity (presence without a Signature pair
+  // never reaches the verifier).
+  let wba = 'absent', wbav = 'absent', wbab = 'absent';
+  if (network && (req.headers.get('signature') || req.headers.get('signature-input'))) {
+    try {
+      let timer = null;
+      const timeout = new Promise(resolve => {
+        timer = setTimeout(() => resolve({ presence: 'present', validity: 'unverifiable', binding: 'unbound' }), WBA_TIMEOUT_MS);
+      });
+      const verdict = await Promise.race([
+        verifyWebBotAuth({
+          getHeader: n => req.headers.get(n),
+          method: req.method,
+          url: req.url,
+          sigAgentHost: sigAgentHost(req),
+          claimedName: base.cname,
+          fetchFn: opts.fetchFn
+        }),
+        timeout
+      ]);
+      if (timer) clearTimeout(timer);
+      wba = verdict.presence; wbav = verdict.validity; wbab = verdict.binding;
+    } catch (e) { wba = 'present'; wbav = 'unverifiable'; wbab = 'unbound'; }
+  }
+  const stk = stackFacts(req);
+  const hp = headerProfile(req);
+  const wt = '1;rng=' + base.ipverdict + ';rdns=' + rdns + ';org=' + org + ';xr=' + xr +
+    ';wba=' + wba + ';wbav=' + wbav + ';wbab=' + wbab +
+    ';proto=' + stk.proto + ';tls=' + stk.tls + ';cipher=' + stk.cipher + ';hp=' + hp;
+  return { ...base, wt };
+}
+
+// The pre-W6 fallback (callers that cannot compute write-time
+// fields): claim fields plus a components string of not-checked
+// values, so the record's shape never varies.
+function fallbackFields(req, ua) {
+  const base = claimFields(req, ua);
+  const stk = stackFacts(req);
+  return {
+    ...base,
+    wt: '1;rng=' + base.ipverdict + ';rdns=' + (base.cname ? 'not-checked' : 'na') +
+      ';org=not-checked;xr=nc;wba=absent;wbav=absent;wbab=absent;proto=' + stk.proto +
+      ';tls=' + stk.tls + ';cipher=' + stk.cipher + ';hp=' + headerProfile(req)
+  };
+}
+
+export function buildVisitRecord(req, res, siteHost, event, digests = {}, fields = null) {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
   const { cls, purpose } = classify(ua);
   const dg = (digests && typeof digests === 'object') ? digests : { visitor: digests || '' };
+  const f = fields || fallbackFields(req, ua);
   return {
     t: new Date().toISOString(),
     site: siteHost,
@@ -179,9 +313,9 @@ export function buildVisitRecord(req, res, siteHost, event, digests = {}) {
     md: prefersMarkdown(req.headers.get('accept')) ? 1 : 0,
     ba: botAuthState(req),
     sigagent: sigAgentHost(req),
-    via: 'edge',
+    wt: f.wt,
     event: event || 'pageview',
-    ...claimFields(req, ua),
+    cname: f.cname, ipverdict: f.ipverdict, rangever: f.rangever,
     // The visitor digests (lens spec B-e; epoch digest added Oct 19
     // 2026, D2), computed by the caller (frontDoor) — '' when no
     // secret is provisioned on this Worker or the request carried
@@ -227,10 +361,11 @@ export function shouldLogAsset(req) {
 // (the render-test join key). It is written to the site's SEPARATE
 // asset dataset (or, on the D1 fallback, the same visit_log table
 // under event 'asset', which every visit aggregate excludes).
-export function buildAssetRecord(req, res, siteHost, digests = {}) {
+export function buildAssetRecord(req, res, siteHost, digests = {}, fields = null) {
   const url = new URL(req.url);
   const ua = (req.headers.get('user-agent') || '').slice(0, 400);
   const dg = (digests && typeof digests === 'object') ? digests : { visitor: digests || '' };
+  const f = fields || fallbackFields(req, ua);
   return {
     t: new Date().toISOString(),
     site: siteHost,
@@ -248,9 +383,9 @@ export function buildAssetRecord(req, res, siteHost, digests = {}) {
     md: 0,
     ba: botAuthState(req),
     sigagent: sigAgentHost(req),
-    via: 'edge',
+    wt: f.wt,
     event: 'asset',
-    ...claimFields(req, ua),
+    cname: f.cname, ipverdict: f.ipverdict, rangever: f.rangever,
     // Companion records carry the digests too (lens spec B-e: the
     // field rides the visit record "and B-a's companion records"),
     // so the render join can be exact rather than ASN-approximate.
@@ -476,22 +611,33 @@ export async function frontDoor(req, env, ctx, res, opts) {
     out = await injectCounterText(out, opts.getCounterText);
   }
   if (shouldLog(req)) {
-    const visitor = await visitorForRequest(env, req);
     const event = changedEventForResponse(eventForPath(url.pathname), out);
-    const record = buildVisitRecord(req, out, opts.siteHost, event, visitor);
-    const write = writeVisit(env, record)
-      .then(() => { try { console.log('VISIT ' + JSON.stringify(record)); } catch (e) {} })
-      .catch(() => {});
+    // The whole record build — digests plus the W6 write-time
+    // fields, whose rDNS / signature legs make bounded network
+    // reads — runs inside the write closure, so the response
+    // never waits on them (Oct 19 2026, W6; previously the digest
+    // computation was awaited before the record was built).
+    const write = (async () => {
+      const visitor = await visitorForRequest(env, req);
+      const fields = await writeTimeFields(req);
+      const record = buildVisitRecord(req, out, opts.siteHost, event, visitor, fields);
+      await writeVisit(env, record);
+      try { console.log('VISIT ' + JSON.stringify(record)); } catch (e) {}
+    })().catch(() => {});
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(write);
     else await write;
   } else if (shouldLogAsset(req)) {
     // Asset companions go to their own store, never the visit store:
     // page totals are byte-identical with companions on or off.
-    const visitor = await visitorForRequest(env, req);
-    const record = buildAssetRecord(req, out, opts.siteHost, visitor);
-    const write = writeAssetVisit(env, record)
-      .then(() => { try { console.log('ASSET ' + JSON.stringify(record)); } catch (e) {} })
-      .catch(() => {});
+    // Their write-time fields skip the network legs (see
+    // writeTimeFields) to bound the lookup budget.
+    const write = (async () => {
+      const visitor = await visitorForRequest(env, req);
+      const fields = await writeTimeFields(req, { network: false });
+      const record = buildAssetRecord(req, out, opts.siteHost, visitor, fields);
+      await writeAssetVisit(env, record);
+      try { console.log('ASSET ' + JSON.stringify(record)); } catch (e) {}
+    })().catch(() => {});
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(write);
     else await write;
   }

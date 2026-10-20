@@ -237,3 +237,44 @@ export function referrerTableHtml(esc, groupedRefs, total) {
   h += '<p>The referer is a claim sent by the browser. It is often absent or stripped — social apps and in-app browsers frequently send none, or only a generic shim host. Platform figures are a <strong>lower bound</strong>. &ldquo;No referer recorded&rdquo; is this site&rsquo;s total requests recorded minus the grouped referrer hosts; the residual also absorbs the rare unparseable referer. The request records cover GET/HEAD requests — referrer figures describe page traffic, not POSTs to the intake, signal, notes or press endpoints.</p>';
   return h;
 }
+
+// ---- write-time components (Oct 19 2026, W6) ----
+// The composite write-time string (frontdoor.writeTimeFields)
+// parsed back into component folds for the keyed stats pages.
+// Records written before the W6 deployment carry 'edge' in the
+// same slot (the old 'via' value) and count as the pre-era line —
+// they have no components and none are implied for them.
+export function parseWt(wt) {
+  if (typeof wt !== 'string' || !wt.startsWith('1;')) return null;
+  const out = {};
+  for (const part of wt.slice(2).split(';')) {
+    const eq = part.indexOf('=');
+    if (eq > 0) out[part.slice(0, eq)] = part.slice(eq + 1);
+  }
+  return out;
+}
+
+export function wtFold(byWt) {
+  const fold = { withComponents: 0, preEra: 0, byRdns: {}, byOrg: {}, byWbav: {}, byHp: {} };
+  for (const [wt, n] of Object.entries(byWt || {})) {
+    const c = parseWt(wt);
+    if (!c) { fold.preEra += n; continue; }
+    fold.withComponents += n;
+    if (c.rdns) fold.byRdns[c.rdns] = (fold.byRdns[c.rdns] || 0) + n;
+    if (c.org) fold.byOrg[c.org] = (fold.byOrg[c.org] || 0) + n;
+    if (c.wba === 'present' && c.wbav) fold.byWbav[c.wbav] = (fold.byWbav[c.wbav] || 0) + n;
+    if (c.hp) fold.byHp[c.hp] = (fold.byHp[c.hp] || 0) + n;
+  }
+  return fold;
+}
+
+export function wtBlockHtml(esc, byWt) {
+  const f = wtFold(byWt);
+  let html = '<h3>Write-time verdict components (from Oct 19, 2026)</h3>';
+  html += '<p>Computed at the moment a request arrived, while its address was in hand, and stored as verdicts and facts only — the address, any hostname, and any key material are discarded. Records written before this instrument existed (' + f.preEra + ') carry no components. The network-origin category names a network, never a person; &lsquo;residential-network&rsquo; is not evidence of a human. The header profile is a descriptive fold only, never a verdict.</p>';
+  html += '<h4>Claimed-operator reverse-DNS verdict (claimed names only)</h4>' + countTable(esc, sortedPairs(f.byRdns), null);
+  html += '<h4>Network-origin category (every request)</h4>' + countTable(esc, sortedPairs(f.byOrg), null);
+  html += '<h4>Web Bot Auth signature validity — our own RFC 9421 computation (signed requests only)</h4>' + countTable(esc, sortedPairs(f.byWbav), null);
+  html += '<h4>Header profile (descriptive)</h4>' + countTable(esc, sortedPairs(f.byHp), null);
+  return html;
+}
