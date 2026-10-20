@@ -40,7 +40,7 @@ const HOW =
   'like any channel knock. The instrument is the Advisory’s: its homepage posts the page path to the ' +
   'counterpart address there after rendering, and the claim is published as “render-signalled”: ' +
   'evidence a browser executed the page. A claim, forgeable in principle; not an arrival; no receipt; it ' +
-  'enters neither the visit record, the counts, nor the ledger. The endpoint exists on both sites so the ' +
+  'enters neither the request record, the counts, nor the ledger. The endpoint exists on both sites so the ' +
   'record’s shape is one shape; the two sites’ claims never merge.';
 
 // The format gate — a claim carries only the page's path (the same
