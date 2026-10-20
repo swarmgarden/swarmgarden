@@ -1,46 +1,47 @@
 {
   "by_channel": {
     "human-press": 1,
-    "unrouted": 8
+    "unrouted": 9
   },
   "by_channel_code": {
     "human-press": {
       "off-format": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 8
+      "no-code (non-JSON refusal)": 9
     }
   },
   "by_cls": {
     "automation": 2,
-    "browser": 7
+    "browser": 8
   },
   "by_cname": {
-    "": 9
+    "": 10
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 8,
+    "no-code (non-JSON refusal)": 9,
     "off-format": 1
   },
   "by_day": {
     "2026-10-18": 2,
     "2026-10-19": 5,
-    "2026-10-20": 2
+    "2026-10-20": 3
   },
   "by_day_pt": {
     "2026-10-18": 4,
-    "2026-10-19": 5
+    "2026-10-19": 5,
+    "2026-10-20": 1
   },
   "by_length": {
-    "1-100": 2,
+    "1-100": 3,
     "not recorded": 7
   },
   "by_origin": {
-    "external": 7,
+    "external": 8,
     "steward-test": 2
   },
   "by_route": {
-    "/": 4,
+    "/": 5,
     "/api/v1/human-press": 1,
     "/no-such-route": 1,
     "/wp-json/batch/v1": 3
@@ -49,24 +50,24 @@
   "by_status": {
     "400": 1,
     "404": 4,
-    "405": 4
+    "405": 5
   },
   "distinct_routes": 4,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 20, 2026, 3:12:32 PM PT",
-  "generated_at_utc": "2026-10-20T22:12:32Z",
+  "generated_at_pt": "Oct 20, 2026, 4:15:30 PM PT",
+  "generated_at_utc": "2026-10-20T23:15:30Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "advisory",
   "successes": {
-    "as_of": "2026-10-20T22:12:44.141Z",
+    "as_of": "2026-10-20T23:15:41.537Z",
     "human_presses": 3,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate."
   },
-  "total": 9,
+  "total": 10,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 4,
+      "count": 5,
       "route": "/",
       "status": 405
     },
