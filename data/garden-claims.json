@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 3776,
+    "absent_total": 3805,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -31,8 +31,8 @@
   ],
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 5:12:40 PM PT",
-  "generated_at_utc": "2026-10-20T00:12:40Z",
+  "generated_at_pt": "Oct 19, 2026, 6:12:41 PM PT",
+  "generated_at_utc": "2026-10-20T01:12:41Z",
   "rows": [
     {
       "claimed": 90,
@@ -62,13 +62,22 @@
       "wrong-range": 0
     },
     {
-      "claimed": 5,
+      "claimed": 7,
       "name": "Applebot",
       "not-checked": 0,
-      "unverifiable-no-list": 5,
+      "unverifiable-no-list": 7,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
+    },
+    {
+      "claimed": 3,
+      "name": "GPTBot",
+      "not-checked": 0,
+      "unverifiable-no-list": 0,
+      "verified-range": 2,
+      "verified_share_of_checkable": "small n (3 checkable)",
+      "wrong-range": 1
     },
     {
       "claimed": 3,
@@ -81,20 +90,20 @@
     },
     {
       "claimed": 2,
-      "name": "GPTBot",
-      "not-checked": 0,
-      "unverifiable-no-list": 0,
-      "verified-range": 1,
-      "verified_share_of_checkable": "small n (2 checkable)",
-      "wrong-range": 1
-    },
-    {
-      "claimed": 2,
       "name": "Internet Archive",
       "not-checked": 0,
       "unverifiable-no-list": 2,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
+      "wrong-range": 0
+    },
+    {
+      "claimed": 2,
+      "name": "OAI-SearchBot",
+      "not-checked": 0,
+      "unverifiable-no-list": 0,
+      "verified-range": 2,
+      "verified_share_of_checkable": "small n (2 checkable)",
       "wrong-range": 0
     },
     {
@@ -113,15 +122,6 @@
       "unverifiable-no-list": 1,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
-      "wrong-range": 0
-    },
-    {
-      "claimed": 1,
-      "name": "OAI-SearchBot",
-      "not-checked": 0,
-      "unverifiable-no-list": 0,
-      "verified-range": 1,
-      "verified_share_of_checkable": "small n (1 checkable)",
       "wrong-range": 0
     }
   ],
