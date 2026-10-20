@@ -1,10 +1,10 @@
 {
   "bot_auth": {
-    "absent_total": 3966,
+    "absent_total": 4045,
     "by_name": [
       {
         "name": "meta-webindexer",
-        "records_with_signature_headers": 5
+        "records_with_signature_headers": 16
       },
       {
         "name": "(no claimed name)",
@@ -12,8 +12,12 @@
       }
     ],
     "note": "Signature-header presence (Signature, Signature-Input, or Signature-Agent) by claimed name. Presence is a claim, not a verification: no signature has been verified, and the platform's verified-bot verdict cannot fire on this hosting tier. signature_agent_hosts is deployment-forward from Oct 18, 2026 (evening): the hostnames signers name for their key directories, stored as claims.",
-    "present_total": 7,
+    "present_total": 18,
     "signature_agent_hosts": [
+      {
+        "host": "www.meta.com",
+        "records": 11
+      },
       {
         "host": "probe.example.org",
         "records": 1
@@ -31,15 +35,15 @@
   ],
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 9:12:36 PM PT",
-  "generated_at_utc": "2026-10-20T04:12:36Z",
+  "generated_at_pt": "Oct 19, 2026, 10:12:44 PM PT",
+  "generated_at_utc": "2026-10-20T05:12:44Z",
   "rows": [
     {
-      "claimed": 96,
+      "claimed": 98,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 96,
+      "verified-range": 98,
       "verified_share_of_checkable": "100.0%",
       "wrong-range": 0
     },
@@ -71,10 +75,19 @@
       "wrong-range": 0
     },
     {
-      "claimed": 7,
+      "claimed": 12,
+      "name": "Meta Web Indexer",
+      "not-checked": 0,
+      "unverifiable-no-list": 12,
+      "verified-range": 0,
+      "verified_share_of_checkable": "\u2014",
+      "wrong-range": 0
+    },
+    {
+      "claimed": 8,
       "name": "Applebot",
       "not-checked": 0,
-      "unverifiable-no-list": 7,
+      "unverifiable-no-list": 8,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -98,28 +111,19 @@
       "wrong-range": 0
     },
     {
+      "claimed": 3,
+      "name": "OAI-SearchBot",
+      "not-checked": 0,
+      "unverifiable-no-list": 0,
+      "verified-range": 3,
+      "verified_share_of_checkable": "small n (3 checkable)",
+      "wrong-range": 0
+    },
+    {
       "claimed": 2,
       "name": "Internet Archive",
       "not-checked": 0,
       "unverifiable-no-list": 2,
-      "verified-range": 0,
-      "verified_share_of_checkable": "\u2014",
-      "wrong-range": 0
-    },
-    {
-      "claimed": 2,
-      "name": "OAI-SearchBot",
-      "not-checked": 0,
-      "unverifiable-no-list": 0,
-      "verified-range": 2,
-      "verified_share_of_checkable": "small n (2 checkable)",
-      "wrong-range": 0
-    },
-    {
-      "claimed": 1,
-      "name": "Meta Web Indexer",
-      "not-checked": 0,
-      "unverifiable-no-list": 1,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
