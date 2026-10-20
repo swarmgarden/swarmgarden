@@ -8,47 +8,47 @@
       {
         "label": "agent-claimed",
         "note": "a claim \u2014 the request's user-agent announced it; not a verification",
-        "value": 1841
+        "value": 1842
       },
       {
         "label": "browser",
         "note": "",
-        "value": 3506
+        "value": 3554
       },
       {
         "label": "automation",
         "note": "",
-        "value": 3077
+        "value": 3150
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 826
+        "value": 833
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 6307
+        "value": 6412
       },
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 2417
+        "value": 2439
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 524
-      },
-      {
-        "label": "Responses with status 304",
-        "note": "",
-        "value": 1
+        "value": 525
       },
       {
         "label": "Responses with status 503",
+        "note": "",
+        "value": 2
+      },
+      {
+        "label": "Responses with status 304",
         "note": "",
         "value": 1
       }
@@ -57,17 +57,17 @@
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Requests, not readers.",
-        "value": 8723
+        "value": 8852
       },
       {
         "label": "Redirect responses",
         "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
-        "value": 525
+        "value": 526
       },
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 9248
+        "value": 9378
       },
       {
         "label": "Verified agent arrivals on record",
@@ -92,8 +92,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 20, 2026, 12:12:36 PM PT",
-  "generated_at_utc": "2026-10-20T19:12:36Z",
+  "generated_at_pt": "Oct 20, 2026, 1:12:43 PM PT",
+  "generated_at_utc": "2026-10-20T20:12:43Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "networks": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 grouped by the network fields written on each record, from this run's dataset pull: the same basis as the countries part.",
@@ -105,13 +105,13 @@
         "asn": "15169",
         "network": "Google LLC",
         "organization": "Google LLC",
-        "requests": 4243
+        "requests": 4316
       },
       {
         "asn": "13335",
         "network": "Cloudflare, Inc.",
         "organization": "Cloudflare, Inc.",
-        "requests": 761
+        "requests": 765
       },
       {
         "asn": "218785",
@@ -123,7 +123,7 @@
         "asn": "48090",
         "network": "TECHOFF SRV LIMITED",
         "organization": "TECHOFF SRV LIMITED",
-        "requests": 510
+        "requests": 548
       },
       {
         "asn": "14061",
@@ -153,7 +153,7 @@
         "asn": "132203",
         "network": "6 COLLYER QUAY",
         "organization": "6 COLLYER QUAY",
-        "requests": 79
+        "requests": 80
       },
       {
         "asn": "214996",
@@ -180,6 +180,12 @@
         "requests": 39
       },
       {
+        "asn": "210558",
+        "network": "1337 Services GmbH",
+        "organization": "1337 Services GmbH",
+        "requests": 38
+      },
+      {
         "asn": "212238",
         "network": "Datacamp Limited",
         "organization": "Datacamp Limited",
@@ -190,12 +196,6 @@
         "network": "OVH Hosting, Inc.",
         "organization": "OVH Hosting, Inc.",
         "requests": 37
-      },
-      {
-        "asn": "210558",
-        "network": "1337 Services GmbH",
-        "organization": "1337 Services GmbH",
-        "requests": 31
       },
       {
         "asn": "132203",
@@ -384,6 +384,12 @@
         "requests": 10
       },
       {
+        "asn": "24940",
+        "network": "Hetzner Online GmbH",
+        "organization": "Hetzner Online GmbH",
+        "requests": 10
+      },
+      {
         "asn": "132203",
         "network": "Tencent cloud computing (Beijing) Co., Ltd.",
         "organization": "Tencent cloud computing (Beijing) Co., Ltd.",
@@ -462,12 +468,6 @@
         "requests": 7
       },
       {
-        "asn": "24940",
-        "network": "Hetzner Online GmbH",
-        "organization": "Hetzner Online GmbH",
-        "requests": 7
-      },
-      {
         "asn": "45090",
         "network": "Tencent cloud computing (Beijing) Co., Ltd.",
         "organization": "Tencent cloud computing (Beijing) Co., Ltd.",
@@ -505,29 +505,29 @@
       }
     ],
     "suppression": {
-      "folded_networks": 113,
-      "folded_requests": 174,
+      "folded_networks": 116,
+      "folded_requests": 178,
       "rule": "Networks with fewer than 5 requests in the window are folded into a single remainder. The number of networks folded and their combined requests are printed here; no folded network is named.",
       "threshold": 5
     },
-    "window_total": 9250
+    "window_total": 9380
   },
   "pull_status": "ok",
   "referrers": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 counted by the site's own keyed stats at this run's pull. The countries file reads the same window and record set from the dataset grouping in the same run, so the two totals can differ by the requests that land between the pulls.",
     "era_note": "Publication of these aggregates begins Oct 19, 2026. Recorded referers run from the counting window's first day, Oct 17, 2026.",
-    "no_referer_recorded": 8114,
+    "no_referer_recorded": 8240,
     "note": "The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host \u2014 so platform figures are a LOWER BOUND. 'No referer recorded' is the honest name for the empty bucket (never 'direct'): the window total minus the grouped hosts, also absorbing the rare unparseable referer. Federated hosts \u2014 Mastodon instances and the like \u2014 are deliberately not grouped into a platform: each prints as its own host. Grouping is a reading aid, never a replacement for the record: the raw host is printed beside every grouped name. Only hosts publish \u2014 never a full referer value, path, or query.",
     "rows": [
       {
         "hosts": [
           {
             "host": "bayareaswarmwarning.com",
-            "requests": 1064
+            "requests": 1068
           }
         ],
         "name": "bayareaswarmwarning.com",
-        "requests": 1064
+        "requests": 1068
       },
       {
         "hosts": [
@@ -568,7 +568,7 @@
       "rule": "Referrer groups with fewer than 5 requests in the window are folded into a single remainder. The numbers of groups and hosts folded and their combined requests are printed here; no folded group or host is named. The account's workers.dev staging hostname also drops into this remainder, unnamed, whenever it appears \u2014 it never publishes.",
       "threshold": 5
     },
-    "window_total": 9248
+    "window_total": 9378
   },
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",
