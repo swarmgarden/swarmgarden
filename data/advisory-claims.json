@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 7839,
+    "absent_total": 7865,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -29,26 +29,250 @@
     "not-checked",
     "verified_share_of_checkable"
   ],
+  "decomposition": {
+    "note": "Per claimed name: operator and dictionary class, requests, the purpose split, the verdict split, Web Bot Auth signature presence, and the reverse-DNS split. The rDNS split covers component-era records only (from the Oct 19, 2026 W6 deployment); rdns_era_records says how many of the name's records carry it. Purposes on records written before the same day's W4 split keep their era's labels.",
+    "rows": [
+      {
+        "by_purpose": {
+          "(none recorded)": 2002
+        },
+        "kind": "search-engine",
+        "name": "Googlebot",
+        "operator": "Google",
+        "rdns": {
+          "match": 13
+        },
+        "rdns_era_records": 13,
+        "requests": 1985,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 0,
+          "verified-range": 1985,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "100.0%",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "mixed": 14,
+          "other": 1244
+        },
+        "kind": "mixed",
+        "name": "GoogleOther",
+        "operator": "Google",
+        "rdns": {
+          "match": 5
+        },
+        "rdns_era_records": 5,
+        "requests": 1255,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 0,
+          "verified-range": 1255,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "100.0%",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "training": 33
+        },
+        "kind": "training",
+        "name": "Meta-ExternalAgent",
+        "operator": "Meta",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 33,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 33,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {},
+        "kind": "(unlisted)",
+        "name": "MJ12bot",
+        "operator": "(unlisted)",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 22,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 22,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {},
+        "kind": "(unlisted)",
+        "name": "Meta Web Indexer",
+        "operator": "(unlisted)",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 8,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 8,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "(none recorded)": 8
+        },
+        "kind": "search-engine",
+        "name": "Applebot",
+        "operator": "Apple",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 5,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 5,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "(none recorded)": 12
+        },
+        "kind": "link-preview",
+        "name": "facebookexternalhit",
+        "operator": "Meta",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 5,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 5,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "search": 4
+        },
+        "kind": "search",
+        "name": "PerplexityBot",
+        "operator": "Perplexity",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 4,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 4,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "(none recorded)": 2
+        },
+        "kind": "search-engine",
+        "name": "Bingbot",
+        "operator": "Microsoft",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 2,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 0,
+          "verified-range": 2,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "small n (2 checkable)",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {},
+        "kind": "(unlisted)",
+        "name": "Internet Archive",
+        "operator": "(unlisted)",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 1,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 1,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
+          "training": 19
+        },
+        "kind": "training",
+        "name": "GPTBot",
+        "operator": "OpenAI",
+        "rdns": {},
+        "rdns_era_records": 0,
+        "requests": 1,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 0,
+          "verified-range": 0,
+          "wrong-range": 1
+        },
+        "verified_share_of_checkable": "small n (1 checkable)",
+        "wba_present": 0
+      }
+    ]
+  },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 19, 2026, 10:12:44 PM PT",
-  "generated_at_utc": "2026-10-20T05:12:44Z",
+  "generated_at_pt": "Oct 19, 2026, 10:21:10 PM PT",
+  "generated_at_utc": "2026-10-20T05:21:10Z",
   "rows": [
     {
-      "claimed": 1970,
+      "claimed": 1985,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 1970,
+      "verified-range": 1985,
       "verified_share_of_checkable": "100.0%",
       "wrong-range": 0
     },
     {
-      "claimed": 1249,
+      "claimed": 1255,
       "name": "GoogleOther",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 1249,
+      "verified-range": 1255,
       "verified_share_of_checkable": "100.0%",
       "wrong-range": 0
     },
@@ -134,5 +358,118 @@
       "wrong-range": 1
     }
   ],
-  "site": "advisory"
+  "site": "advisory",
+  "subclasses": {
+    "folds": {
+      "agent_claimed_operator_purpose": {
+        "Anthropic": {
+          "training": 2
+        },
+        "Apple": {
+          "(none recorded)": 8
+        },
+        "Google": {
+          "(none recorded)": 2002,
+          "mixed": 14,
+          "other": 1244
+        },
+        "Meta": {
+          "(none recorded)": 30,
+          "training": 33
+        },
+        "Microsoft": {
+          "(none recorded)": 2
+        },
+        "OpenAI": {
+          "search": 2,
+          "training": 19
+        },
+        "Perplexity": {
+          "search": 4
+        },
+        "urlscan.io": {
+          "(none recorded)": 1
+        }
+      },
+      "asn_operator_type": {
+        "cdn": 671,
+        "cloud-hosting": 534,
+        "education": 1,
+        "other": 3091,
+        "search-platform": 3562,
+        "telecom-isp": 26
+      },
+      "by_class": {
+        "agent-claimed": {},
+        "automation": {
+          "generic-bot-token": 79,
+          "http-library/tool: axios": 4,
+          "http-library/tool: curl": 408,
+          "http-library/tool: go-http-client": 5,
+          "http-library/tool: headless-chrome": 1,
+          "http-library/tool: python-aiohttp": 16,
+          "http-library/tool: python-httpx": 4,
+          "http-library/tool: python-requests": 22,
+          "named-crawler (dictionary)": 2030
+        },
+        "browser": {
+          "chrome": 2913,
+          "edge": 58,
+          "firefox": 69,
+          "opera": 3,
+          "safari": 211
+        },
+        "unknown": {
+          "library/tool: scrapy": 2,
+          "no-UA": 7,
+          "token: (all other tokens, small-n folded)": 7,
+          "token: B9Verify": 1,
+          "token: Chrome": 1,
+          "token: Dalvik": 2,
+          "token: MaudeOperationalCheck": 2,
+          "token: Mozilla": 519,
+          "token: Roku": 1,
+          "token: UrlScanList": 1,
+          "token: facebookexternalhit": 12,
+          "token: http:": 167,
+          "token: mukewang": 1,
+          "token: siteradar": 3,
+          "token: swarm-garden-snapshot": 18
+        }
+      },
+      "header_profile": {
+        "minimal": 3,
+        "partial": 18
+      },
+      "headless_markers_by_class": {
+        "automation": 1
+      },
+      "origin_category": {
+        "none": 3,
+        "operator-crawler": 18
+      },
+      "protocol": {
+        "h1.1": 21
+      },
+      "ua_completeness": {
+        "comment-no-version": 2,
+        "empty": 7,
+        "full": 7194,
+        "product+version": 511,
+        "product-only": 171
+      },
+      "ua_family": {
+        "axios": 4,
+        "curl": 408,
+        "go-http-client": 5,
+        "headless-chrome": 1,
+        "other": 7423,
+        "python-aiohttp": 16,
+        "python-httpx": 4,
+        "python-requests": 22,
+        "scrapy": 2
+      }
+    },
+    "note": "Cross-tab views over the frozen top classes \u2014 never reclassifications. UA-derived folds are computed from the stored UA strings; origin, header-profile and protocol folds are era-forward from the Oct 19, 2026 W6 deployment. The ASN operator type is a descriptive keyword heuristic over the AS organisation string."
+  }
 }
