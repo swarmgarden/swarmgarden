@@ -77,12 +77,28 @@ function aggregate(a) {
     if (INTEREST.some(s => p.includes(s))) interest[p] = c;
   }
   const top = (obj, n) => Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n);
+  // Total + by-class from ONE read (Oct 20 2026, payload-skew fix):
+  // both fold from aggregateVisits' fetchsplit grouping — the single
+  // (class × status) AE query — so sum(byClass) == total and
+  // fetchesTotal + redirectsTotal == total by construction on every
+  // response, under live traffic. The previous shape took the total
+  // from aggregateVisits' dedicated count() and the classes from
+  // their own GROUP BY: two reads of a live dataset, disagreeing by
+  // the records that landed (or became visible) between them — the
+  // same skew the dashboard push's reconciliation guard kept
+  // refusing on the steward side. The fetchsplit grouping's
+  // cardinality is classes × statuses, far under the group limit,
+  // so this fold is never the truncated one.
+  const byClass = {};
+  for (const [c, n] of Object.entries(a.fetchesByClass || {})) byClass[c] = (byClass[c] || 0) + n;
+  for (const [c, n] of Object.entries(a.redirectsByClass || {})) byClass[c] = (byClass[c] || 0) + n;
+  const total = (a.fetchesTotal || 0) + (a.redirectsTotal || 0);
   return {
-    total: a.total, byClass: a.byClass, byPurpose: a.byPurpose, byBehaviour, byStatus: a.byStatus, byDay: a.byDay,
+    total, byClass, byPurpose: a.byPurpose, byBehaviour, byStatus: a.byStatus, byDay: a.byDay,
     topPaths: top(a.byPath, 12), interest: top(interest, 12),
     topCountries: top(a.byCountry, 12), topReferrers: top(a.byRef, 12), byEvent: a.byEvent,
     readDepth: Object.keys(a.byPath).length,
-    referrersGrouped: groupReferrers(a.byRef, a.total),
+    referrersGrouped: groupReferrers(a.byRef, total),
     crawlersClaimed: a.crawlersClaimed, fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict, byNameVerdict: a.byNameVerdict, byVisitorDay: a.byVisitorDay,
     byVisitorEpoch: a.byVisitorEpoch,
@@ -91,7 +107,7 @@ function aggregate(a) {
     fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
-    edge: a.total, beacon: 0 // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string
+    edge: total, beacon: 0 // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string
   };
 }
 
