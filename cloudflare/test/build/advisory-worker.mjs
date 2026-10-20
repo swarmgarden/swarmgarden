@@ -3071,7 +3071,9 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   if (hit) return hit;
   const rev = reverseName(key);
   if (!rev) return { state: "not-checked" };
-  const ptrs = await doh(fn, rev, "PTR", ms);
+  const deadline = Date.now() + ms;
+  const left = () => Math.max(40, deadline - Date.now());
+  const ptrs = await doh(fn, rev, "PTR", left());
   if (ptrs === null) return { state: "not-checked" };
   let out;
   if (!ptrs.length) {
@@ -3079,8 +3081,8 @@ async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   } else {
     const hostname = ptrs[0].replace(/\.$/, "").toLowerCase();
     const [aRecs, aaaaRecs] = await Promise.all([
-      doh(fn, hostname, "A", ms),
-      doh(fn, hostname, "AAAA", ms)
+      doh(fn, hostname, "A", left()),
+      doh(fn, hostname, "AAAA", left())
     ]);
     const answers = [...aRecs || [], ...aaaaRecs || []];
     const confirmed = answers.some((ans) => sameAddress(ans, key));
@@ -5373,7 +5375,7 @@ function sitePage(bundle, claims, recent, siteStatus, agg) {
   body += recentHtml(recent, bundle);
   body += correctionsBlock(bundle.corrections);
   body += archiveBlock(bundle);
-  return shell(bundle.site_label + " \u2014 the data", body, CLIENT_JS);
+  return shell(bundle.site_label + " \u2014 the data", body, CLIENT_JS + BEACON_JS);
 }
 function siteShelf(site, bundle, siteStatus) {
   if (!bundle) {
@@ -5391,14 +5393,26 @@ function indexPage(garden, advisory, status) {
   body += methodBlock("each site");
   body += correctionsBlock([]);
   body += archiveBlock(null);
-  return shell("The data \u2014 The Swarm Garden", body, "");
+  return shell("The data \u2014 The Swarm Garden", body, BEACON_JS);
 }
 function unavailablePage(what) {
   let body = pageHead("The Swarm Garden \u2014 the data", "The data \u2014 temporarily unavailable");
   body += '<div class="banner"><p><strong>The published data files could not be loaded for this rendering.</strong> That is a loading failure, not an empty record: the record itself stands, and every hour\u2019s files are in the public repository: <a href="' + REPO_DATA_URL + '">github.com/swarmgarden/swarmgarden \u2014 data/</a>. This page will render again from the next completed load.</p></div>';
   body += methodBlock("each site");
-  return shell("The data \u2014 temporarily unavailable", body, "");
+  return shell("The data \u2014 temporarily unavailable", body, BEACON_JS);
 }
+var BEACON_JS = `<script>
+(function () {
+  try {
+    var body = String(location.pathname || '/');
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/v1/render-claim', new Blob([body], { type: 'text/plain' }));
+    } else {
+      fetch('/api/v1/render-claim', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) {}
+})();
+<\/script>`;
 var CLIENT_JS = `<script>
 (function(){
   function parseRows(id){ try { return JSON.parse(document.getElementById(id).textContent); } catch(e){ return []; } }

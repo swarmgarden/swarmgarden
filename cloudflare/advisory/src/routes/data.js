@@ -637,7 +637,7 @@ function sitePage(bundle, claims, recent, siteStatus, agg) {
   body += recentHtml(recent, bundle);
   body += correctionsBlock(bundle.corrections);
   body += archiveBlock(bundle);
-  return shell(bundle.site_label + ' — the data', body, CLIENT_JS);
+  return shell(bundle.site_label + ' — the data', body, CLIENT_JS + BEACON_JS);
 }
 
 function siteShelf(site, bundle, siteStatus) {
@@ -678,7 +678,7 @@ function indexPage(garden, advisory, status) {
   body += methodBlock('each site');
   body += correctionsBlock([]);
   body += archiveBlock(null);
-  return shell('The data — The Swarm Garden', body, '');
+  return shell('The data — The Swarm Garden', body, BEACON_JS);
 }
 
 function unavailablePage(what) {
@@ -688,7 +688,7 @@ function unavailablePage(what) {
     'are in the public repository: <a href="' + REPO_DATA_URL + '">github.com/swarmgarden/swarmgarden — data/</a>. ' +
     'This page will render again from the next completed load.</p></div>';
   body += methodBlock('each site');
-  return shell('The data — temporarily unavailable', body, '');
+  return shell('The data — temporarily unavailable', body, BEACON_JS);
 }
 
 // ---------------------------------------------------------------- client JS
@@ -697,6 +697,26 @@ function unavailablePage(what) {
 // checkboxes, single-column sort (aria-sort), the live "Showing N
 // of M" count, URL-encoded state (params prefixed per table), and
 // CSV/JSON downloads of the CURRENT view.
+
+// The render beacon (W7, Oct 19 2026): the same snippet the
+// static pages carry — a page that renders reports the render.
+// Until this build the Worker-rendered /data pages carried no
+// beacon at all, so no /data page has ever reported a render;
+// coverage for these pages begins with this deployment and the
+// published notes say so. The Garden has no /data pages and stays
+// script-free.
+const BEACON_JS = `<script>
+(function () {
+  try {
+    var body = String(location.pathname || '/');
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/v1/render-claim', new Blob([body], { type: 'text/plain' }));
+    } else {
+      fetch('/api/v1/render-claim', { method: 'POST', body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) {}
+})();
+</script>`;
 
 const CLIENT_JS = `<script>
 (function(){

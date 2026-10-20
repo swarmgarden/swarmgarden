@@ -1851,6 +1851,16 @@ console.log('\nPorted 94-check suite: ' + pass + ' passed, ' + fail + ' failed')
     blogHtml.includes('/api/v1/render-claim') && researchHtml.includes('/api/v1/render-claim') &&
     agentPageHtml.includes('/api/v1/render-claim') && hypHtml.includes('/api/v1/render-claim') &&
     !llmsTxt.includes('/api/v1/render-claim') && dashRes.status === 301);
+  // W7 (Oct 19 2026): EVERY human-facing Advisory page carries the
+  // beacon — the Worker-rendered /data pages included (they carried
+  // none before this build, so their coverage era starts here).
+  const dataIndexHtml = await (await req(renAdv, A + '/data')).text();
+  const dataGardenHtml = await (await req(renAdv, A + '/data/garden')).text();
+  const dataAdvHtml = await (await req(renAdv, A + '/data/advisory')).text();
+  checkP2('W7 render: the Worker-rendered /data pages (index + both site pages) carry the beacon like every other human-facing Advisory page',
+    dataIndexHtml.includes('/api/v1/render-claim') && dataGardenHtml.includes('/api/v1/render-claim') &&
+    dataAdvHtml.includes('/api/v1/render-claim'),
+    'index ' + dataIndexHtml.includes('/api/v1/render-claim') + ' garden ' + dataGardenHtml.includes('/api/v1/render-claim') + ' adv ' + dataAdvHtml.includes('/api/v1/render-claim'));
 
   // The keyed stats page carries the figure, under its ruled name.
   const aStats = await (await req(renAdv, A + '/.netlify/functions/stats?k=test-stats-key&format=json')).json();

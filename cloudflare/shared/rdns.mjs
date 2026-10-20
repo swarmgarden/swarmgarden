@@ -170,7 +170,11 @@ export async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   if (hit) return hit;
   const rev = reverseName(key);
   if (!rev) return { state: 'not-checked' };
-  const ptrs = await doh(fn, rev, 'PTR', ms);
+  // One deadline for the whole lookup (PTR + forward pair share
+  // the budget — the legs do not each get a fresh timeout).
+  const deadline = Date.now() + ms;
+  const left = () => Math.max(40, deadline - Date.now());
+  const ptrs = await doh(fn, rev, 'PTR', left());
   if (ptrs === null) return { state: 'not-checked' };
   let out;
   if (!ptrs.length) {
@@ -178,7 +182,7 @@ export async function lookupNetworkOrigin(address, fetchFn, timeoutMs) {
   } else {
     const hostname = ptrs[0].replace(/\.$/, '').toLowerCase();
     const [aRecs, aaaaRecs] = await Promise.all([
-      doh(fn, hostname, 'A', ms), doh(fn, hostname, 'AAAA', ms)
+      doh(fn, hostname, 'A', left()), doh(fn, hostname, 'AAAA', left())
     ]);
     const answers = [...(aRecs || []), ...(aaaaRecs || [])];
     const confirmed = answers.some(ans => sameAddress(ans, key));
