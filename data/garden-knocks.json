@@ -78,12 +78,12 @@
   },
   "distinct_routes": 8,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 20, 2026, 8:12:46 PM PT",
-  "generated_at_utc": "2026-10-21T03:12:46Z",
+  "generated_at_pt": "Oct 20, 2026, 9:12:36 PM PT",
+  "generated_at_utc": "2026-10-21T04:12:36Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-10-21T03:12:53.096Z",
+    "as_of": "2026-10-21T04:12:42.384Z",
     "human_presses": 3,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
