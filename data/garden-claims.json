@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 5349,
+    "absent_total": 5388,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -269,8 +269,8 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 20, 2026, 10:12:45 PM PT",
-  "generated_at_utc": "2026-10-21T05:12:45Z",
+  "generated_at_pt": "Oct 20, 2026, 11:13:32 PM PT",
+  "generated_at_utc": "2026-10-21T06:13:32Z",
   "rows": [
     {
       "claimed": 174,
@@ -429,10 +429,10 @@
         }
       },
       "2026-10-20": {
-        "digest_requests": 1044,
-        "distinct_sources": 259,
+        "digest_requests": 1086,
+        "distinct_sources": 270,
         "names_per_source": {
-          "0": 234,
+          "0": 245,
           "1": 22,
           "2": 3,
           "3": 0,
@@ -440,7 +440,7 @@
         },
         "names_per_source_by_origin": {
           "cloud-hosting": {
-            "0": 31,
+            "0": 33,
             "1": 0,
             "2": 0,
             "3": 0,
@@ -454,14 +454,14 @@
             "4+": 0
           },
           "none": {
-            "0": 185,
+            "0": 193,
             "1": 10,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "not-checked": {
-            "0": 2,
+            "0": 3,
             "1": 0,
             "2": 0,
             "3": 0,
@@ -512,11 +512,11 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 1785,
+        "cdn": 1813,
         "cloud-hosting": 544,
         "education": 1,
-        "other": 2282,
-        "search-platform": 749,
+        "other": 2285,
+        "search-platform": 757,
         "telecom-isp": 13
       },
       "by_class": {
@@ -532,17 +532,17 @@
           "named-crawler (dictionary)": 232
         },
         "browser": {
-          "chrome": 2169,
+          "chrome": 2178,
           "edge": 53,
           "firefox": 62,
           "opera": 7,
-          "safari": 241
+          "safari": 243
         },
         "unknown": {
-          "no-UA": 679,
+          "no-UA": 697,
           "token: (all other tokens, small-n folded)": 11,
           "token: B9Verify": 2,
-          "token: Bun": 22,
+          "token: Bun": 23,
           "token: Dalvik": 3,
           "token: DomainIntel": 2,
           "token: Google-Lens": 6,
@@ -550,42 +550,42 @@
           "token: Opera": 2,
           "token: OutcropDealflow": 2,
           "token: facebookexternalhit": 11,
-          "token: http:": 239,
-          "token: swarm-garden-export": 45,
-          "token: swarm-garden-snapshot": 101
+          "token: http:": 243,
+          "token: swarm-garden-export": 46,
+          "token: swarm-garden-snapshot": 105
         }
       },
       "header_profile": {
-        "browser-like": 49,
-        "minimal": 787,
-        "partial": 471
+        "browser-like": 57,
+        "minimal": 814,
+        "partial": 478
       },
       "headless_markers_by_class": {},
       "origin_category": {
-        "cloud-hosting": 183,
+        "cloud-hosting": 191,
         "named-other": 44,
-        "none": 982,
-        "not-checked": 12,
+        "none": 1015,
+        "not-checked": 13,
         "operator-crawler": 86
       },
       "protocol": {
         "h1.0": 20,
-        "h1.1": 1139,
-        "h2": 132,
+        "h1.1": 1180,
+        "h2": 133,
         "h3": 16
       },
       "ua_completeness": {
         "comment-no-version": 1,
-        "empty": 679,
-        "full": 3498,
-        "product+version": 948,
-        "product-only": 248
+        "empty": 697,
+        "full": 3509,
+        "product+version": 954,
+        "product-only": 252
       },
       "ua_family": {
         "axios": 3,
         "curl": 690,
         "go-http-client": 2,
-        "other": 4628,
+        "other": 4667,
         "python-aiohttp": 16,
         "python-httpx": 7,
         "python-requests": 28
