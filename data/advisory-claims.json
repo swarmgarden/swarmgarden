@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 9515,
+    "absent_total": 9534,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -38,22 +38,22 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 2619
+          "(none recorded)": 2631
         },
         "kind": "search-engine",
         "name": "Googlebot",
         "operator": "Google",
         "rdns": {
-          "match": 625,
+          "match": 637,
           "none": 5
         },
-        "rdns_era_records": 630,
-        "requests": 2602,
+        "rdns_era_records": 642,
+        "requests": 2614,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
           "unverifiable-no-list": 0,
-          "verified-range": 2597,
+          "verified-range": 2609,
           "wrong-range": 5
         },
         "verified_share_of_checkable": "99.8%",
@@ -310,15 +310,15 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 20, 2026, 4:15:30 PM PT",
-  "generated_at_utc": "2026-10-20T23:15:30Z",
+  "generated_at_pt": "Oct 20, 2026, 5:12:35 PM PT",
+  "generated_at_utc": "2026-10-21T00:12:35Z",
   "rows": [
     {
-      "claimed": 2602,
+      "claimed": 2614,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 2597,
+      "verified-range": 2609,
       "verified_share_of_checkable": "99.8%",
       "wrong-range": 5
     },
@@ -482,11 +482,11 @@
         }
       },
       "2026-10-20": {
-        "digest_requests": 1300,
-        "distinct_sources": 150,
+        "digest_requests": 1318,
+        "distinct_sources": 153,
         "names_per_source": {
-          "0": 125,
-          "1": 13,
+          "0": 127,
+          "1": 14,
           "2": 12,
           "3": 0,
           "4+": 0
@@ -507,7 +507,7 @@
             "4+": 0
           },
           "none": {
-            "0": 96,
+            "0": 98,
             "1": 7,
             "2": 0,
             "3": 0,
@@ -522,7 +522,7 @@
           },
           "operator-crawler": {
             "0": 0,
-            "1": 4,
+            "1": 5,
             "2": 12,
             "3": 0,
             "4+": 0
@@ -531,7 +531,7 @@
         "sources_by_name": {
           "ChatGPT-User": 2,
           "GoogleOther": 13,
-          "Googlebot": 16,
+          "Googlebot": 17,
           "Meta Web Indexer": 2,
           "OAI-SearchBot": 1,
           "PerplexityBot": 2,
@@ -551,7 +551,7 @@
           "(none recorded)": 8
         },
         "Google": {
-          "(none recorded)": 2619,
+          "(none recorded)": 2631,
           "mixed": 528,
           "other": 1244
         },
@@ -575,11 +575,11 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 792,
+        "cdn": 796,
         "cloud-hosting": 645,
         "education": 1,
-        "other": 3324,
-        "search-platform": 4747,
+        "other": 3327,
+        "search-platform": 4759,
         "telecom-isp": 28
       },
       "by_class": {
@@ -593,15 +593,15 @@
           "http-library/tool: python-aiohttp": 16,
           "http-library/tool: python-httpx": 4,
           "http-library/tool: python-requests": 25,
-          "named-crawler (dictionary)": 2649
+          "named-crawler (dictionary)": 2661
         },
         "browser": {
-          "chrome": 3213,
+          "chrome": 3215,
           "edge": 62,
           "firefox": 84,
           "opera": 6,
           "other-mozilla": 1,
-          "safari": 250
+          "safari": 251
         },
         "unknown": {
           "library/tool: scrapy": 2,
@@ -615,16 +615,16 @@
           "token: OutcropDealflow": 2,
           "token: Roku": 1,
           "token: facebookexternalhit": 13,
-          "token: http:": 221,
+          "token: http:": 224,
           "token: mukewang": 1,
           "token: siteradar": 3,
-          "token: swarm-garden-snapshot": 43
+          "token: swarm-garden-snapshot": 44
         }
       },
       "header_profile": {
         "browser-like": 77,
-        "minimal": 146,
-        "partial": 1450
+        "minimal": 147,
+        "partial": 1468
       },
       "headless_markers_by_class": {
         "automation": 2
@@ -632,28 +632,28 @@
       "origin_category": {
         "cloud-hosting": 119,
         "named-other": 62,
-        "none": 334,
+        "none": 341,
         "not-checked": 14,
-        "operator-crawler": 1144
+        "operator-crawler": 1156
       },
       "protocol": {
-        "h1.1": 1605,
+        "h1.1": 1624,
         "h2": 46,
         "h3": 22
       },
       "ua_completeness": {
         "comment-no-version": 2,
         "empty": 7,
-        "full": 8714,
-        "product+version": 588,
-        "product-only": 226
+        "full": 8729,
+        "product+version": 589,
+        "product-only": 229
       },
       "ua_family": {
         "axios": 4,
         "curl": 445,
         "go-http-client": 5,
         "headless-chrome": 2,
-        "other": 9034,
+        "other": 9053,
         "python-aiohttp": 16,
         "python-httpx": 4,
         "python-requests": 25,
