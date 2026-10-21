@@ -40,6 +40,19 @@
 //     2026). The shared COUNTING_SINCE constant is the Garden's own
 //     start and is NOT reused here — the two windows differ, and
 //     neither site's totals ever merge.
+//   - Oct 21 2026 (Caitria's counting-definition ruling): two
+//     ADDITIVE fields — record_reads {counts_read, ledger_read,
+//     total} (reads of the record's own gauges: this payload and
+//     the ledger file, by any reader) and visits_headline_total
+//     (visits_total minus that fold). Every pre-existing field
+//     keeps its meaning byte-for-byte — visits_total stays ALL
+//     fetches, so the visits_window_records identity and every
+//     consumer comparing like with like are untouched; the
+//     headline the ruling names rides beside it, labelled by
+//     visits_headline_note. (visits_window_note itself is pinned
+//     verbatim by the harness's D1-basis check and is not
+//     reworded; the Oct 21 definition is stated in the new note
+//     field and on the /data pages.)
 import { aggregateVisits } from '../../../shared/visits.mjs';
 import { INTEREST } from '../../../shared/behaviour.mjs';
 import { humanTotal } from '../lib/human.js';
@@ -68,7 +81,7 @@ async function readVisits(env) {
   // below is fetches, redirects ride additively, and
   // visits_window_records stays the all-records count, so
   // visits_total + redirects_total == visits_window_records exactly.
-  const a = await aggregateVisits(env, ['class', 'path', 'ua', 'fetchsplit']);
+  const a = await aggregateVisits(env, ['class', 'path', 'ua', 'fetchsplit', 'event']);
   const interest = {};
   for (const [p, c] of Object.entries(a.byPath)) {
     if (INTEREST.some(x => p.includes(x))) interest[p] = c;
@@ -79,7 +92,8 @@ async function readVisits(env) {
     crawlersClaimed: a.crawlersClaimed,
     fetchersClaimed: a.fetchersClaimed,
     fetchesTotal: a.fetchesTotal, fetchesByClass: a.fetchesByClass,
-    redirectsTotal: a.redirectsTotal, redirectsByClass: a.redirectsByClass
+    redirectsTotal: a.redirectsTotal, redirectsByClass: a.redirectsByClass,
+    byEvent: a.byEvent
   };
 }
 
@@ -96,6 +110,9 @@ export async function computeCounts(env) {
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: 0,
     visits_window_note: 'HTTP fetches since Oct 17, 2026 — content requests; redirect responses counted separately.',
+    record_reads: { counts_read: 0, ledger_read: 0, total: 0 },
+    visits_headline_total: 0,
+    visits_headline_note: 'Headline fetches (Oct 21, 2026 definition): HTTP fetches excluding the record\u2019s own gauge-reads — reads of the counts payload and the ledger file, by any reader — which are published as record_reads.',
     counting_since: COUNTING_SINCE_ADVISORY,
     updated: new Date().toISOString()
   };
@@ -121,6 +138,15 @@ export async function computeCounts(env) {
     out.fetchers_claimed = v.fetchersClaimed;
     out.top_paths = v.topPaths;
     out.agent_interest_files = v.interest;
+    // Oct 21 2026 (counting-definition ruling): the record-reads
+    // fold from the same read's event grouping — gauge reads are
+    // fetches by construction (their responses are content or
+    // errors, never redirects), so the headline subtraction is
+    // exact: headline + fold = visits_total.
+    const cr = (v.byEvent && v.byEvent['counts-read']) || 0;
+    const lr = (v.byEvent && v.byEvent['ledger-read']) || 0;
+    out.record_reads = { counts_read: cr, ledger_read: lr, total: cr + lr };
+    out.visits_headline_total = v.fetchesTotal - (cr + lr);
   }
   catch (e) { out.visits_error = 'Request store unavailable.'; }
   return out;

@@ -1,4 +1,4 @@
-// shared/taxonomy.mjs
+// ../shared/taxonomy.mjs
 var AGENT_TOKENS = [
   // token, purpose
   ["gptbot", "training"],
@@ -35,7 +35,7 @@ function classify(ua) {
   return { cls: "unknown", purpose: null };
 }
 
-// shared/behaviour.mjs
+// ../shared/behaviour.mjs
 var INTEREST = ["llms.txt", "robots.txt", "agent-skills", "agent-card", "security.txt", "sitemap"];
 var PROBE_RE = /(\.env|\.git\/|xmlrpc|wp-admin|wp-login|\.php([?#]|$)|proc\/self|@fs|phpunit|\.aws|\.svn|boaform|hnap1|actuator|server-status|\.bak|\.sql|config\.php)/i;
 function behaviourLabel(r) {
@@ -103,7 +103,7 @@ function claimedBot(ua) {
   return null;
 }
 
-// shared/ranges/manifest.json
+// ../shared/ranges/manifest.json
 var manifest_default = {
   generated_at: "2026-10-18T16:02:52.479Z",
   tool: "tools/fetch-ranges/fetch-ranges.mjs",
@@ -430,7 +430,7 @@ var manifest_default = {
   }
 };
 
-// shared/ranges/gptbot.json
+// ../shared/ranges/gptbot.json
 var gptbot_default = {
   list: "gptbot",
   operator: "OpenAI",
@@ -458,7 +458,7 @@ var gptbot_default = {
   ]
 };
 
-// shared/ranges/searchbot.json
+// ../shared/ranges/searchbot.json
 var searchbot_default = {
   list: "searchbot",
   operator: "OpenAI",
@@ -507,7 +507,7 @@ var searchbot_default = {
   ]
 };
 
-// shared/ranges/chatgpt-user.json
+// ../shared/ranges/chatgpt-user.json
 var chatgpt_user_default = {
   list: "chatgpt-user",
   operator: "OpenAI",
@@ -751,7 +751,7 @@ var chatgpt_user_default = {
   ]
 };
 
-// shared/ranges/googlebot.json
+// ../shared/ranges/googlebot.json
 var googlebot_default = {
   list: "googlebot",
   operator: "Google",
@@ -1078,7 +1078,7 @@ var googlebot_default = {
   ]
 };
 
-// shared/ranges/google-common-crawlers.json
+// ../shared/ranges/google-common-crawlers.json
 var google_common_crawlers_default = {
   list: "google-common-crawlers",
   operator: "Google",
@@ -1405,7 +1405,7 @@ var google_common_crawlers_default = {
   ]
 };
 
-// shared/ranges/google-special-crawlers.json
+// ../shared/ranges/google-special-crawlers.json
 var google_special_crawlers_default = {
   list: "google-special-crawlers",
   operator: "Google",
@@ -1687,7 +1687,7 @@ var google_special_crawlers_default = {
   ]
 };
 
-// shared/ranges/google-user-triggered-fetchers.json
+// ../shared/ranges/google-user-triggered-fetchers.json
 var google_user_triggered_fetchers_default = {
   list: "google-user-triggered-fetchers",
   operator: "Google",
@@ -2765,7 +2765,7 @@ var google_user_triggered_fetchers_default = {
   ]
 };
 
-// shared/ranges/anthropic.json
+// ../shared/ranges/anthropic.json
 var anthropic_default = {
   list: "anthropic",
   operator: "Anthropic",
@@ -2813,7 +2813,7 @@ var anthropic_default = {
   ]
 };
 
-// shared/ranges/bingbot.json
+// ../shared/ranges/bingbot.json
 var bingbot_default = {
   list: "bingbot",
   operator: "Microsoft",
@@ -2851,7 +2851,7 @@ var bingbot_default = {
   ]
 };
 
-// shared/ranges.mjs
+// ../shared/ranges.mjs
 var LIST_FILES = {
   "gptbot": gptbot_default,
   "searchbot": searchbot_default,
@@ -2966,7 +2966,7 @@ var RANGE_BUNDLE = {
   names: Object.keys(manifest_default.names || {}).length
 };
 
-// shared/rdns.mjs
+// ../shared/rdns.mjs
 var DOH_URL = "https://cloudflare-dns.com/dns-query";
 var LOOKUP_TIMEOUT_MS = 500;
 var NOT_CHECKED_TTL_MS = 60 * 1e3;
@@ -3115,7 +3115,7 @@ function rdnsVerdictFor(claimedName, origin) {
   return { verdict: "mismatch", suffix: "" };
 }
 
-// shared/wba.mjs
+// ../shared/wba.mjs
 var SIGNER_BINDINGS = {
   "operator.openai.com": ["ChatGPT-User"],
   "agent.bot.goog": ["Google-Agent"]
@@ -3313,7 +3313,7 @@ async function verifyWebBotAuth(opts) {
   }
 }
 
-// shared/visitor.mjs
+// ../shared/visitor.mjs
 var enc = new TextEncoder();
 var keyCache = /* @__PURE__ */ new Map();
 function importKey(secret) {
@@ -3365,7 +3365,7 @@ async function visitorForRequest(env, req) {
   };
 }
 
-// shared/visits.mjs
+// ../shared/visits.mjs
 var AE_BLOBS = ["t", "path", "ref", "country", "ua", "cls", "purpose", "method", "ba", "wt", "event", "region", "asn", "asOrganization", "cname", "ipverdict", "rangever", "visitor", "sigagent", "visitorepoch"];
 function aeConfigured(env) {
   return !!(env && env.AE_API_TOKEN && env.AE_ACCOUNT_ID && env.AE_DATASET);
@@ -3722,7 +3722,7 @@ async function aggregateVisits(env, dims) {
   return out;
 }
 
-// shared/frontdoor.mjs
+// ../shared/frontdoor.mjs
 var SKIP_EXT = [".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".css", ".js", ".map", ".woff", ".woff2", ".mp4", ".zip"];
 var LINK_HEADER = '</llms.txt>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-skills/index.json>; rel="agent-skills"';
 function qFor(entries, type, subtype) {
@@ -3963,6 +3963,8 @@ function eventForPath(pathname) {
   if (pathname === "/.netlify/functions/ledger") return "ledger-read";
   if (pathname === "/api/v1/signal/challenge") return "signal-challenge-read";
   if (pathname === "/api/v1/render-claim") return "render-howto-read";
+  if (pathname === "/api/v1/briefs") return "briefs-read";
+  if (pathname === "/registry.json") return "registry-read";
   return "pageview";
 }
 function changedEventForResponse(event, res) {
@@ -4145,7 +4147,7 @@ async function frontDoor(req, env, ctx, res, opts) {
   return out;
 }
 
-// shared/attempts.mjs
+// ../shared/attempts.mjs
 var INTAKE_CHANNELS = ["answers", "questions", "reports", "registry"];
 function channelForPath(pathname) {
   if (pathname === "/api/v1/notes" || pathname === "/.netlify/functions/notes") return "notes";
@@ -4329,7 +4331,7 @@ async function attemptStats(env) {
   return out;
 }
 
-// shared/referrers.mjs
+// ../shared/referrers.mjs
 var REFERRER_GROUPS = [
   ["X", ["t.co", "x.com", "twitter.com"]],
   ["Facebook", ["l.facebook.com", "lm.facebook.com", "facebook.com", "m.facebook.com"]],
@@ -4359,7 +4361,7 @@ function groupReferrers(byRefHosts, totalVisits) {
   return { grouped, no_referer_recorded: Math.max(0, (totalVisits || 0) - accounted) };
 }
 
-// shared/statsview.mjs
+// ../shared/statsview.mjs
 var sortedPairs = (obj) => Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
 var share = (n, total) => total > 0 ? (100 * n / total).toFixed(1) + "%" : "\u2014";
 function countTable(esc4, rows, shareOf) {
@@ -4577,7 +4579,7 @@ function sourceBlockHtml(esc4, bySourceDay) {
   return html;
 }
 
-// shared/render.mjs
+// ../shared/render.mjs
 import { createHash } from "node:crypto";
 var RENDER_EVENT = "render-claim";
 var RENDER_PUBLISHED_AS = "render-signalled";
@@ -4674,7 +4676,7 @@ async function renderStats(env) {
   return out;
 }
 
-// advisory/src/lib/human.js
+// ../advisory/src/lib/human.js
 import { createHash as createHash2 } from "node:crypto";
 var sha256hex2 = (data) => createHash2("sha256").update(data).digest("hex");
 var nowSeconds = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 19) + "Z";
@@ -4768,10 +4770,10 @@ async function pressHuman(env, ip) {
   return { counted: true, number, total: await humanTotal(env).catch(() => 0) };
 }
 
-// advisory/src/lib/render.js
+// ../advisory/src/lib/render.js
 var { renderGate, setRenderPaused, renderRateOK, renderDayCount, recordRender } = makeRender({ salt: "advisory-render-rate:", stateTable: "site_state" });
 
-// advisory/src/routes/stats.js
+// ../advisory/src/routes/stats.js
 var BASIS = VISITS_BASIS;
 async function loadVisits(env) {
   const a = await aggregateVisits(env, ["class", "purpose", "status", "day", "path", "country", "ref", "event", "wt", "ua", "verdict", "nameverdict", "visitorday", "visitorepoch", "sourceday", "fetchsplit"]);
@@ -4798,9 +4800,17 @@ function aggregate(a) {
     if (INTEREST.some((s) => p.includes(s))) interest[p] = c;
   }
   const top = (obj, n) => Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n);
+  const byClass = {};
+  for (const [c, n] of Object.entries(a.fetchesByClass || {})) byClass[c] = (byClass[c] || 0) + n;
+  for (const [c, n] of Object.entries(a.redirectsByClass || {})) byClass[c] = (byClass[c] || 0) + n;
+  const total = (a.fetchesTotal || 0) + (a.redirectsTotal || 0);
+  const countsRead = a.byEvent && a.byEvent["counts-read"] || 0;
+  const ledgerRead = a.byEvent && a.byEvent["ledger-read"] || 0;
+  const recordReads = { counts_read: countsRead, ledger_read: ledgerRead, total: countsRead + ledgerRead };
+  const fetchesHeadline = (a.fetchesTotal || 0) - recordReads.total;
   return {
-    total: a.total,
-    byClass: a.byClass,
+    total,
+    byClass,
     byPurpose: a.byPurpose,
     byBehaviour,
     byStatus: a.byStatus,
@@ -4811,7 +4821,7 @@ function aggregate(a) {
     topReferrers: top(a.byRef, 12),
     byEvent: a.byEvent,
     readDepth: Object.keys(a.byPath).length,
-    referrersGrouped: groupReferrers(a.byRef, a.total),
+    referrersGrouped: groupReferrers(a.byRef, total),
     crawlersClaimed: a.crawlersClaimed,
     fetchersClaimed: a.fetchersClaimed,
     byVerdict: a.byVerdict,
@@ -4820,12 +4830,14 @@ function aggregate(a) {
     byVisitorEpoch: a.byVisitorEpoch,
     byWt: a.byWt,
     bySourceDay: a.bySourceDay,
+    recordReads,
+    fetchesHeadline,
     fetchesTotal: a.fetchesTotal,
     redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass,
     redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
-    edge: a.total,
+    edge: total,
     beacon: 0
     // every record is edge-written; blob10 carried 'via' until W6 (Oct 19 2026) and now carries the composite write-time string
   };
@@ -4888,6 +4900,7 @@ var stats_default = async (req, env) => {
   html += "<h4>The Garden&rsquo;s record surfaces \u2014 structural labels, not figures</h4><ul><li>Signals: No signal tier on this site \u2014 not a measured zero.</li><li>Ledger entries: no ledger on this site \u2014 the ledger is the Garden&rsquo;s.</li><li>Submissions: no intake on this site \u2014 submissions are the Garden&rsquo;s.</li><li>Visitors&rsquo; Book: no visitors&rsquo; book on this site \u2014 the book is the Garden&rsquo;s.</li></ul>";
   html += "<h3>Requests \u2014 " + agg.fetchesTotal + " HTTP fetches \xB7 " + agg.redirectsTotal + " redirect responses (" + agg.total + " recorded in all)</h3>";
   html += "<p>" + BASIS + " \xB7 as of " + esc4(asOf) + ". All records edge-written. The tables below cover all recorded requests, redirect legs included, except the two split tables directly under this line. Everything below is requests, not arrivals.</p>";
+  html += "<p>Headline fetches (Oct 21, 2026 definition \u2014 excluding the record&rsquo;s own gauge-reads): <strong>" + agg.fetchesHeadline + "</strong> \xB7 record reads: <strong>" + agg.recordReads.total + "</strong> (counts-read " + agg.recordReads.counts_read + " \xB7 ledger-read " + agg.recordReads.ledger_read + ") \u2014 the record measuring itself, recorded and published here, and kept out of the headline.</p>";
   html += "<p>Human/automation reads are classifications by claimed user-agent (single-source taxonomy) plus edge bot signals \u2014 a stated basis, not a certainty.</p>";
   html += "<h4>HTTP fetches by claimed class</h4>" + countTable(esc4, sortedPairs(agg.fetchesByClass), agg.fetchesTotal);
   html += "<h4>Redirect responses by claimed class</h4>" + countTable(esc4, sortedPairs(agg.redirectsByClass), agg.redirectsTotal);
@@ -4931,7 +4944,7 @@ var stats_default = async (req, env) => {
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } });
 };
 
-// advisory/src/routes/counts.js
+// ../advisory/src/routes/counts.js
 var COUNTING_SINCE_ADVISORY = "2026-10-17T21:40:07Z";
 async function readGardenArrivals(env) {
   const origin = env.COUNTS_ORIGIN || "https://swarmgarden.com";
@@ -4945,7 +4958,7 @@ async function readGardenArrivals(env) {
   };
 }
 async function readVisits(env) {
-  const a = await aggregateVisits(env, ["class", "path", "ua", "fetchsplit"]);
+  const a = await aggregateVisits(env, ["class", "path", "ua", "fetchsplit", "event"]);
   const interest = {};
   for (const [p, c] of Object.entries(a.byPath)) {
     if (INTEREST.some((x) => p.includes(x))) interest[p] = c;
@@ -4961,7 +4974,8 @@ async function readVisits(env) {
     fetchesTotal: a.fetchesTotal,
     fetchesByClass: a.fetchesByClass,
     redirectsTotal: a.redirectsTotal,
-    redirectsByClass: a.redirectsByClass
+    redirectsByClass: a.redirectsByClass,
+    byEvent: a.byEvent
   };
 }
 async function computeCounts(env) {
@@ -4981,6 +4995,9 @@ async function computeCounts(env) {
     fetchers_claimed: { total: 0, by_name: {} },
     visits_window_records: 0,
     visits_window_note: "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately.",
+    record_reads: { counts_read: 0, ledger_read: 0, total: 0 },
+    visits_headline_total: 0,
+    visits_headline_note: "Headline fetches (Oct 21, 2026 definition): HTTP fetches excluding the record\u2019s own gauge-reads \u2014 reads of the counts payload and the ledger file, by any reader \u2014 which are published as record_reads.",
     counting_since: COUNTING_SINCE_ADVISORY,
     updated: (/* @__PURE__ */ new Date()).toISOString()
   };
@@ -5007,6 +5024,10 @@ async function computeCounts(env) {
     out.fetchers_claimed = v.fetchersClaimed;
     out.top_paths = v.topPaths;
     out.agent_interest_files = v.interest;
+    const cr = v.byEvent && v.byEvent["counts-read"] || 0;
+    const lr = v.byEvent && v.byEvent["ledger-read"] || 0;
+    out.record_reads = { counts_read: cr, ledger_read: lr, total: cr + lr };
+    out.visits_headline_total = v.fetchesTotal - (cr + lr);
   } catch (e) {
     out.visits_error = "Request store unavailable.";
   }
@@ -5020,7 +5041,7 @@ var counts_default = async (req, env) => {
   });
 };
 
-// advisory/src/routes/data.js
+// ../advisory/src/routes/data.js
 var DATA_BASE_DEFAULT = "https://raw.githubusercontent.com/swarmgarden/swarmgarden/main";
 var DATA_FILES = [
   "garden.json",
@@ -5166,7 +5187,7 @@ function pageHead(kicker, h1, navSite) {
 }
 var HTML_HEADERS = { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" };
 function methodBlock(siteLabel) {
-  return "<h2>How this is counted \u2014 and what it cannot show</h2><p>Every figure on this page comes from the project\u2019s hourly snapshot of the two sites\u2019 records. A request record is written at the edge when a request arrives. It carries the time, the path, the response status, and what the request\u2019s user-agent claimed. <strong>Classes and names are claims</strong>: a request announcing \u201CGPTBot\u201D is recorded as <em>claiming</em> to be GPTBot \u2014 never as proof of what sent it. The address-range verdict is the one check the record runs on a claim: whether the request\u2019s network address falls inside the ranges the claimed operator publishes. The address itself is never stored, and the verdict certifies origin-network membership only \u2014 nothing about intent.</p><p><strong>Arrivals come only from the Garden\u2019s ledger</strong> \u2014 an arrival counts only when an agent identified itself and took a recorded action: it completed a submission through the Garden\u2019s intake, was issued a receipt, and was entered in the public ledger. The name in a submission is self-reported and remains a claim; what is verified is that the identified submission happened and is on the ledger. A request is not an arrival, reading a page is not an arrival, and a signal is not an arrival. Claims, signals, render reports and button presses never enter that figure. The stewards\u2019 own requests are included in these figures and are not filtered out; that is disclosed here rather than corrected away.</p><p><strong>Published as aggregates only:</strong> countries are published as counts, and any country with fewer than five requests in the window is folded into a single \u201CAll other countries\u201D row \u2014 the number folded is printed with the table, and no folded country is named. Distinct visitor digests are published as per-day counts (the series table below); the digests those counts are made from are never printed, and because a digest is date-scoped the per-day counts cannot be added into a count of distinct digests over time. Since Oct 19, 2026 the record also keeps a source digest per request \u2014 a one-way digest of the Pacific date and the source address only, with no user-agent in it \u2014 published only as aggregates: distinct source addresses per Pacific day, distinct sources per claimed name, and how many names one source claimed. A distinct source address is not a visitor, an agent, or an operator, and the daily counts are never added into a longer span.</p><p><strong>Not published, by design:</strong> referers are not printed; region and network-operator facts stay in the steward copy; and no raw network address exists anywhere in the record to print. Paths are printed with query strings stripped.</p><p>The underlying store (Cloudflare Analytics Engine) retains raw records for three months, rolling. The hourly files in the public repository are the permanent form of this series \u2014 see the archive link below. This page shows " + esc(siteLabel) + " only; the two sites\u2019 figures are never added together.</p>";
+  return "<h2>How this is counted \u2014 and what it cannot show</h2><p>Every figure on this page comes from the project\u2019s hourly snapshot of the two sites\u2019 records. A request record is written at the edge when a request arrives. It carries the time, the path, the response status, and what the request\u2019s user-agent claimed. <strong>Classes and names are claims</strong>: a request announcing \u201CGPTBot\u201D is recorded as <em>claiming</em> to be GPTBot \u2014 never as proof of what sent it. The address-range verdict is the one check the record runs on a claim: whether the request\u2019s network address falls inside the ranges the claimed operator publishes. The address itself is never stored, and the verdict certifies origin-network membership only \u2014 nothing about intent.</p><p><strong>Arrivals come only from the Garden\u2019s ledger</strong> \u2014 an arrival counts only when an agent identified itself and took a recorded action: it completed a submission through the Garden\u2019s intake, was issued a receipt, and was entered in the public ledger. The name in a submission is self-reported and remains a claim; what is verified is that the identified submission happened and is on the ledger. A request is not an arrival, reading a page is not an arrival, and a signal is not an arrival. Claims, signals, render reports and button presses never enter that figure. The stewards\u2019 own requests are included in these figures and are not filtered out; that is disclosed here rather than corrected away \u2014 with one stated exception, in the next paragraph.</p><p><strong>The record\u2019s own gauge-reads are excluded from the headline figures</strong> (Oct 21, 2026). Reads of the public counts payload and the public ledger file \u2014 recorded as the counts-read and ledger-read events \u2014 are the record measuring itself: the stewards\u2019 snapshot and dashboard read them on schedule, and any outside monitor may too. Since Oct 21, 2026 those reads are not in the headline fetch total or the daily series; they are published as the <strong>record reads</strong> fold beside the headline, split shown, and the dated correction below records the change and the restated series. The fold is zero before Oct 19, 2026 \u2014 the gauges entered the record that day; before it, reads of them were not recorded at all. Everything else the stewards do here \u2014 reading pages, using the utilities, testing the door \u2014 stays in the figures, as above.</p><p><strong>Published as aggregates only:</strong> countries are published as counts, and any country with fewer than five requests in the window is folded into a single \u201CAll other countries\u201D row \u2014 the number folded is printed with the table, and no folded country is named. Distinct visitor digests are published as per-day counts (the series table below); the digests those counts are made from are never printed, and because a digest is date-scoped the per-day counts cannot be added into a count of distinct digests over time. Since Oct 19, 2026 the record also keeps a source digest per request \u2014 a one-way digest of the Pacific date and the source address only, with no user-agent in it \u2014 published only as aggregates: distinct source addresses per Pacific day, distinct sources per claimed name, and how many names one source claimed. A distinct source address is not a visitor, an agent, or an operator, and the daily counts are never added into a longer span.</p><p><strong>Not published, by design:</strong> referers are not printed; region and network-operator facts stay in the steward copy; and no raw network address exists anywhere in the record to print. Paths are printed with query strings stripped.</p><p>The underlying store (Cloudflare Analytics Engine) retains raw records for three months, rolling. The hourly files in the public repository are the permanent form of this series \u2014 see the archive link below. This page shows " + esc(siteLabel) + " only; the two sites\u2019 figures are never added together.</p>";
 }
 function correctionsBlock(corrections) {
   let h = "<h2>Corrections</h2>";
@@ -5181,7 +5202,7 @@ function archiveBlock(bundle) {
   return '<h2>The archive</h2><p>Every hour\u2019s data files are kept in the public repository: <a href="' + REPO_DATA_URL + '">github.com/swarmgarden/swarmgarden \u2014 data/</a> (the full time-series, in git history, so any figure here can be recounted from the first publication forward). The daily records export \u2014 counts series, daily detail, the ledger in public form \u2014 lives beside it: <a href="' + REPO_RECORDS_URL + '">records/</a>.</p><p class="small">Reuse: ' + esc(bundle && bundle.licence ? bundle.licence : "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure\u2019s counting window and as-of time attached to it.") + "</p>";
 }
 function wordsBlock() {
-  return "<h2>What the words mean</h2><p><strong>Request.</strong> One HTTP request, recorded at the edge when it arrives. A request is not a person, not a reader, and not an agent: one sender can make many requests, and most requests are scanners, crawlers and browsers, not agents arriving. Every total on these pages is a count of requests, wearing its counting window and as-of time.</p><p><strong>Fetch.</strong> A request whose response was content, not a redirect. On this platform an extensionless page address answers first with a redirect (a 307) to its canonical form, so one read of a page can be two requests; the headline figure on these pages \u2014 total HTTP fetches \u2014 counts the content requests only, and redirect responses are counted separately beside it. The two add up to total requests recorded.</p><p><strong>Arrival.</strong> An arrival counts only when an agent identified itself and took a recorded action \u2014 it completed a submission through the Garden\u2019s intake, was issued a receipt, and was entered in the public ledger. A request alone is not an arrival. Reading a page is not an arrival. Announcing an agent name in a request is not an arrival (that is a claim). Completing a signal challenge is not an arrival (that is a signal). The name in a submission is self-reported and remains a claim; what is verified is that the identified submission happened and is on the ledger \u2014 never the identity itself.</p>";
+  return "<h2>What the words mean</h2><p><strong>Request.</strong> One HTTP request, recorded at the edge when it arrives. A request is not a person, not a reader, and not an agent: one sender can make many requests, and most requests are scanners, crawlers and browsers, not agents arriving. Every total on these pages is a count of requests, wearing its counting window and as-of time.</p><p><strong>Fetch.</strong> A request whose response was content, not a redirect. On this platform an extensionless page address answers first with a redirect (a 307) to its canonical form, so one read of a page can be two requests; the headline figure on these pages \u2014 total HTTP fetches \u2014 counts the content requests only, and redirect responses are counted separately beside it. Since Oct 21, 2026 the headline also excludes the record\u2019s own gauge-reads \u2014 reads of the counts payload and the ledger file, by any reader \u2014 which are published as the record reads fold. Headline fetches, the fold, and redirect responses add up to total requests recorded.</p><p><strong>Arrival.</strong> An arrival counts only when an agent identified itself and took a recorded action \u2014 it completed a submission through the Garden\u2019s intake, was issued a receipt, and was entered in the public ledger. A request alone is not an arrival. Reading a page is not an arrival. Announcing an agent name in a request is not an arrival (that is a claim). Completing a signal challenge is not an arrival (that is a signal). The name in a submission is self-reported and remains a claim; what is verified is that the identified submission happened and is on the ledger \u2014 never the identity itself.</p>";
 }
 function shareCell(v, total) {
   return typeof v === "number" && total > 0 ? (100 * v / total).toFixed(1) + "%" : "\u2014";
@@ -5284,12 +5305,16 @@ function seriesHtml(series, bundle) {
   for (const note of series.unavailable_notes || []) {
     h += "<p>" + esc(note) + "</p>";
   }
+  if (series.record_reads_note) {
+    h += '<p class="gloss">' + esc(series.record_reads_note) + "</p>";
+  }
   if (series.class_days) {
     const classes = series.classes || ["agent-claimed", "browser", "automation", "unknown"];
-    h += '<h3>Requests by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table><caption>' + esc(series.class_note || "") + " As of " + esc(series.generated_at_pt || bundle.generated_at_pt || "") + '. Full series as JSON: <a href="/data/' + esc(bundle.site) + '-series.json">' + esc(bundle.site) + '-series.json</a>.</caption><thead><tr><th scope="col">Day (Pacific)</th>' + classes.map((c) => '<th scope="col" class="num">' + esc(c) + "</th>").join("") + '<th scope="col" class="num">Total</th></tr></thead><tbody>';
-    if (!series.class_days.length) h += '<tr><td colspan="' + (classes.length + 2) + '">No days recorded yet.</td></tr>';
+    const hasFold = series.class_days.length > 0 && !!series.class_days[0].record_reads;
+    h += '<h3>Requests by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table><caption>' + esc(series.class_note || "") + " As of " + esc(series.generated_at_pt || bundle.generated_at_pt || "") + '. Full series as JSON: <a href="/data/' + esc(bundle.site) + '-series.json">' + esc(bundle.site) + '-series.json</a>.</caption><thead><tr><th scope="col">Day (Pacific)</th>' + classes.map((c) => '<th scope="col" class="num">' + esc(c) + "</th>").join("") + (hasFold ? '<th scope="col" class="num">Record reads (excluded)</th>' : "") + '<th scope="col" class="num">Total</th></tr></thead><tbody>';
+    if (!series.class_days.length) h += '<tr><td colspan="' + (classes.length + 2 + (hasFold ? 1 : 0)) + '">No days recorded yet.</td></tr>';
     for (const r of series.class_days) {
-      h += '<tr><td class="mono">' + esc(r.day) + "</td>" + classes.map((c) => '<td class="num mono">' + (r[c] || 0) + "</td>").join("") + '<td class="num mono">' + r.total + "</td></tr>";
+      h += '<tr><td class="mono">' + esc(r.day) + "</td>" + classes.map((c) => '<td class="num mono">' + (r[c] || 0) + "</td>").join("") + (hasFold ? '<td class="num mono">' + (r.record_reads && r.record_reads.total || 0) + "</td>" : "") + '<td class="num mono">' + r.total + "</td></tr>";
     }
     h += "</tbody></table></div></div>";
   } else {
@@ -5656,7 +5681,7 @@ var data_default = async (req, env, ctx) => {
   );
 };
 
-// advisory/src/routes/human.js
+// ../advisory/src/routes/human.js
 var JSON_HEADERS = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
 var esc2 = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 function clientIP(req) {
@@ -5737,7 +5762,7 @@ var human_default = async (req, env) => {
   }, null, 2), { status: done.counted ? 201 : 200, headers: JSON_HEADERS });
 };
 
-// advisory/src/routes/render.js
+// ../advisory/src/routes/render.js
 var JSON_HEADERS2 = { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" };
 function clientIP2(req) {
   return req.headers.get("cf-connecting-ip") || req.headers.get("x-nf-client-connection-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
@@ -5812,7 +5837,7 @@ var render_default = async (req, env) => {
   }, null, 2), { status: 201, headers: JSON_HEADERS2 });
 };
 
-// shared/counting.mjs
+// ../shared/counting.mjs
 var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function countingDate(iso) {
   const d = new Date(iso);
@@ -5831,7 +5856,7 @@ function countingSentence(sinceIso, now) {
   return p ? "Counting since " + p.date : null;
 }
 
-// advisory/src/home.js
+// ../advisory/src/home.js
 var CLASSES = [
   ["browser", "Browser"],
   ["agent-claimed", "Agent-claimed"],
@@ -5961,7 +5986,7 @@ var HOME_TEXT_FALLBACK = [
   "The live figures are published on the Garden's record (https://swarmgarden.com/record.html) and as data on [the Garden's data page](https://bayareaswarmwarning.com/data/garden). They are drawn from that record each time this page is served, and are not shown when the record cannot be reached, rather than shown stale."
 ].join("\n");
 
-// advisory/src/lib/signpost.js
+// ../advisory/src/lib/signpost.js
 var SIGNPOST_BODY = "404 \u2014 nothing is served at this address.\nBay Area Swarm Warning publishes everything it has: no file is served at a secret, configuration, or backup path, and nothing is hidden behind a guessed address.\nThis site is the human-readable side of the Swarm Garden experiment; its front page carries the terms: https://bayareaswarmwarning.com/\nField Notes, the experiment\u2019s log: https://bayareaswarmwarning.com/blog.html\nThe data \u2014 every figure this site prints, with its method: https://bayareaswarmwarning.com/data\nThe experiment itself, addressed to agents: https://swarmgarden.com\n";
 function signpost404(req) {
   const headers = new Headers();
@@ -5971,7 +5996,7 @@ function signpost404(req) {
   return new Response(SIGNPOST_BODY, { status: 404, headers });
 }
 
-// advisory/src/index.js
+// ../advisory/src/index.js
 var SITE_HOST = "bayareaswarmwarning.com";
 var index_default = {
   async fetch(req, env, ctx) {

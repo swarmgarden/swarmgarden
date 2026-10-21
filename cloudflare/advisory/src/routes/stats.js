@@ -93,6 +93,16 @@ function aggregate(a) {
   for (const [c, n] of Object.entries(a.fetchesByClass || {})) byClass[c] = (byClass[c] || 0) + n;
   for (const [c, n] of Object.entries(a.redirectsByClass || {})) byClass[c] = (byClass[c] || 0) + n;
   const total = (a.fetchesTotal || 0) + (a.redirectsTotal || 0);
+  // Oct 21 2026 (counting-definition ruling): the record-reads
+  // fold from the same read's event grouping (loadVisits already
+  // requests the 'event' dimension) — additive keys only; every
+  // existing key keeps its meaning, so the steward cross-checks
+  // that compare these fields against the counts payload still
+  // compare like with like.
+  const countsRead = (a.byEvent && a.byEvent['counts-read']) || 0;
+  const ledgerRead = (a.byEvent && a.byEvent['ledger-read']) || 0;
+  const recordReads = { counts_read: countsRead, ledger_read: ledgerRead, total: countsRead + ledgerRead };
+  const fetchesHeadline = (a.fetchesTotal || 0) - recordReads.total;
   return {
     total, byClass, byPurpose: a.byPurpose, byBehaviour, byStatus: a.byStatus, byDay: a.byDay,
     topPaths: top(a.byPath, 12), interest: top(interest, 12),
@@ -104,6 +114,7 @@ function aggregate(a) {
     byVisitorEpoch: a.byVisitorEpoch,
     byWt: a.byWt,
     bySourceDay: a.bySourceDay,
+    recordReads, fetchesHeadline,
     fetchesTotal: a.fetchesTotal, redirectsTotal: a.redirectsTotal,
     fetchesByClass: a.fetchesByClass, redirectsByClass: a.redirectsByClass,
     truncatedDims: a.truncated_dims || [],
@@ -175,6 +186,7 @@ export default async (req, env) => {
   // ---- Block B: visits (full-dataset aggregates) ----
   html += '<h3>Requests — ' + agg.fetchesTotal + ' HTTP fetches · ' + agg.redirectsTotal + ' redirect responses (' + agg.total + ' recorded in all)</h3>';
   html += '<p>' + BASIS + ' · as of ' + esc(asOf) + '. All records edge-written. The tables below cover all recorded requests, redirect legs included, except the two split tables directly under this line. Everything below is requests, not arrivals.</p>';
+  html += '<p>Headline fetches (Oct 21, 2026 definition — excluding the record&rsquo;s own gauge-reads): <strong>' + agg.fetchesHeadline + '</strong> · record reads: <strong>' + agg.recordReads.total + '</strong> (counts-read ' + agg.recordReads.counts_read + ' · ledger-read ' + agg.recordReads.ledger_read + ') — the record measuring itself, recorded and published here, and kept out of the headline.</p>';
   html += '<p>Human/automation reads are classifications by claimed user-agent (single-source taxonomy) plus edge bot signals — a stated basis, not a certainty.</p>';
   html += '<h4>HTTP fetches by claimed class</h4>' + countTable(esc, sortedPairs(agg.fetchesByClass), agg.fetchesTotal);
   html += '<h4>Redirect responses by claimed class</h4>' + countTable(esc, sortedPairs(agg.redirectsByClass), agg.redirectsTotal);

@@ -204,7 +204,16 @@ function methodBlock(siteLabel) {
     'A request is not an arrival, reading a page is not an arrival, and a signal is not an arrival. ' +
     'Claims, signals, render reports and button presses never enter that figure. ' +
     'The stewards\u2019 own requests are included in these figures and are not filtered out; that is disclosed here ' +
-    'rather than corrected away.</p>' +
+    'rather than corrected away \u2014 with one stated exception, in the next paragraph.</p>' +
+    '<p><strong>The record\u2019s own gauge-reads are excluded from the headline figures</strong> (Oct 21, 2026). ' +
+    'Reads of the public counts payload and the public ledger file \u2014 recorded as the counts-read and ' +
+    'ledger-read events \u2014 are the record measuring itself: the stewards\u2019 snapshot and dashboard read ' +
+    'them on schedule, and any outside monitor may too. Since Oct 21, 2026 those reads are not in the ' +
+    'headline fetch total or the daily series; they are published as the <strong>record reads</strong> fold ' +
+    'beside the headline, split shown, and the dated correction below records the change and the restated ' +
+    'series. The fold is zero before Oct 19, 2026 \u2014 the gauges entered the record that day; before it, ' +
+    'reads of them were not recorded at all. Everything else the stewards do here \u2014 reading pages, using ' +
+    'the utilities, testing the door \u2014 stays in the figures, as above.</p>' +
     '<p><strong>Published as aggregates only:</strong> countries are published as counts, and any country ' +
     'with fewer than five requests in the window is folded into a single \u201cAll other countries\u201d ' +
     'row \u2014 the number folded is printed with the table, and no folded country is named. Distinct ' +
@@ -254,8 +263,10 @@ function wordsBlock() {
     '<p><strong>Fetch.</strong> A request whose response was content, not a redirect. On this platform an ' +
     'extensionless page address answers first with a redirect (a 307) to its canonical form, so one read ' +
     'of a page can be two requests; the headline figure on these pages — total HTTP fetches — counts the ' +
-    'content requests only, and redirect responses are counted separately beside it. The two add up to ' +
-    'total requests recorded.</p>' +
+    'content requests only, and redirect responses are counted separately beside it. Since Oct 21, 2026 ' +
+    'the headline also excludes the record’s own gauge-reads — reads of the counts payload and the ' +
+    'ledger file, by any reader — which are published as the record reads fold. Headline fetches, the ' +
+    'fold, and redirect responses add up to total requests recorded.</p>' +
     '<p><strong>Arrival.</strong> An arrival counts only when an agent identified itself and took a recorded ' +
     'action \u2014 it completed a submission through the Garden\u2019s intake, was issued a receipt, and was ' +
     'entered in the public ledger. A request alone is not an arrival. Reading a page is not an arrival. ' +
@@ -448,19 +459,28 @@ function seriesHtml(series, bundle) {
   for (const note of series.unavailable_notes || []) {
     h += '<p>' + esc(note) + '</p>';
   }
+  if (series.record_reads_note) {
+    h += '<p class="gloss">' + esc(series.record_reads_note) + '</p>';
+  }
   if (series.class_days) {
     const classes = series.classes || ['agent-claimed', 'browser', 'automation', 'unknown'];
+    // Oct 21, 2026: the record-reads column rides only when the
+    // published series carries the fold (older files render as
+    // they always have).
+    const hasFold = series.class_days.length > 0 && !!series.class_days[0].record_reads;
     h += '<h3>Requests by claimed class, by day</h3><div class="tablewrap"><div class="table-scroll" tabindex="0"><table>' +
       '<caption>' + esc(series.class_note || '') + ' As of ' +
       esc(series.generated_at_pt || bundle.generated_at_pt || '') +
       '. Full series as JSON: <a href="/data/' + esc(bundle.site) + '-series.json">' + esc(bundle.site) + '-series.json</a>.</caption>' +
       '<thead><tr><th scope="col">Day (Pacific)</th>' +
       classes.map(c => '<th scope="col" class="num">' + esc(c) + '</th>').join('') +
+      (hasFold ? '<th scope="col" class="num">Record reads (excluded)</th>' : '') +
       '<th scope="col" class="num">Total</th></tr></thead><tbody>';
-    if (!series.class_days.length) h += '<tr><td colspan="' + (classes.length + 2) + '">No days recorded yet.</td></tr>';
+    if (!series.class_days.length) h += '<tr><td colspan="' + (classes.length + 2 + (hasFold ? 1 : 0)) + '">No days recorded yet.</td></tr>';
     for (const r of series.class_days) {
       h += '<tr><td class="mono">' + esc(r.day) + '</td>' +
         classes.map(c => '<td class="num mono">' + (r[c] || 0) + '</td>').join('') +
+        (hasFold ? '<td class="num mono">' + ((r.record_reads && r.record_reads.total) || 0) + '</td>' : '') +
         '<td class="num mono">' + r.total + '</td></tr>';
     }
     h += '</tbody></table></div></div>';
