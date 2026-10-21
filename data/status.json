@@ -1,25 +1,29 @@
 {
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 21, 2026, 5:12:59 AM PT",
-  "generated_at_utc": "2026-10-21T12:12:59Z",
+  "generated_at_pt": "Oct 21, 2026, 6:12:32 AM PT",
+  "generated_at_utc": "2026-10-21T13:12:32Z",
   "sites": {
     "advisory": {
-      "last_attempt_pt": "Oct 21, 2026, 5:12:59 AM PT",
-      "last_attempt_utc": "2026-10-21T12:12:59Z",
-      "last_success_pt": "Oct 21, 2026, 5:12:59 AM PT",
-      "last_success_utc": "2026-10-21T12:12:59Z",
+      "last_attempt_pt": "Oct 21, 2026, 6:12:32 AM PT",
+      "last_attempt_utc": "2026-10-21T13:12:32Z",
+      "last_success_pt": "Oct 21, 2026, 6:12:32 AM PT",
+      "last_success_utc": "2026-10-21T13:12:32Z",
       "notes": [],
       "rendering_retirement_noted": true,
       "state": "ok"
     },
     "garden": {
-      "last_attempt_pt": "Oct 21, 2026, 5:12:59 AM PT",
-      "last_attempt_utc": "2026-10-21T12:12:59Z",
-      "last_success_pt": "Oct 21, 2026, 5:12:59 AM PT",
-      "last_success_utc": "2026-10-21T12:12:59Z",
-      "notes": [],
+      "last_attempt_pt": "Oct 21, 2026, 6:12:32 AM PT",
+      "last_attempt_utc": "2026-10-21T13:12:32Z",
+      "last_success_pt": "Oct 21, 2026, 6:12:32 AM PT",
+      "last_success_utc": "2026-10-21T13:12:32Z",
+      "notes": [
+        "The channel-knocks file was not refreshed this hour (the keyed pull carried no attempt aggregates).",
+        "The render-claims pull failed this hour; that file was not refreshed.",
+        "The referrer aggregates were not published this hour (the keyed stats pull or its referrer part was unavailable, flagged truncated, or failed its grouping cross-check); that part of the bundle was not refreshed."
+      ],
       "rendering_retirement_noted": true,
-      "state": "ok"
+      "state": "degraded"
     }
   }
 }

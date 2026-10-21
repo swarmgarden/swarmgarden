@@ -1,70 +1,97 @@
 {
   "by_channel": {
     "human-press": 1,
-    "unrouted": 11
+    "intake-other": 1,
+    "unrouted": 33
   },
   "by_channel_code": {
     "human-press": {
       "off-format": 1
     },
+    "intake-other": {
+      "no-code (non-JSON refusal)": 1
+    },
     "unrouted": {
-      "no-code (non-JSON refusal)": 11
+      "no-code (non-JSON refusal)": 33
     }
   },
   "by_cls": {
-    "automation": 2,
-    "browser": 10
+    "automation": 3,
+    "browser": 32
   },
   "by_cname": {
-    "": 12
+    "": 35
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 11,
+    "no-code (non-JSON refusal)": 34,
     "off-format": 1
   },
   "by_day": {
     "2026-10-18": 2,
     "2026-10-19": 5,
     "2026-10-20": 3,
-    "2026-10-21": 2
+    "2026-10-21": 25
   },
   "by_day_pt": {
     "2026-10-18": 4,
     "2026-10-19": 5,
-    "2026-10-20": 3
+    "2026-10-20": 3,
+    "2026-10-21": 23
   },
   "by_length": {
-    "1-100": 5,
+    "0": 17,
+    "1-100": 11,
     "not recorded": 7
   },
   "by_origin": {
-    "external": 10,
+    "external": 33,
     "steward-test": 2
   },
   "by_route": {
     "/": 7,
+    "/_data/app/app/down": 1,
+    "/api/Ad/getAdByTag": 1,
+    "/api/Uploads/apiimei": 1,
+    "/api/app/config": 1,
+    "/api/app/getinfo": 1,
+    "/api/app/version/check": 1,
+    "/api/chat/visitor/channelInfo": 1,
+    "/api/common/getAllSetting": 1,
+    "/api/configs": 1,
+    "/api/heartbeat": 1,
+    "/api/init": 1,
+    "/api/kf-fe/qrcode/check": 1,
+    "/api/link-submit": 1,
+    "/api/system/systemConfigs/getCustomerServiceLink": 1,
+    "/api/user/user/quick_reply": 1,
+    "/api/user/user_register_v2": 1,
     "/api/v1/human-press": 1,
+    "/api/v1/seller/login": 1,
+    "/biz/server/config": 1,
+    "/channel/statistics": 1,
+    "/instatll": 1,
+    "/join_room": 1,
     "/no-such-route": 1,
     "/wp-json/batch/v1": 3
   },
-  "by_route_folded": 0,
+  "by_route_folded": 2,
   "by_status": {
     "400": 1,
-    "404": 4,
+    "404": 27,
     "405": 7
   },
-  "distinct_routes": 4,
+  "distinct_routes": 27,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 21, 2026, 5:12:59 AM PT",
-  "generated_at_utc": "2026-10-21T12:12:59Z",
+  "generated_at_pt": "Oct 21, 2026, 6:12:32 AM PT",
+  "generated_at_utc": "2026-10-21T13:12:32Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "advisory",
   "successes": {
-    "as_of": "2026-10-21T12:13:12.643Z",
+    "as_of": "2026-10-21T13:12:45.051Z",
     "human_presses": 3,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate."
   },
-  "total": 12,
+  "total": 35,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -79,9 +106,141 @@
       "status": 404
     },
     {
+      "cls": "browser",
+      "count": 1,
+      "route": "/_data/app/app/down",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/Ad/getAdByTag",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/Uploads/apiimei",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/app/config",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/app/getinfo",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/app/version/check",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/chat/visitor/channelInfo",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/common/getAllSetting",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/configs",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/heartbeat",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/init",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/kf-fe/qrcode/check",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/link-submit",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/system/systemConfigs/getCustomerServiceLink",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/user/user/quick_reply",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/user/user_register_v2",
+      "status": 404
+    },
+    {
+      "cls": "automation",
+      "count": 1,
+      "route": "/biz/server/config",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/channel/statistics",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/instatll",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/join_room",
+      "status": 404
+    },
+    {
       "cls": "automation",
       "count": 1,
       "route": "/no-such-route",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/relayApi/api/notice/site_setting",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/site/api/v1/site/vipExclusiveDomain/getGuestDomain",
       "status": 404
     }
   ]
