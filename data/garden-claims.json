@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 5574,
+    "absent_total": 5601,
     "by_name": [
       {
         "name": "meta-webindexer",
@@ -269,8 +269,8 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 21, 2026, 2:12:39 AM PT",
-  "generated_at_utc": "2026-10-21T09:12:39Z",
+  "generated_at_pt": "Oct 21, 2026, 3:12:31 AM PT",
+  "generated_at_utc": "2026-10-21T10:12:31Z",
   "rows": [
     {
       "claimed": 182,
@@ -486,10 +486,10 @@
         }
       },
       "2026-10-21": {
-        "digest_requests": 128,
-        "distinct_sources": 29,
+        "digest_requests": 155,
+        "distinct_sources": 37,
         "names_per_source": {
-          "0": 23,
+          "0": 31,
           "1": 6,
           "2": 0,
           "3": 0,
@@ -504,7 +504,7 @@
             "4+": 0
           },
           "none": {
-            "0": 17,
+            "0": 25,
             "1": 0,
             "2": 0,
             "3": 0,
@@ -556,10 +556,10 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 1861,
-        "cloud-hosting": 622,
+        "cdn": 1883,
+        "cloud-hosting": 623,
         "education": 1,
-        "other": 2318,
+        "other": 2322,
         "search-platform": 782,
         "telecom-isp": 15
       },
@@ -576,14 +576,14 @@
           "named-crawler (dictionary)": 240
         },
         "browser": {
-          "chrome": 2282,
+          "chrome": 2284,
           "edge": 53,
           "firefox": 64,
           "opera": 7,
-          "safari": 249
+          "safari": 252
         },
         "unknown": {
-          "no-UA": 727,
+          "no-UA": 742,
           "token: (all other tokens, small-n folded)": 13,
           "token: B9Verify": 2,
           "token: Bun": 23,
@@ -594,42 +594,42 @@
           "token: Opera": 2,
           "token: OutcropDealflow": 2,
           "token: facebookexternalhit": 11,
-          "token: http:": 252,
-          "token: swarm-garden-export": 49,
-          "token: swarm-garden-snapshot": 111
+          "token: http:": 256,
+          "token: swarm-garden-export": 50,
+          "token: swarm-garden-snapshot": 113
         }
       },
       "header_profile": {
-        "browser-like": 66,
-        "minimal": 909,
-        "partial": 562
+        "browser-like": 67,
+        "minimal": 927,
+        "partial": 565
       },
       "headless_markers_by_class": {},
       "origin_category": {
-        "cloud-hosting": 272,
+        "cloud-hosting": 268,
         "named-other": 44,
-        "none": 1109,
+        "none": 1135,
         "not-checked": 18,
         "operator-crawler": 94
       },
       "protocol": {
         "h1.0": 20,
-        "h1.1": 1360,
-        "h2": 141,
+        "h1.1": 1381,
+        "h2": 142,
         "h3": 16
       },
       "ua_completeness": {
         "comment-no-version": 1,
-        "empty": 727,
-        "full": 3645,
-        "product+version": 965,
-        "product-only": 261
+        "empty": 742,
+        "full": 3650,
+        "product+version": 968,
+        "product-only": 265
       },
       "ua_family": {
         "axios": 3,
         "curl": 690,
         "go-http-client": 2,
-        "other": 4853,
+        "other": 4880,
         "python-aiohttp": 16,
         "python-httpx": 7,
         "python-requests": 28
