@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 21
+    "unrouted": 25
   },
   "by_channel_code": {
     "human-press": {
@@ -24,18 +24,18 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 21
+      "no-code (non-JSON refusal)": 25
     }
   },
   "by_cls": {
-    "automation": 10,
+    "automation": 14,
     "browser": 16
   },
   "by_cname": {
-    "": 26
+    "": 30
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 21,
+    "no-code (non-JSON refusal)": 25,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -45,48 +45,50 @@
     "2026-10-19": 3,
     "2026-10-20": 4,
     "2026-10-21": 8,
-    "2026-10-22": 5
+    "2026-10-22": 5,
+    "2026-10-23": 4
   },
   "by_day_pt": {
     "2026-10-18": 7,
     "2026-10-19": 6,
     "2026-10-20": 6,
     "2026-10-21": 5,
-    "2026-10-22": 2
+    "2026-10-22": 2,
+    "2026-10-23": 4
   },
   "by_length": {
-    "1-100": 17,
+    "1-100": 21,
     "not recorded": 9
   },
   "by_origin": {
-    "external": 20,
+    "external": 24,
     "steward-test": 6
   },
   "by_route": {
-    "/": 15,
+    "/": 17,
     "/.netlify/functions/visit": 1,
     "/api/v1/human-press": 1,
     "/api/v1/notes": 1,
     "/api/v1/questions": 1,
     "/api/v1/render-claim": 1,
     "/api/v1/signal": 1,
-    "/wp-json/batch/v1": 5
+    "/wp-json/batch/v1": 7
   },
   "by_route_folded": 0,
   "by_status": {
     "400": 3,
-    "404": 7,
-    "405": 15,
+    "404": 9,
+    "405": 17,
     "503": 1
   },
   "distinct_routes": 8,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 23, 2026, 1:52:59 AM PT",
-  "generated_at_utc": "2026-10-23T08:52:59Z",
+  "generated_at_pt": "Oct 23, 2026, 7:46:45 AM PT",
+  "generated_at_utc": "2026-10-23T14:46:45Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-10-23T08:53:34.287Z",
+    "as_of": "2026-10-23T14:46:53.903Z",
     "human_presses": 3,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -97,7 +99,7 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 26,
+  "total": 30,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -106,20 +108,20 @@
       "status": 405
     },
     {
-      "cls": "browser",
-      "count": 3,
-      "route": "/wp-json/batch/v1",
-      "status": 404
-    },
-    {
       "cls": "automation",
-      "count": 2,
+      "count": 4,
       "route": "/",
       "status": 405
     },
     {
       "cls": "automation",
-      "count": 2,
+      "count": 4,
+      "route": "/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 3,
       "route": "/wp-json/batch/v1",
       "status": 404
     },
