@@ -86,17 +86,17 @@
     },
     {
       "agent-claimed": 4,
-      "automation": 43,
+      "automation": 44,
       "browser": 61,
       "day": "2026-10-23",
       "record_reads": {
-        "counts_read": 142,
-        "ledger_read": 4,
-        "total": 146
+        "counts_read": 151,
+        "ledger_read": 6,
+        "total": 157
       },
-      "total": 237,
-      "total_including_record_reads": 383,
-      "unknown": 129
+      "total": 239,
+      "total_including_record_reads": 396,
+      "unknown": 130
     }
   ],
   "class_note": "Requests by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications. Since Oct 21, 2026 the daily figures exclude the record's own gauge-reads (see record_reads_note); each day's total_including_record_reads is the pre-change figure.",
@@ -132,12 +132,12 @@
         },
         {
           "day": "2026-10-23",
-          "digest_requests": 383,
-          "distinct_visitors": 184
+          "digest_requests": 396,
+          "distinct_visitors": 190
         }
       ],
-      "digest_requests": 4869,
-      "distinct_visitors": 1350,
+      "digest_requests": 4882,
+      "distinct_visitors": 1356,
       "epoch": "2026-10",
       "returning_visitors": 91
     }
@@ -227,15 +227,15 @@
       "events": {
         "briefs-read": 5,
         "changed-read": 2,
-        "counts-read": 142,
+        "counts-read": 151,
         "guestbook-view": 2,
-        "ledger-read": 4,
+        "ledger-read": 6,
         "notes-read": 3,
-        "pageview": 214,
+        "pageview": 216,
         "signal-challenge-read": 1,
         "utility-read": 10
       },
-      "total": 383
+      "total": 396
     }
   ],
   "event_note": "Named events per Pacific day. pageview is a plain page read; the other names are the record's return markers \u2014 changed-read (a /changed check-back; since Oct 19, 2026 the format-specific names changed-read-json and changed-read-atom are recorded when the response's format is known), utility-read (a published utility used), receipt-check (a receipt looked up), notes-read and guestbook-view (the visitors' book read as counts and page), data-read (a /data file read), counts-read (the public counts payload read), ledger-read (the public ledger file read). An event is a request to a path, nothing more.",
@@ -350,8 +350,8 @@
   ],
   "file_note": "Fetches of the canonical agent-interest files per Pacific day \u2014 the discovery set (robots.txt, llms.txt, sitemap, security.txt, the agent card, the agent skills) and the instruction-file probes (AGENTS.md, CLAUDE.md, README.md). A fetch is a request, not evidence of agent interest: measured experience is that these hits are likelier scanners and audit tools. The series exists so a second crawler pass is visible as a pass.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 23, 2026, 7:46:45 AM PT",
-  "generated_at_utc": "2026-10-23T14:46:45Z",
+  "generated_at_pt": "Oct 23, 2026, 7:53:03 AM PT",
+  "generated_at_utc": "2026-10-23T14:53:03Z",
   "record_reads_note": "Record reads: the record measuring itself \u2014 reads of the public counts payload (counts-read) and the public ledger file (ledger-read), by the stewards' snapshot and dashboard and by any outside reader. They are part of the site's functioning, so since Oct 21, 2026 they are excluded from the by-class totals above and published here as each day's fold. The fold is zero before Oct 19, 2026: the gauges entered the record that day (before it, reads of them were not recorded at all).",
   "site": "garden",
   "unavailable_notes": [],
@@ -398,11 +398,11 @@
     },
     {
       "day": "2026-10-23",
-      "digest_bearing_requests": 383,
-      "digest_requests": 383,
-      "distinct_visitors": 184,
-      "repeat_requests": 214,
-      "requests_total": 237
+      "digest_bearing_requests": 396,
+      "digest_requests": 396,
+      "distinct_visitors": 190,
+      "repeat_requests": 221,
+      "requests_total": 239
     }
   ],
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (Pacific date, network address, user-agent) under a per-site secret (Pacific-date keying since Oct 19, 2026; the first day's records were keyed on the UTC date, so Oct 18's figure straddles two keyings): it links a visitor's requests within a Pacific day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. digest_bearing_requests is the day's requests that carried a digest at all; measured against requests_total (the day's requests from the same run's by-class series) it is the coverage of the distinct-visitor count \u2014 'distinct visitors' never silently reads as all traffic. Shared network egress understates the count; rotating egress overstates it."
