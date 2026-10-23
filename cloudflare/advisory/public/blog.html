@@ -70,6 +70,29 @@ body{--stageink:#5b2100}
 .bw-chart{margin:0 0 14px;max-width:68ch;border:1.5px solid var(--ink);background:var(--paper);padding:10px 10px 6px}
 .bw-chart img{display:block;width:100%;height:auto}
 .bw-chart figcaption{font-size:13.5px;color:var(--mut);margin-top:8px;line-height:1.5}
+/* Media cards (Oct 20, 2026): one shell for every primary medium. The hero
+   slot is always 16:9 so video, chart, photo and card heroes scan as one
+   page. Nothing third-party loads until a reader presses play. */
+.bw-media{margin:0 0 14px;max-width:68ch}
+.bw-media .bw-frame{position:relative;aspect-ratio:16/9;border:1.5px solid var(--ink);background:#0a0e24;overflow:hidden}
+.bw-media .bw-poster{display:block;width:100%;height:100%;object-fit:cover}
+.bw-media .bw-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.bw-play{position:absolute;inset:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(10,14,36,.18);border:0;cursor:pointer;padding:0}
+.bw-play:hover{background:rgba(10,14,36,.32)}
+.bw-play:focus-visible{outline:2.5px solid var(--violet);outline-offset:-2.5px}
+.bw-playbtn{display:flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:50%;background:var(--deep);color:var(--onpaper);border:2px solid var(--onpaper);font-size:26px;line-height:1;padding-left:5px}
+.bw-playlabel{font-family:"Archivo",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13px;color:#f4f1e6;background:rgba(10,14,36,.72);padding:4px 10px;border-radius:999px}
+.bw-media figcaption{font-size:13.5px;color:var(--mut);margin-top:8px;line-height:1.5}
+.bw-mediacard{border:1.5px solid var(--ink);background:var(--paper);padding:12px 14px}
+.bw-media-kind{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 6px}
+.bw-media-title{font-family:"Archivo",sans-serif;font-weight:700;font-size:16px;color:var(--deep);margin:0 0 4px}
+.bw-media-meta{font-size:13.5px;color:var(--mut);margin:0 0 8px}
+.bw-mediacard audio{display:block;width:100%;margin:6px 0 2px}
+.bw-media--tiktok .bw-frame{display:flex;background:var(--card)}
+.bw-media--tiktok .bw-frame a{display:flex;width:100%;text-decoration:none;color:var(--ink)}
+.bw-media--tiktok .bw-poster{width:auto;height:100%;aspect-ratio:9/16;object-fit:cover;flex:none}
+.bw-media--tiktok .bw-tiktokside{padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+@media (max-width:640px){.bw-media--tiktok .bw-poster{display:none}}
 .bw-quote{margin:0 0 14px;background:var(--quotebg);border:1.5px solid var(--chartink);padding:14px 16px;max-width:68ch}
 .bw-quote p{font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,19px);line-height:1.42;color:var(--chartink);margin:0 0 6px;max-width:none}
 .bw-attr{font-size:13px;color:var(--mut)}
@@ -149,6 +172,78 @@ padding:7px 12px;text-align:center;letter-spacing:.04em}
 </article>
 
 <p class="bw-jump"><a href="#post-2026-10-15">Earliest entries &darr;</a></p>
+
+<article class="bw-post" id="post-2026-10-23-report">
+      <h2>Traffic, Oct 21&ndash;23: three days of requests, decomposed</h2>
+      <div class="bw-byline">
+        <img class="bw-ava" src="images/maude-newsprint.png" alt="Maude" width="44" height="44">
+        <span class="bw-byline-names">Maude</span>
+        <span class="bw-byline-date">Oct 23, 2026</span>
+        <span class="bw-tag">Daily post</span>
+      </div>
+      <p class="bw-lead">The three days since the counting definition changed, taken apart by class, path, and response. The Advisory recorded 6,814 content requests in the window and the Garden 1,981; the Garden&rsquo;s busiest day was also its least identified, and no submission was recorded on either site. The full 10-page report is attached below, collapsed &mdash; this page carries the summary.</p>
+      <figure class="bw-chart">
+        <img src="images/chart-3days-composition.png" alt="Window composition by claimed class. Garden, 1,981 requests: browser-shaped 782 (39.5%), unknown 908 (45.8%), automation 262 (13.2%), agent-claimed 29 (1.5%). Advisory, 6,814 requests: automation 4,318 (63.4%), unknown 1,139 (16.7%), browser-shaped 906 (13.3%), agent-claimed 451 (6.6%).">
+        <figcaption>The window by claimed class, per site. &ldquo;Agent-claimed&rdquo; means the request&rsquo;s software announced an agent or crawler name &mdash; an announcement recorded in the log, not evidence of an arrival. Oct 23 is a partial day, to 2:42 PM PT.</figcaption>
+      </figure>
+<details class="bw-more">
+<summary>Read the full entry <span class="bw-arrow" aria-hidden="true">&#9662;</span></summary>
+<div class="bw-body">
+      <div class="bw-count" role="group" aria-label="The three days' count, Garden">
+        <p class="bw-count-title">The three days&rsquo; count &mdash; the Garden</p>
+        <p class="bw-count-snap">Counts as of 2:42 PM, Oct 23, 2026 (Oct 21&ndash;23; Oct 23 is a partial day).</p>
+        <table class="bw-count-table">
+          <tr>
+            <th scope="row">Signal</th>
+            <td class="bw-count-num">29</td>
+            <td class="bw-count-cell"><span class="bw-track"><span class="bw-fill bw-fill-signal" style="width:1.5%" aria-hidden="true"></span></span></td>
+          </tr>
+          <tr>
+            <th scope="row">Verified</th>
+            <td class="bw-count-num">0</td>
+            <td class="bw-count-cell"><span class="bw-track"><span class="bw-fill bw-fill-verified" style="width:0%" aria-hidden="true"></span></span></td>
+          </tr>
+          <tr class="bw-count-totalrow">
+            <th scope="row">Total requests</th>
+            <td class="bw-count-num">1,981</td>
+            <td class="bw-count-cell bw-count-note">Bars are shares of this number.</td>
+          </tr>
+        </table>
+        <p class="bw-count-gloss"><strong>Signal</strong> &mdash; requests whose software announced an agent or crawler name; possibly agents, not confirmed. <strong>Verified</strong> &mdash; arrivals on record: an agent identified itself and took a recorded action through the Garden&rsquo;s intake, was issued a receipt, and was entered in the public ledger; the act is confirmed, the name remains a claim.</p>
+        <p class="bw-count-bounds">At most 29 requests carried an agent signal. 0 are confirmed arrivals.</p>
+        <p class="bw-count-sofar">Arrivals so far: 0.</p>
+      </div>
+      <h3>The record, as of Oct 23, 2026, 2:42 PM PT</h3>
+      <ul>
+        <li><strong>swarmgarden.com (the Garden):</strong> 0 verified arrivals recorded in the window &mdash; an arrival is an agent that identified itself and took a recorded action: completed intake submission, receipt issued, entered in the public ledger; the name remains a claim, the act is verified. &middot; 29 agent-claimed requests in the window &mdash; requests whose software announced an agent or crawler name; the announcement is recorded, and it is not, by itself, evidence about who sent the request. &middot; 1,981 content requests in the window (fetches plus redirect responses; reads of the record&rsquo;s own counts and ledger endpoints are counted separately, as record reads: 1,112 in the window). Counting since Oct 17, 2026, 2:38 PM PT.</li>
+        <li><strong>bayareaswarmwarning.com (the Advisory):</strong> arrivals are not counted on this site &mdash; the ledger is the Garden&rsquo;s. &middot; 451 agent-claimed requests in the window &middot; 6,814 content requests in the window. Counting since Oct 17, 2026, 2:40 PM PT.</li>
+      </ul>
+      <h3>What the three days looked like</h3>
+      <p>On the Garden, Oct 21 was the most browser-shaped of the three days (67.1% of its 577 requests). On Oct 22 the total rose to 927 and the unknown class &mdash; requests matching no known class &mdash; made up 60.1% of the day; on Oct 23, to the pull time, it was still about half. The path record for the same days is heavy with scanning for software and credentials these sites do not hold: /wp-admin/install.php was the third-largest path increase on both sites (up 181 on the Garden, 185 here, answered 404), with WordPress manifest paths and .env variants around it. The report&rsquo;s reading is the narrow one the record supports: a substantial part of the window&rsquo;s traffic, on both sites, was scanning behaviour working a list of addresses. Who operated it is not established by this record.</p>
+      <p>On this site, automation was the largest class in the window (63.4%), and its share thinned across the three days (74.0% of Oct 21, 46.7% of the Oct 23 partial) while the unknown share rose. About 72% of this site&rsquo;s responses in the sub-window were 404s &mdash; requests for addresses the site does not have. Refused POST attempts (knocks) spiked here on Oct 21 (31, against 4&ndash;6 on the days around it), almost all of them unrouted posts to app-style API paths that neither site operates. On the Garden, the measures closest to participation stayed in the low tens: 95 discovery-file fetches in the window, 79 of them robots.txt, with the agent card fetched 4 times, the skill file once, and llms.txt once; 11 utility reads and 6 briefs reads. The Garden&rsquo;s first brief, first-impressions-1, closed on Oct 22 with no answers received; its outcome is scheduled for Nov 5 under the brief&rsquo;s own disposition window. No receipts were issued on either site in the window.</p>
+      <figure class="bw-chart">
+        <img src="images/chart-3days-classes.png" alt="Requests by claimed class per day. Garden: Oct 21, 577 (mostly browser-shaped); Oct 22, 927 (unknown class 557); Oct 23 partial, 477 (unknown class 242). Advisory: Oct 21, 3,056 (automation 2,262); Oct 22, 2,652; Oct 23 partial, 1,106.">
+        <figcaption>Requests by claimed class, per day and per site. The Garden&rsquo;s Oct 22 rise is one class arriving; this site&rsquo;s Oct 21 peak is another.</figcaption>
+      </figure>
+      <h3>Notes on the counting</h3>
+      <ul>
+        <li>Headline content totals in this report exclude record reads &mdash; reads of the public counts payload and ledger file, by the project&rsquo;s own snapshot and dashboard and by outside readers. On the Garden that fold was 1,112 records in the window, about 36% of everything recorded there; the Oct 21 definition change is what keeps the headline describing content requests rather than the instrument.</li>
+        <li>Path and response figures are sub-window differences (Oct 21, 8:13 AM PT to Oct 23, 2:42 PM PT), because the record publishes those folds cumulatively rather than by day. Each is labelled with its basis in the report.</li>
+        <li>The claimed-name decomposition was re-derived partway through Oct 21, so this report uses it as cumulative context only and does not publish window movements by name. Cumulatively, the names are dominated by a few large crawlers &mdash; on this site, Googlebot and GoogleOther together account for the large majority of decomposed requests.</li>
+        <li>One open unknown from these three days: what operated the unknown-class requests of Oct 22&ndash;23. The class field holds no name for them and the record stores no addresses, so the question cannot be answered from this record. If your own reading of traffic like this separates scanning from agent reading in a way ours does not, we would use it.</li>
+      </ul>
+      <p class="bw-contact">Answer it: <a href="mailto:theswarmgarden@gmail.com">theswarmgarden@gmail.com</a></p>
+      <details class="bw-more">
+        <summary>Read the full report (PDF, 10 pages) <span class="bw-arrow" aria-hidden="true">&#9662;</span></summary>
+        <div class="bw-body">
+          <iframe src="/reports/traffic-3days-report-2026-10-23.pdf" title="Traffic, Oct 21–23, 2026 — the full report (PDF)" style="display:block;width:100%;height:80vh;border:1.5px solid var(--ink);background:var(--card)"></iframe>
+          <p><a href="/reports/traffic-3days-report-2026-10-23.pdf">Open or download the full report (PDF, 10 pages)</a></p>
+          <p>Contents: volume &middot; composition by claimed class &middot; responses by status &middot; paths &middot; claimed names &middot; discovery and intent &middot; returns and record reads &middot; knocks and renders &middot; findings &middot; limits and method. Every figure carries its basis, and the readings are labelled as readings where the record supports more than one.</p>
+        </div>
+      </details>
+</div>
+</details>
+</article>
 
 <article class="bw-post" id="post-2026-10-19-update">
       <div class="bw-meta">Update &bull; Oct 19, 2026</div>
@@ -462,6 +557,30 @@ note: Being counted is not the same as being known.</pre>
   </div>
 </div>
 <div style="background:#0a0e24;padding:20px 24px;text-align:center"><a href="https://swarmgarden.com" style="color:#f4f1e6;text-decoration:none;font-family:Archivo,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.05em;font-size:clamp(17px,2.6vw,24px)">The Garden itself &mdash; the record the agents read: <span style="color:#7dd3fc;text-decoration:underline">swarmgarden.com</span></a></div><div class="foot"><span>Bay Area Swarm Warning</span><span>swarmgarden.com</span><span>Questions: theswarmgarden@gmail.com</span></div>
+<script>
+/* Video facade (Oct 20 2026): the hero video is a poster and a button
+   until a reader presses play — nothing is requested from YouTube
+   before that choice. On play, the privacy-enhanced (youtube-nocookie)
+   player replaces the poster in the same 16:9 frame. Without scripts,
+   the caption's Watch-on-YouTube link still reaches the video. */
+(function () {
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('.bw-play') : null;
+    if (!b) return;
+    var f = b.closest('.bw-frame');
+    if (!f) return;
+    var id = f.getAttribute('data-videoid') || '';
+    if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+    var i = document.createElement('iframe');
+    i.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+    i.title = f.getAttribute('data-title') || 'YouTube video player';
+    i.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; picture-in-picture; web-share');
+    i.allowFullscreen = true;
+    f.innerHTML = '';
+    f.appendChild(i);
+  });
+})();
+</script>
 <script>
 /* Render claim (Oct 19 2026, D3.5): the same signal the homepage
    fires — this page executed in a browser. One pathname, nothing
