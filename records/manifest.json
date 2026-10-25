@@ -15,14 +15,14 @@
       "sha256": "b0a4816a5250094ce63a9187f196ff3af019fe8020849f37d3bb48f90e138a30"
     },
     {
-      "bytes": 28916,
+      "bytes": 30051,
       "path": "advisory/counts-series.csv",
-      "sha256": "afa6e0f5d84803e765c7a9637a51523b8e4e60b67cdc767389a0dcd09b1db800"
+      "sha256": "1362bf2f5721f246e80ff7ed8d060a33b4b93004ffa9525156d07d59279e3b93"
     },
     {
-      "bytes": 94124,
+      "bytes": 97774,
       "path": "advisory/counts-series.json",
-      "sha256": "6a8bb63134c03b20c4077aefd6c0376fdd7cdc5c2225788de03eb78d19784c68"
+      "sha256": "a0f978e188a4751622c5f2c1bdabb8bf71519843c455ef67ae9cc61699c7d23f"
     },
     {
       "bytes": 102554,
@@ -55,19 +55,24 @@
       "sha256": "d1bab45330b05793392c72516b579a5896ea34e1e1f61cc26d159111559c2a60"
     },
     {
-      "bytes": 259173,
+      "bytes": 261419,
       "path": "advisory/daily/2026-10-24.json",
-      "sha256": "1cb34453a73ccf1b92e4f00feffa1dedbf6759d92f1b8259956fe31b4606216f"
+      "sha256": "29a1662adcd459d2e4f5b10ce7d45a23a7d3c3cda87b648e7cf4d8372eea8f1b"
     },
     {
-      "bytes": 20166,
+      "bytes": 261809,
+      "path": "advisory/daily/2026-10-25.json",
+      "sha256": "476c1902bccfc94e5b222e81cf39fe4f6f7204a601584807caf23523071646e5"
+    },
+    {
+      "bytes": 20922,
       "path": "garden/counts-series.csv",
-      "sha256": "4c078c96367bd27371bee67f5a4bf61e7dbbe7912f1a6ffda47dd51a78c70711"
+      "sha256": "7875f331ba283ad7aadfde0fd985d51f191fd6b860eb8f2f1948c955ee593053"
     },
     {
-      "bytes": 83820,
+      "bytes": 87031,
       "path": "garden/counts-series.json",
-      "sha256": "69b0b6073bb4a3df4f9e275b4f46628b13a0d9c884492ecdc4e47d5c94f258e5"
+      "sha256": "8d2be15ffdcd73a665a2cc63a08f9574b57221570bdeefd2c2af99ca7a9af307"
     },
     {
       "bytes": 63161,
@@ -100,36 +105,41 @@
       "sha256": "220f747af3dc46acd2f10267ee65435761d702bca4f6d945f74e39aa6636d5bd"
     },
     {
-      "bytes": 145740,
+      "bytes": 148502,
       "path": "garden/daily/2026-10-24.json",
-      "sha256": "1c5d4ee1c84b58a264c7def6a0ee49b5ff9b4ccb353f9fd4469a19d7efea4627"
+      "sha256": "18466ac07eb9bdd9c83069e17f22b6c4fae8f8acbae8580d2ad2718b3791b36f"
+    },
+    {
+      "bytes": 148781,
+      "path": "garden/daily/2026-10-25.json",
+      "sha256": "fba8b03fbfc04e8d4fc46c26f443a0a3e3b54f8496df6697650e281997dd8e84"
     },
     {
       "bytes": 363,
       "path": "ledger/garden-ledger.json",
-      "sha256": "4c3bb62e2188c001f52c2357ab2709c2ca13010c9e90547493619c5de25bb73b"
+      "sha256": "c445a76092d9e25c9d344d10f493608e06b33ebcfafcbe0027d9d2aa780512e4"
     },
     {
-      "bytes": 4172054,
+      "bytes": 4453383,
       "path": "snapshots/2026-10.md.gz",
-      "sha256": "dd07bdd6cec7bbffc5f7dd0b750d4e82cf6601db658da8e77afe99009f16ee56"
+      "sha256": "ab3962e3b4697cb1ad14d9f2620146d05ce23cf602765dce1f1da75e756bcaff"
     }
   ],
-  "generated_at_pt": "2026-10-24T01:53:00.977101-07:00",
-  "generated_at_utc": "2026-10-24T08:53:00Z",
+  "generated_at_pt": "2026-10-25T01:24:10.572389-07:00",
+  "generated_at_utc": "2026-10-25T08:24:10Z",
   "notes": [],
   "producer": "snapshot.py + export.py (B2 records preservation, plan dated Oct 18, 2026; all seven defaults adopted)",
   "publication": "Published to the public repo's records/ tree \u2014 daily publication enabled in export-config.json (steward approved the first export Oct 18, 2026).",
   "series": {
     "advisory": {
       "first_snapshot_at_utc": "2026-10-18T01:09:24Z",
-      "last_snapshot_at_utc": "2026-10-24T08:53:00Z",
-      "rows": 130
+      "last_snapshot_at_utc": "2026-10-25T08:24:10Z",
+      "rows": 135
     },
     "garden": {
       "first_snapshot_at_utc": "2026-10-18T01:09:24Z",
-      "last_snapshot_at_utc": "2026-10-24T08:53:00Z",
-      "rows": 130
+      "last_snapshot_at_utc": "2026-10-25T08:24:10Z",
+      "rows": 135
     }
   }
 }
