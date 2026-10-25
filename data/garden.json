@@ -19,29 +19,29 @@
       {
         "label": "browser",
         "note": "",
-        "value": 3703
+        "value": 3705
       },
       {
         "label": "automation",
         "note": "",
-        "value": 1448
+        "value": 1450
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 2366
+        "value": 2377
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 3907
+        "value": 3919
       },
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 3185
+        "value": 3188
       },
       {
         "label": "Responses with status 307",
@@ -69,22 +69,22 @@
         "value": 3
       }
     ],
-    "fetches_including_record_reads": 9919,
+    "fetches_including_record_reads": 9963,
     "record_reads": {
-      "counts_read": 2638,
-      "ledger_read": 165,
-      "total": 2803
+      "counts_read": 2665,
+      "ledger_read": 167,
+      "total": 2832
     },
     "rows": [
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Since Oct 21, 2026 the record's own gauge-reads are excluded (see the record reads row). Requests, not readers.",
-        "value": 7116
+        "value": 7131
       },
       {
         "label": "Record reads",
-        "note": "The record measuring itself: counts-read 2,638 (reads of the public counts payload) + ledger-read 165 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
-        "value": 2803
+        "note": "The record measuring itself: counts-read 2,665 (reads of the public counts payload) + ledger-read 167 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
+        "value": 2832
       },
       {
         "label": "Redirect responses",
@@ -94,7 +94,7 @@
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 10512
+        "value": 10556
       },
       {
         "label": "Verified agent arrivals on record",
@@ -119,8 +119,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 25, 2026, 1:24:10 AM PT",
-  "generated_at_utc": "2026-10-25T08:24:10Z",
+  "generated_at_pt": "Oct 25, 2026, 1:53:00 AM PT",
+  "generated_at_utc": "2026-10-25T08:53:00Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "networks": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 grouped by the network fields written on each record, from this run's dataset pull: the same basis as the countries part.",
@@ -132,7 +132,7 @@
         "asn": "13335",
         "network": "Cloudflare, Inc.",
         "organization": "Cloudflare, Inc.",
-        "requests": 4041
+        "requests": 4073
       },
       {
         "asn": "396982",
@@ -144,7 +144,7 @@
         "asn": "32934",
         "network": "Meta Platforms Ireland Limited",
         "organization": "Meta Platforms Ireland Limited",
-        "requests": 953
+        "requests": 961
       },
       {
         "asn": "48090",
@@ -168,7 +168,7 @@
         "asn": "132203",
         "network": "6 COLLYER QUAY",
         "organization": "6 COLLYER QUAY",
-        "requests": 191
+        "requests": 192
       },
       {
         "asn": "218785",
@@ -309,6 +309,12 @@
         "requests": 29
       },
       {
+        "asn": "45102",
+        "network": "Alibaba Cloud - US",
+        "organization": "Alibaba Cloud - US",
+        "requests": 28
+      },
+      {
         "asn": "209366",
         "network": "SEMrush CY LTD",
         "organization": "SEMrush CY LTD",
@@ -319,12 +325,6 @@
         "network": "Scaleway",
         "organization": "Scaleway",
         "requests": 28
-      },
-      {
-        "asn": "45102",
-        "network": "Alibaba Cloud - US",
-        "organization": "Alibaba Cloud - US",
-        "requests": 27
       },
       {
         "asn": "16509",
@@ -603,6 +603,12 @@
         "requests": 8
       },
       {
+        "asn": "16276",
+        "network": "Ahrefs Pte Ltd Dmytro",
+        "organization": "Ahrefs Pte Ltd Dmytro",
+        "requests": 7
+      },
+      {
         "asn": "399784",
         "network": "Internet Archive Canada",
         "organization": "Internet Archive Canada",
@@ -619,12 +625,6 @@
         "network": "Web2Objects LLC",
         "organization": "Web2Objects LLC",
         "requests": 7
-      },
-      {
-        "asn": "16276",
-        "network": "Ahrefs Pte Ltd Dmytro",
-        "organization": "Ahrefs Pte Ltd Dmytro",
-        "requests": 6
       },
       {
         "asn": "214996",
@@ -681,34 +681,34 @@
       "rule": "Networks with fewer than 5 requests in the window are folded into a single remainder. The number of networks folded and their combined requests are printed here; no folded network is named.",
       "threshold": 5
     },
-    "window_total": 10513
+    "window_total": 10556
   },
   "pull_status": "ok",
   "referrers": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 counted by the site's own keyed stats at this run's pull. The countries file reads the same window and record set from the dataset grouping in the same run, so the two totals can differ by the requests that land between the pulls.",
     "era_note": "Publication of these aggregates begins Oct 19, 2026. No referer is recorded on the Garden's Oct 17, 2026 records (the counting window's first 163 requests); recorded referers run from Oct 18, 2026.",
-    "no_referer_recorded": 10082,
+    "no_referer_recorded": 10124,
     "note": "The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host \u2014 so platform figures are a LOWER BOUND. 'No referer recorded' is the honest name for the empty bucket (never 'direct'): the window total minus the grouped hosts, also absorbing the rare unparseable referer. Federated hosts \u2014 Mastodon instances and the like \u2014 are deliberately not grouped into a platform: each prints as its own host. Grouping is a reading aid, never a replacement for the record: the raw host is printed beside every grouped name. Only hosts publish \u2014 never a full referer value, path, or query.",
     "rows": [
       {
         "hosts": [
           {
             "host": "swarmgarden.com",
-            "requests": 250
+            "requests": 251
           }
         ],
         "name": "swarmgarden.com",
-        "requests": 250
+        "requests": 251
       },
       {
         "hosts": [
           {
             "host": "www.swarmgarden.com",
-            "requests": 116
+            "requests": 117
           }
         ],
         "name": "www.swarmgarden.com",
-        "requests": 116
+        "requests": 117
       },
       {
         "hosts": [
@@ -779,7 +779,7 @@
       "rule": "Referrer groups with fewer than 5 requests in the window are folded into a single remainder. The numbers of groups and hosts folded and their combined requests are printed here; no folded group or host is named. The account's workers.dev staging hostname also drops into this remainder, unnamed, whenever it appears \u2014 it never publishes.",
       "threshold": 5
     },
-    "window_total": 10512
+    "window_total": 10556
   },
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
