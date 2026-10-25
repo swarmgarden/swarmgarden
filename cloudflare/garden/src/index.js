@@ -89,9 +89,32 @@ function route(pathname) {
   return null;
 }
 
-export default {
+const worker = {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
+    // The /agents address (added Oct 20 2026, published-claims audit
+    // Finding 14): the Advisory's "send your agent" direction has
+    // always named https://swarmgarden.com/agents, and the Garden
+    // had no such address — the direction landed on the signpost
+    // 404. The address now redirects (301) to the participate page,
+    // the protocol's home, so every existing external link to it
+    // lands on the protocol. No Garden surface uses /agents for
+    // anything else (the skills live under /.well-known/). The
+    // redirect passes through the front door like any other read,
+    // so the record counts it as what it is: a redirect response.
+    if (url.pathname === '/agents') {
+      let res = new Response(null, {
+        status: 301,
+        headers: { Location: 'https://' + SITE_HOST + '/participate.html' }
+      });
+      res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
+      if (!res.headers.get('link')) {
+        const headers = new Headers(res.headers);
+        headers.set('Link', LINK_HEADER);
+        res = new Response(res.body, { status: res.status, headers });
+      }
+      return res;
+    }
     // The published data files (added Oct 18 2026, ASAP Item 2):
     // GET/HEAD /data/<published-name>.json answers directly here,
     // before the route table — exactly the Advisory's discipline.
@@ -224,5 +247,32 @@ export default {
         return c && typeof c.humans_total === 'number' ? c.humans_total : null;
       }
     });
+  }
+};
+
+// HTTPS enforcement (added Oct 25 2026, Caitria's instruction):
+// the site answers over HTTPS but used to serve plain HTTP with a
+// 200 as well. Now an http: request gets a 301 to the same address
+// over https: (path and query preserved) — answered here, before
+// the front door, so the scheme redirect is not visit-logged (the
+// follow-up https: request is the recorded one; the Advisory's
+// /dashboard.html redirect sets the same precedent). Every https:
+// response carries HSTS (one year, subdomains included), matching
+// the posture caitriaoneill.com adopted Oct 23 2026. Implemented
+// in the Worker because the zone-level toggles sit behind token
+// permissions this project does not hold.
+const HSTS_VALUE = 'max-age=31536000; includeSubDomains';
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    if (url.protocol === 'http:') {
+      url.protocol = 'https:';
+      return new Response(null, { status: 301, headers: { Location: url.toString() } });
+    }
+    const res = await worker.fetch(req, env, ctx);
+    if (res.headers.get('strict-transport-security')) return res;
+    const headers = new Headers(res.headers);
+    headers.set('Strict-Transport-Security', HSTS_VALUE);
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
   }
 };
