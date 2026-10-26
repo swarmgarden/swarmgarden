@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 29
+    "unrouted": 31
   },
   "by_channel_code": {
     "human-press": {
@@ -24,18 +24,18 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 29
+      "no-code (non-JSON refusal)": 31
     }
   },
   "by_cls": {
     "automation": 14,
-    "browser": 20
+    "browser": 22
   },
   "by_cname": {
-    "": 34
+    "": 36
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 29,
+    "no-code (non-JSON refusal)": 31,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -47,7 +47,8 @@
     "2026-10-21": 8,
     "2026-10-22": 5,
     "2026-10-23": 4,
-    "2026-10-25": 4
+    "2026-10-25": 4,
+    "2026-10-26": 2
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -57,18 +58,19 @@
     "2026-10-22": 2,
     "2026-10-23": 4,
     "2026-10-24": 3,
-    "2026-10-25": 1
+    "2026-10-25": 3
   },
   "by_length": {
     "1-100": 25,
+    "1001-10000": 2,
     "not recorded": 9
   },
   "by_origin": {
-    "external": 28,
+    "external": 30,
     "steward-test": 6
   },
   "by_route": {
-    "/": 20,
+    "/": 22,
     "/.netlify/functions/visit": 1,
     "/api/v1/human-press": 1,
     "/api/v1/notes": 1,
@@ -81,17 +83,17 @@
   "by_status": {
     "400": 3,
     "404": 10,
-    "405": 20,
+    "405": 22,
     "503": 1
   },
   "distinct_routes": 8,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 25, 2026, 1:54:04 PM PT",
-  "generated_at_utc": "2026-10-25T20:54:04Z",
+  "generated_at_pt": "Oct 25, 2026, 7:53:06 PM PT",
+  "generated_at_utc": "2026-10-26T02:53:06Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-10-25T20:54:10.347Z",
+    "as_of": "2026-10-26T02:53:14.360Z",
     "human_presses": 7,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -102,11 +104,11 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 34,
+  "total": 36,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 16,
+      "count": 18,
       "route": "/",
       "status": 405
     },
