@@ -1,51 +1,66 @@
 {
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 27, 2026, 1:53:02 AM PT",
-  "generated_at_utc": "2026-10-27T08:53:02Z",
+  "generated_at_pt": "Oct 27, 2026, 7:53:00 AM PT",
+  "generated_at_utc": "2026-10-27T14:53:00Z",
   "rows": [
     {
-      "2xx": 3246,
+      "2xx": 3368,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 20,
-        "automation": 241,
-        "browser": 1300,
-        "unknown": 1685
+        "automation": 243,
+        "browser": 1335,
+        "unknown": 1770
       },
       "none_recorded": 0,
       "path": "/",
-      "visits": 3246
+      "visits": 3368
     },
     {
-      "2xx": 1098,
+      "2xx": 1108,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 66,
-        "automation": 962,
+        "agent-claimed": 71,
+        "automation": 967,
         "browser": 27,
         "unknown": 43
       },
       "none_recorded": 0,
       "path": "/robots.txt",
-      "visits": 1098
+      "visits": 1108
     },
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 729,
+      "4xx": 748,
       "5xx": 0,
       "by_class": {
         "automation": 7,
         "browser": 6,
-        "unknown": 716
+        "unknown": 735
       },
       "none_recorded": 0,
       "path": "/wp-admin/install.php",
-      "visits": 729
+      "visits": 748
+    },
+    {
+      "2xx": 237,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 12,
+        "automation": 63,
+        "browser": 159,
+        "unknown": 3
+      },
+      "none_recorded": 0,
+      "path": "/blog",
+      "visits": 237
     },
     {
       "2xx": 234,
@@ -63,21 +78,6 @@
       "visits": 234
     },
     {
-      "2xx": 231,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 12,
-        "automation": 62,
-        "browser": 154,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/blog",
-      "visits": 231
-    },
-    {
       "2xx": 12,
       "3xx": 158,
       "4xx": 0,
@@ -93,7 +93,7 @@
       "visits": 170
     },
     {
-      "2xx": 155,
+      "2xx": 156,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
@@ -101,26 +101,41 @@
         "agent-claimed": 6,
         "automation": 49,
         "browser": 4,
-        "unknown": 96
+        "unknown": 97
       },
       "none_recorded": 0,
       "path": "/.netlify/functions/counts",
-      "visits": 155
+      "visits": 156
     },
     {
       "2xx": 2,
-      "3xx": 147,
+      "3xx": 148,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 8,
-        "automation": 61,
+        "automation": 62,
         "browser": 76,
         "unknown": 4
       },
       "none_recorded": 0,
       "path": "/blog.html",
-      "visits": 149
+      "visits": 150
+    },
+    {
+      "2xx": 134,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 13,
+        "automation": 42,
+        "browser": 76,
+        "unknown": 3
+      },
+      "none_recorded": 0,
+      "path": "/agent-page",
+      "visits": 134
     },
     {
       "2xx": 2,
@@ -138,21 +153,6 @@
       "visits": 134
     },
     {
-      "2xx": 133,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 13,
-        "automation": 41,
-        "browser": 76,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/agent-page",
-      "visits": 133
-    },
-    {
       "2xx": 2,
       "3xx": 119,
       "4xx": 0,
@@ -168,19 +168,19 @@
       "visits": 121
     },
     {
-      "2xx": 111,
+      "2xx": 114,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 47,
+        "agent-claimed": 50,
         "automation": 21,
         "browser": 32,
         "unknown": 11
       },
       "none_recorded": 0,
       "path": "/sitemap.xml",
-      "visits": 111
+      "visits": 114
     },
     {
       "2xx": 87,
@@ -195,6 +195,36 @@
       "none_recorded": 0,
       "path": "/dashboard",
       "visits": 87
+    },
+    {
+      "2xx": 83,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 20,
+        "automation": 25,
+        "browser": 36,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/data",
+      "visits": 83
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 82,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 5,
+        "automation": 7,
+        "browser": 46,
+        "unknown": 24
+      },
+      "none_recorded": 0,
+      "path": "/.git/config",
+      "visits": 82
     },
     {
       "2xx": 0,
@@ -213,46 +243,16 @@
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 78,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 5,
-        "automation": 7,
-        "browser": 43,
-        "unknown": 23
-      },
-      "none_recorded": 0,
-      "path": "/.git/config",
-      "visits": 78
-    },
-    {
-      "2xx": 78,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 16,
-        "automation": 24,
-        "browser": 36,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/data",
-      "visits": 78
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 76,
+      "4xx": 80,
       "5xx": 0,
       "by_class": {
         "automation": 6,
-        "browser": 42,
-        "unknown": 28
+        "browser": 45,
+        "unknown": 29
       },
       "none_recorded": 0,
       "path": "/wp-login.php",
-      "visits": 76
+      "visits": 80
     },
     {
       "2xx": 74,
@@ -272,17 +272,17 @@
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 70,
+      "4xx": 73,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 2,
         "automation": 11,
-        "browser": 44,
-        "unknown": 13
+        "browser": 46,
+        "unknown": 14
       },
       "none_recorded": 0,
       "path": "/.env",
-      "visits": 70
+      "visits": 73
     },
     {
       "2xx": 67,
@@ -344,19 +344,19 @@
       "visits": 59
     },
     {
-      "2xx": 58,
+      "2xx": 59,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 7,
         "automation": 22,
-        "browser": 26,
+        "browser": 27,
         "unknown": 3
       },
       "none_recorded": 0,
       "path": "/data/advisory",
-      "visits": 58
+      "visits": 59
     },
     {
       "2xx": 0,
@@ -448,6 +448,20 @@
       "4xx": 42,
       "5xx": 0,
       "by_class": {
+        "automation": 7,
+        "browser": 19,
+        "unknown": 16
+      },
+      "none_recorded": 0,
+      "path": "/config.json",
+      "visits": 42
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 42,
+      "5xx": 0,
+      "by_class": {
         "automation": 5,
         "browser": 37
       },
@@ -482,20 +496,6 @@
       },
       "none_recorded": 0,
       "path": "/.well-known/security.txt",
-      "visits": 41
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 41,
-      "5xx": 0,
-      "by_class": {
-        "automation": 7,
-        "browser": 19,
-        "unknown": 15
-      },
-      "none_recorded": 0,
-      "path": "/config.json",
       "visits": 41
     },
     {
@@ -812,6 +812,36 @@
     {
       "2xx": 0,
       "3xx": 0,
+      "4xx": 27,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 3,
+        "automation": 8,
+        "browser": 12,
+        "unknown": 4
+      },
+      "none_recorded": 0,
+      "path": "/api/.env",
+      "visits": 27
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 27,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 6,
+        "automation": 6,
+        "browser": 11,
+        "unknown": 4
+      },
+      "none_recorded": 0,
+      "path": "/backend/.env",
+      "visits": 27
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
       "4xx": 26,
       "5xx": 0,
       "by_class": {
@@ -874,21 +904,6 @@
       "4xx": 25,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 3,
-        "automation": 8,
-        "browser": 10,
-        "unknown": 4
-      },
-      "none_recorded": 0,
-      "path": "/api/.env",
-      "visits": 25
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 25,
-      "5xx": 0,
-      "by_class": {
         "agent-claimed": 4,
         "automation": 7,
         "browser": 12,
@@ -896,21 +911,6 @@
       },
       "none_recorded": 0,
       "path": "/api/config",
-      "visits": 25
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 25,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 6,
-        "automation": 6,
-        "browser": 9,
-        "unknown": 4
-      },
-      "none_recorded": 0,
-      "path": "/backend/.env",
       "visits": 25
     },
     {
@@ -1038,6 +1038,20 @@
       "4xx": 23,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 3,
+        "automation": 6,
+        "browser": 14
+      },
+      "none_recorded": 0,
+      "path": "/.svn/wc.db",
+      "visits": 23
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 23,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 7,
         "browser": 1,
@@ -1045,6 +1059,20 @@
       },
       "none_recorded": 0,
       "path": "/.vscode/sftp.json",
+      "visits": 23
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 23,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 3,
+        "automation": 7,
+        "browser": 13
+      },
+      "none_recorded": 0,
+      "path": "/app/.env",
       "visits": 23
     },
     {
@@ -1086,6 +1114,21 @@
       },
       "none_recorded": 0,
       "path": "/server",
+      "visits": 23
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 23,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 4,
+        "automation": 9,
+        "browser": 7,
+        "unknown": 3
+      },
+      "none_recorded": 0,
+      "path": "/wordpress/",
       "visits": 23
     },
     {
@@ -1139,12 +1182,13 @@
       "4xx": 22,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 5,
+        "agent-claimed": 4,
         "automation": 7,
-        "browser": 10
+        "browser": 8,
+        "unknown": 3
       },
       "none_recorded": 0,
-      "path": "/.svn/entries",
+      "path": "/.git/HEAD",
       "visits": 22
     },
     {
@@ -1153,12 +1197,12 @@
       "4xx": 22,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 3,
-        "automation": 6,
-        "browser": 13
+        "agent-claimed": 5,
+        "automation": 7,
+        "browser": 10
       },
       "none_recorded": 0,
-      "path": "/.svn/wc.db",
+      "path": "/.svn/entries",
       "visits": 22
     },
     {
@@ -1237,12 +1281,12 @@
       "4xx": 21,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 3,
-        "automation": 7,
-        "browser": 11
+        "automation": 6,
+        "browser": 1,
+        "unknown": 14
       },
       "none_recorded": 0,
-      "path": "/app/.env",
+      "path": "/actuator/env",
       "visits": 21
     },
     {
@@ -1288,21 +1332,6 @@
       },
       "none_recorded": 0,
       "path": "/.env.test",
-      "visits": 20
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 20,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 4,
-        "automation": 7,
-        "browser": 6,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/.git/HEAD",
       "visits": 20
     },
     {
@@ -1361,20 +1390,6 @@
       },
       "none_recorded": 0,
       "path": "/___proxy_subdomain_cpanel",
-      "visits": 20
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 20,
-      "5xx": 0,
-      "by_class": {
-        "automation": 6,
-        "browser": 1,
-        "unknown": 13
-      },
-      "none_recorded": 0,
-      "path": "/actuator/env",
       "visits": 20
     },
     {
@@ -1535,21 +1550,6 @@
       },
       "none_recorded": 0,
       "path": "/v2/_catalog",
-      "visits": 20
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 20,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 4,
-        "automation": 8,
-        "browser": 5,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/wordpress/",
       "visits": 20
     },
     {
@@ -1887,6 +1887,21 @@
     {
       "2xx": 0,
       "3xx": 0,
+      "4xx": 18,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 2,
+        "automation": 7,
+        "browser": 8,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp/",
+      "visits": 18
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
       "4xx": 17,
       "5xx": 0,
       "by_class": {
@@ -1926,6 +1941,21 @@
       },
       "none_recorded": 0,
       "path": "/.travis.yml",
+      "visits": 17
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 17,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 2,
+        "automation": 7,
+        "browser": 5,
+        "unknown": 3
+      },
+      "none_recorded": 0,
+      "path": "/admin/.env",
       "visits": 17
     },
     {
@@ -2716,21 +2746,6 @@
       "4xx": 15,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 2,
-        "automation": 7,
-        "browser": 3,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/admin/.env",
-      "visits": 15
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 15,
-      "5xx": 0,
-      "by_class": {
         "agent-claimed": 4,
         "automation": 7,
         "browser": 3,
@@ -2838,6 +2853,21 @@
       },
       "none_recorded": 0,
       "path": "/config.env",
+      "visits": 15
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 15,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 3,
+        "automation": 7,
+        "browser": 3,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/core/.env",
       "visits": 15
     },
     {
@@ -3841,6 +3871,20 @@
       "4xx": 14,
       "5xx": 0,
       "by_class": {
+        "automation": 3,
+        "browser": 10,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/login",
+      "visits": 14
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 14,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 2,
         "automation": 8,
         "browser": 4
@@ -4393,6 +4437,21 @@
       "4xx": 13,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 1,
+        "automation": 6,
+        "browser": 4,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/_environment",
+      "visits": 13
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 13,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 3,
         "automation": 7,
         "browser": 3
@@ -4754,21 +4813,6 @@
       },
       "none_recorded": 0,
       "path": "/configuration.json",
-      "visits": 13
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 13,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 3,
-        "automation": 7,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/core/.env",
       "visits": 13
     },
     {
@@ -5250,6 +5294,20 @@
       "4xx": 13,
       "5xx": 0,
       "by_class": {
+        "automation": 8,
+        "browser": 1,
+        "unknown": 4
+      },
+      "none_recorded": 0,
+      "path": "/settings.json",
+      "visits": 13
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 13,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 5,
         "automation": 7,
         "browser": 1
@@ -5368,21 +5426,6 @@
       },
       "none_recorded": 0,
       "path": "/web/settings/settings.py",
-      "visits": 13
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 13,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 2,
-        "automation": 6,
-        "browser": 4,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/wp/",
       "visits": 13
     },
     {
@@ -5661,21 +5704,6 @@
       "5xx": 0,
       "by_class": {
         "agent-claimed": 1,
-        "automation": 5,
-        "browser": 4,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/_environment",
-      "visits": 12
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 12,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 1,
         "automation": 6,
         "browser": 2,
         "unknown": 3
@@ -5696,6 +5724,20 @@
       },
       "none_recorded": 0,
       "path": "/admin-panel/.env",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 12,
+      "5xx": 0,
+      "by_class": {
+        "automation": 5,
+        "browser": 5,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/admin/login",
       "visits": 12
     },
     {
@@ -5880,6 +5922,20 @@
       },
       "none_recorded": 0,
       "path": "/azure/.env",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 12,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "automation": 5,
+        "browser": 6,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/blog/",
       "visits": 12
     },
     {
@@ -6473,6 +6529,20 @@
       "4xx": 12,
       "5xx": 0,
       "by_class": {
+        "automation": 3,
+        "browser": 7,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/register",
+      "visits": 12
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 12,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 3,
         "automation": 6,
         "browser": 3
@@ -6528,12 +6598,12 @@
       "4xx": 12,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 3,
         "automation": 8,
-        "browser": 1,
-        "unknown": 3
+        "browser": 1
       },
       "none_recorded": 0,
-      "path": "/settings.json",
+      "path": "/settings.php.txt",
       "visits": 12
     },
     {
@@ -6542,12 +6612,12 @@
       "4xx": 12,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 3,
-        "automation": 8,
-        "browser": 1
+        "automation": 4,
+        "browser": 6,
+        "unknown": 2
       },
       "none_recorded": 0,
-      "path": "/settings.php.txt",
+      "path": "/site/",
       "visits": 12
     },
     {
@@ -6946,6 +7016,20 @@
       },
       "none_recorded": 0,
       "path": "/.gem/credentials",
+      "visits": 11
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 11,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 5,
+        "automation": 5,
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/.git/description",
       "visits": 11
     },
     {
@@ -7444,6 +7528,20 @@
       "4xx": 11,
       "5xx": 0,
       "by_class": {
+        "automation": 3,
+        "browser": 6,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/auth/login",
+      "visits": 11
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 11,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 2,
         "automation": 7,
         "browser": 2
@@ -7873,6 +7971,20 @@
       "4xx": 11,
       "5xx": 0,
       "by_class": {
+        "automation": 4,
+        "browser": 5,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/forgot-password",
+      "visits": 11
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 11,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 2,
         "automation": 7,
         "browser": 2
@@ -8287,6 +8399,20 @@
       "4xx": 11,
       "5xx": 0,
       "by_class": {
+        "automation": 5,
+        "browser": 5,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/site/wp-json/",
+      "visits": 11
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 11,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 5,
         "browser": 2
@@ -8555,20 +8681,6 @@
       },
       "none_recorded": 0,
       "path": "/.gemini/settings.json",
-      "visits": 10
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 10,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 5,
-        "automation": 4,
-        "browser": 1
-      },
-      "none_recorded": 0,
-      "path": "/.git/description",
       "visits": 10
     },
     {
@@ -9092,6 +9204,20 @@
       "4xx": 10,
       "5xx": 0,
       "by_class": {
+        "automation": 3,
+        "browser": 6,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/cms/wp-json/",
+      "visits": 10
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 10,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 5,
         "browser": 1
@@ -9287,6 +9413,20 @@
       "4xx": 10,
       "5xx": 0,
       "by_class": {
+        "automation": 6,
+        "browser": 2,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/home",
+      "visits": 10
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 10,
+      "5xx": 0,
+      "by_class": {
         "automation": 7,
         "browser": 3
       },
@@ -9442,6 +9582,20 @@
       },
       "none_recorded": 0,
       "path": "/phpinfo/index.php",
+      "visits": 10
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 10,
+      "5xx": 0,
+      "by_class": {
+        "automation": 4,
+        "browser": 4,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/press/",
       "visits": 10
     },
     {
@@ -10054,6 +10208,20 @@
       "4xx": 9,
       "5xx": 0,
       "by_class": {
+        "automation": 4,
+        "browser": 3,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/admin/reports",
+      "visits": 9
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 3,
         "automation": 4,
         "browser": 2
@@ -10183,20 +10351,6 @@
       },
       "none_recorded": 0,
       "path": "/beta/.env",
-      "visits": 9
-    },
-    {
-      "2xx": 0,
-      "3xx": 9,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "automation": 4,
-        "browser": 4,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/blog/",
       "visits": 9
     },
     {
@@ -10505,6 +10659,20 @@
       "4xx": 9,
       "5xx": 0,
       "by_class": {
+        "automation": 4,
+        "browser": 4,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/email/verify",
+      "visits": 9
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 1,
         "automation": 8
       },
@@ -10551,20 +10719,6 @@
       },
       "none_recorded": 0,
       "path": "/guestbook.html",
-      "visits": 9
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 9,
-      "5xx": 0,
-      "by_class": {
-        "automation": 6,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/home",
       "visits": 9
     },
     {
@@ -10656,6 +10810,19 @@
       "4xx": 9,
       "5xx": 0,
       "by_class": {
+        "automation": 4,
+        "unknown": 5
+      },
+      "none_recorded": 0,
+      "path": "/livewire/update",
+      "visits": 9
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 3,
         "automation": 3,
         "browser": 3
@@ -10690,6 +10857,20 @@
       },
       "none_recorded": 0,
       "path": "/nest/.env",
+      "visits": 9
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 9,
+      "5xx": 0,
+      "by_class": {
+        "automation": 4,
+        "browser": 3,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/news/",
       "visits": 9
     },
     {
@@ -11366,12 +11547,12 @@
       "4xx": 8,
       "5xx": 0,
       "by_class": {
-        "automation": 5,
-        "browser": 1,
+        "automation": 4,
+        "browser": 2,
         "unknown": 2
       },
       "none_recorded": 0,
-      "path": "/admin/login",
+      "path": "/admin",
       "visits": 8
     },
     {
@@ -11380,12 +11561,11 @@
       "4xx": 8,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 2,
-        "unknown": 2
+        "automation": 2,
+        "unknown": 6
       },
       "none_recorded": 0,
-      "path": "/admin/reports",
+      "path": "/admin/login/livewire/update",
       "visits": 8
     },
     {
@@ -11494,6 +11674,20 @@
       },
       "none_recorded": 0,
       "path": "/cloud-config.txt",
+      "visits": 8
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 8,
+      "5xx": 0,
+      "by_class": {
+        "automation": 5,
+        "browser": 1,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/cms/",
       "visits": 8
     },
     {
@@ -11844,6 +12038,19 @@
       "4xx": 8,
       "5xx": 0,
       "by_class": {
+        "automation": 2,
+        "unknown": 6
+      },
+      "none_recorded": 0,
+      "path": "/login/livewire/update",
+      "visits": 8
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 8,
+      "5xx": 0,
+      "by_class": {
         "automation": 3,
         "browser": 2,
         "unknown": 3
@@ -11924,6 +12131,20 @@
       "4xx": 8,
       "5xx": 0,
       "by_class": {
+        "automation": 4,
+        "browser": 3,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/onboarding",
+      "visits": 8
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 8,
+      "5xx": 0,
+      "by_class": {
         "automation": 7,
         "browser": 1
       },
@@ -11942,6 +12163,19 @@
       },
       "none_recorded": 0,
       "path": "/phpversion.php",
+      "visits": 8
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 8,
+      "5xx": 0,
+      "by_class": {
+        "automation": 5,
+        "browser": 3
+      },
+      "none_recorded": 0,
+      "path": "/press/wp-json/",
       "visits": 8
     },
     {
@@ -12108,20 +12342,6 @@
       "4xx": 8,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 2,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/site/",
-      "visits": 8
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 8,
-      "5xx": 0,
-      "by_class": {
         "automation": 3,
         "browser": 5
       },
@@ -12208,6 +12428,20 @@
       },
       "none_recorded": 0,
       "path": "/wgetrc",
+      "visits": 8
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 8,
+      "5xx": 0,
+      "by_class": {
+        "automation": 4,
+        "browser": 3,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/workspace",
       "visits": 8
     },
     {
@@ -12383,20 +12617,6 @@
       "4xx": 7,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/admin",
-      "visits": 7
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 7,
-      "5xx": 0,
-      "by_class": {
         "automation": 5,
         "browser": 1,
         "unknown": 1
@@ -12467,19 +12687,6 @@
       },
       "none_recorded": 0,
       "path": "/cache/.env",
-      "visits": 7
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 7,
-      "5xx": 0,
-      "by_class": {
-        "automation": 5,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/cms/",
       "visits": 7
     },
     {
@@ -12635,20 +12842,6 @@
       "4xx": 7,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/forgot-password",
-      "visits": 7
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 7,
-      "5xx": 0,
-      "by_class": {
         "automation": 7
       },
       "none_recorded": 0,
@@ -12782,7 +12975,7 @@
         "unknown": 1
       },
       "none_recorded": 0,
-      "path": "/login",
+      "path": "/news/wp-json/",
       "visits": 7
     },
     {
@@ -12823,20 +13016,6 @@
       },
       "none_recorded": 0,
       "path": "/pimcore/app/config/pimcore/google-api-private-key.json",
-      "visits": 7
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 7,
-      "5xx": 0,
-      "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/press/",
       "visits": 7
     },
     {
@@ -12980,6 +13159,48 @@
       "4xx": 7,
       "5xx": 0,
       "by_class": {
+        "automation": 2,
+        "browser": 3,
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/tasks",
+      "visits": 7
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 7,
+      "5xx": 0,
+      "by_class": {
+        "automation": 4,
+        "browser": 2,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/two-factor-challenge",
+      "visits": 7
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 7,
+      "5xx": 0,
+      "by_class": {
+        "automation": 4,
+        "browser": 2,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/user/profile",
+      "visits": 7
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 7,
+      "5xx": 0,
+      "by_class": {
         "automation": 5,
         "unknown": 2
       },
@@ -13025,7 +13246,7 @@
         "unknown": 1
       },
       "none_recorded": 0,
-      "path": "/workspace",
+      "path": "/wp-json/atarim/v1/db/vc",
       "visits": 7
     },
     {
@@ -13034,12 +13255,12 @@
       "4xx": 7,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 2,
+        "automation": 3,
+        "browser": 3,
         "unknown": 1
       },
       "none_recorded": 0,
-      "path": "/wp-json/atarim/v1/db/vc",
+      "path": "/wp/wp-json/",
       "visits": 7
     },
     {
@@ -13104,20 +13325,6 @@
       },
       "none_recorded": 0,
       "path": "/api/v1/garden-state",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/auth/login",
       "visits": 6
     },
     {
@@ -13257,11 +13464,10 @@
       "5xx": 0,
       "by_class": {
         "automation": 4,
-        "browser": 1,
-        "unknown": 1
+        "browser": 2
       },
       "none_recorded": 0,
-      "path": "/email/verify",
+      "path": "/filament",
       "visits": 6
     },
     {
@@ -13321,19 +13527,6 @@
       "4xx": 6,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/livewire/update",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
         "agent-claimed": 1,
         "automation": 5
       },
@@ -13352,48 +13545,6 @@
       },
       "none_recorded": 0,
       "path": "/mysql/.env",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/news/",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 2,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/news/wp-json/",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/onboarding",
       "visits": 6
     },
     {
@@ -13508,12 +13659,11 @@
       "4xx": 6,
       "5xx": 0,
       "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 2
+        "automation": 1,
+        "unknown": 5
       },
       "none_recorded": 0,
-      "path": "/register",
+      "path": "/register/livewire/update",
       "visits": 6
     },
     {
@@ -13585,19 +13735,6 @@
       "5xx": 0,
       "by_class": {
         "automation": 5,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/site/wp-json/",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 5,
         "browser": 1
       },
       "none_recorded": 0,
@@ -13638,38 +13775,10 @@
       "4xx": 6,
       "5xx": 0,
       "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/two-factor-challenge",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
         "automation": 6
       },
       "none_recorded": 0,
       "path": "/txets.php",
-      "visits": 6
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 6,
-      "5xx": 0,
-      "by_class": {
-        "automation": 4,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/user/profile",
       "visits": 6
     },
     {
@@ -13696,6 +13805,20 @@
       },
       "none_recorded": 0,
       "path": "/utilities/garden-preflight/v1",
+      "visits": 6
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 6,
+      "5xx": 0,
+      "by_class": {
+        "automation": 3,
+        "browser": 2,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wordpress/wp-json/",
       "visits": 6
     },
     {
@@ -13804,19 +13927,6 @@
       "4xx": 5,
       "5xx": 0,
       "by_class": {
-        "automation": 2,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/admin/login/livewire/update",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
         "agent-claimed": 1,
         "automation": 1,
         "unknown": 3
@@ -13881,20 +13991,6 @@
       "visits": 5
     },
     {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/cms/wp-json/",
-      "visits": 5
-    },
-    {
       "2xx": 5,
       "3xx": 0,
       "4xx": 0,
@@ -13904,19 +14000,6 @@
       },
       "none_recorded": 0,
       "path": "/data/advisory-renders.json",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
-        "automation": 4,
-        "browser": 1
-      },
-      "none_recorded": 0,
-      "path": "/filament",
       "visits": 5
     },
     {
@@ -13949,19 +14032,6 @@
       "4xx": 5,
       "5xx": 0,
       "by_class": {
-        "automation": 2,
-        "unknown": 3
-      },
-      "none_recorded": 0,
-      "path": "/login/livewire/update",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
         "automation": 4,
         "browser": 1
       },
@@ -13981,18 +14051,6 @@
       },
       "none_recorded": 0,
       "path": "/pi.php",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
-        "automation": 5
-      },
-      "none_recorded": 0,
-      "path": "/press/wp-json/",
       "visits": 5
     },
     {
@@ -14108,20 +14166,6 @@
       "4xx": 5,
       "5xx": 0,
       "by_class": {
-        "automation": 2,
-        "browser": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/tasks",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
         "automation": 3,
         "browser": 1,
         "unknown": 1
@@ -14141,34 +14185,6 @@
       },
       "none_recorded": 0,
       "path": "/tmp/.env",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/wordpress/wp-json/",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
-        "automation": 3,
-        "browser": 1,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/wp/wp-json/",
       "visits": 5
     },
     {
@@ -15502,19 +15518,6 @@
       "4xx": 3,
       "5xx": 0,
       "by_class": {
-        "automation": 1,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/register/livewire/update",
-      "visits": 3
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 3,
-      "5xx": 0,
-      "by_class": {
         "automation": 2,
         "browser": 1
       },
@@ -15585,6 +15588,18 @@
       },
       "none_recorded": 0,
       "path": "/wap",
+      "visits": 3
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 3,
+      "5xx": 0,
+      "by_class": {
+        "browser": 3
+      },
+      "none_recorded": 0,
+      "path": "/wp-json/",
       "visits": 3
     },
     {
@@ -15925,11 +15940,60 @@
       "4xx": 2,
       "5xx": 0,
       "by_class": {
+        "unknown": 2
+      },
+      "none_recorded": 0,
+      "path": "/_next/static/",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "automation": 1,
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/admin/.git/config",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/admin/orders",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 1,
         "browser": 1
       },
       "none_recorded": 0,
       "path": "/api/config.php",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/app",
       "visits": 2
     },
     {
@@ -15954,6 +16018,18 @@
       },
       "none_recorded": 0,
       "path": "/backend/.git/config",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/blog/wp-json/",
       "visits": 2
     },
     {
@@ -15990,6 +16066,18 @@
       },
       "none_recorded": 0,
       "path": "/console/console.portal",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/contact",
       "visits": 2
     },
     {
@@ -16149,10 +16237,34 @@
       "4xx": 2,
       "5xx": 0,
       "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/nova",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
         "unknown": 2
       },
       "none_recorded": 0,
       "path": "/pages/doenterpagevariables.action",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 2
+      },
+      "none_recorded": 0,
+      "path": "/password/reset",
       "visits": 2
     },
     {
@@ -16304,6 +16416,19 @@
       },
       "none_recorded": 0,
       "path": "/wap/api/syspara!getSyspara.action",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-admin/",
       "visits": 2
     },
     {
@@ -17249,10 +17374,10 @@
       "4xx": 1,
       "5xx": 0,
       "by_class": {
-        "unknown": 1
+        "browser": 1
       },
       "none_recorded": 0,
-      "path": "/_next/static/",
+      "path": "/address",
       "visits": 1
     },
     {
@@ -17264,7 +17389,43 @@
         "browser": 1
       },
       "none_recorded": 0,
-      "path": "/admin/.git/config",
+      "path": "/admin/dashboard",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/admin/products",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/admin/settings",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/admin/users",
       "visits": 1
     },
     {
@@ -17324,6 +17485,18 @@
         "browser": 1
       },
       "none_recorded": 0,
+      "path": "/auth/register",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
       "path": "/aws-credentials.json",
       "visits": 1
     },
@@ -17337,6 +17510,18 @@
       },
       "none_recorded": 0,
       "path": "/aws/credentials/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/backpack/dashboard",
       "visits": 1
     },
     {
@@ -17373,6 +17558,30 @@
       },
       "none_recorded": 0,
       "path": "/buildkite/.env",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/cart",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/checkout",
       "visits": 1
     },
     {
@@ -17505,6 +17714,18 @@
       },
       "none_recorded": 0,
       "path": "/error.log",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/faq",
       "visits": 1
     },
     {
@@ -17660,7 +17881,55 @@
         "browser": 1
       },
       "none_recorded": 0,
+      "path": "/plans",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/portal",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
       "path": "/private.pem",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/profile",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/pulse",
       "visits": 1
     },
     {
@@ -17685,6 +17954,18 @@
       },
       "none_recorded": 0,
       "path": "/setup.php",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
+      "path": "/shop",
       "visits": 1
     },
     {
@@ -17744,6 +18025,18 @@
         "browser": 1
       },
       "none_recorded": 0,
+      "path": "/tickets",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
       "path": "/tmp/",
       "visits": 1
     },
@@ -17780,6 +18073,18 @@
         "browser": 1
       },
       "none_recorded": 0,
+      "path": "/welcome",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1
+      },
+      "none_recorded": 0,
       "path": "/widwsisw/",
       "visits": 1
     },
@@ -17801,10 +18106,10 @@
       "4xx": 1,
       "5xx": 0,
       "by_class": {
-        "browser": 1
+        "unknown": 1
       },
       "none_recorded": 0,
-      "path": "/wp-admin/",
+      "path": "/wp-admin/includes/",
       "visits": 1
     },
     {
@@ -17817,6 +18122,18 @@
       },
       "none_recorded": 0,
       "path": "/wp-admin/js/widgets/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-admin/network/",
       "visits": 1
     },
     {
@@ -17885,10 +18202,82 @@
       "4xx": 1,
       "5xx": 0,
       "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/ID3/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/Requests/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/SimplePie/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
         "browser": 1
       },
       "none_recorded": 0,
       "path": "/wp-includes/Text/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/assets/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/block-patterns/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/customize/",
       "visits": 1
     },
     {
@@ -17933,10 +18322,46 @@
       "4xx": 1,
       "5xx": 0,
       "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/sitemaps/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/style-engine/",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
         "browser": 1
       },
       "none_recorded": 0,
       "path": "/wp-includes/version.php",
+      "visits": 1
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 1,
+      "5xx": 0,
+      "by_class": {
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/wp-includes/widgets/",
       "visits": 1
     },
     {
