@@ -1,6 +1,6 @@
 {
   "bot_auth": {
-    "absent_total": 14412,
+    "absent_total": 14444,
     "by_name": [
       {
         "name": "(no claimed name)",
@@ -46,20 +46,20 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 1937
+          "(none recorded)": 1945
         },
         "kind": "link-preview",
         "name": "facebookexternalhit",
         "operator": "Meta",
         "rdns": {
-          "not-offered": 1929
+          "not-offered": 1937
         },
-        "rdns_era_records": 1929,
-        "requests": 1932,
+        "rdns_era_records": 1937,
+        "requests": 1940,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 1932,
+          "unverifiable-no-list": 1940,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -387,14 +387,14 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Oct 28, 2026, 7:09:43 AM PT",
-  "generated_at_utc": "2026-10-28T14:09:43Z",
+  "generated_at_pt": "Oct 28, 2026, 7:53:00 AM PT",
+  "generated_at_utc": "2026-10-28T14:53:00Z",
   "rows": [
     {
-      "claimed": 1932,
+      "claimed": 1940,
       "name": "facebookexternalhit",
       "not-checked": 0,
-      "unverifiable-no-list": 1932,
+      "unverifiable-no-list": 1940,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -1123,11 +1123,11 @@
         }
       },
       "2026-10-28": {
-        "digest_requests": 360,
-        "distinct_sources": 116,
+        "digest_requests": 394,
+        "distinct_sources": 127,
         "names_per_source": {
-          "0": 23,
-          "1": 93,
+          "0": 27,
+          "1": 100,
           "2": 0,
           "3": 0,
           "4+": 0
@@ -1148,8 +1148,8 @@
             "4+": 0
           },
           "none": {
-            "0": 19,
-            "1": 84,
+            "0": 23,
+            "1": 91,
             "2": 0,
             "3": 0,
             "4+": 0
@@ -1172,7 +1172,7 @@
         "sources_by_name": {
           "AhrefsBot": 2,
           "Googlebot": 4,
-          "facebookexternalhit": 87
+          "facebookexternalhit": 94
         }
       }
     },
@@ -1199,7 +1199,7 @@
           "other": 23
         },
         "Meta": {
-          "(none recorded)": 1971,
+          "(none recorded)": 1979,
           "training": 32
         },
         "OpenAI": {
@@ -1209,10 +1209,10 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 5870,
+        "cdn": 5894,
         "cloud-hosting": 1071,
         "education": 1,
-        "other": 5667,
+        "other": 5675,
         "search-platform": 1809,
         "security-research": 4,
         "telecom-isp": 53
@@ -1222,7 +1222,7 @@
         "automation": {
           "generic-bot-token": 270,
           "http-library/tool: axios": 4,
-          "http-library/tool: curl": 781,
+          "http-library/tool: curl": 782,
           "http-library/tool: go-http-client": 38,
           "http-library/tool: headless-chrome": 1,
           "http-library/tool: java": 1,
@@ -1240,7 +1240,7 @@
         },
         "unknown": {
           "library/tool: scrapy": 1,
-          "no-UA": 3962,
+          "no-UA": 3978,
           "token: (all other tokens, small-n folded)": 25,
           "token: Bun": 47,
           "token: Dalvik": 11,
@@ -1248,18 +1248,18 @@
           "token: Mozilla": 942,
           "token: Mozlila": 12,
           "token: a2a-census-research": 8,
-          "token: facebookexternalhit": 1937,
-          "token: http:": 798,
+          "token: facebookexternalhit": 1945,
+          "token: http:": 802,
           "token: metabase-cve-2026-72898-detect": 7,
-          "token: swarm-garden-export": 87,
-          "token: swarm-garden-snapshot": 189,
+          "token: swarm-garden-export": 88,
+          "token: swarm-garden-snapshot": 191,
           "token: webapp-mapper": 10
         }
       },
       "header_profile": {
         "browser-like": 270,
-        "minimal": 7775,
-        "partial": 2363
+        "minimal": 7804,
+        "partial": 2367
       },
       "headless_markers_by_class": {
         "automation": 1
@@ -1268,31 +1268,31 @@
         "cloud-hosting": 1148,
         "commercial-bot": 51,
         "named-other": 363,
-        "none": 8283,
+        "none": 8316,
         "not-checked": 189,
         "operator-crawler": 368,
         "residential-network": 6
       },
       "protocol": {
         "h1.0": 21,
-        "h1.1": 5469,
-        "h2": 4858,
+        "h1.1": 5482,
+        "h2": 4878,
         "h3": 60
       },
       "ua_completeness": {
         "comment-no-version": 1,
-        "empty": 3962,
-        "full": 8419,
-        "product+version": 1281,
-        "product-only": 811
+        "empty": 3978,
+        "full": 8427,
+        "product+version": 1285,
+        "product-only": 815
       },
       "ua_family": {
         "axios": 4,
-        "curl": 781,
+        "curl": 782,
         "go-http-client": 38,
         "headless-chrome": 1,
         "java": 1,
-        "other": 13565,
+        "other": 13596,
         "python-aiohttp": 19,
         "python-httpx": 9,
         "python-requests": 55,
