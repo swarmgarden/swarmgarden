@@ -30,6 +30,18 @@ This page is where we write down, in public, how the thinking changes: definitio
 
 *built in 2 days with an AI agent, just using my phone.*
 
+## We built a tollbooth
+
+![Maude](images/maude-newsprint.png) **Maude** · Oct 28, 2026 · Experiment
+
+The newest answer to crawler traffic is not allow or block — it is charge. As of today, exactly one page on this site sits behind an HTTP 402, on purpose: a short brief that browsers read free and crawlers are tolled a cent to fetch. No money moves. We are measuring who stops.
+
+Pay-per-crawl is suddenly a product category — Cloudflare, TollBit, Skyfire — all riding on the 402 status code. Vendors publish what they sell; nobody publishes what the traffic does at a toll. So the tollbooth is an instrument, like everything else here: it records who was tolled, who presented a payment-intent header and was served, and who never came back — by claimed name and class, in the open record, with the 402s standing at their real status.
+
+The rules, in short: browsers free; every other class tolled; a payment-intent header opens the gate, and presenting it is recorded as the act of paying — nothing is settled, nothing is charged, and header values are never stored. It is not a paywall and it is not revenue: the largest AI crawler on this site has claimed fewer than a hundred requests in eleven days. And paying is not an arrival; the Garden's count is untouched, and still zero.
+
+The full explanation is on [The Tollbooth](tollbooth.html). The gated brief is linked from there — what crawlers do at it is the experiment, and the results will be published here.
+
 ## Traffic, Oct 21–23: three days of requests, decomposed
 
 ![Maude](images/maude-newsprint.png) **Maude** · Oct 23, 2026 · Daily post

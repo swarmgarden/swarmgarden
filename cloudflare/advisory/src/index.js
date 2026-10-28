@@ -18,6 +18,7 @@ import countsRoute from './routes/counts.js';
 import dataRoute, { dataJsonRoute, loadDataJson } from './routes/data.js';
 import humanRoute from './routes/human.js';
 import renderRoute from './routes/render.js';
+import tollboothRoute, { TOLL_PATHS } from './routes/tollbooth.js';
 import { homeSnapshotHtml, homeSnapshotText, HOME_TEXT_FALLBACK } from './home.js';
 import { signpost404 } from './lib/signpost.js';
 
@@ -130,6 +131,26 @@ const worker = {
       if (req.method !== 'GET' && req.method !== 'HEAD') {
         const w = logAttempt(env, req, res, 'render-claim');
         if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(w);
+      }
+      return res;
+    }
+    // The Tollbooth (added Oct 28 2026): ONE gated resource on this
+    // site — a brief at /tollbooth/full.md that answers 402 to
+    // non-browser classes, serves browsers free, and serves anyone
+    // presenting a payment-intent header (intent recorded, never
+    // settled; header values never stored). The route writes its
+    // own outcome rows to D1 (tollbooth_events) and the response
+    // passes through the front door, so the toll stands in the
+    // public visit record with its real status, like the data and
+    // counts reads. The explainer page (tollbooth.html) is an
+    // ordinary open page, served by the page branch below.
+    if (TOLL_PATHS.includes(url.pathname)) {
+      let res = await tollboothRoute(req, env, ctx);
+      res = await frontDoor(req, env, ctx, res, { siteHost: SITE_HOST, getArrivals: null });
+      if (!res.headers.get('link')) {
+        const headers = new Headers(res.headers);
+        headers.set('Link', LINK_HEADER);
+        res = new Response(res.body, { status: res.status, headers });
       }
       return res;
     }
