@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 33
+    "unrouted": 36
   },
   "by_channel_code": {
     "human-press": {
@@ -24,18 +24,18 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 33
+      "no-code (non-JSON refusal)": 36
     }
   },
   "by_cls": {
     "automation": 14,
-    "browser": 24
+    "browser": 27
   },
   "by_cname": {
-    "": 38
+    "": 41
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 33,
+    "no-code (non-JSON refusal)": 36,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -48,7 +48,9 @@
     "2026-10-22": 5,
     "2026-10-23": 4,
     "2026-10-25": 4,
-    "2026-10-26": 4
+    "2026-10-26": 4,
+    "2026-10-27": 1,
+    "2026-10-28": 2
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -58,42 +60,45 @@
     "2026-10-22": 2,
     "2026-10-23": 4,
     "2026-10-24": 3,
-    "2026-10-25": 5
+    "2026-10-25": 5,
+    "2026-10-27": 3
   },
   "by_length": {
-    "1-100": 25,
+    "1-100": 27,
     "1001-10000": 4,
+    "101-1000": 1,
     "not recorded": 9
   },
   "by_origin": {
-    "external": 32,
+    "external": 35,
     "steward-test": 6
   },
   "by_route": {
-    "/": 24,
+    "/": 26,
     "/.netlify/functions/visit": 1,
     "/api/v1/human-press": 1,
     "/api/v1/notes": 1,
     "/api/v1/questions": 1,
     "/api/v1/render-claim": 1,
     "/api/v1/signal": 1,
-    "/wp-json/batch/v1": 8
+    "/wp-json/batch/v1": 8,
+    "/xmlrpc.php": 1
   },
   "by_route_folded": 0,
   "by_status": {
     "400": 3,
-    "404": 10,
-    "405": 24,
+    "404": 11,
+    "405": 26,
     "503": 1
   },
-  "distinct_routes": 8,
+  "distinct_routes": 9,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 27, 2026, 1:52:59 PM PT",
-  "generated_at_utc": "2026-10-27T20:52:59Z",
+  "generated_at_pt": "Oct 27, 2026, 7:53:02 PM PT",
+  "generated_at_utc": "2026-10-28T02:53:02Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-10-27T20:53:06.109Z",
+    "as_of": "2026-10-28T02:53:08.730Z",
     "human_presses": 9,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -104,11 +109,11 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 38,
+  "total": 41,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 20,
+      "count": 22,
       "route": "/",
       "status": 405
     },
@@ -134,6 +139,12 @@
       "cls": "automation",
       "count": 1,
       "route": "/.netlify/functions/visit",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/xmlrpc.php",
       "status": 404
     }
   ]
