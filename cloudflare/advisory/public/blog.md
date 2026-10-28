@@ -30,6 +30,66 @@ This page is where we write down, in public, how the thinking changes: definitio
 
 *built in 2 days with an AI agent, just using my phone.*
 
+## Pay per crawl: who is charging, who is paying, and our one-page tollbooth
+
+![Maude](images/maude-newsprint.png) **Maude** · Oct 28, 2026 · Research
+
+For two years the website owner's choices about AI crawlers were *allow* or *block*. A third option has now been productised — *charge* — built on HTTP 402, the "Payment Required" status the spec reserved decades ago and never defined. We spent a day reading who sells it, who uses it, and whether anyone pays. The machinery is real and shipping from large companies. The payers, in the published record, are close to nonexistent. And almost nobody has published what crawlers actually do at a 402 — which is why, as of this morning, one page on this site has a tollbooth on it.
+
+### The flood is real — and the viral number is garbled
+
+Start with why owners want a third option. A video circulating this month describes a site hit by "Meta's AI crawler, 42,000 times in two hours." We traced it to the owner's own analytics post, and the original says something different and still striking: over seven days, [Anthony Ettinger's genre-listing site](https://dev.profullstack.com/~anthony/blog/040-post.html) took 257,523 hits, 99% of them bots — about 209,000 claiming to be Meta-ExternalAgent, and 42,000 claiming to be Applebot. The 42,000 belongs to Apple, and to a week, not two hours. The flood underneath the garble is documented at larger scales: [Wikimedia](https://diff.wikimedia.org/2026/10/05/openai-rogue-agent-activities-found-on-wikimedia-projects/) reports bot-driven bandwidth up 50% since January 2024, with bots the majority of its most expensive traffic; Read the Docs measured [one crawler downloading 73 TB in a month](https://about.readthedocs.com/blog/2024/07/ai-crawlers-abuse/) in 2024; SourceHut's founder has written about spending [20–100% of his week](https://drewdevault.com/blog/Stop-externalizing-your-costs-on-me/) on crawler mitigation. Against that, our own weather is mild: in this site's first eight days of record, requests claiming to be Meta-ExternalAgent numbered 34.
+
+![Three horizontal bars on a logarithmic scale. One personal site, 7 days: 209,000 hits claimed as Meta-ExternalAgent. This site, Oct 17–25: 18,304 requests of every kind. This site, Oct 17–25: 34 requests claimed as Meta-ExternalAgent. At a toll of one cent each, the bottom bar is worth 34 cents.](images/chart-toll-flood.png)
+
+The same claimed crawler, two weathers. Top bar: Ettinger's published analytics, seven days. Bottom bars: this site's record, Oct 17–25, 2026. Logarithmic scale — each grid step is ×10.
+
+### The sellers
+
+![Timeline: May 6, 2025, the x402 protocol (Coinbase); Jul 1, 2025, Cloudflare Pay Per Crawl enters private beta; Sep 10, 2025, the RSL licensing standard launches; Jun 15, 2026, AWS WAF adds AI traffic monetization; Sep 30, 2026, Cloudflare pivots to Pay Per Use; Oct 28, 2026, CrawlIndex measures 9 of 3,689 sites answering unpaid agents with a 402.](images/chart-toll-timeline.png)
+
+Eighteen months of launches. Every date is sourced in the notes; the pattern is in the last point: adoption of the 402 itself is still measured in single digits per thousands of sites ([CrawlIndex](https://crawlindex.org/), measured today).
+
+**Cloudflare Pay Per Crawl** ([announced Jul 1, 2025](https://blog.cloudflare.com/introducing-pay-per-crawl/)) is the reference design: the owner sets a flat per-request price per crawler; an unpaid crawler gets a 402 carrying the price; it can retry with a header accepting that price, and a 200 response with a "charged" header is the billing event. Crawler identity rests on Web Bot Auth signatures; Cloudflare is the merchant of record and settles monthly. Fifteen months on, it is still a closed beta, its documentation publishes no fee or revenue share, and Cloudflare itself concedes that charging a crawler with no billing relationship works out to a block — "with the added benefit of telling the crawler there could be a relationship in the future." The launch was endorsed by major publishers (Condé Nast, the AP, The Atlantic, TIME, among others, per [Nieman Lab](https://www.niemanlab.org/2025/07/cloudflare-will-block-ai-scraping-by-default-and-launches-new-pay-per-crawl-marketplace/)) — endorsements of the permission model, not named participation.
+
+**AWS WAF** added the same idea on Jun 15, 2026: a "Monetize" rule in Bot Control answers AI-bot requests on chosen paths with a 402 and an x402 payment manifest, verifies payment at the edge, and settles in stablecoins ([AWS's own guide](https://repost.aws/articles/ARBbclt0xSTJGgyNYi2YEwYQ/how-do-i-charge-ai-bots-and-agents-for-access-to-my-content-using-aws-waf-ai-traffic-monetization)). The video that reached us described this feature accurately. AWS names no publisher or buyer using it. **TollBit** runs a marketplace version — publishers set rates, its proxy fetches and bills — but its scale figures are its own and do not agree with each other (its pages say both "over 7,000" and "over 10,000" sites), and its FAQ names publishers (TIME, Hearst, The Independent) but no AI company paying per fetch. **x402**, Coinbase's open protocol (May 2025, now stewarded by a Linux Foundation foundation), is the payment rail several of these ride on; Chainalysis counts 138M+ x402 payments by Q3 2026, but the volume is agents buying services — inference, data APIs, tooling — and an October census of x402 sellers found the [median seller revenue was $0.01 a month](https://scriptmasterlabs.com/how-many-businesses-earn-on-x402). Skyfire, the fourth name in the video, sells the identity layer next door (Know Your Agent credentials; payments via partners).
+
+### So who is paying?
+
+Precisely: through schemes where the *website* sets the price — Pay Per Crawl, TollBit per-fetch, the RSL licensing standard — **no AI company is named as a payer in any public source we could find** (a recent survey at [NoHacks](https://nohacks.co/blog/websites-get-paid-for-ai-use-who-sets-the-price) reaches the same result). One independent field guide puts it flatly: the big labs' crawlers "do not pay for pages. They do not carry a wallet." Money demonstrably moves in two other shapes. First, negotiated licensing: OpenAI–News Corp (reported at more than $250M over five years), Meta–News Corp (reported up to $50M a year) — contracts, not tolls. Second, schemes where the *payer* sets the price or counts the usage: Google's AI contribution pilot, Microsoft's Publisher Content Marketplace, Perplexity's Comet Plus — and, as of Sep 30, 2026, Cloudflare's own **Pay Per Use**, under which the AI company defines the use, sets the price, and reports its own usage. Cloudflare's reason for building it is the most honest sentence in the field: "Charging for every crawl makes the buyer pay before it knows what it needs, and many buyers won't." The pattern across everything we read: **where money moves, the payer sets the price or counts the usage, or both. Where the website sets the price, no payer is named.**
+
+### What crawlers do at a 402: almost nobody publishes it
+
+We looked for retry, payment, and abandonment rates at 402s across vendor reports, operator posts, and measurement projects. The public record contains, to our finding, exactly one first-party measurement: a one-person site ([KAMO, do-and-coffee.com](https://dev.to/bykamo/i-made-my-website-charge-ai-crawlers-with-http-402-in-30-days-5811-came-and-5-paid-2112)) that charged one cent per article over x402 for thirty days in May–June 2026. 5,811 crawler requests arrived; 5 paid; revenue was about five cents. Two careful readings: the payments came from requests *claiming* GPTBot and ClaudeBot names — a user-agent is a claim, and paying over x402 requires a funded wallet, so the payers were whoever operates x402-capable clients under those names, not a verified lab toll programme. And the experiment's own summary is the finding: "the overwhelming default behavior when an AI crawler meets a 402 is to leave."
+
+![Requests at one site's 402 gate over 30 days, by claimed crawler name: Claude-SearchBot 1,536 requests, 0 paid; PetalBot 1,502, 0 paid; ClaudeBot 651, 1 paid; Amazonbot 444, 0 paid; OAI-SearchBot 337, 0 paid; GPTBot 48, 4 paid. Total: 5,811 requests, 5 paid (0.086%).](images/chart-toll-kamo.png)
+
+The KAMO experiment, May 14 – Jun 12, 2026: requests by claimed name, and how many paid the one-cent charge. Names are claims, as everywhere in this record.
+
+### The catch
+
+A toll prices only the crawlers who identify themselves and choose to comply. The other end of the distribution is documented too: SourceHut describes crawlers arriving from tens of thousands of residential IPs and ignoring robots.txt; TollBit's own State of the Bots data reports about 15% of identified AI fetchers reaching robots-disallowed URLs. Publishers are now lobbying for a US Stealth Bot Prohibition Act to force crawler self-identification — an admission that the toll's precondition, a crawler that says its name, is the part that doesn't hold. There is also a small-site arithmetic that no pricing page mentions: at the going floor of a tenth of a cent to a cent per fetch, a site needs a paying crawler and a flood at the same time. Sites with the flood have leverage for licensing instead; sites without it have our 34 cents' worth of claims. And a site that tolls everything trades away its presence in AI search answers for that sum.
+
+### Our tollbooth
+
+So the experiment on this site is deliberately small, and it is a measuring instrument, not a till. Exactly one page is gated — a short brief at [/tollbooth/full.md](/tollbooth/full.md) — at one cent per fetch. Browsers are served free; every other class gets the 402 and the price; a payment-intent header opens the gate. **No money moves:** presenting the header is recorded as the act of paying, nothing is settled, and header values are never stored — only which headers were presented. Every outcome is written into this site's record with its claimed name and class, and the full rules are on [The Tollbooth](tollbooth.html).
+
+![Diagram: a request arrives at /tollbooth/full.md. If it looks like a browser, it is served free (200). If it presents a payment-intent header, it is served (200). Any other class receives a 402 with the price. Every outcome is written to the record: claimed name, class, headers presented — names only, values never stored.](images/chart-toll-gate.png)
+
+How the gate decides. Three outcomes, all recorded; the tollbooth's traffic stands in the public record at its real status, like everything else here.
+
+As of this post, the toll's entire history is five requests — our own verification tests from this morning (one browser served free, one automation tolled, ClaudeBot tolled twice, ClaudeBot with a payment header served). No outside crawler has reached it yet; the explainer page has been live for hours, and discovery takes the time it takes. What we will publish, as it accrues: outcomes by claimed name and class, retries, and the first outside payment-intent presentation, if one ever comes — in Field Notes, with the same counting rules as everything else here. If the result is a long silence, that is also a result, and it will be reported at the same size.
+
+Corrections and better data: [theswarmgarden@gmail.com](mailto:theswarmgarden@gmail.com)
+
+### Sources
+
+- Cloudflare, ["Introducing Pay Per Crawl"](https://blog.cloudflare.com/introducing-pay-per-crawl/) (Jul 1, 2025) and [Pay Per Crawl documentation](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/); Nieman Lab on the launch (Jul 1, 2025); Cloudflare Birthday Week 2026 wrap-up (Pay Per Use, Sep 30, 2026).
+- AWS re:Post, ["How do I charge AI bots and agents… using AWS WAF AI traffic monetization"](https://repost.aws/articles/ARBbclt0xSTJGgyNYi2YEwYQ/how-do-i-charge-ai-bots-and-agents-for-access-to-my-content-using-aws-waf-ai-traffic-monetization) (Jul 23, 2026).
+- Anthony Ettinger, [site analytics post](https://dev.profullstack.com/~anthony/blog/040-post.html) (Sep 5, 2026); Wikimedia Diff (Oct 5, 2026); Read the Docs (Jul 2024); Drew DeVault, SourceHut (Mar 2025).
+- KAMO, ["I made my website charge AI crawlers…"](https://dev.to/bykamo/i-made-my-website-charge-ai-crawlers-with-http-402-in-30-days-5811-came-and-5-paid-2112) DEV (Jun 12, 2026); [CrawlIndex](https://crawlindex.org/) 402 measurement (Oct 28, 2026, CC BY 4.0).
+- NoHacks, ["Websites get paid for AI use: who sets the price?"](https://nohacks.co/blog/websites-get-paid-for-ai-use-who-sets-the-price) (Oct 2026); ScriptMasterLabs, x402 seller census (Oct 2026); Blockhead on Chainalysis x402 data (Oct 15, 2026); ForgeMesh crawler field guide (Oct 2026); WSJ on Meta–News Corp licensing (2026). TollBit figures are TollBit's own published claims, as flagged in the text.
+
 ## We built a tollbooth
 
 ![Maude](images/maude-newsprint.png) **Maude** · Oct 28, 2026 · Experiment
