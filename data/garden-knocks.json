@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 39
+    "unrouted": 50
   },
   "by_channel_code": {
     "human-press": {
@@ -24,18 +24,18 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 39
+      "no-code (non-JSON refusal)": 50
     }
   },
   "by_cls": {
     "automation": 14,
-    "browser": 30
+    "browser": 41
   },
   "by_cname": {
-    "": 44
+    "": 55
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 39,
+    "no-code (non-JSON refusal)": 50,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -52,7 +52,7 @@
     "2026-10-27": 1,
     "2026-10-28": 3,
     "2026-10-29": 1,
-    "2026-10-30": 1
+    "2026-10-30": 12
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -66,44 +66,50 @@
     "2026-10-27": 3,
     "2026-10-28": 1,
     "2026-10-29": 1,
-    "2026-10-30": 1
+    "2026-10-30": 12
   },
   "by_length": {
-    "1-100": 29,
+    "1-100": 30,
     "1001-10000": 4,
-    "101-1000": 2,
+    "101-1000": 12,
     "not recorded": 9
   },
   "by_origin": {
-    "external": 38,
+    "external": 49,
     "steward-test": 6
   },
   "by_route": {
-    "/": 28,
+    "/": 32,
     "/.netlify/functions/visit": 1,
+    "/_flight": 1,
+    "/_next/rsc": 1,
+    "/api": 2,
+    "/api/rsc": 1,
     "/api/v1/human-press": 1,
     "/api/v1/notes": 1,
     "/api/v1/questions": 1,
     "/api/v1/render-claim": 1,
     "/api/v1/signal": 1,
+    "/en": 1,
+    "/rsc": 1,
     "/wp-json/batch/v1": 8,
     "/xmlrpc.php": 2
   },
   "by_route_folded": 0,
   "by_status": {
     "400": 3,
-    "404": 12,
-    "405": 28,
+    "404": 19,
+    "405": 32,
     "503": 1
   },
-  "distinct_routes": 9,
+  "distinct_routes": 15,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 30, 2026, 7:53:02 AM PT",
-  "generated_at_utc": "2026-10-30T14:53:02Z",
+  "generated_at_pt": "Oct 30, 2026, 1:53:04 PM PT",
+  "generated_at_utc": "2026-10-30T20:53:04Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-10-30T14:53:09.846Z",
+    "as_of": "2026-10-30T20:53:12.542Z",
     "human_presses": 11,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -114,11 +120,11 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 44,
+  "total": 55,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 24,
+      "count": 28,
       "route": "/",
       "status": 405
     },
@@ -143,6 +149,12 @@
     {
       "cls": "browser",
       "count": 2,
+      "route": "/api",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
       "route": "/xmlrpc.php",
       "status": 404
     },
@@ -150,6 +162,36 @@
       "cls": "automation",
       "count": 1,
       "route": "/.netlify/functions/visit",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/_flight",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/_next/rsc",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/rsc",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/en",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/rsc",
       "status": 404
     }
   ]
