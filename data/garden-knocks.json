@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 62
+    "unrouted": 115
   },
   "by_channel_code": {
     "human-press": {
@@ -24,19 +24,19 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 62
+      "no-code (non-JSON refusal)": 115
     }
   },
   "by_cls": {
     "automation": 14,
-    "browser": 41,
-    "unknown": 12
+    "browser": 82,
+    "unknown": 24
   },
   "by_cname": {
-    "": 67
+    "": 120
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 62,
+    "no-code (non-JSON refusal)": 115,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -54,7 +54,7 @@
     "2026-10-28": 3,
     "2026-10-29": 1,
     "2026-10-30": 12,
-    "2026-11-01": 12
+    "2026-11-01": 65
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -69,54 +69,60 @@
     "2026-10-28": 1,
     "2026-10-29": 1,
     "2026-10-30": 12,
-    "2026-10-31": 12
+    "2026-10-31": 65
   },
   "by_length": {
-    "1-100": 40,
+    "1-100": 91,
     "1001-10000": 4,
     "101-1000": 12,
-    "not recorded": 11
+    "not recorded": 13
   },
   "by_origin": {
-    "external": 61,
+    "external": 114,
     "steward-test": 6
   },
   "by_route": {
-    "/": 34,
+    "/": 44,
     "/.netlify/functions/visit": 1,
+    "//wp-json/batch/v1": 2,
     "/_flight": 1,
     "/_next/rsc": 1,
-    "/api": 4,
-    "/api/gql": 2,
-    "/api/graphql": 2,
+    "/api": 6,
+    "/api/gql": 4,
+    "/api/graphql": 4,
     "/api/rsc": 1,
     "/api/v1/human-press": 1,
     "/api/v1/notes": 1,
-    "/api/v1/questions": 1,
-    "/api/v1/render-claim": 1,
-    "/api/v1/signal": 1,
-    "/en": 1,
-    "/graphql": 2,
-    "/graphql/api": 2,
-    "/rsc": 1,
-    "/wp-json/batch/v1": 8,
+    "/blog/wp-json/batch/v1": 2,
+    "/cms/wp-json/batch/v1": 2,
+    "/graphql": 4,
+    "/graphql/api": 4,
+    "/index.php": 8,
+    "/main/wp-json/batch/v1": 2,
+    "/new/wp-json/batch/v1": 2,
+    "/site/wp-json/batch/v1": 2,
+    "/wordpress/wp-json/batch/v1": 2,
+    "/wp-json/Batch/v1": 2,
+    "/wp-json/batch/v1": 10,
+    "/wp-json/batch/v1/": 2,
+    "/wp/wp-json/batch/v1": 2,
     "/xmlrpc.php": 2
   },
-  "by_route_folded": 0,
+  "by_route_folded": 8,
   "by_status": {
     "400": 3,
-    "404": 29,
-    "405": 34,
+    "404": 72,
+    "405": 44,
     "503": 1
   },
-  "distinct_routes": 19,
+  "distinct_routes": 33,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Oct 31, 2026, 7:53:04 PM PT",
-  "generated_at_utc": "2026-11-01T02:53:04Z",
+  "generated_at_pt": "Nov 1, 2026, 1:53:02 AM PT",
+  "generated_at_utc": "2026-11-01T08:53:02Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-11-01T02:53:12.441Z",
+    "as_of": "2026-11-01T08:53:09.282Z",
     "human_presses": 12,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -127,13 +133,25 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 67,
+  "total": 120,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 28,
+      "count": 36,
       "route": "/",
       "status": 405
+    },
+    {
+      "cls": "browser",
+      "count": 8,
+      "route": "/index.php",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 6,
+      "route": "/wp-json/batch/v1",
+      "status": 404
     },
     {
       "cls": "automation",
@@ -142,57 +160,111 @@
       "status": 405
     },
     {
-      "cls": "automation",
-      "count": 4,
-      "route": "/wp-json/batch/v1",
-      "status": 404
-    },
-    {
-      "cls": "browser",
-      "count": 4,
-      "route": "/wp-json/batch/v1",
-      "status": 404
-    },
-    {
       "cls": "unknown",
-      "count": 2,
+      "count": 4,
       "route": "/",
       "status": 405
     },
     {
-      "cls": "browser",
-      "count": 2,
+      "cls": "unknown",
+      "count": 4,
       "route": "/api",
       "status": 404
     },
     {
       "cls": "unknown",
-      "count": 2,
-      "route": "/api",
-      "status": 404
-    },
-    {
-      "cls": "unknown",
-      "count": 2,
+      "count": 4,
       "route": "/api/gql",
       "status": 404
     },
     {
       "cls": "unknown",
-      "count": 2,
+      "count": 4,
       "route": "/api/graphql",
       "status": 404
     },
     {
       "cls": "unknown",
-      "count": 2,
+      "count": 4,
       "route": "/graphql",
       "status": 404
     },
     {
       "cls": "unknown",
-      "count": 2,
+      "count": 4,
       "route": "/graphql/api",
+      "status": 404
+    },
+    {
+      "cls": "automation",
+      "count": 4,
+      "route": "/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "//wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/api",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/blog/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/cms/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/main/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/new/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/site/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/wordpress/wp-json/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/wp-json/Batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/wp-json/batch/v1/",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 2,
+      "route": "/wp/wp-json/batch/v1",
       "status": 404
     },
     {
@@ -234,7 +306,25 @@
     {
       "cls": "browser",
       "count": 1,
+      "route": "/index.php/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
       "route": "/rsc",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/wp-json/batch%2fv1",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/wp-json/batch/v1/..;/batch/v1",
       "status": 404
     }
   ]
