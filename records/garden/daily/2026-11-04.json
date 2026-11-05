@@ -4,21 +4,21 @@
       "bucket": "extra",
       "claimed_name": "facebookexternalhit",
       "countries": {
-        "DE": 310,
-        "GB": 308,
-        "SG": 306,
-        "US": 3134
+        "DE": 328,
+        "GB": 326,
+        "SG": 324,
+        "US": 3315
       },
       "kind": "link-preview",
       "operator_claimed": "Meta",
       "paths": {
-        "/": 4018,
+        "/": 4252,
         "/.netlify/functions/counts": 3,
-        "/robots.txt": 37
+        "/robots.txt": 38
       },
-      "requests": 4058,
+      "requests": 4293,
       "stored_classes": {
-        "unknown": 4058
+        "unknown": 4293
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
@@ -28,14 +28,14 @@
       "bucket": "extra",
       "claimed_name": "Googlebot",
       "countries": {
-        "US": 204
+        "US": 207
       },
       "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
         "/": 23,
         "/.netlify/functions/counts": 2,
-        "/.netlify/functions/ledger": 10,
+        "/.netlify/functions/ledger": 11,
         "/agents": 3,
         "/api/v1/briefs": 3,
         "/api/v1/notes": 6,
@@ -49,14 +49,14 @@
         "/guestbook": 4,
         "/guestbook.html": 3,
         "/index.html": 14,
-        "/index.md": 14,
+        "/index.md": 15,
         "/participate": 8,
         "/participate.html": 6,
         "/participate.md": 5,
         "/questions": 10,
         "/questions.html": 8,
         "/questions.md": 2,
-        "/record": 7,
+        "/record": 8,
         "/record.html": 4,
         "/record.md": 4,
         "/registry": 4,
@@ -68,9 +68,9 @@
         "/reports.md": 4,
         "/utilities/garden-state/v1": 4
       },
-      "requests": 204,
+      "requests": 207,
       "stored_classes": {
-        "automation": 204
+        "automation": 207
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -179,19 +179,19 @@
       "claimed_name": "Googlebot",
       "countries": {
         "NL": 4,
-        "US": 137
+        "US": 139
       },
       "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
         "/": 7,
         "/press/": 2,
-        "/robots.txt": 131,
+        "/robots.txt": 133,
         "/site/": 1
       },
-      "requests": 141,
+      "requests": 143,
       "stored_classes": {
-        "automation": 141
+        "automation": 143
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -308,6 +308,45 @@
     },
     {
       "bucket": "taxonomy",
+      "claimed_name": "GPTBot",
+      "countries": {
+        "US": 55
+      },
+      "kind": "training",
+      "operator_claimed": "OpenAI",
+      "paths": {
+        "/": 6,
+        "/.well-known/agent-skills/swarm-garden/SKILL.md": 1,
+        "/agents": 1,
+        "/api/v1/notes": 1,
+        "/briefs": 1,
+        "/briefs.html": 1,
+        "/changed": 4,
+        "/evidence.html": 1,
+        "/evidence.md": 2,
+        "/guestbook.html": 2,
+        "/index.html": 2,
+        "/index.md": 4,
+        "/participate.html": 1,
+        "/participate.md": 1,
+        "/questions": 1,
+        "/questions.html": 1,
+        "/record.html": 1,
+        "/record.md": 1,
+        "/registry.html": 1,
+        "/reports.html": 2,
+        "/sitemap.xml": 20
+      },
+      "requests": 55,
+      "stored_classes": {
+        "agent-claimed": 55
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.4; +https://openai.com/gptbot)",
+      "web_bot_auth_present": 0
+    },
+    {
+      "bucket": "taxonomy",
       "claimed_name": "Amazonbot",
       "countries": {
         "US": 55
@@ -356,45 +395,6 @@
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot) Chrome/119.0.6045.214 Safari/537.36",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "taxonomy",
-      "claimed_name": "GPTBot",
-      "countries": {
-        "US": 54
-      },
-      "kind": "training",
-      "operator_claimed": "OpenAI",
-      "paths": {
-        "/": 6,
-        "/.well-known/agent-skills/swarm-garden/SKILL.md": 1,
-        "/agents": 1,
-        "/api/v1/notes": 1,
-        "/briefs": 1,
-        "/briefs.html": 1,
-        "/changed": 4,
-        "/evidence.html": 1,
-        "/evidence.md": 2,
-        "/guestbook.html": 2,
-        "/index.html": 2,
-        "/index.md": 4,
-        "/participate.html": 1,
-        "/participate.md": 1,
-        "/questions": 1,
-        "/questions.html": 1,
-        "/record.html": 1,
-        "/record.md": 1,
-        "/registry.html": 1,
-        "/reports.html": 2,
-        "/sitemap.xml": 19
-      },
-      "requests": 54,
-      "stored_classes": {
-        "agent-claimed": 54
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.4; +https://openai.com/gptbot)",
       "web_bot_auth_present": 0
     },
     {
@@ -480,19 +480,38 @@
       "bucket": "taxonomy",
       "claimed_name": "OAI-SearchBot",
       "countries": {
-        "US": 23
+        "US": 24
       },
       "kind": "search",
       "operator_claimed": "OpenAI",
       "paths": {
-        "/robots.txt": 23
+        "/robots.txt": 24
       },
-      "requests": 23,
+      "requests": 24,
       "stored_classes": {
-        "agent-claimed": 23
+        "agent-claimed": 24
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot",
+      "web_bot_auth_present": 0
+    },
+    {
+      "bucket": "taxonomy",
+      "claimed_name": "OAI-SearchBot",
+      "countries": {
+        "US": 22
+      },
+      "kind": "search",
+      "operator_claimed": "OpenAI",
+      "paths": {
+        "/robots.txt": 22
+      },
+      "requests": 22,
+      "stored_classes": {
+        "agent-claimed": 22
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; robots.txt; +https://openai.com/searchbot",
       "web_bot_auth_present": 0
     },
     {
@@ -532,25 +551,6 @@
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "taxonomy",
-      "claimed_name": "OAI-SearchBot",
-      "countries": {
-        "US": 21
-      },
-      "kind": "search",
-      "operator_claimed": "OpenAI",
-      "paths": {
-        "/robots.txt": 21
-      },
-      "requests": 21,
-      "stored_classes": {
-        "agent-claimed": 21
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; robots.txt; +https://openai.com/searchbot",
       "web_bot_auth_present": 0
     },
     {
@@ -705,6 +705,26 @@
       "web_bot_auth_present": 0
     },
     {
+      "bucket": "scanner",
+      "claimed_name": "NetAPI",
+      "countries": {
+        "DE": 6
+      },
+      "kind": "other-bot",
+      "operator_claimed": "NetAPI",
+      "paths": {
+        "/": 3,
+        "/robots.txt": 3
+      },
+      "requests": 6,
+      "stored_classes": {
+        "automation": 6
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "NetAPI/1.1 (+https://netapi.com/bot.html)",
+      "web_bot_auth_present": 0
+    },
+    {
       "bucket": "extra",
       "claimed_name": "Googlebot",
       "countries": {
@@ -745,26 +765,6 @@
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "scanner",
-      "claimed_name": "NetAPI",
-      "countries": {
-        "DE": 4
-      },
-      "kind": "other-bot",
-      "operator_claimed": "NetAPI",
-      "paths": {
-        "/": 2,
-        "/robots.txt": 2
-      },
-      "requests": 4,
-      "stored_classes": {
-        "automation": 4
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "NetAPI/1.1 (+https://netapi.com/bot.html)",
       "web_bot_auth_present": 0
     },
     {
@@ -1022,25 +1022,25 @@
     }
   ],
   "claimed_purposes": {
-    "": 23022,
+    "": 23835,
     "mixed": 15,
     "other": 23,
-    "search": 46,
-    "training": 176,
+    "search": 48,
+    "training": 177,
     "undeclared": 55,
     "user-triggered": 4
   },
   "classes": {
-    "agent-claimed": 319,
-    "automation": 1972,
-    "browser": 6296,
-    "unknown": 14754
+    "agent-claimed": 322,
+    "automation": 1986,
+    "browser": 6379,
+    "unknown": 15470
   },
   "counting_window": {
     "ae_retention": "Analytics Engine retains raw records three months, rolling; aggregates here are cumulative over the current dataset window.",
     "counting_since": "2026-10-17T21:38:49Z",
     "dataset_first_record_utc": "2026-10-17 21:38:49",
-    "dataset_last_record_utc": "2026-11-04 08:50:51"
+    "dataset_last_record_utc": "2026-11-05 02:50:47"
   },
   "countries": {
     "AE": 13,
@@ -1049,25 +1049,25 @@
     "AU": 80,
     "AZ": 1,
     "BD": 20,
-    "BE": 1057,
-    "BR": 165,
+    "BE": 1149,
+    "BR": 167,
     "BS": 1,
-    "CA": 267,
+    "CA": 268,
     "CH": 76,
     "CL": 3,
-    "CN": 240,
+    "CN": 264,
     "CO": 4,
-    "DE": 1426,
+    "DE": 1477,
     "DK": 2,
     "DO": 1,
     "EC": 1,
     "EE": 13,
     "ES": 6,
     "FI": 85,
-    "FR": 211,
-    "GB": 869,
+    "FR": 213,
+    "GB": 905,
     "GY": 1,
-    "HK": 276,
+    "HK": 279,
     "HR": 3,
     "ID": 106,
     "IE": 38,
@@ -1075,36 +1075,36 @@
     "IN": 173,
     "IS": 2,
     "IT": 2,
-    "JP": 211,
-    "KR": 149,
+    "JP": 213,
+    "KR": 154,
     "LT": 1,
     "LV": 1,
     "MA": 3,
     "MX": 9,
     "MY": 1,
-    "NL": 1545,
+    "NL": 1592,
     "NO": 3,
     "PA": 2,
     "PK": 3,
-    "PL": 350,
-    "RO": 220,
-    "RU": 1154,
+    "PL": 351,
+    "RO": 240,
+    "RU": 1163,
     "SA": 1,
     "SE": 69,
-    "SG": 1809,
+    "SG": 1871,
     "SI": 3,
     "T1": 3,
-    "TH": 58,
-    "TR": 14,
+    "TH": 60,
+    "TR": 15,
     "TW": 14,
-    "UA": 33,
-    "US": 12465,
+    "UA": 34,
+    "US": 12919,
     "VE": 1,
     "VN": 5,
     "ZA": 9
   },
   "dataset": "garden_visits",
-  "dataset_total": 23341,
+  "dataset_total": 24157,
   "date_pt": "2026-11-04",
   "distinct_referrer_values_steward_copy": 169,
   "events": {
@@ -1112,22 +1112,22 @@
     "briefs-read": 36,
     "changed-read": 93,
     "changed-read-atom": 17,
-    "changed-read-json": 16,
-    "counts-read": 7523,
+    "changed-read-json": 17,
+    "counts-read": 7847,
     "data-read": 19,
-    "guestbook-view": 115,
-    "ledger-read": 255,
-    "notes-read": 36,
-    "pageview": 15104,
+    "guestbook-view": 117,
+    "ledger-read": 262,
+    "notes-read": 37,
+    "pageview": 15580,
     "receipt-check": 1,
     "registry-read": 15,
-    "signal-challenge-read": 3,
-    "utility-read": 106
+    "signal-challenge-read": 4,
+    "utility-read": 110
   },
   "generic_http_clients": {
     "aiohttp": 19,
     "axios": 4,
-    "curl": 789,
+    "curl": 790,
     "go-http-client": 53,
     "httpx": 11,
     "java/": 1,
@@ -1554,48 +1554,66 @@
     "2026-11-04T05": 70,
     "2026-11-04T06": 39,
     "2026-11-04T07": 30,
-    "2026-11-04T08": 36
+    "2026-11-04T08": 50,
+    "2026-11-04T09": 38,
+    "2026-11-04T10": 34,
+    "2026-11-04T11": 29,
+    "2026-11-04T12": 29,
+    "2026-11-04T13": 37,
+    "2026-11-04T14": 39,
+    "2026-11-04T15": 152,
+    "2026-11-04T16": 47,
+    "2026-11-04T17": 29,
+    "2026-11-04T18": 48,
+    "2026-11-04T19": 30,
+    "2026-11-04T20": 65,
+    "2026-11-04T21": 37,
+    "2026-11-04T22": 52,
+    "2026-11-04T23": 40,
+    "2026-11-05T00": 30,
+    "2026-11-05T01": 37,
+    "2026-11-05T02": 29
   },
   "markdown_preference_records": 46,
   "methods": {
-    "GET": 23290,
+    "GET": 24106,
     "HEAD": 51
   },
   "networks": [
     {
       "as_organization": "Cloudflare, Inc.",
       "asn": "13335",
-      "requests": 9577
+      "requests": 9916
     },
     {
       "as_organization": "Meta Platforms Ireland Limited",
       "asn": "32934",
-      "requests": 4100
+      "requests": 4334
     },
     {
       "as_organization": "Google LLC",
       "asn": "396982",
-      "requests": 2190
+      "requests": 2285
     },
     {
       "as_organization": "TECHOFF SRV LIMITED",
       "asn": "48090",
-      "requests": 1009
+      "requests": 1041
     },
     {
       "as_organization": "DigitalOcean, LLC",
       "asn": "14061",
-      "requests": 955
+      "requests": 973
     },
     {
       "as_organization": "Google LLC",
       "asn": "15169",
-      "requests": 413
+      "requests": 418
     },
     {
       "as_organization": "6 COLLYER QUAY",
       "asn": "132203",
-      "requests": 378
+      "requests": 396
     },
     {
       "as_organization": "TC DATACENTER LIMITED MANAGED IP SPACE",
@@ -1610,12 +1628,12 @@
     {
       "as_organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
       "asn": "132203",
-      "requests": 145
+      "requests": 156
     },
     {
       "as_organization": "16 COLLYER QUAY",
       "asn": "132203",
-      "requests": 140
+      "requests": 145
     },
     {
       "as_organization": "1337 Services GmbH",
@@ -1623,19 +1641,19 @@
       "requests": 111
     },
     {
-      "as_organization": "Amazon Data Services Northern Virginia",
-      "asn": "14618",
-      "requests": 101
-    },
-    {
       "as_organization": "TECHOFF SRV LIMITED",
       "asn": "47890",
-      "requests": 91
+      "requests": 104
+    },
+    {
+      "as_organization": "Amazon Data Services Northern Virginia",
+      "asn": "14618",
+      "requests": 102
     },
     {
       "as_organization": "Alibaba Cloud LLC",
       "asn": "45102",
-      "requests": 87
+      "requests": 88
     },
     {
       "as_organization": "TechTies Inc.",
@@ -1650,12 +1668,12 @@
     {
       "as_organization": "Amazon Technologies Inc.",
       "asn": "14618",
-      "requests": 82
+      "requests": 83
     },
     {
       "as_organization": "Microsoft Limited",
       "asn": "8075",
-      "requests": 80
+      "requests": 82
     },
     {
       "as_organization": "Datacamp Limited",
@@ -1680,7 +1698,7 @@
     {
       "as_organization": "Hetzner Online GmbH",
       "asn": "24940",
-      "requests": 70
+      "requests": 72
     },
     {
       "as_organization": "UCLOUD INFORMATION TECHNOLOGY (HK) LIMITED",
@@ -1690,7 +1708,7 @@
     {
       "as_organization": "Alibaba Cloud - US",
       "asn": "45102",
-      "requests": 61
+      "requests": 64
     },
     {
       "as_organization": "HOS-382394",
@@ -1733,6 +1751,11 @@
       "requests": 47
     },
     {
+      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
+      "asn": "132203",
+      "requests": 46
+    },
+    {
       "as_organization": "Amazon.com, Inc.",
       "asn": "16509",
       "requests": 42
@@ -1740,11 +1763,6 @@
     {
       "as_organization": "Cloudfanatic.NET",
       "asn": "11878",
-      "requests": 42
-    },
-    {
-      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
-      "asn": "132203",
       "requests": 42
     },
     {
@@ -1758,14 +1776,14 @@
       "requests": 37
     },
     {
+      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
+      "asn": "45090",
+      "requests": 35
+    },
+    {
       "as_organization": "Amazon Data Services Ireland Limited",
       "asn": "16509",
       "requests": 34
-    },
-    {
-      "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
-      "asn": "45090",
-      "requests": 33
     },
     {
       "as_organization": "Ghosty Networks LLC",
@@ -1833,19 +1851,19 @@
       "requests": 26
     },
     {
+      "as_organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
+      "asn": "45090",
+      "requests": 25
+    },
+    {
       "as_organization": "Dmytro, Ahrefs Pte Ltd",
       "asn": "16276",
       "requests": 25
     },
     {
-      "as_organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
-      "asn": "45090",
-      "requests": 24
-    },
-    {
       "as_organization": "Microsoft Deutschland MCIO GmbH",
       "asn": "8075",
-      "requests": 23
+      "requests": 24
     },
     {
       "as_organization": "yasni GmbH",
@@ -1868,14 +1886,14 @@
       "requests": 19
     },
     {
-      "as_organization": "Linode",
-      "asn": "63949",
+      "as_organization": "Palo Alto Networks, Inc",
+      "asn": "3356",
       "requests": 18
     },
     {
-      "as_organization": "Palo Alto Networks, Inc",
-      "asn": "3356",
-      "requests": 17
+      "as_organization": "Linode",
+      "asn": "63949",
+      "requests": 18
     },
     {
       "as_organization": "Cogent Communications, LLC",
@@ -1923,6 +1941,11 @@
       "requests": 14
     },
     {
+      "as_organization": "ACEVILLE PTE.LTD.",
+      "asn": "132203",
+      "requests": 14
+    },
+    {
       "as_organization": "Scaleway Dedibox",
       "asn": "12876",
       "requests": 14
@@ -1933,8 +1956,8 @@
       "requests": 13
     },
     {
-      "as_organization": "ACEVILLE PTE.LTD.",
-      "asn": "132203",
+      "as_organization": "Channelnet",
+      "asn": "49453",
       "requests": 13
     },
     {
@@ -2098,6 +2121,11 @@
       "requests": 8
     },
     {
+      "as_organization": "Verizon Business",
+      "asn": "5650",
+      "requests": 7
+    },
+    {
       "as_organization": "Subnet Digital LLC",
       "asn": "9009",
       "requests": 7
@@ -2133,11 +2161,6 @@
       "requests": 6
     },
     {
-      "as_organization": "Verizon Business",
-      "asn": "5650",
-      "requests": 6
-    },
-    {
       "as_organization": "AviationAI",
       "asn": "7922",
       "requests": 6
@@ -2153,8 +2176,18 @@
       "requests": 6
     },
     {
+      "as_organization": "ReflectionAI Inc",
+      "asn": "396982",
+      "requests": 6
+    },
+    {
       "as_organization": "OVH GmbH",
       "asn": "16276",
+      "requests": 5
+    },
+    {
+      "as_organization": "Block for xDSL/FTTx customers pools",
+      "asn": "15557",
       "requests": 5
     },
     {
@@ -2163,8 +2196,8 @@
       "requests": 5
     },
     {
-      "as_organization": "Block for xDSL/FTTx customers pools",
-      "asn": "15557",
+      "as_organization": "Skyway West",
+      "asn": "14007",
       "requests": 5
     },
     {
@@ -2218,6 +2251,11 @@
       "requests": 4
     },
     {
+      "as_organization": "UAB code200",
+      "asn": "9009",
+      "requests": 4
+    },
+    {
       "as_organization": "Web2Objects LLC",
       "asn": "3257",
       "requests": 4
@@ -2235,11 +2273,6 @@
     {
       "as_organization": "Aviation RE LLC",
       "asn": "46635",
-      "requests": 4
-    },
-    {
-      "as_organization": "Skyway West",
-      "asn": "14007",
       "requests": 4
     },
     {
@@ -2310,11 +2343,6 @@
     {
       "as_organization": "CV Griya Cloud Server",
       "asn": "154896",
-      "requests": 3
-    },
-    {
-      "as_organization": "UAB code200",
-      "asn": "9009",
       "requests": 3
     },
     {
@@ -2478,6 +2506,11 @@
       "requests": 2
     },
     {
+      "as_organization": "OVH Sp. z o. o.",
+      "asn": "16276",
+      "requests": 2
+    },
+    {
       "as_organization": "LonConnect Ltd",
       "asn": "212286",
       "requests": 2
@@ -2510,6 +2543,11 @@
     {
       "as_organization": "VPS1-NET",
       "asn": "44925",
+      "requests": 2
+    },
+    {
+      "as_organization": "HostRoyale Technologies Pvt Ltd",
+      "asn": "203020",
       "requests": 2
     },
     {
@@ -2668,11 +2706,6 @@
       "requests": 2
     },
     {
-      "as_organization": "ReflectionAI Inc",
-      "asn": "396982",
-      "requests": 2
-    },
-    {
       "as_organization": "Granslosa System GSYS KB",
       "asn": "42708",
       "requests": 2
@@ -2763,11 +2796,6 @@
       "requests": 1
     },
     {
-      "as_organization": "OVH Sp. z o. o.",
-      "asn": "16276",
-      "requests": 1
-    },
-    {
       "as_organization": "Rego Communications Ltd",
       "asn": "149994",
       "requests": 1
@@ -2793,18 +2821,23 @@
       "requests": 1
     },
     {
-      "as_organization": "TDC Brands A/S",
-      "asn": "203953",
-      "requests": 1
-    },
-    {
       "as_organization": "Desktop Sigmanet Comunica\u00e7\u00e3o Multim\u00eddia SA",
       "asn": "28649",
       "requests": 1
     },
     {
+      "as_organization": "TDC Brands A/S",
+      "asn": "203953",
+      "requests": 1
+    },
+    {
       "as_organization": "American Airlines Inc.",
       "asn": "53741",
+      "requests": 1
+    },
+    {
+      "as_organization": "Dynamic pools",
+      "asn": "15557",
       "requests": 1
     },
     {
@@ -2865,11 +2898,6 @@
     {
       "as_organization": "Nese Mala",
       "asn": "206119",
-      "requests": 1
-    },
-    {
-      "as_organization": "HostRoyale Technologies Pvt Ltd",
-      "asn": "203020",
       "requests": 1
     },
     {
@@ -2983,18 +3011,23 @@
       "requests": 1
     },
     {
-      "as_organization": "HAITAISHUMA-LTD",
-      "asn": "17638",
-      "requests": 1
-    },
-    {
       "as_organization": "VPS Hostafrica",
       "asn": "329184",
       "requests": 1
     },
     {
+      "as_organization": "HAITAISHUMA-LTD",
+      "asn": "17638",
+      "requests": 1
+    },
+    {
       "as_organization": "Red de servicios IP",
       "asn": "3352",
+      "requests": 1
+    },
+    {
+      "as_organization": "China Unicom Jiangxi province network",
+      "asn": "4837",
       "requests": 1
     },
     {
@@ -3048,13 +3081,18 @@
       "requests": 1
     },
     {
-      "as_organization": "ARTERIA Networks Corporation",
-      "asn": "2519",
+      "as_organization": "Oracle Corporation",
+      "asn": "31898",
       "requests": 1
     },
     {
       "as_organization": "Bright Technologies Limited",
       "asn": "133605",
+      "requests": 1
+    },
+    {
+      "as_organization": "ARTERIA Networks Corporation",
+      "asn": "2519",
       "requests": 1
     },
     {
@@ -3133,13 +3171,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Dvois Broadband Pvt Ltd",
-      "asn": "45769",
+      "as_organization": "T-Mobile USA, Inc.",
+      "asn": "21928",
       "requests": 1
     },
     {
-      "as_organization": "T-Mobile USA, Inc.",
-      "asn": "21928",
+      "as_organization": "Dvois Broadband Pvt Ltd",
+      "asn": "45769",
       "requests": 1
     },
     {
@@ -3298,78 +3336,92 @@
       "requests": 1
     }
   ],
-  "no_referer_recorded": 22083,
+  "no_referer_recorded": 22859,
   "paths": [
     {
       "path": "/.netlify/functions/counts",
       "status": {
-        "200": 7523
+        "200": 7847
       },
-      "total": 7523
+      "total": 7847
     },
     {
       "path": "/",
       "status": {
-        "200": 6193
+        "200": 6466
       },
-      "total": 6193
+      "total": 6466
     },
     {
       "path": "/wp-admin/install.php",
       "status": {
-        "404": 1134
+        "404": 1143
       },
-      "total": 1134
+      "total": 1143
     },
     {
       "path": "/robots.txt",
       "status": {
-        "200": 482
+        "200": 492
       },
-      "total": 482
+      "total": 492
     },
     {
       "path": "/.netlify/functions/ledger",
       "status": {
-        "200": 255
+        "200": 262
       },
-      "total": 255
+      "total": 262
     },
     {
       "path": "/participate.html",
       "status": {
         "200": 2,
-        "307": 162
+        "307": 163
       },
-      "total": 164
+      "total": 165
     },
     {
       "path": "/participate",
       "status": {
-        "200": 158
+        "200": 159
       },
-      "total": 158
+      "total": 159
     },
     {
       "path": "/changed",
       "status": {
-        "200": 151,
+        "200": 152,
         "405": 2
       },
-      "total": 153
+      "total": 154
     },
     {
       "path": "/sitemap.xml",
       "status": {
-        "200": 143
+        "200": 145
       },
-      "total": 143
+      "total": 145
     },
     {
       "path": "/briefs.html",
       "status": {
         "200": 2,
-        "307": 102
+        "307": 103
+      },
+      "total": 105
+    },
+    {
+      "path": "/questions",
+      "status": {
+        "200": 104
+      },
+      "total": 104
+    },
+    {
+      "path": "/record",
+      "status": {
+        "200": 104
       },
       "total": 104
     },
@@ -3382,29 +3434,22 @@
       "total": 104
     },
     {
-      "path": "/questions",
-      "status": {
-        "200": 103
-      },
-      "total": 103
-    },
-    {
-      "path": "/record",
-      "status": {
-        "200": 103
-      },
-      "total": 103
-    },
-    {
       "path": "/questions.html",
       "status": {
         "200": 2,
-        "307": 99
+        "307": 100
       },
-      "total": 101
+      "total": 102
     },
     {
       "path": "/guestbook",
+      "status": {
+        "200": 99
+      },
+      "total": 99
+    },
+    {
+      "path": "/index.md",
       "status": {
         "200": 98
       },
@@ -3413,16 +3458,9 @@
     {
       "path": "/guestbook.html",
       "status": {
-        "307": 96
+        "307": 97
       },
-      "total": 96
-    },
-    {
-      "path": "/index.md",
-      "status": {
-        "200": 95
-      },
-      "total": 95
+      "total": 97
     },
     {
       "path": "/briefs",
@@ -3457,9 +3495,9 @@
     {
       "path": "/.git/config",
       "status": {
-        "404": 78
+        "404": 79
       },
-      "total": 78
+      "total": 79
     },
     {
       "path": "/reports",
@@ -3471,23 +3509,23 @@
     {
       "path": "/.env",
       "status": {
-        "404": 71
+        "404": 74
       },
-      "total": 71
+      "total": 74
     },
     {
       "path": "/utilities/garden-state/v1",
       "status": {
-        "200": 71
+        "200": 72
       },
-      "total": 71
+      "total": 72
     },
     {
       "path": "/wp-login.php",
       "status": {
-        "404": 70
+        "404": 72
       },
-      "total": 70
+      "total": 72
     },
     {
       "path": "/index.html",
@@ -3500,9 +3538,9 @@
     {
       "path": "/api/v1/notes",
       "status": {
-        "200": 62
+        "200": 63
       },
-      "total": 62
+      "total": 63
     },
     {
       "path": "/participate.md",
@@ -3514,9 +3552,9 @@
     {
       "path": "/llms.txt",
       "status": {
-        "200": 50
+        "200": 51
       },
-      "total": 50
+      "total": 51
     },
     {
       "path": "/briefs.md",
@@ -3570,16 +3608,23 @@
     {
       "path": "/evidence.html",
       "status": {
-        "307": 38
+        "307": 39
       },
-      "total": 38
+      "total": 39
     },
     {
       "path": "/evidence",
       "status": {
-        "200": 37
+        "200": 38
       },
-      "total": 37
+      "total": 38
+    },
+    {
+      "path": "/.env.local",
+      "status": {
+        "404": 36
+      },
+      "total": 36
     },
     {
       "path": "/api/v1/briefs",
@@ -3603,7 +3648,7 @@
       "total": 35
     },
     {
-      "path": "/.env.local",
+      "path": "/api/.env",
       "status": {
         "404": 34
       },
@@ -3615,13 +3660,6 @@
         "404": 34
       },
       "total": 34
-    },
-    {
-      "path": "/api/.env",
-      "status": {
-        "404": 33
-      },
-      "total": 33
     },
     {
       "path": "/wp/wp-includes/wlwmanifest.xml",
@@ -3636,6 +3674,13 @@
         "404": 33
       },
       "total": 33
+    },
+    {
+      "path": "/AGENTS.md",
+      "status": {
+        "200": 32
+      },
+      "total": 32
     },
     {
       "path": "/agents",
@@ -3688,9 +3733,16 @@
       "total": 32
     },
     {
-      "path": "/AGENTS.md",
+      "path": "/.env.production",
       "status": {
-        "200": 31
+        "404": 31
+      },
+      "total": 31
+    },
+    {
+      "path": "/app/.env",
+      "status": {
+        "404": 31
       },
       "total": 31
     },
@@ -3709,25 +3761,25 @@
       "total": 31
     },
     {
-      "path": "/.env.production",
+      "path": "/.env.prod",
       "status": {
         "404": 30
       },
       "total": 30
     },
     {
-      "path": "/app/.env",
+      "path": "/info.php",
       "status": {
-        "404": 29
+        "404": 30
       },
-      "total": 29
+      "total": 30
     },
     {
-      "path": "/.env.prod",
+      "path": "/.well-known/agent-card.json",
       "status": {
-        "404": 28
+        "200": 27
       },
-      "total": 28
+      "total": 27
     },
     {
       "path": "//wp1/wp-includes/wlwmanifest.xml",
@@ -3744,14 +3796,14 @@
       "total": 27
     },
     {
-      "path": "/info.php",
+      "path": "/.env.old",
       "status": {
-        "404": 27
+        "404": 26
       },
-      "total": 27
+      "total": 26
     },
     {
-      "path": "/.well-known/agent-card.json",
+      "path": "/evidence.md",
       "status": {
         "200": 26
       },
@@ -3779,16 +3831,9 @@
       "total": 25
     },
     {
-      "path": "/.env.old",
+      "path": "/admin/.env",
       "status": {
         "404": 25
-      },
-      "total": 25
-    },
-    {
-      "path": "/evidence.md",
-      "status": {
-        "200": 25
       },
       "total": 25
     },
@@ -3807,16 +3852,30 @@
       "total": 25
     },
     {
-      "path": "/admin/.env",
+      "path": "/.well-known/agent-skills/index.json",
       "status": {
-        "404": 24
+        "200": 24
       },
       "total": 24
     },
     {
-      "path": "/.well-known/agent-skills/index.json",
+      "path": "/.env.docker",
       "status": {
-        "200": 23
+        "404": 23
+      },
+      "total": 23
+    },
+    {
+      "path": "/.env.example",
+      "status": {
+        "404": 23
+      },
+      "total": 23
+    },
+    {
+      "path": "/.env.staging",
+      "status": {
+        "404": 23
       },
       "total": 23
     },
@@ -3828,6 +3887,15 @@
       "total": 23
     },
     {
+      "path": "/api/v1/signal/challenge",
+      "status": {
+        "200": 17,
+        "404": 1,
+        "503": 5
+      },
+      "total": 23
+    },
+    {
       "path": "/media/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 23
@@ -3835,18 +3903,16 @@
       "total": 23
     },
     {
-      "path": "/.env.example",
+      "path": "/.env.backup",
       "status": {
         "404": 22
       },
       "total": 22
     },
     {
-      "path": "/api/v1/signal/challenge",
+      "path": "/.env.bak",
       "status": {
-        "200": 16,
-        "404": 1,
-        "503": 5
+        "404": 22
       },
       "total": 22
     },
@@ -3859,14 +3925,14 @@
       "total": 22
     },
     {
-      "path": "/.env.bak",
+      "path": "/web/.env",
       "status": {
-        "404": 21
+        "404": 22
       },
-      "total": 21
+      "total": 22
     },
     {
-      "path": "/.env.staging",
+      "path": "/.env.development",
       "status": {
         "404": 21
       },
@@ -3894,32 +3960,25 @@
       "total": 21
     },
     {
-      "path": "/web/.env",
+      "path": "/actuator/env",
       "status": {
         "404": 21
       },
       "total": 21
     },
     {
-      "path": "/.env.backup",
+      "path": "/config/.env",
       "status": {
-        "404": 20
+        "404": 21
       },
-      "total": 20
+      "total": 21
     },
     {
-      "path": "/.env.development",
+      "path": "/src/.env",
       "status": {
-        "404": 20
+        "404": 21
       },
-      "total": 20
-    },
-    {
-      "path": "/.env.docker",
-      "status": {
-        "404": 20
-      },
-      "total": 20
+      "total": 21
     },
     {
       "path": "//cms/wp-includes/wlwmanifest.xml",
@@ -3950,14 +4009,42 @@
       "total": 20
     },
     {
-      "path": "/src/.env",
+      "path": "/backup/.env",
       "status": {
         "404": 20
       },
       "total": 20
     },
     {
+      "path": "/core/.env",
+      "status": {
+        "404": 20
+      },
+      "total": 20
+    },
+    {
+      "path": "/credentials.json",
+      "status": {
+        "404": 20
+      },
+      "total": 20
+    },
+    {
+      "path": "/.env.dev",
+      "status": {
+        "404": 19
+      },
+      "total": 19
+    },
+    {
       "path": "/.env.sample",
+      "status": {
+        "404": 19
+      },
+      "total": 19
+    },
+    {
+      "path": "/.env.test",
       "status": {
         "404": 19
       },
@@ -3971,32 +4058,39 @@
       "total": 19
     },
     {
-      "path": "/actuator/env",
+      "path": "/config.php",
       "status": {
         "404": 19
       },
       "total": 19
     },
     {
-      "path": "/backup/.env",
+      "path": "/frontend/.env",
       "status": {
         "404": 19
       },
       "total": 19
     },
     {
-      "path": "/config/.env",
+      "path": "/phpinfo",
       "status": {
         "404": 19
       },
       "total": 19
     },
     {
-      "path": "/.env.dev",
+      "path": "/phpinfo.php",
       "status": {
-        "404": 18
+        "404": 19
       },
-      "total": 18
+      "total": 19
+    },
+    {
+      "path": "/test/.env",
+      "status": {
+        "404": 19
+      },
+      "total": 19
     },
     {
       "path": "/.env.live",
@@ -4006,7 +4100,7 @@
       "total": 18
     },
     {
-      "path": "/.env.test",
+      "path": "/.env.save",
       "status": {
         "404": 18
       },
@@ -4020,49 +4114,35 @@
       "total": 18
     },
     {
-      "path": "/config.php",
-      "status": {
-        "404": 18
-      },
-      "total": 18
-    },
-    {
-      "path": "/core/.env",
-      "status": {
-        "404": 18
-      },
-      "total": 18
-    },
-    {
-      "path": "/credentials.json",
-      "status": {
-        "404": 18
-      },
-      "total": 18
-    },
-    {
-      "path": "/frontend/.env",
-      "status": {
-        "404": 18
-      },
-      "total": 18
-    },
-    {
-      "path": "/.env.save",
+      "path": "/.npmrc",
       "status": {
         "404": 17
       },
       "total": 17
     },
     {
-      "path": "/phpinfo",
+      "path": "/.well-known/agent-skills/swarm-garden/SKILL.md",
+      "status": {
+        "200": 17
+      },
+      "total": 17
+    },
+    {
+      "path": "//xmlrpc.php",
       "status": {
         "404": 17
       },
       "total": 17
     },
     {
-      "path": "/phpinfo.php",
+      "path": "/appsettings.Development.json",
+      "status": {
+        "404": 17
+      },
+      "total": 17
+    },
+    {
+      "path": "/docker-compose.yml",
       "status": {
         "404": 17
       },
@@ -4076,16 +4156,16 @@
       "total": 17
     },
     {
-      "path": "/.npmrc",
+      "path": "/staging/.env",
       "status": {
-        "404": 16
+        "404": 17
       },
-      "total": 16
+      "total": 17
     },
     {
-      "path": "/.well-known/agent-skills/swarm-garden/SKILL.md",
+      "path": "/.gitlab-ci.yml",
       "status": {
-        "200": 16
+        "404": 16
       },
       "total": 16
     },
@@ -4104,13 +4184,6 @@
       "total": 16
     },
     {
-      "path": "//xmlrpc.php",
-      "status": {
-        "404": 16
-      },
-      "total": 16
-    },
-    {
       "path": "/CLAUDE.md",
       "status": {
         "200": 13,
@@ -4119,14 +4192,14 @@
       "total": 16
     },
     {
-      "path": "/appsettings.Development.json",
+      "path": "/media/.env",
       "status": {
         "404": 16
       },
       "total": 16
     },
     {
-      "path": "/test/.env",
+      "path": "/settings.json",
       "status": {
         "404": 16
       },
@@ -4161,14 +4234,35 @@
       "total": 15
     },
     {
-      "path": "/docker-compose.yml",
+      "path": "/Dockerfile",
       "status": {
         "404": 15
       },
       "total": 15
     },
     {
-      "path": "/media/.env",
+      "path": "/_profiler/phpinfo",
+      "status": {
+        "404": 15
+      },
+      "total": 15
+    },
+    {
+      "path": "/appsettings.json",
+      "status": {
+        "404": 15
+      },
+      "total": 15
+    },
+    {
+      "path": "/laravel/.env",
+      "status": {
+        "404": 15
+      },
+      "total": 15
+    },
+    {
+      "path": "/old/.env",
       "status": {
         "404": 15
       },
@@ -4182,14 +4276,7 @@
       "total": 15
     },
     {
-      "path": "/settings.json",
-      "status": {
-        "404": 15
-      },
-      "total": 15
-    },
-    {
-      "path": "/staging/.env",
+      "path": "/sendgrid.env",
       "status": {
         "404": 15
       },
@@ -4203,7 +4290,21 @@
       "total": 15
     },
     {
+      "path": "/.aws/credentials",
+      "status": {
+        "404": 14
+      },
+      "total": 14
+    },
+    {
       "path": "/.env.aws",
+      "status": {
+        "404": 14
+      },
+      "total": 14
+    },
+    {
+      "path": "/.env.swp",
       "status": {
         "404": 14
       },
@@ -4217,14 +4318,14 @@
       "total": 14
     },
     {
-      "path": "/.vscode/sftp.json",
+      "path": "/.s3cfg",
       "status": {
         "404": 14
       },
       "total": 14
     },
     {
-      "path": "/_profiler/phpinfo",
+      "path": "/.vscode/sftp.json",
       "status": {
         "404": 14
       },
@@ -4239,60 +4340,25 @@
       "total": 14
     },
     {
-      "path": "/appsettings.json",
+      "path": "/config.env",
       "status": {
         "404": 14
       },
       "total": 14
-    },
-    {
-      "path": "/laravel/.env",
-      "status": {
-        "404": 14
-      },
-      "total": 14
-    },
-    {
-      "path": "/sendgrid.env",
-      "status": {
-        "404": 14
-      },
-      "total": 14
-    },
-    {
-      "path": "/.aws/credentials",
-      "status": {
-        "404": 13
-      },
-      "total": 13
-    },
-    {
-      "path": "/.gitlab-ci.yml",
-      "status": {
-        "404": 13
-      },
-      "total": 13
-    },
-    {
-      "path": "/.s3cfg",
-      "status": {
-        "404": 13
-      },
-      "total": 13
-    },
-    {
-      "path": "/Dockerfile",
-      "status": {
-        "404": 13
-      },
-      "total": 13
     },
     {
       "path": "/credentials",
       "status": {
-        "404": 13
+        "404": 14
       },
-      "total": 13
+      "total": 14
+    },
+    {
+      "path": "/server/.env",
+      "status": {
+        "404": 14
+      },
+      "total": 14
     },
     {
       "path": "/debug/default/view",
@@ -4309,21 +4375,7 @@
       "total": 13
     },
     {
-      "path": "/old/.env",
-      "status": {
-        "404": 13
-      },
-      "total": 13
-    },
-    {
       "path": "/production/.env",
-      "status": {
-        "404": 13
-      },
-      "total": 13
-    },
-    {
-      "path": "/server/.env",
       "status": {
         "404": 13
       },
@@ -4344,11 +4396,11 @@
       "total": 13
     },
     {
-      "path": "/.env.swp",
+      "path": "/v1/.env",
       "status": {
-        "404": 12
+        "404": 13
       },
-      "total": 12
+      "total": 13
     },
     {
       "path": "/.hg/dirstate",
@@ -4407,7 +4459,35 @@
       "total": 12
     },
     {
-      "path": "/config.env",
+      "path": "/composer.json",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
+      "path": "/database.sql",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
+      "path": "/env",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
+      "path": "/env.txt",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
+      "path": "/public/.env",
       "status": {
         "404": 12
       },
@@ -4435,9 +4515,10 @@
       "total": 12
     },
     {
-      "path": "/v1/.env",
+      "path": "/utilities/garden-verify-receipt/v1",
       "status": {
-        "404": 12
+        "200": 3,
+        "400": 9
       },
       "total": 12
     },
@@ -4457,6 +4538,41 @@
     },
     {
       "path": "/.DS_Store",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/.docker/.env",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/.env.openai",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/.env.php",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/.github/workflows/deploy.yml",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/.netrc",
       "status": {
         "404": 11
       },
@@ -4484,9 +4600,9 @@
       "total": 11
     },
     {
-      "path": "/composer.json",
+      "path": "/api/v1/human-press",
       "status": {
-        "404": 11
+        "200": 11
       },
       "total": 11
     },
@@ -4498,14 +4614,7 @@
       "total": 11
     },
     {
-      "path": "/env",
-      "status": {
-        "404": 11
-      },
-      "total": 11
-    },
-    {
-      "path": "/env.txt",
+      "path": "/dev/.env",
       "status": {
         "404": 11
       },
@@ -4519,10 +4628,9 @@
       "total": 11
     },
     {
-      "path": "/utilities/garden-verify-receipt/v1",
+      "path": "/new/.env",
       "status": {
-        "200": 3,
-        "400": 8
+        "404": 11
       },
       "total": 11
     },
@@ -4534,14 +4642,14 @@
       "total": 11
     },
     {
-      "path": "/.aws/config",
+      "path": "/.aws/.env",
       "status": {
         "404": 10
       },
       "total": 10
     },
     {
-      "path": "/.docker/.env",
+      "path": "/.aws/config",
       "status": {
         "404": 10
       },
@@ -4555,23 +4663,9 @@
       "total": 10
     },
     {
-      "path": "/.env.openai",
+      "path": "/.well-known/agent-skills/attend-the-garden/SKILL.md",
       "status": {
-        "404": 10
-      },
-      "total": 10
-    },
-    {
-      "path": "/.env.php",
-      "status": {
-        "404": 10
-      },
-      "total": 10
-    },
-    {
-      "path": "/.netrc",
-      "status": {
-        "404": 10
+        "200": 10
       },
       "total": 10
     },
@@ -4583,9 +4677,9 @@
       "total": 10
     },
     {
-      "path": "/api/v1/human-press",
+      "path": "/appsettings.Production.json",
       "status": {
-        "200": 10
+        "404": 10
       },
       "total": 10
     },
@@ -4597,14 +4691,7 @@
       "total": 10
     },
     {
-      "path": "/database.sql",
-      "status": {
-        "404": 10
-      },
-      "total": 10
-    },
-    {
-      "path": "/dev/.env",
+      "path": "/demo/.env",
       "status": {
         "404": 10
       },
@@ -4618,21 +4705,7 @@
       "total": 10
     },
     {
-      "path": "/new/.env",
-      "status": {
-        "404": 10
-      },
-      "total": 10
-    },
-    {
       "path": "/news/",
-      "status": {
-        "404": 10
-      },
-      "total": 10
-    },
-    {
-      "path": "/public/.env",
       "status": {
         "404": 10
       },
@@ -4646,7 +4719,35 @@
       "total": 10
     },
     {
-      "path": "/.well-known/agent-skills/attend-the-garden/SKILL.md",
+      "path": "/.env-example",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.env~",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.git/logs/refs/heads/main",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.gitmodules",
+      "status": {
+        "404": 9
+      },
+      "total": 9
+    },
+    {
+      "path": "/.well-known/agent-skills/answer-a-brief/SKILL.md",
       "status": {
         "200": 9
       },
@@ -4675,13 +4776,6 @@
     },
     {
       "path": "/application_default_credentials.json",
-      "status": {
-        "404": 9
-      },
-      "total": 9
-    },
-    {
-      "path": "/appsettings.Production.json",
       "status": {
         "404": 9
       },
@@ -4737,18 +4831,18 @@
       "total": 9
     },
     {
-      "path": "/wp-sitemap.xml",
+      "path": "/sentry.properties",
       "status": {
         "404": 9
       },
       "total": 9
     },
     {
-      "path": "/.aws/.env",
+      "path": "/wp-sitemap.xml",
       "status": {
-        "404": 8
+        "404": 9
       },
-      "total": 8
+      "total": 9
     },
     {
       "path": "/.aws/credentials.bak",
@@ -4758,7 +4852,21 @@
       "total": 8
     },
     {
-      "path": "/.env~",
+      "path": "/.boto",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/.docker/config.json",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/.env.testing",
       "status": {
         "404": 8
       },
@@ -4768,34 +4876,6 @@
       "path": "/.git/logs/HEAD",
       "status": {
         "404": 8
-      },
-      "total": 8
-    },
-    {
-      "path": "/.git/logs/refs/heads/main",
-      "status": {
-        "404": 8
-      },
-      "total": 8
-    },
-    {
-      "path": "/.github/workflows/deploy.yml",
-      "status": {
-        "404": 8
-      },
-      "total": 8
-    },
-    {
-      "path": "/.gitmodules",
-      "status": {
-        "404": 8
-      },
-      "total": 8
-    },
-    {
-      "path": "/.well-known/agent-skills/answer-a-brief/SKILL.md",
-      "status": {
-        "200": 8
       },
       "total": 8
     },
@@ -4821,14 +4901,14 @@
       "total": 8
     },
     {
-      "path": "/config.yaml",
+      "path": "/back/.env",
       "status": {
         "404": 8
       },
       "total": 8
     },
     {
-      "path": "/demo/.env",
+      "path": "/config.yaml",
       "status": {
         "404": 8
       },
@@ -4870,13 +4950,6 @@
       "total": 8
     },
     {
-      "path": "/sentry.properties",
-      "status": {
-        "404": 8
-      },
-      "total": 8
-    },
-    {
       "path": "/server-info",
       "status": {
         "404": 8
@@ -4905,6 +4978,13 @@
       "total": 8
     },
     {
+      "path": "/web.config",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
       "path": "/wp/",
       "status": {
         "404": 8
@@ -4919,23 +4999,16 @@
       "total": 7
     },
     {
-      "path": "/.docker/config.json",
+      "path": "/.well-known/agent-skills/ask-the-garden/SKILL.md",
       "status": {
-        "404": 7
+        "200": 7
       },
       "total": 7
     },
     {
-      "path": "/.env-example",
+      "path": "/.well-known/agent-skills/keep-a-return-file/SKILL.md",
       "status": {
-        "404": 7
-      },
-      "total": 7
-    },
-    {
-      "path": "/.env.testing",
-      "status": {
-        "404": 7
+        "200": 7
       },
       "total": 7
     },
@@ -4969,13 +5042,6 @@
     },
     {
       "path": "/auth.json",
-      "status": {
-        "404": 7
-      },
-      "total": 7
-    },
-    {
-      "path": "/back/.env",
       "status": {
         "404": 7
       },
@@ -5059,7 +5125,15 @@
       "total": 7
     },
     {
-      "path": "/.boto",
+      "path": "/utilities/garden-dates/v1",
+      "status": {
+        "200": 2,
+        "400": 5
+      },
+      "total": 7
+    },
+    {
+      "path": "/.claude/settings.local.json",
       "status": {
         "404": 6
       },
@@ -5108,21 +5182,7 @@
       "total": 6
     },
     {
-      "path": "/.well-known/agent-skills/ask-the-garden/SKILL.md",
-      "status": {
-        "200": 6
-      },
-      "total": 6
-    },
-    {
       "path": "/.well-known/agent-skills/file-a-good-report/SKILL.md",
-      "status": {
-        "200": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/.well-known/agent-skills/keep-a-return-file/SKILL.md",
       "status": {
         "200": 6
       },
@@ -5144,6 +5204,13 @@
     },
     {
       "path": "/angular/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/api/actuator/env",
       "status": {
         "404": 6
       },
@@ -5283,6 +5350,13 @@
       "total": 6
     },
     {
+      "path": "/storage/logs/laravel.log",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/store/.env",
       "status": {
         "404": 6
@@ -5291,21 +5365,6 @@
     },
     {
       "path": "/test.php",
-      "status": {
-        "404": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/utilities/garden-dates/v1",
-      "status": {
-        "200": 2,
-        "400": 4
-      },
-      "total": 6
-    },
-    {
-      "path": "/web.config",
       "status": {
         "404": 6
       },
@@ -5347,6 +5406,20 @@
       "total": 5
     },
     {
+      "path": "/.htaccess",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
+      "path": "/.well-known/mcp.json",
+      "status": {
+        "200": 5
+      },
+      "total": 5
+    },
+    {
       "path": "/_environment",
       "status": {
         "404": 5
@@ -5362,13 +5435,6 @@
     },
     {
       "path": "/admin/login/livewire/update",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/api/actuator/env",
       "status": {
         "404": 5
       },
@@ -5432,6 +5498,13 @@
     },
     {
       "path": "/codeigniter/.env",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
+      "path": "/config.yml",
       "status": {
         "404": 5
       },
@@ -5662,13 +5735,6 @@
       "total": 5
     },
     {
-      "path": "/storage/logs/laravel.log",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
       "path": "/symfony/.env",
       "status": {
         "404": 5
@@ -5704,7 +5770,7 @@
       "total": 5
     },
     {
-      "path": "/.claude/settings.local.json",
+      "path": "/.claude/settings.json",
       "status": {
         "404": 4
       },
@@ -5742,13 +5808,6 @@
       "path": "/.github/copilot-instructions.md",
       "status": {
         "404": 4
-      },
-      "total": 4
-    },
-    {
-      "path": "/.well-known/mcp.json",
-      "status": {
-        "200": 4
       },
       "total": 4
     },
@@ -5816,13 +5875,6 @@
       "total": 4
     },
     {
-      "path": "/config.yml",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
       "path": "/contact",
       "status": {
         "404": 4
@@ -5859,6 +5911,13 @@
     },
     {
       "path": "/dump.sql",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
+      "path": "/evidence.html.",
       "status": {
         "404": 4
       },
@@ -6034,6 +6093,13 @@
       "total": 4
     },
     {
+      "path": "/terraform.tfvars",
+      "status": {
+        "404": 4
+      },
+      "total": 4
+    },
+    {
       "path": "/terraform/.env",
       "status": {
         "404": 4
@@ -6076,13 +6142,6 @@
       "total": 4
     },
     {
-      "path": "/.claude/settings.json",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
       "path": "/.config/gcloud/configurations/config_default",
       "status": {
         "404": 3
@@ -6118,14 +6177,14 @@
       "total": 3
     },
     {
-      "path": "/.htaccess",
+      "path": "/.msmtprc",
       "status": {
         "404": 3
       },
       "total": 3
     },
     {
-      "path": "/.msmtprc",
+      "path": "/.ssh/id_ed25519",
       "status": {
         "404": 3
       },
@@ -6321,13 +6380,6 @@
       "total": 3
     },
     {
-      "path": "/evidence.html.",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
       "path": "/forgot-password",
       "status": {
         "404": 3
@@ -6392,6 +6444,13 @@
     },
     {
       "path": "/kubernetes/.env",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/llms.txt.",
       "status": {
         "404": 3
       },
@@ -6566,13 +6625,6 @@
       "total": 3
     },
     {
-      "path": "/terraform.tfvars",
-      "status": {
-        "404": 3
-      },
-      "total": 3
-    },
-    {
       "path": "/test/phpinfo.php",
       "status": {
         "404": 3
@@ -6595,6 +6647,13 @@
     },
     {
       "path": "/uat/phpinfo.php",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/utilities/garden-state/v1.",
       "status": {
         "404": 3
       },
@@ -6853,13 +6912,6 @@
       "total": 2
     },
     {
-      "path": "/.ssh/id_ed25519",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/.travis.yml",
       "status": {
         "404": 2
@@ -6896,6 +6948,90 @@
     },
     {
       "path": "/.zsh_history",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//assets/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//blogs/media/media/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//cache/cache/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//cgi-bin/cgi-bin/cgi-bin/cgi-bin/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/images/images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//images/images/images/images/images/images/images/images/cache.php",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "//wp-content/plugins/plugins/cache.php",
       "status": {
         "404": 2
       },
@@ -7029,6 +7165,13 @@
     },
     {
       "path": "/api/public/storeInfo",
+      "status": {
+        "404": 2
+      },
+      "total": 2
+    },
+    {
+      "path": "/api/v1/notes.",
       "status": {
         "404": 2
       },
@@ -7602,13 +7745,6 @@
       "total": 2
     },
     {
-      "path": "/llms.txt.",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/mandrill/.env",
       "status": {
         "404": 2
@@ -8036,13 +8172,6 @@
       "total": 2
     },
     {
-      "path": "/utilities/garden-state/v1.",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
       "path": "/v1/completions",
       "status": {
         "404": 2
@@ -8225,6 +8354,13 @@
       "total": 1
     },
     {
+      "path": "/.cursor/mcp.json",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/.docker/secrets.json",
       "status": {
         "404": 1
@@ -8366,6 +8502,13 @@
     },
     {
       "path": "/.ksh_history",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/.kube/config",
       "status": {
         "404": 1
       },
@@ -8526,84 +8669,35 @@
       "total": 1
     },
     {
-      "path": "//assets/images/images/cache.php",
+      "path": "//blog/",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "//blogs/media/media/cache.php",
+      "path": "//blog/robots.txt",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "//cache/cache/cache.php",
+      "path": "//wordpress/",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "//cgi-bin/cgi-bin/cgi-bin/cgi-bin/cache.php",
+      "path": "//wp/",
       "status": {
         "404": 1
       },
       "total": 1
     },
     {
-      "path": "//images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/images/images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//images/images/images/images/images/images/images/images/cache.php",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "//wp-content/plugins/plugins/cache.php",
+      "path": "/Alvin9999/https/fanfan1.net/daohang/",
       "status": {
         "404": 1
       },
@@ -8617,7 +8711,21 @@
       "total": 1
     },
     {
+      "path": "/__debug__/settings/",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/_config.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/_ignition/health-check",
       "status": {
         "404": 1
       },
@@ -8632,6 +8740,13 @@
     },
     {
       "path": "/_vti_bin/*",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/_wdt/",
       "status": {
         "404": 1
       },
@@ -8870,13 +8985,6 @@
     },
     {
       "path": "/api/v1/garden-state",
-      "status": {
-        "404": 1
-      },
-      "total": 1
-    },
-    {
-      "path": "/api/v1/notes.",
       "status": {
         "404": 1
       },
@@ -9499,6 +9607,13 @@
       "total": 1
     },
     {
+      "path": "/debug/vars",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/deployment-config.json",
       "status": {
         "404": 1
@@ -9737,6 +9852,13 @@
       "total": 1
     },
     {
+      "path": "/horizon/api/stats",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/host.json",
       "status": {
         "404": 1
@@ -9968,6 +10090,13 @@
       "total": 1
     },
     {
+      "path": "/manage/env",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/marketing/.env",
       "status": {
         "404": 1
@@ -10067,6 +10196,13 @@
     },
     {
       "path": "/parameters.yml",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/phpMyAdmin/config.inc.php",
       "status": {
         "404": 1
       },
@@ -10242,6 +10378,13 @@
     },
     {
       "path": "/root/.gitconfig",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/roundcube/config/config.inc.php",
       "status": {
         "404": 1
       },
@@ -10535,6 +10678,20 @@
       "total": 1
     },
     {
+      "path": "/telescope/api/requests",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/telescope/queries",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/terraform.tfstate",
       "status": {
         "404": 1
@@ -10605,6 +10762,13 @@
       "total": 1
     },
     {
+      "path": "/v1/kv/",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/v1/models",
       "status": {
         "404": 1
@@ -10627,6 +10791,13 @@
     },
     {
       "path": "/v2/*",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
+      "path": "/v3/api-docs",
       "status": {
         "404": 1
       },
@@ -10971,10 +11142,10 @@
   ],
   "probe_path_traffic_by_stored_class": {
     "automation": 16,
-    "browser": 1512,
-    "unknown": 1977
+    "browser": 1517,
+    "unknown": 2078
   },
-  "records_with_no_user_agent": 7243,
+  "records_with_no_user_agent": 7562,
   "referrers_by_hostname": {
     "188.114.97.0": 1,
     "bayareaswarmwarning.com": 15,
@@ -10983,18 +11154,18 @@
     "m.facebook.com": 1,
     "surya888.co": 6,
     "susieajett.pages.dev": 6,
-    "swarmgarden.com": 816,
+    "swarmgarden.com": 833,
     "trendcueai.com": 1,
     "www.baidu.com": 1,
     "www.bayareaswarmwarning.com": 7,
     "www.bing.com": 1,
     "www.facebook.com": 1,
-    "www.google.com": 47,
+    "www.google.com": 59,
     "www.sman1sphilir.sch.id": 4,
-    "www.swarmgarden.com": 325
+    "www.swarmgarden.com": 335
   },
   "regions": {
-    "": 2543,
+    "": 2608,
     "Abu Dhabi": 4,
     "Alabama": 4,
     "Andalusia": 1,
@@ -11006,44 +11177,45 @@
     "Auvergne-Rh\u00f4ne-Alpes": 7,
     "Baden-Wurttemberg": 2,
     "Baki": 1,
-    "Bangkok": 58,
+    "Bangkok": 60,
     "Banten": 1,
     "Basel-City": 3,
     "Bavaria": 97,
-    "Beijing": 26,
+    "Beijing": 27,
     "Bogota D.C.": 2,
-    "British Columbia": 20,
+    "British Columbia": 21,
     "Brittany": 11,
-    "Brussels Capital": 1057,
-    "Bucharest": 122,
+    "Brussels Capital": 1149,
+    "Bucharest": 129,
     "Buenos Aires": 1,
-    "California": 2599,
+    "California": 2711,
     "Capital Region": 4,
     "Casablanca-Settat": 1,
     "Central Java": 4,
     "Centre-Val de Loire": 1,
     "Ceuta": 1,
-    "Colorado": 792,
+    "Chongqing": 2,
+    "Colorado": 828,
     "Corrientes": 12,
     "Delhi": 76,
     "Demerara-Mahaica": 1,
     "Dhaka Division": 12,
-    "District of Columbia": 454,
+    "District of Columbia": 456,
     "Drenthe": 1,
     "Dubai": 9,
     "East Java": 2,
-    "England": 851,
+    "England": 887,
     "Esp\u00edrito Santo": 1,
     "Federal District": 3,
-    "Florida": 747,
+    "Florida": 789,
     "Fukuoka": 1,
     "Galicia": 1,
     "Gauteng": 8,
-    "Georgia": 864,
+    "Georgia": 905,
     "Grand Est": 49,
     "Groningen": 13,
-    "Guangdong": 41,
-    "Guangxi": 6,
+    "Guangdong": 43,
+    "Guangxi": 9,
     "Gyeonggi-do": 8,
     "G\u00e4vleborg": 1,
     "Halland": 4,
@@ -11051,26 +11223,28 @@
     "Haryana": 12,
     "Hauts-de-France": 77,
     "Hebei": 1,
-    "Henan": 4,
-    "Hesse": 1076,
+    "Henan": 6,
+    "Hesse": 1125,
     "Ho Chi Minh City (HCMC)": 2,
     "Hunan": 2,
     "Idaho": 12,
-    "Illinois": 886,
+    "Illinois": 922,
     "Indiana": 2,
-    "Iowa": 434,
-    "Istanbul": 10,
+    "Iowa": 446,
+    "Istanbul": 11,
     "Jakarta": 97,
     "Jalisco": 2,
-    "Jiangsu": 27,
+    "Jiangsu": 28,
+    "Jiangxi": 1,
     "Johor": 1,
     "Kansas": 1,
     "Karnataka": 23,
     "Khulna Division": 4,
     "Khyber Pakhtunkhwa": 1,
-    "Kyiv City": 29,
+    "Kyiv City": 30,
     "Kymenlaakso": 8,
     "Leinster": 38,
+    "Liaoning": 2,
     "Limburg": 6,
     "Lombardy": 2,
     "Louisiana": 1,
@@ -11078,32 +11252,32 @@
     "Madrid": 2,
     "Maharashtra": 57,
     "Marrakesh-Safi": 2,
-    "Maryland": 59,
+    "Maryland": 61,
     "Massachusetts": 72,
     "Mato Grosso do Sul": 1,
-    "Mazovia": 350,
+    "Mazovia": 351,
     "Mexico City": 1,
     "Michigan": 2,
     "Minas Gerais": 2,
     "Missouri": 12,
-    "Moscow": 1149,
+    "Moscow": 1158,
     "Murcia": 1,
     "M\u00e9xico": 4,
     "Nacional": 1,
-    "Nebraska": 141,
+    "Nebraska": 143,
     "Nevada": 2,
     "New Aquitaine": 32,
     "New Brunswick": 1,
     "New Hampshire": 1,
-    "New Jersey": 51,
+    "New Jersey": 52,
     "New Mexico": 1,
     "New Providence": 1,
     "New South Wales": 80,
-    "New York": 1029,
+    "New York": 1067,
     "Nizhny Novgorod Oblast": 2,
     "North Brabant": 1,
-    "North Carolina": 283,
-    "North Holland": 1405,
+    "North Carolina": 286,
+    "North Holland": 1451,
     "North Rhine-Westphalia": 68,
     "Novosibirsk Oblast": 1,
     "Nuevo Le\u00f3n": 2,
@@ -11123,40 +11297,41 @@
     "Riga": 1,
     "Riyadh Region": 1,
     "Santiago Metropolitan": 3,
-    "Saxony": 132,
+    "Saxony": 134,
     "Scotland": 1,
-    "Seoul": 141,
-    "Shanghai": 102,
+    "Seoul": 146,
+    "Shaanxi": 6,
+    "Shanghai": 104,
     "Shanxi": 1,
     "Siauliai": 1,
-    "Sichuan": 20,
+    "Sichuan": 21,
     "Sindh": 2,
     "South Carolina": 40,
-    "South Holland": 87,
+    "South Holland": 88,
     "South Karelia": 50,
     "St.-Petersburg": 2,
     "State of Berlin": 1,
     "Stockholm": 61,
-    "S\u00e3o Paulo": 158,
+    "S\u00e3o Paulo": 160,
     "Taiwan": 14,
     "Tel Aviv": 49,
-    "Tennessee": 34,
-    "Texas": 947,
+    "Tennessee": 35,
+    "Texas": 989,
     "Thai Nguyen": 2,
     "Th\u1eeba Thi\u00ean Hu\u1ebf Province": 1,
-    "Tianjin": 9,
+    "Tianjin": 10,
     "Ticino": 59,
-    "Timi\u0219 County": 98,
-    "Tokyo": 183,
+    "Timi\u0219 County": 111,
+    "Tokyo": 185,
     "T\u00e1chira": 1,
     "Uppsala": 1,
     "Urban Municipality of Maribor": 3,
     "Utah": 21,
     "Uusimaa": 27,
     "Vienna": 2,
-    "Virginia": 1446,
+    "Virginia": 1493,
     "V\u00e4stra G\u00f6taland": 1,
-    "Washington": 911,
+    "Washington": 948,
     "Western Cape": 1,
     "Wisconsin": 1,
     "Wyoming": 2,
@@ -11164,19 +11339,19 @@
     "Zhejiang": 1,
     "Zhytomyr Oblast": 1,
     "Zurich": 14,
-    "\u00cele-de-France": 34,
+    "\u00cele-de-France": 36,
     "\u015eanl\u0131urfa": 1
   },
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
-  "snapshot_at_pt": "2026-11-04T00:52:58.201400-08:00",
-  "snapshot_at_utc": "2026-11-04T08:52:58Z",
+  "snapshot_at_pt": "2026-11-04T18:53:01.430922-08:00",
+  "snapshot_at_utc": "2026-11-05T02:53:01Z",
   "status": {
-    "200": 16479,
+    "200": 17119,
     "301": 17,
-    "307": 833,
-    "400": 17,
-    "404": 5984,
+    "307": 838,
+    "400": 19,
+    "404": 6153,
     "405": 6,
     "503": 5
   },
@@ -11190,7 +11365,7 @@
     "source": "public counts payload (D1 exact counts)"
   },
   "web_bot_auth_verdicts": {
-    "absent": 23267,
+    "absent": 24083,
     "present": 74
   }
 }
