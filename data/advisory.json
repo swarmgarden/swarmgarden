@@ -14,39 +14,39 @@
       {
         "label": "agent-claimed",
         "note": "a claim \u2014 the request's user-agent announced it; not a verification",
-        "value": 2893
+        "value": 2898
       },
       {
         "label": "browser",
         "note": "",
-        "value": 8373
+        "value": 8997
       },
       {
         "label": "automation",
         "note": "",
-        "value": 9204
+        "value": 9215
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 8287
+        "value": 8378
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 15944
+        "value": 16548
       },
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 11822
+        "value": 11947
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 968
+        "value": 970
       },
       {
         "label": "Responses with status 402",
@@ -64,32 +64,32 @@
         "value": 1
       }
     ],
-    "fetches_including_record_reads": 28008,
+    "fetches_including_record_reads": 28738,
     "record_reads": {
-      "counts_read": 214,
+      "counts_read": 215,
       "ledger_read": 6,
-      "total": 220
+      "total": 221
     },
     "rows": [
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Since Oct 21, 2026 the record's own gauge-reads are excluded (see the record reads row). Requests, not readers.",
-        "value": 27788
+        "value": 28517
       },
       {
         "label": "Record reads",
-        "note": "The record measuring itself: counts-read 214 (reads of the public counts payload) + ledger-read 6 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
-        "value": 220
+        "note": "The record measuring itself: counts-read 215 (reads of the public counts payload) + ledger-read 6 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
+        "value": 221
       },
       {
         "label": "Redirect responses",
         "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
-        "value": 969
+        "value": 971
       },
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 28977
+        "value": 29709
       },
       {
         "label": "Verified agent arrivals on record",
@@ -114,8 +114,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 6, 2026, 6:53:04 PM PT",
-  "generated_at_utc": "2026-11-07T02:53:04Z",
+  "generated_at_pt": "Nov 7, 2026, 12:52:59 AM PT",
+  "generated_at_utc": "2026-11-07T08:52:59Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "networks": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 grouped by the network fields written on each record, from this run's dataset pull: the same basis as the countries part.",
@@ -127,61 +127,61 @@
         "asn": "15169",
         "network": "Google LLC",
         "organization": "Google LLC",
-        "requests": 10105
+        "requests": 10109
       },
       {
         "asn": "32934",
         "network": "Meta Platforms Ireland Limited",
         "organization": "Meta Platforms Ireland Limited",
-        "requests": 4989
-      },
-      {
-        "asn": "13335",
-        "network": "Cloudflare, Inc.",
-        "organization": "Cloudflare, Inc.",
-        "requests": 1938
+        "requests": 5063
       },
       {
         "asn": "396982",
         "network": "Google LLC",
         "organization": "Google LLC",
-        "requests": 1451
+        "requests": 2043
+      },
+      {
+        "asn": "13335",
+        "network": "Cloudflare, Inc.",
+        "organization": "Cloudflare, Inc.",
+        "requests": 1942
       },
       {
         "asn": "14061",
         "network": "DigitalOcean, LLC",
         "organization": "DigitalOcean, LLC",
-        "requests": 1356
+        "requests": 1377
       },
       {
         "asn": "48090",
         "network": "TECHOFF SRV LIMITED",
         "organization": "TECHOFF SRV LIMITED",
-        "requests": 1316
+        "requests": 1318
       },
       {
         "asn": "218785",
         "network": "TC DATACENTER LIMITED MANAGED IP SPACE",
         "organization": "TC DATACENTER LIMITED MANAGED IP SPACE",
-        "requests": 960
+        "requests": 962
       },
       {
         "asn": "132203",
         "network": "6 COLLYER QUAY",
         "organization": "6 COLLYER QUAY",
-        "requests": 512
+        "requests": 513
       },
       {
         "asn": "14956",
         "network": "RouterHosting LLC",
         "organization": "RouterHosting LLC",
-        "requests": 280
+        "requests": 281
       },
       {
         "asn": "8075",
         "network": "Microsoft Corporation",
         "organization": "Microsoft Corporation",
-        "requests": 250
+        "requests": 254
       },
       {
         "asn": "19318",
@@ -193,7 +193,7 @@
         "asn": "8075",
         "network": "Microsoft Limited",
         "organization": "Microsoft Limited",
-        "requests": 220
+        "requests": 224
       },
       {
         "asn": "14593",
@@ -208,16 +208,16 @@
         "requests": 198
       },
       {
+        "asn": "132203",
+        "network": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
+        "organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
+        "requests": 190
+      },
+      {
         "asn": "210558",
         "network": "1337 Services GmbH",
         "organization": "1337 Services GmbH",
         "requests": 189
-      },
-      {
-        "asn": "132203",
-        "network": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
-        "organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
-        "requests": 185
       },
       {
         "asn": "47890",
@@ -235,7 +235,7 @@
         "asn": "132203",
         "network": "16 COLLYER QUAY",
         "organization": "16 COLLYER QUAY",
-        "requests": 124
+        "requests": 126
       },
       {
         "asn": "24940",
@@ -271,25 +271,25 @@
         "asn": "14618",
         "network": "Amazon Data Services Northern Virginia",
         "organization": "Amazon Data Services Northern Virginia",
-        "requests": 74
+        "requests": 75
       },
       {
         "asn": "45102",
         "network": "Alibaba Cloud - US",
         "organization": "Alibaba Cloud - US",
-        "requests": 72
+        "requests": 73
+      },
+      {
+        "asn": "14618",
+        "network": "Amazon Technologies Inc.",
+        "organization": "Amazon Technologies Inc.",
+        "requests": 69
       },
       {
         "asn": "209366",
         "network": "SEMrush CY LTD",
         "organization": "SEMrush CY LTD",
         "requests": 68
-      },
-      {
-        "asn": "14618",
-        "network": "Amazon Technologies Inc.",
-        "organization": "Amazon Technologies Inc.",
-        "requests": 67
       },
       {
         "asn": "132203",
@@ -370,6 +370,12 @@
         "requests": 39
       },
       {
+        "asn": "45102",
+        "network": "Alibaba Cloud (Singapore) Private Limited",
+        "organization": "Alibaba Cloud (Singapore) Private Limited",
+        "requests": 38
+      },
+      {
         "asn": "16276",
         "network": "OVH Hosting, Inc.",
         "organization": "OVH Hosting, Inc.",
@@ -380,12 +386,6 @@
         "network": "UCLOUD",
         "organization": "UCLOUD",
         "requests": 37
-      },
-      {
-        "asn": "45102",
-        "network": "Alibaba Cloud (Singapore) Private Limited",
-        "organization": "Alibaba Cloud (Singapore) Private Limited",
-        "requests": 36
       },
       {
         "asn": "11878",
@@ -466,22 +466,22 @@
         "requests": 29
       },
       {
+        "asn": "45090",
+        "network": "Tencent Cloud Computing (Beijing) Co., Ltd",
+        "organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
+        "requests": 29
+      },
+      {
         "asn": "6167",
         "network": "Verizon Business",
         "organization": "Verizon Business",
         "requests": 29
       },
       {
-        "asn": "45090",
-        "network": "Tencent Cloud Computing (Beijing) Co., Ltd",
-        "organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
-        "requests": 28
-      },
-      {
         "asn": "8075",
         "network": "Microsoft Deutschland MCIO GmbH",
         "organization": "Microsoft Deutschland MCIO GmbH",
-        "requests": 27
+        "requests": 28
       },
       {
         "asn": "16509",
@@ -532,16 +532,16 @@
         "requests": 21
       },
       {
+        "asn": "132203",
+        "network": "ACEVILLE PTE.LTD.",
+        "organization": "ACEVILLE PTE.LTD.",
+        "requests": 20
+      },
+      {
         "asn": "207957",
         "network": "SERV.HOST GROUP LTD",
         "organization": "SERV.HOST GROUP LTD",
         "requests": 20
-      },
-      {
-        "asn": "132203",
-        "network": "ACEVILLE PTE.LTD.",
-        "organization": "ACEVILLE PTE.LTD.",
-        "requests": 19
       },
       {
         "asn": "3356",
@@ -560,6 +560,12 @@
         "network": "Orange Romania",
         "organization": "Orange Romania",
         "requests": 17
+      },
+      {
+        "asn": "12816",
+        "network": "Technische Universitaet Muenchen",
+        "organization": "Technische Universitaet Muenchen",
+        "requests": 16
       },
       {
         "asn": "54004",
@@ -589,12 +595,6 @@
         "asn": "58466",
         "network": "Shanghai UCloud Information Technology Company Limited",
         "organization": "Shanghai UCloud Information Technology Company Limited",
-        "requests": 15
-      },
-      {
-        "asn": "12816",
-        "network": "Technische Universitaet Muenchen",
-        "organization": "Technische Universitaet Muenchen",
         "requests": 15
       },
       {
@@ -934,6 +934,12 @@
         "requests": 5
       },
       {
+        "asn": "47890",
+        "network": "UNMANAGED LTD",
+        "organization": "UNMANAGED LTD",
+        "requests": 5
+      },
+      {
         "asn": "11840",
         "network": "VeriSign Infrastructure & Operations",
         "organization": "VeriSign Infrastructure & Operations",
@@ -958,34 +964,34 @@
       "rule": "Networks with fewer than 5 requests in the window are folded into a single remainder. The number of networks folded and their combined requests are printed here; no folded network is named.",
       "threshold": 5
     },
-    "window_total": 28978
+    "window_total": 29709
   },
   "pull_status": "ok",
   "referrers": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 counted by the site's own keyed stats at this run's pull. The countries file reads the same window and record set from the dataset grouping in the same run, so the two totals can differ by the requests that land between the pulls.",
     "era_note": "Publication of these aggregates begins Oct 19, 2026. Recorded referers run from the counting window's first day, Oct 17, 2026.",
-    "no_referer_recorded": 26236,
+    "no_referer_recorded": 26955,
     "note": "The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host \u2014 so platform figures are a LOWER BOUND. 'No referer recorded' is the honest name for the empty bucket (never 'direct'): the window total minus the grouped hosts, also absorbing the rare unparseable referer. Federated hosts \u2014 Mastodon instances and the like \u2014 are deliberately not grouped into a platform: each prints as its own host. Grouping is a reading aid, never a replacement for the record: the raw host is printed beside every grouped name. Only hosts publish \u2014 never a full referer value, path, or query.",
     "rows": [
       {
         "hosts": [
           {
             "host": "bayareaswarmwarning.com",
-            "requests": 2226
+            "requests": 2232
           }
         ],
         "name": "bayareaswarmwarning.com",
-        "requests": 2226
+        "requests": 2232
       },
       {
         "hosts": [
           {
             "host": "www.bayareaswarmwarning.com",
-            "requests": 358
+            "requests": 365
           }
         ],
         "name": "www.bayareaswarmwarning.com",
-        "requests": 358
+        "requests": 365
       },
       {
         "hosts": [
@@ -1054,7 +1060,7 @@
       "rule": "Referrer groups with fewer than 5 requests in the window are folded into a single remainder. The numbers of groups and hosts folded and their combined requests are printed here; no folded group or host is named. The account's workers.dev staging hostname also drops into this remainder, unnamed, whenever it appears \u2014 it never publishes.",
       "threshold": 5
     },
-    "window_total": 28977
+    "window_total": 29709
   },
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",

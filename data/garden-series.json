@@ -281,18 +281,32 @@
       "unknown": 347
     },
     {
-      "agent-claimed": 9,
-      "automation": 39,
-      "browser": 132,
+      "agent-claimed": 13,
+      "automation": 49,
+      "browser": 383,
       "day": "2026-11-06",
       "record_reads": {
-        "counts_read": 346,
-        "ledger_read": 10,
-        "total": 356
+        "counts_read": 452,
+        "ledger_read": 11,
+        "total": 463
       },
-      "total": 446,
-      "total_including_record_reads": 802,
-      "unknown": 266
+      "total": 782,
+      "total_including_record_reads": 1245,
+      "unknown": 337
+    },
+    {
+      "agent-claimed": 0,
+      "automation": 1,
+      "browser": 100,
+      "day": "2026-11-07",
+      "record_reads": {
+        "counts_read": 24,
+        "ledger_read": 1,
+        "total": 25
+      },
+      "total": 111,
+      "total_including_record_reads": 136,
+      "unknown": 10
     }
   ],
   "class_note": "Requests by claimed class, per Pacific day, over the counting window. The first day is partial \u2014 counting opened partway through Oct 17, 2026, Pacific time. A class is what the request's user-agent claimed; classes are claims, not verifications. Since Oct 21, 2026 the daily figures exclude the record's own gauge-reads (see record_reads_note); each day's total_including_record_reads is the pre-change figure.",
@@ -406,14 +420,19 @@
         },
         {
           "day": "2026-11-06",
-          "digest_requests": 802,
-          "distinct_visitors": 369
+          "digest_requests": 1245,
+          "distinct_visitors": 467
+        },
+        {
+          "day": "2026-11-07",
+          "digest_requests": 136,
+          "distinct_visitors": 20
         }
       ],
-      "digest_requests": 6892,
-      "distinct_visitors": 1672,
+      "digest_requests": 7471,
+      "distinct_visitors": 1736,
       "epoch": "2026-11",
-      "returning_visitors": 553
+      "returning_visitors": 585
     }
   ],
   "event_days": [
@@ -700,15 +719,25 @@
       "day": "2026-11-06",
       "events": {
         "briefs-read": 1,
-        "changed-read": 1,
+        "changed-read": 2,
         "changed-read-atom": 1,
-        "counts-read": 346,
-        "guestbook-view": 4,
-        "ledger-read": 10,
-        "pageview": 438,
+        "counts-read": 452,
+        "guestbook-view": 12,
+        "ledger-read": 11,
+        "notes-read": 5,
+        "pageview": 760,
         "signal-challenge-read": 1
       },
-      "total": 802
+      "total": 1245
+    },
+    {
+      "day": "2026-11-07",
+      "events": {
+        "counts-read": 24,
+        "ledger-read": 1,
+        "pageview": 111
+      },
+      "total": 136
     }
   ],
   "event_note": "Named events per Pacific day. pageview is a plain page read; the other names are the record's return markers \u2014 changed-read (a /changed check-back; since Oct 19, 2026 the format-specific names changed-read-json and changed-read-atom are recorded when the response's format is known), utility-read (a published utility used), receipt-check (a receipt looked up), notes-read and guestbook-view (the visitors' book read as counts and page), data-read (a /data file read), counts-read (the public counts payload read), ledger-read (the public ledger file read). An event is a request to a path, nothing more.",
@@ -958,180 +987,21 @@
       "day": "2026-11-06",
       "files": {
         "/.well-known/agent-card.json": 1,
-        "/robots.txt": 21,
+        "/robots.txt": 25,
         "/sitemap.xml": 2
       },
-      "total": 24
+      "total": 28
     }
   ],
   "file_note": "Fetches of the canonical agent-interest files per Pacific day \u2014 the discovery set (robots.txt, llms.txt, sitemap, security.txt, the agent card, the agent skills) and the instruction-file probes (AGENTS.md, CLAUDE.md, README.md). A fetch is a request, not evidence of agent interest: measured experience is that these hits are likelier scanners and audit tools. The series exists so a second crawler pass is visible as a pass.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 6, 2026, 6:53:04 PM PT",
-  "generated_at_utc": "2026-11-07T02:53:04Z",
+  "generated_at_pt": "Nov 7, 2026, 12:52:59 AM PT",
+  "generated_at_utc": "2026-11-07T08:52:59Z",
   "record_reads_note": "Record reads: the record measuring itself \u2014 reads of the public counts payload (counts-read) and the public ledger file (ledger-read), by the stewards' snapshot and dashboard and by any outside reader. They are part of the site's functioning, so since Oct 21, 2026 they are excluded from the by-class totals above and published here as each day's fold. The fold is zero before Oct 19, 2026: the gauges entered the record that day (before it, reads of them were not recorded at all).",
   "site": "garden",
-  "unavailable_notes": [],
-  "visitor_days": [
-    {
-      "day": "2026-10-18",
-      "digest_bearing_requests": 653,
-      "digest_requests": 653,
-      "distinct_visitors": 295,
-      "repeat_requests": 406,
-      "requests_total": 1173
-    },
-    {
-      "day": "2026-10-19",
-      "digest_bearing_requests": 1948,
-      "digest_requests": 1948,
-      "distinct_visitors": 453,
-      "repeat_requests": 1608,
-      "requests_total": 1494
-    },
-    {
-      "day": "2026-10-20",
-      "digest_bearing_requests": 1141,
-      "digest_requests": 1141,
-      "distinct_visitors": 311,
-      "repeat_requests": 903,
-      "requests_total": 658
-    },
-    {
-      "day": "2026-10-21",
-      "digest_bearing_requests": 915,
-      "digest_requests": 915,
-      "distinct_visitors": 234,
-      "repeat_requests": 738,
-      "requests_total": 577
-    },
-    {
-      "day": "2026-10-22",
-      "digest_bearing_requests": 1349,
-      "digest_requests": 1349,
-      "distinct_visitors": 410,
-      "repeat_requests": 1009,
-      "requests_total": 927
-    },
-    {
-      "day": "2026-10-23",
-      "digest_bearing_requests": 1350,
-      "digest_requests": 1350,
-      "distinct_visitors": 514,
-      "repeat_requests": 920,
-      "requests_total": 810
-    },
-    {
-      "day": "2026-10-24",
-      "digest_bearing_requests": 1362,
-      "digest_requests": 1362,
-      "distinct_visitors": 470,
-      "repeat_requests": 977,
-      "requests_total": 824
-    },
-    {
-      "day": "2026-10-25",
-      "digest_bearing_requests": 1215,
-      "digest_requests": 1215,
-      "distinct_visitors": 445,
-      "repeat_requests": 853,
-      "requests_total": 697
-    },
-    {
-      "day": "2026-10-26",
-      "digest_bearing_requests": 1170,
-      "digest_requests": 1170,
-      "distinct_visitors": 443,
-      "repeat_requests": 815,
-      "requests_total": 721
-    },
-    {
-      "day": "2026-10-27",
-      "digest_bearing_requests": 1283,
-      "digest_requests": 1283,
-      "distinct_visitors": 423,
-      "repeat_requests": 930,
-      "requests_total": 796
-    },
-    {
-      "day": "2026-10-28",
-      "digest_bearing_requests": 1151,
-      "digest_requests": 1151,
-      "distinct_visitors": 406,
-      "repeat_requests": 814,
-      "requests_total": 641
-    },
-    {
-      "day": "2026-10-29",
-      "digest_bearing_requests": 1093,
-      "digest_requests": 1093,
-      "distinct_visitors": 402,
-      "repeat_requests": 758,
-      "requests_total": 636
-    },
-    {
-      "day": "2026-10-30",
-      "digest_bearing_requests": 1479,
-      "digest_requests": 1479,
-      "distinct_visitors": 422,
-      "repeat_requests": 1136,
-      "requests_total": 866
-    },
-    {
-      "day": "2026-10-31",
-      "digest_bearing_requests": 1478,
-      "digest_requests": 1478,
-      "distinct_visitors": 459,
-      "repeat_requests": 1113,
-      "requests_total": 900
-    },
-    {
-      "day": "2026-11-01",
-      "digest_bearing_requests": 1470,
-      "digest_requests": 1470,
-      "distinct_visitors": 419,
-      "repeat_requests": 1143,
-      "requests_total": 1013
-    },
-    {
-      "day": "2026-11-02",
-      "digest_bearing_requests": 1240,
-      "digest_requests": 1240,
-      "distinct_visitors": 390,
-      "repeat_requests": 913,
-      "requests_total": 815
-    },
-    {
-      "day": "2026-11-03",
-      "digest_bearing_requests": 1279,
-      "digest_requests": 1279,
-      "distinct_visitors": 443,
-      "repeat_requests": 913,
-      "requests_total": 783
-    },
-    {
-      "day": "2026-11-04",
-      "digest_bearing_requests": 1044,
-      "digest_requests": 1044,
-      "distinct_visitors": 389,
-      "repeat_requests": 718,
-      "requests_total": 604
-    },
-    {
-      "day": "2026-11-05",
-      "digest_bearing_requests": 1057,
-      "digest_requests": 1057,
-      "distinct_visitors": 463,
-      "repeat_requests": 654,
-      "requests_total": 610
-    },
-    {
-      "day": "2026-11-06",
-      "digest_bearing_requests": 802,
-      "digest_requests": 802,
-      "distinct_visitors": 369,
-      "repeat_requests": 482,
-      "requests_total": 446
-    }
+  "unavailable_notes": [
+    "The distinct-visitor daily series pull failed this hour (distinct-visitor series: grouped result reached the 10000-row cap \u2014 series would silently truncate); that half of the series was not refreshed."
   ],
+  "visitor_days": null,
   "visitor_note": "Distinct visitors per Pacific day, counted by visitor digest. The digest exists only on records written since Oct 18, 2026, so the series begins then and its first day is partial; earlier days are absent, never zero. The digest is a one-way HMAC over (Pacific date, network address, user-agent) under a per-site secret (Pacific-date keying since Oct 19, 2026; the first day's records were keyed on the UTC date, so Oct 18's figure straddles two keyings): it links a visitor's requests within a Pacific day and nothing across days, so each day's figure is that day's distinct count only \u2014 the days cannot be added into a total of distinct visitors. Digest values are never published. digest_bearing_requests is the day's requests that carried a digest at all; measured against requests_total (the day's requests from the same run's by-class series) it is the coverage of the distinct-visitor count \u2014 'distinct visitors' never silently reads as all traffic. Shared network egress understates the count; rotating egress overstates it."
 }
