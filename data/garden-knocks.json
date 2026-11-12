@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 145
+    "unrouted": 155
   },
   "by_channel_code": {
     "human-press": {
@@ -24,19 +24,24 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 145
+      "no-code (non-JSON refusal)": 155
     }
   },
   "by_cls": {
-    "automation": 16,
-    "browser": 109,
+    "agent-claimed": 4,
+    "automation": 19,
+    "browser": 112,
     "unknown": 25
   },
   "by_cname": {
-    "": 150
+    "": 155,
+    "ChatGPT-User": 1,
+    "Meta Web Indexer": 1,
+    "Meta-ExternalFetcher": 1,
+    "OAI-SearchBot": 2
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 145,
+    "no-code (non-JSON refusal)": 155,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -61,7 +66,8 @@
     "2026-11-06": 1,
     "2026-11-07": 13,
     "2026-11-08": 2,
-    "2026-11-10": 1
+    "2026-11-10": 1,
+    "2026-11-12": 10
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -83,17 +89,18 @@
     "2026-11-06": 4,
     "2026-11-07": 10,
     "2026-11-08": 1,
-    "2026-11-10": 1
+    "2026-11-10": 1,
+    "2026-11-12": 10
   },
   "by_length": {
     "0": 2,
-    "1-100": 117,
+    "1-100": 120,
     "1001-10000": 4,
-    "101-1000": 14,
+    "101-1000": 21,
     "not recorded": 13
   },
   "by_origin": {
-    "external": 144,
+    "external": 154,
     "steward-test": 6
   },
   "by_route": {
@@ -104,15 +111,15 @@
     "/_next/rsc": 1,
     "/api": 6,
     "/api/gql": 4,
-    "/api/graphql": 4,
+    "/api/graphql": 5,
     "/api/rsc": 1,
     "/api/v1/human-press": 1,
-    "/api/v1/notes": 1,
     "/blog/wp-json/batch/v1": 2,
+    "/cgi-bin/php": 2,
     "/cms/wp-json/batch/v1": 2,
-    "/graphql": 4,
+    "/graphql": 5,
     "/graphql/api": 4,
-    "/index.php": 8,
+    "/index.php": 10,
     "/main/wp-json/batch/v1": 2,
     "/new/wp-json/batch/v1": 2,
     "/site/wp-json/batch/v1": 2,
@@ -123,21 +130,21 @@
     "/wp/wp-json/batch/v1": 2,
     "/xmlrpc.php": 3
   },
-  "by_route_folded": 8,
+  "by_route_folded": 13,
   "by_status": {
     "400": 3,
-    "404": 73,
+    "404": 83,
     "405": 73,
     "503": 1
   },
-  "distinct_routes": 33,
+  "distinct_routes": 38,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Nov 12, 2026, 6:53:05 AM PT",
-  "generated_at_utc": "2026-11-12T14:53:05Z",
+  "generated_at_pt": "Nov 12, 2026, 12:53:01 PM PT",
+  "generated_at_utc": "2026-11-12T20:53:01Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-11-12T14:53:12.370Z",
+    "as_of": "2026-11-12T20:53:08.643Z",
     "human_presses": 16,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -148,7 +155,7 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 150,
+  "total": 160,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -309,7 +316,37 @@
     {
       "cls": "browser",
       "count": 1,
+      "route": "/api/graphql",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
       "route": "/api/rsc",
+      "status": 404
+    },
+    {
+      "cls": "agent-claimed",
+      "count": 1,
+      "route": "/cgi-bin/php",
+      "status": 404
+    },
+    {
+      "cls": "automation",
+      "count": 1,
+      "route": "/cgi-bin/php",
+      "status": 404
+    },
+    {
+      "cls": "agent-claimed",
+      "count": 1,
+      "route": "/cgi-bin/php-cgi",
+      "status": 404
+    },
+    {
+      "cls": "agent-claimed",
+      "count": 1,
+      "route": "/cgi-bin/php-cgi.exe",
       "status": 404
     },
     {
@@ -321,13 +358,43 @@
     {
       "cls": "browser",
       "count": 1,
+      "route": "/graphql",
+      "status": 404
+    },
+    {
+      "cls": "agent-claimed",
+      "count": 1,
+      "route": "/index.php",
+      "status": 404
+    },
+    {
+      "cls": "automation",
+      "count": 1,
+      "route": "/index.php",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
       "route": "/index.php/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "automation",
+      "count": 1,
+      "route": "/php-cgi/php-cgi.exe",
       "status": 404
     },
     {
       "cls": "browser",
       "count": 1,
       "route": "/rsc",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/v1/graphql",
       "status": 404
     },
     {

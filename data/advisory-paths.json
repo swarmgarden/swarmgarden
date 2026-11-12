@@ -1,51 +1,51 @@
 {
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 12, 2026, 6:53:05 AM PT",
-  "generated_at_utc": "2026-11-12T14:53:05Z",
+  "generated_at_pt": "Nov 12, 2026, 12:53:01 PM PT",
+  "generated_at_utc": "2026-11-12T20:53:01Z",
   "rows": [
     {
-      "2xx": 9674,
+      "2xx": 9760,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 38,
-        "automation": 405,
-        "browser": 2427,
-        "unknown": 6804
+        "automation": 406,
+        "browser": 2438,
+        "unknown": 6878
       },
       "none_recorded": 0,
       "path": "/",
-      "visits": 9674
+      "visits": 9760
     },
     {
-      "2xx": 1597,
+      "2xx": 1601,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 145,
-        "automation": 1282,
-        "browser": 78,
+        "automation": 1285,
+        "browser": 79,
         "unknown": 92
       },
       "none_recorded": 0,
       "path": "/robots.txt",
-      "visits": 1597
+      "visits": 1601
     },
     {
       "2xx": 0,
       "3xx": 0,
-      "4xx": 1255,
+      "4xx": 1257,
       "5xx": 0,
       "by_class": {
         "automation": 8,
         "browser": 9,
-        "unknown": 1238
+        "unknown": 1240
       },
       "none_recorded": 0,
       "path": "/wp-admin/install.php",
-      "visits": 1255
+      "visits": 1257
     },
     {
       "2xx": 445,
@@ -93,7 +93,7 @@
       "visits": 270
     },
     {
-      "2xx": 237,
+      "2xx": 238,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
@@ -101,11 +101,11 @@
         "agent-claimed": 6,
         "automation": 57,
         "browser": 9,
-        "unknown": 165
+        "unknown": 166
       },
       "none_recorded": 0,
       "path": "/.netlify/functions/counts",
-      "visits": 237
+      "visits": 238
     },
     {
       "2xx": 2,
@@ -213,19 +213,34 @@
       "visits": 184
     },
     {
-      "2xx": 164,
+      "2xx": 165,
       "3xx": 0,
       "4xx": 0,
       "5xx": 0,
       "by_class": {
         "agent-claimed": 28,
-        "automation": 54,
+        "automation": 55,
         "browser": 63,
         "unknown": 19
       },
       "none_recorded": 0,
       "path": "/data/advisory",
-      "visits": 164
+      "visits": 165
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 140,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 5,
+        "automation": 7,
+        "browser": 82,
+        "unknown": 46
+      },
+      "none_recorded": 0,
+      "path": "/.git/config",
+      "visits": 140
     },
     {
       "2xx": 0,
@@ -240,21 +255,6 @@
       "none_recorded": 0,
       "path": "/wp-login.php",
       "visits": 140
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 139,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 5,
-        "automation": 7,
-        "browser": 81,
-        "unknown": 46
-      },
-      "none_recorded": 0,
-      "path": "/.git/config",
-      "visits": 139
     },
     {
       "2xx": 130,
@@ -426,27 +426,27 @@
       "by_class": {
         "agent-claimed": 3,
         "automation": 9,
+        "browser": 30,
+        "unknown": 10
+      },
+      "none_recorded": 0,
+      "path": "/.env.production",
+      "visits": 52
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 52,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 3,
+        "automation": 9,
         "browser": 29,
         "unknown": 11
       },
       "none_recorded": 0,
       "path": "/api/.env",
       "visits": 52
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 51,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 3,
-        "automation": 9,
-        "browser": 29,
-        "unknown": 10
-      },
-      "none_recorded": 0,
-      "path": "/.env.production",
-      "visits": 51
     },
     {
       "2xx": 0,
@@ -627,6 +627,21 @@
       "4xx": 42,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 2,
+        "automation": 9,
+        "browser": 23,
+        "unknown": 8
+      },
+      "none_recorded": 0,
+      "path": "/.env.staging",
+      "visits": 42
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 42,
+      "5xx": 0,
+      "by_class": {
         "automation": 5,
         "browser": 37
       },
@@ -661,21 +676,6 @@
       },
       "none_recorded": 0,
       "path": "/.env.local",
-      "visits": 41
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 41,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 2,
-        "automation": 9,
-        "browser": 22,
-        "unknown": 8
-      },
-      "none_recorded": 0,
-      "path": "/.env.staging",
       "visits": 41
     },
     {
@@ -906,6 +906,20 @@
       "4xx": 37,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 3,
+        "automation": 7,
+        "browser": 27
+      },
+      "none_recorded": 0,
+      "path": "/.svn/wc.db",
+      "visits": 37
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 37,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 5,
         "automation": 7,
         "browser": 15,
@@ -956,20 +970,6 @@
       "none_recorded": 0,
       "path": "/test/wp-includes/wlwmanifest.xml",
       "visits": 37
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 36,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 3,
-        "automation": 7,
-        "browser": 26
-      },
-      "none_recorded": 0,
-      "path": "/.svn/wc.db",
-      "visits": 36
     },
     {
       "2xx": 36,
@@ -1118,6 +1118,20 @@
       "4xx": 34,
       "5xx": 0,
       "by_class": {
+        "automation": 25,
+        "browser": 8,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/index.php",
+      "visits": 34
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 34,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 6,
         "browser": 14,
@@ -1174,6 +1188,36 @@
       "4xx": 33,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 1,
+        "automation": 7,
+        "browser": 19,
+        "unknown": 6
+      },
+      "none_recorded": 0,
+      "path": "/.env.save",
+      "visits": 33
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 33,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 2,
+        "automation": 8,
+        "browser": 14,
+        "unknown": 9
+      },
+      "none_recorded": 0,
+      "path": "/.env.test",
+      "visits": 33
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 33,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 4,
         "automation": 7,
         "browser": 15,
@@ -1208,20 +1252,6 @@
       },
       "none_recorded": 0,
       "path": "/console/",
-      "visits": 33
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 33,
-      "5xx": 0,
-      "by_class": {
-        "automation": 24,
-        "browser": 8,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/index.php",
       "visits": 33
     },
     {
@@ -1283,36 +1313,6 @@
       "none_recorded": 0,
       "path": "/server/.env",
       "visits": 33
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 32,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 1,
-        "automation": 7,
-        "browser": 18,
-        "unknown": 6
-      },
-      "none_recorded": 0,
-      "path": "/.env.save",
-      "visits": 32
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 32,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 2,
-        "automation": 8,
-        "browser": 13,
-        "unknown": 9
-      },
-      "none_recorded": 0,
-      "path": "/.env.test",
-      "visits": 32
     },
     {
       "2xx": 0,
@@ -1447,6 +1447,21 @@
       "4xx": 31,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 5,
+        "automation": 7,
+        "browser": 9,
+        "unknown": 10
+      },
+      "none_recorded": 0,
+      "path": "/.git-credentials",
+      "visits": 31
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 31,
+      "5xx": 0,
+      "by_class": {
         "browser": 31
       },
       "none_recorded": 0,
@@ -1478,6 +1493,20 @@
       },
       "none_recorded": 0,
       "path": "/___proxy_subdomain_whm/login",
+      "visits": 31
+    },
+    {
+      "2xx": 31,
+      "3xx": 0,
+      "4xx": 0,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 4,
+        "automation": 22,
+        "browser": 5
+      },
+      "none_recorded": 0,
+      "path": "/data/advisory-claims.json",
       "visits": 31
     },
     {
@@ -1515,21 +1544,6 @@
       "4xx": 30,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 5,
-        "automation": 7,
-        "browser": 8,
-        "unknown": 10
-      },
-      "none_recorded": 0,
-      "path": "/.git-credentials",
-      "visits": 30
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 30,
-      "5xx": 0,
-      "by_class": {
         "browser": 30
       },
       "none_recorded": 0,
@@ -1548,20 +1562,6 @@
       },
       "none_recorded": 0,
       "path": "/blog/",
-      "visits": 30
-    },
-    {
-      "2xx": 30,
-      "3xx": 0,
-      "4xx": 0,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 4,
-        "automation": 21,
-        "browser": 5
-      },
-      "none_recorded": 0,
-      "path": "/data/advisory-claims.json",
       "visits": 30
     },
     {
@@ -1756,6 +1756,21 @@
       "4xx": 28,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 4,
+        "automation": 7,
+        "browser": 5,
+        "unknown": 12
+      },
+      "none_recorded": 0,
+      "path": "/.git/logs/HEAD",
+      "visits": 28
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 28,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 8,
         "automation": 7,
         "browser": 13
@@ -1872,21 +1887,6 @@
       },
       "none_recorded": 0,
       "path": "/.env.live",
-      "visits": 27
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 27,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 4,
-        "automation": 7,
-        "browser": 4,
-        "unknown": 12
-      },
-      "none_recorded": 0,
-      "path": "/.git/logs/HEAD",
       "visits": 27
     },
     {
@@ -2764,6 +2764,21 @@
       "visits": 21
     },
     {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 21,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 1,
+        "automation": 7,
+        "browser": 8,
+        "unknown": 5
+      },
+      "none_recorded": 0,
+      "path": "/.npmrc",
+      "visits": 21
+    },
+    {
       "2xx": 21,
       "3xx": 0,
       "4xx": 0,
@@ -3013,21 +3028,6 @@
       },
       "none_recorded": 0,
       "path": "/.gitmodules",
-      "visits": 20
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 20,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 1,
-        "automation": 7,
-        "browser": 7,
-        "unknown": 5
-      },
-      "none_recorded": 0,
-      "path": "/.npmrc",
       "visits": 20
     },
     {
@@ -3836,6 +3836,20 @@
       "4xx": 18,
       "5xx": 0,
       "by_class": {
+        "agent-claimed": 3,
+        "automation": 4,
+        "browser": 11
+      },
+      "none_recorded": 0,
+      "path": "/deploy/.env",
+      "visits": 18
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 18,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 6,
         "automation": 6,
         "browser": 5,
@@ -4220,13 +4234,13 @@
       "4xx": 17,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 1,
-        "automation": 5,
-        "browser": 8,
-        "unknown": 3
+        "agent-claimed": 3,
+        "automation": 8,
+        "browser": 4,
+        "unknown": 2
       },
       "none_recorded": 0,
-      "path": "/crm/.env",
+      "path": "/config.php.bak",
       "visits": 17
     },
     {
@@ -4235,12 +4249,13 @@
       "4xx": 17,
       "5xx": 0,
       "by_class": {
-        "agent-claimed": 3,
-        "automation": 4,
-        "browser": 10
+        "agent-claimed": 1,
+        "automation": 5,
+        "browser": 8,
+        "unknown": 3
       },
       "none_recorded": 0,
-      "path": "/deploy/.env",
+      "path": "/crm/.env",
       "visits": 17
     },
     {
@@ -4798,21 +4813,6 @@
       "5xx": 0,
       "by_class": {
         "agent-claimed": 3,
-        "automation": 8,
-        "browser": 3,
-        "unknown": 2
-      },
-      "none_recorded": 0,
-      "path": "/config.php.bak",
-      "visits": 16
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 16,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 3,
         "automation": 5,
         "browser": 8
       },
@@ -5264,6 +5264,21 @@
       },
       "none_recorded": 0,
       "path": "/.gem/credentials.yaml",
+      "visits": 15
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 15,
+      "5xx": 0,
+      "by_class": {
+        "agent-claimed": 5,
+        "automation": 6,
+        "browser": 3,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/.github/workflows/ci.yml",
       "visits": 15
     },
     {
@@ -6112,21 +6127,6 @@
       },
       "none_recorded": 0,
       "path": "/.env2",
-      "visits": 14
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 14,
-      "5xx": 0,
-      "by_class": {
-        "agent-claimed": 5,
-        "automation": 6,
-        "browser": 2,
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/.github/workflows/ci.yml",
       "visits": 14
     },
     {
@@ -14373,6 +14373,18 @@
       "4xx": 6,
       "5xx": 0,
       "by_class": {
+        "browser": 6
+      },
+      "none_recorded": 0,
+      "path": "/.env.orig",
+      "visits": 6
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 6,
+      "5xx": 0,
+      "by_class": {
         "agent-claimed": 2,
         "automation": 4
       },
@@ -14747,18 +14759,6 @@
       "4xx": 5,
       "5xx": 0,
       "by_class": {
-        "browser": 5
-      },
-      "none_recorded": 0,
-      "path": "/.env.orig",
-      "visits": 5
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 5,
-      "5xx": 0,
-      "by_class": {
         "agent-claimed": 1,
         "browser": 1,
         "unknown": 3
@@ -15077,6 +15077,18 @@
       },
       "none_recorded": 0,
       "path": "/.gitconfig",
+      "visits": 4
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 4,
+      "5xx": 0,
+      "by_class": {
+        "browser": 4
+      },
+      "none_recorded": 0,
+      "path": "/.pypirc",
       "visits": 4
     },
     {
@@ -15852,18 +15864,6 @@
       },
       "none_recorded": 0,
       "path": "/.env.php.bak",
-      "visits": 3
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 3,
-      "5xx": 0,
-      "by_class": {
-        "browser": 3
-      },
-      "none_recorded": 0,
-      "path": "/.pypirc",
       "visits": 3
     },
     {
@@ -17006,6 +17006,18 @@
     {
       "2xx": 0,
       "3xx": 0,
+      "4xx": 3,
+      "5xx": 0,
+      "by_class": {
+        "browser": 3
+      },
+      "none_recorded": 0,
+      "path": "/www/.git/config",
+      "visits": 3
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
       "4xx": 2,
       "5xx": 0,
       "by_class": {
@@ -17503,6 +17515,19 @@
       },
       "none_recorded": 0,
       "path": "/adminer/",
+      "visits": 2
+    },
+    {
+      "2xx": 0,
+      "3xx": 0,
+      "4xx": 2,
+      "5xx": 0,
+      "by_class": {
+        "browser": 1,
+        "unknown": 1
+      },
+      "none_recorded": 0,
+      "path": "/api/.git/config",
       "visits": 2
     },
     {
@@ -18770,18 +18795,6 @@
       },
       "none_recorded": 0,
       "path": "/wsgi.py",
-      "visits": 2
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 2,
-      "5xx": 0,
-      "by_class": {
-        "browser": 2
-      },
-      "none_recorded": 0,
-      "path": "/www/.git/config",
       "visits": 2
     },
     {
@@ -20283,18 +20296,6 @@
       },
       "none_recorded": 0,
       "path": "/api-keys.txt",
-      "visits": 1
-    },
-    {
-      "2xx": 0,
-      "3xx": 0,
-      "4xx": 1,
-      "5xx": 0,
-      "by_class": {
-        "unknown": 1
-      },
-      "none_recorded": 0,
-      "path": "/api/.git/config",
       "visits": 1
     },
     {
