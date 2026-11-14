@@ -14,39 +14,39 @@
       {
         "label": "agent-claimed",
         "note": "a claim \u2014 the request's user-agent announced it; not a verification",
-        "value": 3023
+        "value": 3024
       },
       {
         "label": "browser",
         "note": "",
-        "value": 10619
+        "value": 10650
       },
       {
         "label": "automation",
         "note": "",
-        "value": 9610
+        "value": 9619
       },
       {
         "label": "unknown",
         "note": "",
-        "value": 11704
+        "value": 11789
       }
     ],
     "by_status": [
       {
         "label": "Responses with status 404",
         "note": "",
-        "value": 18529
+        "value": 18534
       },
       {
         "label": "Responses with status 200",
         "note": "",
-        "value": 15303
+        "value": 15420
       },
       {
         "label": "Responses with status 307",
         "note": "",
-        "value": 1097
+        "value": 1101
       },
       {
         "label": "Responses with status 402",
@@ -64,32 +64,32 @@
         "value": 2
       }
     ],
-    "fetches_including_record_reads": 34110,
+    "fetches_including_record_reads": 34232,
     "record_reads": {
-      "counts_read": 247,
+      "counts_read": 248,
       "ledger_read": 6,
-      "total": 253
+      "total": 254
     },
     "rows": [
       {
         "label": "Total HTTP fetches",
         "note": "HTTP fetches since Oct 17, 2026 \u2014 content requests; redirect responses counted separately. Since Oct 21, 2026 the record's own gauge-reads are excluded (see the record reads row). Requests, not readers.",
-        "value": 33857
+        "value": 33978
       },
       {
         "label": "Record reads",
-        "note": "The record measuring itself: counts-read 247 (reads of the public counts payload) + ledger-read 6 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
-        "value": 253
+        "note": "The record measuring itself: counts-read 248 (reads of the public counts payload) + ledger-read 6 (reads of the public ledger file), by the stewards' instruments and any outside reader. Recorded and published here; excluded from the fetch total above since Oct 21, 2026.",
+        "value": 254
       },
       {
         "label": "Redirect responses",
         "note": "Responses with a 3xx status \u2014 the platform's canonicalization redirects and moved addresses. Counted, and never folded into the fetch total.",
-        "value": 1099
+        "value": 1103
       },
       {
         "label": "All requests recorded",
         "note": "Every request recorded at the edge in the window \u2014 fetches plus redirect responses.",
-        "value": 35209
+        "value": 35335
       },
       {
         "label": "Verified agent arrivals on record",
@@ -114,8 +114,8 @@
     ]
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 14, 2026, 6:53:09 AM PT",
-  "generated_at_utc": "2026-11-14T14:53:09Z",
+  "generated_at_pt": "Nov 14, 2026, 12:52:58 PM PT",
+  "generated_at_utc": "2026-11-14T20:52:58Z",
   "licence": "CC BY 4.0 \u2014 republish freely with attribution to the Swarm Garden record; keep each figure's counting window and as-of time attached to it.",
   "networks": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 grouped by the network fields written on each record, from this run's dataset pull: the same basis as the countries part.",
@@ -133,7 +133,7 @@
         "asn": "32934",
         "network": "Meta Platforms Ireland Limited",
         "organization": "Meta Platforms Ireland Limited",
-        "requests": 7327
+        "requests": 7408
       },
       {
         "asn": "396982",
@@ -145,7 +145,7 @@
         "asn": "13335",
         "network": "Cloudflare, Inc.",
         "organization": "Cloudflare, Inc.",
-        "requests": 2111
+        "requests": 2116
       },
       {
         "asn": "48090",
@@ -169,19 +169,19 @@
         "asn": "132203",
         "network": "6 COLLYER QUAY",
         "organization": "6 COLLYER QUAY",
-        "requests": 681
+        "requests": 698
       },
       {
         "asn": "8075",
         "network": "Microsoft Corporation",
         "organization": "Microsoft Corporation",
-        "requests": 324
+        "requests": 328
       },
       {
         "asn": "8075",
         "network": "Microsoft Limited",
         "organization": "Microsoft Limited",
-        "requests": 293
+        "requests": 294
       },
       {
         "asn": "14956",
@@ -193,7 +193,7 @@
         "asn": "132203",
         "network": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
         "organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
-        "requests": 273
+        "requests": 275
       },
       {
         "asn": "19318",
@@ -205,7 +205,7 @@
         "asn": "132203",
         "network": "16 COLLYER QUAY",
         "organization": "16 COLLYER QUAY",
-        "requests": 220
+        "requests": 224
       },
       {
         "asn": "14593",
@@ -253,7 +253,7 @@
         "asn": "36352",
         "network": "HostPapa",
         "organization": "HostPapa",
-        "requests": 118
+        "requests": 121
       },
       {
         "asn": "216014",
@@ -277,7 +277,7 @@
         "asn": "14618",
         "network": "Amazon Data Services Northern Virginia",
         "organization": "Amazon Data Services Northern Virginia",
-        "requests": 90
+        "requests": 91
       },
       {
         "asn": "14618",
@@ -301,7 +301,7 @@
         "asn": "132203",
         "network": "Tencent cloud computing (Beijing) Co., Ltd.",
         "organization": "Tencent cloud computing (Beijing) Co., Ltd.",
-        "requests": 81
+        "requests": 82
       },
       {
         "asn": "209366",
@@ -316,16 +316,16 @@
         "requests": 65
       },
       {
+        "asn": "396982",
+        "network": "Palo Alto Networks, Inc",
+        "organization": "Palo Alto Networks, Inc",
+        "requests": 61
+      },
+      {
         "asn": "214996",
         "network": "netcup GmbH",
         "organization": "netcup GmbH",
         "requests": 61
-      },
-      {
-        "asn": "396982",
-        "network": "Palo Alto Networks, Inc",
-        "organization": "Palo Alto Networks, Inc",
-        "requests": 58
       },
       {
         "asn": "16276",
@@ -664,6 +664,12 @@
         "requests": 13
       },
       {
+        "asn": "14618",
+        "network": "Amazon.com, Inc.",
+        "organization": "Amazon.com, Inc.",
+        "requests": 13
+      },
+      {
         "asn": "6079",
         "network": "Aviation RE LLC",
         "organization": "Aviation RE LLC",
@@ -686,12 +692,6 @@
         "network": "IOH B2B",
         "organization": "IOH B2B",
         "requests": 13
-      },
-      {
-        "asn": "14618",
-        "network": "Amazon.com, Inc.",
-        "organization": "Amazon.com, Inc.",
-        "requests": 12
       },
       {
         "asn": "8560",
@@ -916,6 +916,12 @@
         "requests": 7
       },
       {
+        "asn": "44620",
+        "network": "Tres Teknoloji A.S.",
+        "organization": "Tres Teknoloji A.S.",
+        "requests": 7
+      },
+      {
         "asn": "47890",
         "network": "UNMANAGED LTD",
         "organization": "UNMANAGED LTD",
@@ -979,12 +985,6 @@
         "asn": "9009",
         "network": "Subnet Digital LLC",
         "organization": "Subnet Digital LLC",
-        "requests": 6
-      },
-      {
-        "asn": "44620",
-        "network": "Tres Teknoloji A.S.",
-        "organization": "Tres Teknoloji A.S.",
         "requests": 6
       },
       {
@@ -1061,39 +1061,39 @@
       }
     ],
     "suppression": {
-      "folded_networks": 293,
-      "folded_requests": 495,
+      "folded_networks": 294,
+      "folded_requests": 497,
       "rule": "Networks with fewer than 5 requests in the window are folded into a single remainder. The number of networks folded and their combined requests are printed here; no folded network is named.",
       "threshold": 5
     },
-    "window_total": 35210
+    "window_total": 35336
   },
   "pull_status": "ok",
   "referrers": {
     "basis": "Every request recorded for this site over the counting window \u2014 HTTP fetches and redirect responses alike \u2014 counted by the site's own keyed stats at this run's pull. The countries file reads the same window and record set from the dataset grouping in the same run, so the two totals can differ by the requests that land between the pulls.",
     "era_note": "Publication of these aggregates begins Oct 19, 2026. Recorded referers run from the counting window's first day, Oct 17, 2026.",
-    "no_referer_recorded": 32078,
+    "no_referer_recorded": 32194,
     "note": "The referer is a claim sent by the browser. It is often absent or stripped \u2014 social apps and in-app browsers frequently send none, or only a generic shim host \u2014 so platform figures are a LOWER BOUND. 'No referer recorded' is the honest name for the empty bucket (never 'direct'): the window total minus the grouped hosts, also absorbing the rare unparseable referer. Federated hosts \u2014 Mastodon instances and the like \u2014 are deliberately not grouped into a platform: each prints as its own host. Grouping is a reading aid, never a replacement for the record: the raw host is printed beside every grouped name. Only hosts publish \u2014 never a full referer value, path, or query.",
     "rows": [
       {
         "hosts": [
           {
             "host": "bayareaswarmwarning.com",
-            "requests": 2453
+            "requests": 2459
           }
         ],
         "name": "bayareaswarmwarning.com",
-        "requests": 2453
+        "requests": 2459
       },
       {
         "hosts": [
           {
             "host": "www.bayareaswarmwarning.com",
-            "requests": 492
+            "requests": 496
           }
         ],
         "name": "www.bayareaswarmwarning.com",
-        "requests": 492
+        "requests": 496
       },
       {
         "hosts": [
@@ -1162,7 +1162,7 @@
       "rule": "Referrer groups with fewer than 5 requests in the window are folded into a single remainder. The numbers of groups and hosts folded and their combined requests are printed here; no folded group or host is named. The account's workers.dev staging hostname also drops into this remainder, unnamed, whenever it appears \u2014 it never publishes.",
       "threshold": 5
     },
-    "window_total": 35209
+    "window_total": 35335
   },
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",
