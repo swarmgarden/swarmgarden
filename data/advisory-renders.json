@@ -1,7 +1,7 @@
 {
   "by_cls": {
-    "automation": 19,
-    "browser": 198
+    "automation": 21,
+    "browser": 199
   },
   "by_day": {
     "2026-10-18": 19,
@@ -31,25 +31,26 @@
     "2026-11-11": 2,
     "2026-11-12": 6,
     "2026-11-13": 5,
-    "2026-11-14": 4
+    "2026-11-14": 4,
+    "2026-11-15": 3
   },
   "by_path": {
-    "/": 130,
+    "/": 131,
     "/agent-page": 10,
-    "/blog": 19,
+    "/blog": 20,
     "/dashboard": 6,
     "/dashboard.html": 1,
     "/data": 13,
     "/data/advisory": 5,
     "/data/garden": 11,
     "/index.html": 1,
-    "/research": 20,
+    "/research": 21,
     "/tollbooth": 1
   },
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 15, 2026, 12:53:00 AM PT",
-  "generated_at_utc": "2026-11-15T08:53:00Z",
+  "generated_at_pt": "Nov 15, 2026, 6:52:59 AM PT",
+  "generated_at_utc": "2026-11-15T14:52:59Z",
   "note": "Render-signalled claims: the site's pages report a render after it happens, and the claim is kept under this name. A claim, forgeable in principle; not an arrival; it enters neither the request record, the counts, nor the ledger. On the Garden the endpoint stands gated shut by design, so its file records zero. Days are UTC days, as recorded. Coverage: the reporting script fires from the home page and the named content pages (research, blog, agent page, hypothesis register) since Oct 19, 2026; earlier claims come from the home and dashboard pages only. The Worker-rendered /data pages (the index and both per-site pages) carry the same beacon from Oct 19, 2026 (W7); before that, no /data page reported a render. The companion-join rendering file (<site>-rendering.json) was retired Oct 19, 2026 \u2014 it structurally read zero and measured logging, not rendering; this beacon is the sole render instrument.",
   "site": "advisory",
-  "total": 217
+  "total": 220
 }
