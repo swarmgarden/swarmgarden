@@ -4,21 +4,21 @@
       "bucket": "extra",
       "claimed_name": "facebookexternalhit",
       "countries": {
-        "DE": 574,
-        "GB": 572,
-        "SG": 568,
-        "US": 5681
+        "DE": 592,
+        "GB": 590,
+        "SG": 586,
+        "US": 5862
       },
       "kind": "link-preview",
       "operator_claimed": "Meta",
       "paths": {
-        "/": 7322,
+        "/": 7554,
         "/.netlify/functions/counts": 5,
-        "/robots.txt": 68
+        "/robots.txt": 71
       },
-      "requests": 7395,
+      "requests": 7630,
       "stored_classes": {
-        "unknown": 7395
+        "unknown": 7630
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
@@ -28,12 +28,12 @@
       "bucket": "extra",
       "claimed_name": "Googlebot",
       "countries": {
-        "US": 298
+        "US": 301
       },
       "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
-        "/": 35,
+        "/": 36,
         "/.netlify/functions/counts": 2,
         "/.netlify/functions/ledger": 14,
         "/agents": 7,
@@ -48,9 +48,9 @@
         "/evidence.md": 3,
         "/guestbook": 9,
         "/guestbook.html": 6,
-        "/index.html": 20,
+        "/index.html": 21,
         "/index.md": 21,
-        "/participate": 13,
+        "/participate": 14,
         "/participate.html": 11,
         "/participate.md": 5,
         "/questions": 15,
@@ -68,9 +68,9 @@
         "/reports.md": 4,
         "/utilities/garden-state/v1": 4
       },
-      "requests": 298,
+      "requests": 301,
       "stored_classes": {
-        "automation": 298
+        "automation": 301
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -84,12 +84,12 @@
         "MD": 2,
         "NL": 4,
         "TR": 3,
-        "US": 200
+        "US": 204
       },
       "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
-        "/": 11,
+        "/": 12,
         "/.env": 1,
         "/.env.bak": 1,
         "/.git/logs/HEAD": 1,
@@ -105,12 +105,12 @@
         "/questions": 1,
         "/record.html": 1,
         "/registry": 1,
-        "/robots.txt": 188,
+        "/robots.txt": 191,
         "/site/": 1
       },
-      "requests": 217,
+      "requests": 221,
       "stored_classes": {
-        "automation": 217
+        "automation": 221
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -218,7 +218,7 @@
       "bucket": "taxonomy",
       "claimed_name": "Amazonbot",
       "countries": {
-        "US": 95
+        "US": 98
       },
       "kind": "undeclared",
       "operator_claimed": "Amazon",
@@ -229,7 +229,7 @@
         "/api/v1/briefs": 1,
         "/api/v1/notes": 1,
         "/briefs": 3,
-        "/briefs.html": 5,
+        "/briefs.html": 6,
         "/briefs.md": 1,
         "/changed": 4,
         "/evidence": 3,
@@ -237,11 +237,11 @@
         "/evidence.html.": 1,
         "/evidence.md": 1,
         "/guestbook": 3,
-        "/guestbook.html": 5,
+        "/guestbook.html": 6,
         "/index.html": 1,
         "/index.md": 1,
         "/participate": 3,
-        "/participate.html": 7,
+        "/participate.html": 8,
         "/participate.html.": 1,
         "/participate.md": 1,
         "/questions": 3,
@@ -259,9 +259,9 @@
         "/robots.txt": 1,
         "/utilities/garden-state/v1": 1
       },
-      "requests": 95,
+      "requests": 98,
       "stored_classes": {
-        "agent-claimed": 95
+        "agent-claimed": 98
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot) Chrome/119.0.6045.214 Safari/537.36",
@@ -290,6 +290,45 @@
       },
       "ua_redacted_by_anomaly_scan": true,
       "user_agent": "[redacted by UA anomaly scan \u2014 steward copy retains the original]",
+      "web_bot_auth_present": 0
+    },
+    {
+      "bucket": "taxonomy",
+      "claimed_name": "GPTBot",
+      "countries": {
+        "US": 70
+      },
+      "kind": "training",
+      "operator_claimed": "OpenAI",
+      "paths": {
+        "/": 8,
+        "/.well-known/agent-skills/swarm-garden/SKILL.md": 1,
+        "/agents": 1,
+        "/api/v1/notes": 1,
+        "/briefs": 1,
+        "/briefs.html": 1,
+        "/changed": 5,
+        "/evidence.html": 1,
+        "/evidence.md": 2,
+        "/guestbook.html": 2,
+        "/index.html": 2,
+        "/index.md": 5,
+        "/participate.html": 1,
+        "/participate.md": 1,
+        "/questions": 1,
+        "/questions.html": 1,
+        "/record.html": 1,
+        "/record.md": 1,
+        "/registry.html": 1,
+        "/reports.html": 2,
+        "/sitemap.xml": 31
+      },
+      "requests": 70,
+      "stored_classes": {
+        "agent-claimed": 70
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.4; +https://openai.com/gptbot)",
       "web_bot_auth_present": 0
     },
     {
@@ -333,45 +372,6 @@
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (l9scan/2.0.13e27393e2431313e2838313; +https://leakix.net)",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "taxonomy",
-      "claimed_name": "GPTBot",
-      "countries": {
-        "US": 68
-      },
-      "kind": "training",
-      "operator_claimed": "OpenAI",
-      "paths": {
-        "/": 7,
-        "/.well-known/agent-skills/swarm-garden/SKILL.md": 1,
-        "/agents": 1,
-        "/api/v1/notes": 1,
-        "/briefs": 1,
-        "/briefs.html": 1,
-        "/changed": 5,
-        "/evidence.html": 1,
-        "/evidence.md": 2,
-        "/guestbook.html": 2,
-        "/index.html": 2,
-        "/index.md": 5,
-        "/participate.html": 1,
-        "/participate.md": 1,
-        "/questions": 1,
-        "/questions.html": 1,
-        "/record.html": 1,
-        "/record.md": 1,
-        "/registry.html": 1,
-        "/reports.html": 2,
-        "/sitemap.xml": 30
-      },
-      "requests": 68,
-      "stored_classes": {
-        "agent-claimed": 68
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.4; +https://openai.com/gptbot)",
       "web_bot_auth_present": 0
     },
     {
@@ -420,16 +420,16 @@
       "bucket": "taxonomy",
       "claimed_name": "OAI-SearchBot",
       "countries": {
-        "US": 40
+        "US": 41
       },
       "kind": "search",
       "operator_claimed": "OpenAI",
       "paths": {
-        "/robots.txt": 40
+        "/robots.txt": 41
       },
-      "requests": 40,
+      "requests": 41,
       "stored_classes": {
-        "agent-claimed": 40
+        "agent-claimed": 41
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot",
@@ -519,16 +519,16 @@
       "bucket": "taxonomy",
       "claimed_name": "OAI-SearchBot",
       "countries": {
-        "US": 32
+        "US": 33
       },
       "kind": "search",
       "operator_claimed": "OpenAI",
       "paths": {
-        "/robots.txt": 32
+        "/robots.txt": 33
       },
-      "requests": 32,
+      "requests": 33,
       "stored_classes": {
-        "agent-claimed": 32
+        "agent-claimed": 33
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; robots.txt; +https://openai.com/searchbot",
@@ -538,7 +538,7 @@
       "bucket": "extra",
       "claimed_name": "meta-webindexer",
       "countries": {
-        "US": 27
+        "US": 28
       },
       "kind": "link-indexer",
       "operator_claimed": "Meta",
@@ -548,7 +548,7 @@
         "/briefs": 1,
         "/briefs.html": 1,
         "/briefs.md": 1,
-        "/changed": 1,
+        "/changed": 2,
         "/evidence": 1,
         "/evidence.html": 1,
         "/evidence.md": 1,
@@ -570,9 +570,9 @@
         "/sitemap.xml": 1,
         "/utilities/garden-state/v1": 1
       },
-      "requests": 27,
+      "requests": 28,
       "stored_classes": {
-        "automation": 27
+        "automation": 28
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 (compatible; meta-webindexer/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler))",
@@ -621,17 +621,17 @@
       "bucket": "extra",
       "claimed_name": "Googlebot",
       "countries": {
-        "US": 10
+        "US": 11
       },
       "kind": "search-engine",
       "operator_claimed": "Google",
       "paths": {
-        "/": 9,
+        "/": 10,
         "/guestbook": 1
       },
-      "requests": 10,
+      "requests": 11,
       "stored_classes": {
-        "automation": 10
+        "automation": 11
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -641,16 +641,16 @@
       "bucket": "scanner",
       "claimed_name": "Censys",
       "countries": {
-        "US": 10
+        "US": 11
       },
       "kind": "scanner",
       "operator_claimed": "Censys",
       "paths": {
-        "/": 10
+        "/": 11
       },
-      "requests": 10,
+      "requests": 11,
       "stored_classes": {
-        "unknown": 10
+        "unknown": 11
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (compatible; CensysInspect/1.1; +https://about.censys.io/)",
@@ -903,6 +903,26 @@
       "web_bot_auth_present": 0
     },
     {
+      "bucket": "extra",
+      "claimed_name": "Googlebot",
+      "countries": {
+        "US": 4
+      },
+      "kind": "search-engine",
+      "operator_claimed": "Google",
+      "paths": {
+        "/participate": 2,
+        "/participate.html": 2
+      },
+      "requests": 4,
+      "stored_classes": {
+        "automation": 4
+      },
+      "ua_redacted_by_anomaly_scan": false,
+      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.8103.78 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "web_bot_auth_present": 0
+    },
+    {
       "bucket": "taxonomy",
       "claimed_name": "ChatGPT-User",
       "countries": {
@@ -1023,26 +1043,6 @@
       },
       "ua_redacted_by_anomaly_scan": false,
       "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15 (Applebot/0.1; +http://www.apple.com/go/applebot)",
-      "web_bot_auth_present": 0
-    },
-    {
-      "bucket": "extra",
-      "claimed_name": "Googlebot",
-      "countries": {
-        "US": 2
-      },
-      "kind": "search-engine",
-      "operator_claimed": "Google",
-      "paths": {
-        "/participate": 1,
-        "/participate.html": 1
-      },
-      "requests": 2,
-      "stored_classes": {
-        "automation": 2
-      },
-      "ua_redacted_by_anomaly_scan": false,
-      "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.8103.78 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
       "web_bot_auth_present": 0
     },
     {
@@ -1593,48 +1593,48 @@
     }
   ],
   "claimed_purposes": {
-    "": 35821,
+    "": 36503,
     "mixed": 15,
     "other": 23,
-    "search": 76,
-    "training": 212,
-    "undeclared": 96,
+    "search": 78,
+    "training": 214,
+    "undeclared": 99,
     "user-triggered": 15
   },
   "classes": {
-    "agent-claimed": 437,
-    "automation": 2435,
-    "browser": 8885,
-    "unknown": 24501
+    "agent-claimed": 444,
+    "automation": 2452,
+    "browser": 8974,
+    "unknown": 25077
   },
   "counting_window": {
     "ae_retention": "Analytics Engine retains raw records three months, rolling; aggregates here are cumulative over the current dataset window.",
     "counting_since": "2026-10-17T21:38:49Z",
     "dataset_first_record_utc": "2026-10-17 21:38:49",
-    "dataset_last_record_utc": "2026-11-15 08:50:55"
+    "dataset_last_record_utc": "2026-11-16 02:50:57"
   },
   "countries": {
-    "AE": 16,
+    "AE": 17,
     "AR": 16,
     "AT": 6,
     "AU": 83,
     "AZ": 1,
     "BB": 2,
     "BD": 32,
-    "BE": 2221,
+    "BE": 2224,
     "BF": 1,
     "BG": 1,
     "BH": 1,
     "BO": 2,
-    "BR": 266,
+    "BR": 301,
     "BS": 1,
-    "CA": 304,
+    "CA": 306,
     "CH": 104,
     "CL": 5,
-    "CN": 474,
+    "CN": 483,
     "CO": 5,
     "CZ": 2,
-    "DE": 2277,
+    "DE": 2337,
     "DK": 2,
     "DO": 1,
     "EC": 7,
@@ -1642,22 +1642,22 @@
     "EG": 2,
     "ES": 19,
     "ET": 1,
-    "FI": 420,
-    "FR": 263,
-    "GB": 1557,
+    "FI": 422,
+    "FR": 265,
+    "GB": 1593,
     "GY": 1,
-    "HK": 711,
+    "HK": 713,
     "HR": 4,
-    "ID": 135,
-    "IE": 39,
+    "ID": 136,
+    "IE": 42,
     "IL": 53,
     "IN": 198,
     "IQ": 9,
     "IS": 3,
     "IT": 12,
-    "JP": 272,
+    "JP": 275,
     "KE": 2,
-    "KR": 216,
+    "KR": 223,
     "LT": 1,
     "LV": 1,
     "MA": 8,
@@ -1671,45 +1671,45 @@
     "PA": 3,
     "PE": 1,
     "PH": 1,
-    "PK": 4,
-    "PL": 563,
+    "PK": 7,
+    "PL": 565,
     "PT": 2,
     "PY": 1,
     "QA": 1,
     "RO": 287,
-    "RU": 1286,
+    "RU": 1295,
     "SA": 3,
-    "SE": 88,
-    "SG": 2628,
+    "SE": 90,
+    "SG": 2668,
     "SI": 4,
     "SR": 1,
     "T1": 3,
     "TH": 71,
     "TN": 1,
-    "TR": 47,
-    "TW": 50,
+    "TR": 48,
+    "TW": 52,
     "UA": 34,
-    "US": 19277,
+    "US": 19741,
     "VE": 1,
     "VN": 9,
     "ZA": 11
   },
   "dataset": "garden_visits",
-  "dataset_total": 36258,
+  "dataset_total": 36947,
   "date_pt": "2026-11-15",
   "distinct_referrer_values_steward_copy": 182,
   "events": {
     "arrival-board-view": 3,
     "briefs-read": 48,
-    "changed-read": 129,
+    "changed-read": 132,
     "changed-read-atom": 24,
     "changed-read-json": 17,
-    "counts-read": 12302,
+    "counts-read": 12619,
     "data-read": 22,
-    "guestbook-view": 190,
-    "ledger-read": 351,
+    "guestbook-view": 194,
+    "ledger-read": 356,
     "notes-read": 51,
-    "pageview": 22967,
+    "pageview": 23327,
     "receipt-check": 1,
     "registry-read": 24,
     "signal-challenge-read": 5,
@@ -2409,28 +2409,46 @@
     "2026-11-15T05": 47,
     "2026-11-15T06": 36,
     "2026-11-15T07": 31,
-    "2026-11-15T08": 32
+    "2026-11-15T08": 44,
+    "2026-11-15T09": 31,
+    "2026-11-15T10": 38,
+    "2026-11-15T11": 70,
+    "2026-11-15T12": 30,
+    "2026-11-15T13": 38,
+    "2026-11-15T14": 37,
+    "2026-11-15T15": 38,
+    "2026-11-15T16": 31,
+    "2026-11-15T17": 35,
+    "2026-11-15T18": 34,
+    "2026-11-15T19": 36,
+    "2026-11-15T20": 41,
+    "2026-11-15T21": 40,
+    "2026-11-15T22": 58,
+    "2026-11-15T23": 31,
+    "2026-11-16T00": 27,
+    "2026-11-16T01": 33,
+    "2026-11-16T02": 29
   },
   "markdown_preference_records": 59,
   "methods": {
-    "GET": 36204,
+    "GET": 36893,
     "HEAD": 54
   },
   "networks": [
     {
       "as_organization": "Cloudflare, Inc.",
       "asn": "13335",
-      "requests": 14624
+      "requests": 14955
     },
     {
       "as_organization": "Meta Platforms Ireland Limited",
       "asn": "32934",
-      "requests": 7472
+      "requests": 7709
     },
     {
       "as_organization": "Google LLC",
       "asn": "396982",
-      "requests": 4140
+      "requests": 4173
     },
     {
       "as_organization": "TECHOFF SRV LIMITED",
@@ -2445,27 +2463,27 @@
     {
       "as_organization": "6 COLLYER QUAY",
       "asn": "132203",
-      "requests": 605
+      "requests": 612
     },
     {
       "as_organization": "Google LLC",
       "asn": "15169",
-      "requests": 592
+      "requests": 602
     },
     {
       "as_organization": "TC DATACENTER LIMITED MANAGED IP SPACE",
       "asn": "218785",
-      "requests": 430
+      "requests": 431
     },
     {
       "as_organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
       "asn": "132203",
-      "requests": 241
+      "requests": 243
     },
     {
       "as_organization": "16 COLLYER QUAY",
       "asn": "132203",
-      "requests": 206
+      "requests": 211
     },
     {
       "as_organization": "Apple Inc.",
@@ -2475,7 +2493,7 @@
     {
       "as_organization": "Amazon Data Services Northern Virginia",
       "asn": "14618",
-      "requests": 154
+      "requests": 159
     },
     {
       "as_organization": "TECHOFF SRV LIMITED",
@@ -2485,12 +2503,12 @@
     {
       "as_organization": "Amazon Technologies Inc.",
       "asn": "14618",
-      "requests": 140
+      "requests": 147
     },
     {
       "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
       "asn": "132203",
-      "requests": 119
+      "requests": 121
     },
     {
       "as_organization": "1337 Services GmbH",
@@ -2500,12 +2518,17 @@
     {
       "as_organization": "Hetzner Online GmbH",
       "asn": "24940",
+      "requests": 112
+    },
+    {
+      "as_organization": "Palo Alto Networks, Inc",
+      "asn": "396982",
       "requests": 110
     },
     {
       "as_organization": "Microsoft Limited",
       "asn": "8075",
-      "requests": 107
+      "requests": 110
     },
     {
       "as_organization": "Feo Prest SRL",
@@ -2515,11 +2538,6 @@
     {
       "as_organization": "OVH SAS",
       "asn": "16276",
-      "requests": 101
-    },
-    {
-      "as_organization": "Palo Alto Networks, Inc",
-      "asn": "396982",
       "requests": 101
     },
     {
@@ -2555,7 +2573,7 @@
     {
       "as_organization": "Alibaba Cloud - US",
       "asn": "45102",
-      "requests": 77
+      "requests": 78
     },
     {
       "as_organization": "OVH Hosting, Inc.",
@@ -2568,19 +2586,19 @@
       "requests": 69
     },
     {
+      "as_organization": "SEMrush CY LTD",
+      "asn": "209366",
+      "requests": 58
+    },
+    {
       "as_organization": "HOS-382394",
       "asn": "24940",
       "requests": 56
     },
     {
-      "as_organization": "SEMrush CY LTD",
-      "asn": "209366",
-      "requests": 56
-    },
-    {
       "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
       "asn": "45090",
-      "requests": 55
+      "requests": 56
     },
     {
       "as_organization": "Plot No. 16, Phase IV, Sector 18, Gurugram, Haryana 122015",
@@ -2633,6 +2651,11 @@
       "requests": 42
     },
     {
+      "as_organization": "Microsoft Deutschland MCIO GmbH",
+      "asn": "8075",
+      "requests": 41
+    },
+    {
       "as_organization": "Microsoft Corporation",
       "asn": "8075",
       "requests": 41
@@ -2648,14 +2671,9 @@
       "requests": 41
     },
     {
-      "as_organization": "Microsoft Deutschland MCIO GmbH",
-      "asn": "8075",
-      "requests": 40
-    },
-    {
       "as_organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
       "asn": "45090",
-      "requests": 39
+      "requests": 40
     },
     {
       "as_organization": "Private Layer INC",
@@ -2703,14 +2721,14 @@
       "requests": 29
     },
     {
-      "as_organization": "Scaleway",
-      "asn": "12876",
+      "as_organization": "Amazon Technologies Inc.",
+      "asn": "16509",
       "requests": 28
     },
     {
-      "as_organization": "Amazon Technologies Inc.",
-      "asn": "16509",
-      "requests": 27
+      "as_organization": "Scaleway",
+      "asn": "12876",
+      "requests": 28
     },
     {
       "as_organization": "Flux Telecom, LLC",
@@ -2718,9 +2736,19 @@
       "requests": 27
     },
     {
+      "as_organization": "Technische Universitaet Muenchen",
+      "asn": "12816",
+      "requests": 27
+    },
+    {
       "as_organization": "Google Asia Pacific Pte. Ltd. (GAPPL)",
       "asn": "396982",
       "requests": 27
+    },
+    {
+      "as_organization": "SERV.HOST GROUP LTD",
+      "asn": "207957",
+      "requests": 26
     },
     {
       "as_organization": "Amazon Data Services Sweden",
@@ -2730,11 +2758,6 @@
     {
       "as_organization": "Ahrefs Pte Ltd Dmytro",
       "asn": "16276",
-      "requests": 25
-    },
-    {
-      "as_organization": "Technische Universitaet Muenchen",
-      "asn": "12816",
       "requests": 25
     },
     {
@@ -2853,11 +2876,6 @@
       "requests": 13
     },
     {
-      "as_organization": "SERV.HOST GROUP LTD",
-      "asn": "207957",
-      "requests": 13
-    },
-    {
       "as_organization": "Verizon Business",
       "asn": "6167",
       "requests": 13
@@ -2903,6 +2921,16 @@
       "requests": 12
     },
     {
+      "as_organization": "CHINANET SHANGHAI PROVINCE NETWORK",
+      "asn": "4811",
+      "requests": 11
+    },
+    {
+      "as_organization": "Censys, Inc.",
+      "asn": "398324",
+      "requests": 11
+    },
+    {
       "as_organization": "Anexia Holding GmbH",
       "asn": "214996",
       "requests": 11
@@ -2933,11 +2961,6 @@
       "requests": 10
     },
     {
-      "as_organization": "Censys, Inc.",
-      "asn": "398324",
-      "requests": 10
-    },
-    {
       "as_organization": "Shanghai UCloud Information Technology Company Limited",
       "asn": "58466",
       "requests": 10
@@ -2956,11 +2979,6 @@
       "as_organization": "VeriSign Infrastructure & Operations",
       "asn": "11840",
       "requests": 10
-    },
-    {
-      "as_organization": "CHINANET SHANGHAI PROVINCE NETWORK",
-      "asn": "4811",
-      "requests": 9
     },
     {
       "as_organization": "PRCDN Consumer Pool",
@@ -3223,6 +3241,11 @@
       "requests": 4
     },
     {
+      "as_organization": "Code200 UAB",
+      "asn": "9009",
+      "requests": 4
+    },
+    {
       "as_organization": "Web2Objects LLC",
       "asn": "3257",
       "requests": 4
@@ -3343,11 +3366,6 @@
       "requests": 3
     },
     {
-      "as_organization": "Code200 UAB",
-      "asn": "9009",
-      "requests": 3
-    },
-    {
       "as_organization": "CV Griya Cloud Server",
       "asn": "154896",
       "requests": 3
@@ -3380,6 +3398,11 @@
     {
       "as_organization": "CHANGCHUN-YIQITONGXIN",
       "asn": "4134",
+      "requests": 3
+    },
+    {
+      "as_organization": "Nayatel Private Limited",
+      "asn": "23674",
       "requests": 3
     },
     {
@@ -3548,6 +3571,11 @@
       "requests": 2
     },
     {
+      "as_organization": "Charter Communications LLC",
+      "asn": "20115",
+      "requests": 2
+    },
+    {
       "as_organization": "Humle and Dumle",
       "asn": "12552",
       "requests": 2
@@ -3580,6 +3608,11 @@
     {
       "as_organization": "Solid Core Hosting LTD",
       "asn": "199457",
+      "requests": 2
+    },
+    {
+      "as_organization": "Interworks Networking Services",
+      "asn": "20012",
       "requests": 2
     },
     {
@@ -3643,13 +3676,13 @@
       "requests": 2
     },
     {
-      "as_organization": "EGIHosting",
-      "asn": "18779",
+      "as_organization": "Advanced Wireless Network Company Limited",
+      "asn": "138524",
       "requests": 2
     },
     {
-      "as_organization": "Advanced Wireless Network Company Limited",
-      "asn": "138524",
+      "as_organization": "EGIHosting",
+      "asn": "18779",
       "requests": 2
     },
     {
@@ -3665,6 +3698,11 @@
     {
       "as_organization": "V tal",
       "asn": "8167",
+      "requests": 2
+    },
+    {
+      "as_organization": "Tralex AB",
+      "asn": "51747",
       "requests": 2
     },
     {
@@ -3795,6 +3833,16 @@
     {
       "as_organization": "TalkTalk Communications Limited",
       "asn": "13285",
+      "requests": 2
+    },
+    {
+      "as_organization": "16 COLLYER QUAY  # 18-29 INCOME AT RAFFLES",
+      "asn": "132203",
+      "requests": 2
+    },
+    {
+      "as_organization": "Amazon Data Services Ireland Ltd",
+      "asn": "16509",
       "requests": 2
     },
     {
@@ -4035,11 +4083,6 @@
     {
       "as_organization": "MOBILE-BROADBAND-POOL",
       "asn": "8781",
-      "requests": 1
-    },
-    {
-      "as_organization": "Charter Communications LLC",
-      "asn": "20115",
       "requests": 1
     },
     {
@@ -4353,6 +4396,11 @@
       "requests": 1
     },
     {
+      "as_organization": "Server Mania Inc.",
+      "asn": "55286",
+      "requests": 1
+    },
+    {
       "as_organization": "Far EasTone Telecommunication Co., Ltd.",
       "asn": "9674",
       "requests": 1
@@ -4360,11 +4408,6 @@
     {
       "as_organization": "Internet access",
       "asn": "201466",
-      "requests": 1
-    },
-    {
-      "as_organization": "Server Mania Inc.",
-      "asn": "55286",
       "requests": 1
     },
     {
@@ -4475,11 +4518,6 @@
     {
       "as_organization": "WIND TRE S.P.A.",
       "asn": "1267",
-      "requests": 1
-    },
-    {
-      "as_organization": "Tralex AB",
-      "asn": "51747",
       "requests": 1
     },
     {
@@ -4998,11 +5036,6 @@
       "requests": 1
     },
     {
-      "as_organization": "16 COLLYER QUAY  # 18-29 INCOME AT RAFFLES",
-      "asn": "132203",
-      "requests": 1
-    },
-    {
       "as_organization": "SABOTAGE LLC",
       "asn": "61125",
       "requests": 1
@@ -5068,146 +5101,146 @@
       "requests": 1
     }
   ],
-  "no_referer_recorded": 34304,
+  "no_referer_recorded": 34970,
   "paths": [
     {
       "path": "/.netlify/functions/counts",
       "status": {
-        "200": 12302
+        "200": 12619
       },
-      "total": 12302
+      "total": 12619
     },
     {
       "path": "/",
       "status": {
-        "200": 10254
+        "200": 10530
       },
-      "total": 10254
+      "total": 10530
     },
     {
       "path": "/wp-admin/install.php",
       "status": {
-        "404": 1264
+        "404": 1273
       },
-      "total": 1264
+      "total": 1273
     },
     {
       "path": "/robots.txt",
       "status": {
-        "200": 689
+        "200": 703
       },
-      "total": 689
+      "total": 703
     },
     {
       "path": "/.netlify/functions/ledger",
       "status": {
-        "200": 351
+        "200": 356
       },
-      "total": 351
+      "total": 356
     },
     {
       "path": "/participate.html",
       "status": {
         "200": 3,
-        "307": 211
+        "307": 217
       },
-      "total": 214
+      "total": 220
     },
     {
       "path": "/participate",
       "status": {
-        "200": 209
+        "200": 215
       },
-      "total": 209
+      "total": 215
     },
     {
       "path": "/changed",
       "status": {
-        "200": 195,
+        "200": 198,
         "405": 2
       },
-      "total": 197
+      "total": 200
     },
     {
       "path": "/sitemap.xml",
       "status": {
-        "200": 185
+        "200": 186
       },
-      "total": 185
+      "total": 186
     },
     {
       "path": "/briefs.html",
       "status": {
         "200": 3,
-        "307": 137
+        "307": 139
       },
-      "total": 140
+      "total": 142
     },
     {
       "path": "/questions.html",
       "status": {
         "200": 3,
-        "307": 135
+        "307": 136
       },
-      "total": 138
+      "total": 139
+    },
+    {
+      "path": "/guestbook.html",
+      "status": {
+        "307": 137
+      },
+      "total": 137
     },
     {
       "path": "/guestbook",
       "status": {
-        "200": 135
+        "200": 136
       },
-      "total": 135
+      "total": 136
     },
     {
       "path": "/questions",
       "status": {
-        "200": 135
+        "200": 136
       },
-      "total": 135
+      "total": 136
     },
     {
       "path": "/record.html",
       "status": {
         "200": 3,
-        "307": 132
+        "307": 133
       },
-      "total": 135
-    },
-    {
-      "path": "/guestbook.html",
-      "status": {
-        "307": 134
-      },
-      "total": 134
+      "total": 136
     },
     {
       "path": "/record",
       "status": {
-        "200": 132
+        "200": 133
       },
-      "total": 132
+      "total": 133
     },
     {
       "path": "/index.md",
+      "status": {
+        "200": 131
+      },
+      "total": 131
+    },
+    {
+      "path": "/briefs",
       "status": {
         "200": 130
       },
       "total": 130
     },
     {
-      "path": "/briefs",
-      "status": {
-        "200": 129
-      },
-      "total": 129
-    },
-    {
       "path": "/registry.html",
       "status": {
         "200": 3,
-        "307": 126
+        "307": 127
       },
-      "total": 129
+      "total": 130
     },
     {
       "path": "/registry",
@@ -5219,22 +5252,22 @@
     {
       "path": "/.git/config",
       "status": {
-        "404": 116
+        "404": 117
       },
-      "total": 116
-    },
-    {
-      "path": "/reports",
-      "status": {
-        "200": 108
-      },
-      "total": 108
+      "total": 117
     },
     {
       "path": "/reports.html",
       "status": {
         "200": 3,
-        "307": 105
+        "307": 106
+      },
+      "total": 109
+    },
+    {
+      "path": "/reports",
+      "status": {
+        "200": 108
       },
       "total": 108
     },
@@ -5249,9 +5282,9 @@
       "path": "/index.html",
       "status": {
         "200": 4,
-        "307": 84
+        "307": 85
       },
-      "total": 88
+      "total": 89
     },
     {
       "path": "/wp-login.php",
@@ -5292,9 +5325,9 @@
       "path": "/evidence.html",
       "status": {
         "200": 1,
-        "307": 67
+        "307": 68
       },
-      "total": 68
+      "total": 69
     },
     {
       "path": "/evidence",
@@ -5339,6 +5372,13 @@
       "total": 51
     },
     {
+      "path": "/.well-known/security.txt",
+      "status": {
+        "200": 50
+      },
+      "total": 50
+    },
+    {
       "path": "/.env.local",
       "status": {
         "404": 49
@@ -5381,11 +5421,11 @@
       "total": 48
     },
     {
-      "path": "/.well-known/security.txt",
+      "path": "/.env.prod",
       "status": {
-        "200": 47
+        "404": 46
       },
-      "total": 47
+      "total": 46
     },
     {
       "path": "/app/.env",
@@ -5395,19 +5435,12 @@
       "total": 46
     },
     {
-      "path": "/.env.prod",
-      "status": {
-        "404": 45
-      },
-      "total": 45
-    },
-    {
       "path": "/agents",
       "status": {
-        "301": 27,
+        "301": 29,
         "404": 15
       },
-      "total": 42
+      "total": 44
     },
     {
       "path": "/info.php",
@@ -5480,6 +5513,13 @@
       "total": 37
     },
     {
+      "path": "/.env.staging",
+      "status": {
+        "404": 36
+      },
+      "total": 36
+    },
+    {
       "path": "/blog/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 36
@@ -5499,13 +5539,6 @@
         "200": 36
       },
       "total": 36
-    },
-    {
-      "path": "/.env.staging",
-      "status": {
-        "404": 35
-      },
-      "total": 35
     },
     {
       "path": "/2019/wp-includes/wlwmanifest.xml",
@@ -5536,6 +5569,13 @@
       "total": 34
     },
     {
+      "path": "/src/.env",
+      "status": {
+        "404": 34
+      },
+      "total": 34
+    },
+    {
       "path": "/web/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 34
@@ -5553,13 +5593,6 @@
       "path": "/AGENTS.md",
       "status": {
         "200": 33
-      },
-      "total": 33
-    },
-    {
-      "path": "/src/.env",
-      "status": {
-        "404": 33
       },
       "total": 33
     },
@@ -5690,6 +5723,13 @@
       "total": 30
     },
     {
+      "path": "/config/.env",
+      "status": {
+        "404": 30
+      },
+      "total": 30
+    },
+    {
       "path": "/secrets.json",
       "status": {
         "404": 30
@@ -5725,13 +5765,6 @@
       "total": 29
     },
     {
-      "path": "/config/.env",
-      "status": {
-        "404": 29
-      },
-      "total": 29
-    },
-    {
       "path": "/.npmrc",
       "status": {
         "404": 28
@@ -5744,6 +5777,13 @@
         "404": 28
       },
       "total": 28
+    },
+    {
+      "path": "/backup/.env",
+      "status": {
+        "404": 27
+      },
+      "total": 27
     },
     {
       "path": "/cms/wp-includes/wlwmanifest.xml",
@@ -5796,13 +5836,6 @@
     },
     {
       "path": "/.svn/wc.db",
-      "status": {
-        "404": 26
-      },
-      "total": 26
-    },
-    {
-      "path": "/backup/.env",
       "status": {
         "404": 26
       },
@@ -5907,6 +5940,13 @@
       "total": 25
     },
     {
+      "path": "/v2/.env",
+      "status": {
+        "404": 25
+      },
+      "total": 25
+    },
+    {
       "path": "/wordpress/wp-includes/wlwmanifest.xml",
       "status": {
         "404": 25
@@ -5951,6 +5991,13 @@
       "total": 24
     },
     {
+      "path": "/old/.env",
+      "status": {
+        "404": 24
+      },
+      "total": 24
+    },
+    {
       "path": "/phpinfo",
       "status": {
         "404": 24
@@ -5983,13 +6030,6 @@
       "status": {
         "200": 19,
         "400": 5
-      },
-      "total": 24
-    },
-    {
-      "path": "/v2/.env",
-      "status": {
-        "404": 24
       },
       "total": 24
     },
@@ -6030,13 +6070,6 @@
     },
     {
       "path": "/media/wp-includes/wlwmanifest.xml",
-      "status": {
-        "404": 23
-      },
-      "total": 23
-    },
-    {
-      "path": "/old/.env",
       "status": {
         "404": 23
       },
@@ -6120,6 +6153,13 @@
       "total": 20
     },
     {
+      "path": "/admin/phpinfo.php",
+      "status": {
+        "404": 19
+      },
+      "total": 19
+    },
+    {
       "path": "/composer.json",
       "status": {
         "404": 19
@@ -6163,13 +6203,6 @@
     },
     {
       "path": "/Dockerfile",
-      "status": {
-        "404": 18
-      },
-      "total": 18
-    },
-    {
-      "path": "/admin/phpinfo.php",
       "status": {
         "404": 18
       },
@@ -6626,6 +6659,13 @@
       "total": 12
     },
     {
+      "path": "/gcp-credentials.json",
+      "status": {
+        "404": 12
+      },
+      "total": 12
+    },
+    {
       "path": "/project/.env",
       "status": {
         "404": 12
@@ -6746,13 +6786,6 @@
       "total": 11
     },
     {
-      "path": "/gcp-credentials.json",
-      "status": {
-        "404": 11
-      },
-      "total": 11
-    },
-    {
       "path": "/hosting/phpinfo.php",
       "status": {
         "404": 11
@@ -6761,6 +6794,13 @@
     },
     {
       "path": "/login.action",
+      "status": {
+        "404": 11
+      },
+      "total": 11
+    },
+    {
+      "path": "/php-info.php",
       "status": {
         "404": 11
       },
@@ -6886,14 +6926,14 @@
       "total": 10
     },
     {
-      "path": "/news/",
+      "path": "/microservice/.env",
       "status": {
         "404": 10
       },
       "total": 10
     },
     {
-      "path": "/php-info.php",
+      "path": "/news/",
       "status": {
         "404": 10
       },
@@ -6922,6 +6962,20 @@
     },
     {
       "path": "/sender/.env",
+      "status": {
+        "404": 10
+      },
+      "total": 10
+    },
+    {
+      "path": "/service/.env",
+      "status": {
+        "404": 10
+      },
+      "total": 10
+    },
+    {
+      "path": "/shop/.env",
       "status": {
         "404": 10
       },
@@ -7019,7 +7073,7 @@
       "total": 9
     },
     {
-      "path": "/microservice/.env",
+      "path": "/notifications/.env",
       "status": {
         "404": 9
       },
@@ -7075,21 +7129,7 @@
       "total": 9
     },
     {
-      "path": "/service/.env",
-      "status": {
-        "404": 9
-      },
-      "total": 9
-    },
-    {
       "path": "/ses/.env",
-      "status": {
-        "404": 9
-      },
-      "total": 9
-    },
-    {
-      "path": "/shop/.env",
       "status": {
         "404": 9
       },
@@ -7187,6 +7227,20 @@
       "total": 8
     },
     {
+      "path": "/database/.env",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/debug.php",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
       "path": "/deploy/.env",
       "status": {
         "404": 8
@@ -7257,13 +7311,6 @@
       "total": 8
     },
     {
-      "path": "/notifications/.env",
-      "status": {
-        "404": 8
-      },
-      "total": 8
-    },
-    {
       "path": "/opt/.env",
       "status": {
         "404": 8
@@ -7293,6 +7340,13 @@
     },
     {
       "path": "/prestashop/.env",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/prod/.env",
       "status": {
         "404": 8
       },
@@ -7335,6 +7389,13 @@
     },
     {
       "path": "/var/www/html/.env",
+      "status": {
+        "404": 8
+      },
+      "total": 8
+    },
+    {
+      "path": "/webroot/index.php/_environment",
       "status": {
         "404": 8
       },
@@ -7432,21 +7493,14 @@
       "total": 7
     },
     {
-      "path": "/database/.env",
-      "status": {
-        "404": 7
-      },
-      "total": 7
-    },
-    {
-      "path": "/debug.php",
-      "status": {
-        "404": 7
-      },
-      "total": 7
-    },
-    {
       "path": "/development/.env",
+      "status": {
+        "404": 7
+      },
+      "total": 7
+    },
+    {
+      "path": "/docs/phpinfo.php",
       "status": {
         "404": 7
       },
@@ -7488,6 +7542,13 @@
       "total": 7
     },
     {
+      "path": "/newsletter/.env",
+      "status": {
+        "404": 7
+      },
+      "total": 7
+    },
+    {
       "path": "/nuxt/.env",
       "status": {
         "404": 7
@@ -7516,14 +7577,14 @@
       "total": 7
     },
     {
-      "path": "/preview/phpinfo.php",
+      "path": "/postmark/.env",
       "status": {
         "404": 7
       },
       "total": 7
     },
     {
-      "path": "/prod/.env",
+      "path": "/preview/phpinfo.php",
       "status": {
         "404": 7
       },
@@ -7590,13 +7651,6 @@
       "status": {
         "200": 2,
         "400": 5
-      },
-      "total": 7
-    },
-    {
-      "path": "/webroot/index.php/_environment",
-      "status": {
-        "404": 7
       },
       "total": 7
     },
@@ -7783,6 +7837,13 @@
       "total": 6
     },
     {
+      "path": "/ci/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/cms/",
       "status": {
         "404": 6
@@ -7818,7 +7879,7 @@
       "total": 6
     },
     {
-      "path": "/docs/phpinfo.php",
+      "path": "/exapi/.env",
       "status": {
         "404": 6
       },
@@ -7846,6 +7907,13 @@
       "total": 6
     },
     {
+      "path": "/mongodb/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/mysql/.env",
       "status": {
         "404": 6
@@ -7854,13 +7922,6 @@
     },
     {
       "path": "/nest/.env",
-      "status": {
-        "404": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/newsletter/.env",
       "status": {
         "404": 6
       },
@@ -7896,13 +7957,6 @@
     },
     {
       "path": "/portal/.env",
-      "status": {
-        "404": 6
-      },
-      "total": 6
-    },
-    {
-      "path": "/postmark/.env",
       "status": {
         "404": 6
       },
@@ -7965,7 +8019,21 @@
       "total": 6
     },
     {
+      "path": "/transactional/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/vendor/.env",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
+      "path": "/wp-admin/phpinfo.php",
       "status": {
         "404": 6
       },
@@ -8001,6 +8069,13 @@
     },
     {
       "path": "/.env.backup2",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
+      "path": "/.env_copy",
       "status": {
         "404": 5
       },
@@ -8126,13 +8201,6 @@
       "total": 5
     },
     {
-      "path": "/ci/.env",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
       "path": "/cms/wp-json/",
       "status": {
         "404": 5
@@ -8203,6 +8271,13 @@
       "total": 5
     },
     {
+      "path": "/docker/.env",
+      "status": {
+        "404": 5
+      },
+      "total": 5
+    },
+    {
       "path": "/elasticsearch/.env",
       "status": {
         "404": 5
@@ -8218,13 +8293,6 @@
     },
     {
       "path": "/evidence.html.",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/exapi/.env",
       "status": {
         "404": 5
       },
@@ -8281,13 +8349,6 @@
     },
     {
       "path": "/mandrill/.env",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/mongodb/.env",
       "status": {
         "404": 5
       },
@@ -8378,13 +8439,6 @@
       "total": 5
     },
     {
-      "path": "/transactional/.env",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
       "path": "/uat/phpinfo.php",
       "status": {
         "404": 5
@@ -8406,14 +8460,14 @@
       "total": 5
     },
     {
-      "path": "/wp-admin/phpinfo.php",
+      "path": "/wp-json/batch/v1",
       "status": {
         "404": 5
       },
       "total": 5
     },
     {
-      "path": "/wp-json/batch/v1",
+      "path": "/wp/.env",
       "status": {
         "404": 5
       },
@@ -8463,13 +8517,6 @@
     },
     {
       "path": "/.env.yml",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
-      "path": "/.env_copy",
       "status": {
         "404": 4
       },
@@ -8770,13 +8817,6 @@
       "total": 4
     },
     {
-      "path": "/docker/.env",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
       "path": "/elmah.axd",
       "status": {
         "404": 4
@@ -8982,13 +9022,6 @@
     },
     {
       "path": "/wp-config.txt",
-      "status": {
-        "404": 4
-      },
-      "total": 4
-    },
-    {
-      "path": "/wp/.env",
       "status": {
         "404": 4
       },
@@ -9626,6 +9659,13 @@
     },
     {
       "path": "/record.htmlnGarden",
+      "status": {
+        "404": 3
+      },
+      "total": 3
+    },
+    {
+      "path": "/rest/.env",
       "status": {
         "404": 3
       },
@@ -10984,13 +11024,6 @@
     },
     {
       "path": "/redmine/config/initializers/secret_token.rb",
-      "status": {
-        "404": 2
-      },
-      "total": 2
-    },
-    {
-      "path": "/rest/.env",
       "status": {
         "404": 2
       },
@@ -14402,19 +14435,19 @@
   "probe_path_traffic_by_stored_class": {
     "agent-claimed": 12,
     "automation": 39,
-    "browser": 2432,
-    "unknown": 2816
+    "browser": 2461,
+    "unknown": 2825
   },
-  "records_with_no_user_agent": 11936,
+  "records_with_no_user_agent": 12248,
   "referrers_by_hostname": {
     "188.114.97.0": 1,
-    "bayareaswarmwarning.com": 24,
+    "bayareaswarmwarning.com": 25,
     "caitriaoneill.com": 28,
     "github.com": 4,
     "m.facebook.com": 4,
     "surya888.co": 6,
     "susieajett.pages.dev": 6,
-    "swarmgarden.com": 1237,
+    "swarmgarden.com": 1252,
     "trendcueai.com": 1,
     "unparseable-referrer-value": 3,
     "www.baidu.com": 1,
@@ -14424,13 +14457,13 @@
     "www.google.com": 98,
     "www.linkedin.com": 1,
     "www.sman1sphilir.sch.id": 4,
-    "www.swarmgarden.com": 526
+    "www.swarmgarden.com": 534
   },
   "regions": {
-    "": 3797,
+    "": 3839,
     "Abu Dhabi": 5,
     "Addis Ababa": 1,
-    "Alabama": 4,
+    "Alabama": 5,
     "Ancash": 1,
     "Andalusia": 2,
     "Andhra Pradesh": 2,
@@ -14438,7 +14471,7 @@
     "Antalya": 1,
     "Antioquia": 2,
     "Apulia": 1,
-    "Arizona": 19,
+    "Arizona": 21,
     "Asuncion": 1,
     "Asyut": 1,
     "Auvergne-Rh\u00f4ne-Alpes": 8,
@@ -14451,18 +14484,18 @@
     "Bangkok": 70,
     "Banten": 1,
     "Basel-City": 3,
-    "Bavaria": 155,
-    "Beijing": 41,
+    "Bavaria": 157,
+    "Beijing": 42,
     "Black River": 1,
     "Bogota D.C.": 3,
     "British Columbia": 23,
     "Brittany": 11,
     "Brod-Posavina": 1,
-    "Brussels Capital": 2218,
+    "Brussels Capital": 2221,
     "Bucharest": 129,
     "Buenos Aires": 1,
     "Buenos Aires F.D.": 1,
-    "California": 4069,
+    "California": 4152,
     "Capital Region": 5,
     "Casablanca-Settat": 3,
     "Catalonia": 2,
@@ -14476,33 +14509,33 @@
     "Chongqing": 5,
     "Coahuila": 1,
     "Cochabamba": 1,
-    "Colorado": 1350,
+    "Colorado": 1391,
     "Corrientes": 12,
     "Delhi": 76,
     "Demerara-Mahaica": 1,
     "Dhaka Division": 23,
-    "District of Columbia": 508,
+    "District of Columbia": 514,
     "Drenthe": 1,
-    "Dubai": 11,
+    "Dubai": 12,
     "East Java": 2,
     "Eastern Province": 1,
     "Emilia-Romagna": 1,
-    "England": 1538,
+    "England": 1574,
     "Erbil": 1,
     "Esp\u00edrito Santo": 2,
     "Extremadura": 1,
     "Federal District": 5,
     "Flanders": 3,
-    "Florida": 1315,
+    "Florida": 1351,
     "Fujian": 1,
     "Fukuoka": 1,
     "Galicia": 3,
     "Gauteng": 8,
-    "Georgia": 1485,
+    "Georgia": 1532,
     "Goi\u00e1s": 2,
     "Grand Est": 65,
     "Groningen": 23,
-    "Guangdong": 66,
+    "Guangdong": 67,
     "Guangxi": 16,
     "Guayas": 2,
     "Gyeonggi-do": 10,
@@ -14514,20 +14547,21 @@
     "Hauts-de-France": 106,
     "Hebei": 5,
     "Henan": 8,
-    "Hesse": 1837,
+    "Hesse": 1892,
     "Ho Chi Minh City (HCMC)": 2,
     "Hubei": 2,
     "Hunan": 3,
     "H\u01b0ng Y\u00ean Province": 1,
     "Idaho": 13,
-    "Illinois": 1346,
+    "Illinois": 1388,
     "Indiana": 2,
     "Inner Mongolia": 8,
-    "Iowa": 657,
-    "Istanbul": 42,
-    "Jakarta": 118,
+    "Iowa": 661,
+    "Islamabad": 3,
+    "Istanbul": 43,
+    "Jakarta": 119,
     "Jalisco": 2,
-    "Jiangsu": 44,
+    "Jiangsu": 45,
     "Jiangxi": 1,
     "Jilin": 3,
     "Johor": 1,
@@ -14536,10 +14570,10 @@
     "Khulna Division": 5,
     "Khyber Pakhtunkhwa": 1,
     "Kyiv City": 30,
-    "Kymenlaakso": 18,
+    "Kymenlaakso": 20,
     "La Paz Department": 1,
     "Lagos": 6,
-    "Leinster": 39,
+    "Leinster": 42,
     "Liaoning": 9,
     "Limburg": 108,
     "Lisbon": 1,
@@ -14552,22 +14586,22 @@
     "Maharashtra": 60,
     "Manama": 1,
     "Marrakesh-Safi": 4,
-    "Maryland": 82,
+    "Maryland": 85,
     "Massachusetts": 78,
     "Mato Grosso do Sul": 1,
-    "Mazovia": 562,
+    "Mazovia": 564,
     "Mendoza": 2,
     "Mexico City": 1,
     "Michigan": 3,
     "Minas Gerais": 3,
     "Missouri": 12,
-    "Moscow": 1281,
+    "Moscow": 1290,
     "Murcia": 1,
     "M\u00e9xico": 4,
     "Nacional": 1,
     "Nairobi County": 2,
     "Navarre": 1,
-    "Nebraska": 196,
+    "Nebraska": 199,
     "Nevada": 2,
     "New Aquitaine": 32,
     "New Brunswick": 1,
@@ -14576,17 +14610,17 @@
     "New Mexico": 1,
     "New Providence": 1,
     "New South Wales": 83,
-    "New York": 1653,
+    "New York": 1698,
     "Ningxia": 5,
     "Nizhny Novgorod Oblast": 2,
     "North Brabant": 48,
-    "North Carolina": 390,
+    "North Carolina": 397,
     "North Holland": 1779,
     "North Rhine-Westphalia": 73,
     "Northern Ireland": 1,
     "Novosibirsk Oblast": 1,
     "Nuevo Le\u00f3n": 2,
-    "Ohio": 141,
+    "Ohio": 143,
     "Oklahoma": 80,
     "Ontario": 86,
     "Oregon": 165,
@@ -14607,7 +14641,7 @@
     "Provence-Alpes-C\u00f4te d'Azur": 1,
     "Qalyubia": 1,
     "Qinghai": 7,
-    "Quebec": 146,
+    "Quebec": 148,
     "Quintana Roo": 1,
     "Rabat-Sal\u00e9-K\u00e9nitra": 1,
     "Rajshahi Division": 3,
@@ -14620,37 +14654,37 @@
     "Saint Michael": 2,
     "Santa Catarina": 1,
     "Santiago Metropolitan": 5,
-    "Saxony": 141,
+    "Saxony": 144,
     "Schleswig-Holstein": 1,
     "Scotland": 1,
-    "Seoul": 206,
+    "Seoul": 213,
     "Shaanxi": 8,
-    "Shanghai": 147,
+    "Shanghai": 153,
     "Shanxi": 9,
     "Siauliai": 1,
     "Sichuan": 44,
     "Sindh": 3,
     "Sofia-Capital": 1,
-    "South Carolina": 61,
+    "South Carolina": 62,
     "South Holland": 88,
     "South Karelia": 323,
     "Southern District": 1,
     "St.-Petersburg": 2,
     "State of Berlin": 18,
-    "Stockholm": 80,
-    "S\u00e3o Paulo": 246,
-    "Taiwan": 48,
+    "Stockholm": 82,
+    "S\u00e3o Paulo": 281,
+    "Taiwan": 50,
     "Takao": 2,
     "Tel Aviv": 51,
     "Tennessee": 43,
-    "Texas": 1587,
+    "Texas": 1636,
     "Thai Nguyen": 2,
     "Th\u1eeba Thi\u00ean Hu\u1ebf Province": 1,
     "Tianjin": 26,
     "Tibet": 1,
     "Ticino": 83,
     "Timi\u0219 County": 158,
-    "Tokyo": 244,
+    "Tokyo": 247,
     "Tunis Governorate": 1,
     "T\u00e1chira": 1,
     "Uppsala": 1,
@@ -14660,10 +14694,10 @@
     "Uusimaa": 78,
     "Valencia": 4,
     "Vienna": 6,
-    "Virginia": 2117,
+    "Virginia": 2164,
     "V\u00e4stra G\u00f6taland": 1,
     "Wanica District": 1,
-    "Washington": 1503,
+    "Washington": 1549,
     "West Java": 4,
     "West Sumatra": 1,
     "Western Cape": 3,
@@ -14674,21 +14708,21 @@
     "Zhejiang": 7,
     "Zhytomyr Oblast": 1,
     "Zurich": 18,
-    "\u00cele-de-France": 36,
+    "\u00cele-de-France": 38,
     "\u0130zmir Province": 1,
     "\u015eanl\u0131urfa": 1,
     "\u015eold\u0103ne\u015fti": 7
   },
   "site": "garden",
   "site_label": "Garden \u2014 swarmgarden.com",
-  "snapshot_at_pt": "2026-11-15T00:53:00.366859-08:00",
-  "snapshot_at_utc": "2026-11-15T08:53:00Z",
+  "snapshot_at_pt": "2026-11-15T18:52:59.026448-08:00",
+  "snapshot_at_utc": "2026-11-16T02:52:59Z",
   "status": {
-    "200": 26228,
-    "301": 27,
-    "307": 1131,
+    "200": 26858,
+    "301": 29,
+    "307": 1148,
     "400": 19,
-    "404": 8840,
+    "404": 8880,
     "405": 8,
     "503": 5
   },
@@ -14702,7 +14736,7 @@
     "source": "public counts payload (D1 exact counts)"
   },
   "web_bot_auth_verdicts": {
-    "absent": 36136,
-    "present": 122
+    "absent": 36823,
+    "present": 124
   }
 }
