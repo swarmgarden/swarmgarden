@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 162
+    "unrouted": 165
   },
   "by_channel_code": {
     "human-press": {
@@ -24,24 +24,24 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 162
+      "no-code (non-JSON refusal)": 165
     }
   },
   "by_cls": {
     "agent-claimed": 4,
     "automation": 19,
-    "browser": 119,
-    "unknown": 25
+    "browser": 120,
+    "unknown": 27
   },
   "by_cname": {
-    "": 162,
+    "": 165,
     "ChatGPT-User": 1,
     "Meta Web Indexer": 1,
     "Meta-ExternalFetcher": 1,
     "OAI-SearchBot": 2
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 162,
+    "no-code (non-JSON refusal)": 165,
     "off-format": 3,
     "render-not-open": 1,
     "unknown-nonce": 1
@@ -70,7 +70,7 @@
     "2026-11-12": 10,
     "2026-11-14": 4,
     "2026-11-15": 2,
-    "2026-11-16": 1
+    "2026-11-16": 4
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -95,22 +95,22 @@
     "2026-11-10": 1,
     "2026-11-12": 10,
     "2026-11-14": 5,
-    "2026-11-15": 2
+    "2026-11-15": 5
   },
   "by_length": {
     "0": 2,
-    "1-100": 122,
-    "1001-10000": 9,
+    "1-100": 123,
+    "1001-10000": 10,
     "101-1000": 21,
-    "not recorded": 13
+    "not recorded": 14
   },
   "by_origin": {
-    "external": 161,
+    "external": 164,
     "steward-test": 6
   },
   "by_route": {
-    "/": 80,
-    "/.netlify/functions/visit": 1,
+    "/": 82,
+    "/.netlify/functions/visit": 2,
     "//wp-json/batch/v1": 2,
     "/_flight": 1,
     "/_next/rsc": 1,
@@ -138,18 +138,18 @@
   "by_route_folded": 13,
   "by_status": {
     "400": 3,
-    "404": 83,
-    "405": 80,
+    "404": 84,
+    "405": 82,
     "503": 1
   },
   "distinct_routes": 38,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Nov 15, 2026, 6:52:59 PM PT",
-  "generated_at_utc": "2026-11-16T02:52:59Z",
+  "generated_at_pt": "Nov 16, 2026, 12:54:26 AM PT",
+  "generated_at_utc": "2026-11-16T08:54:26Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-11-16T02:53:06.662Z",
+    "as_of": "2026-11-16T08:54:32.951Z",
     "human_presses": 16,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -160,11 +160,11 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 167,
+  "total": 170,
   "unrouted_by_route": [
     {
       "cls": "browser",
-      "count": 69,
+      "count": 70,
       "route": "/",
       "status": 405
     },
@@ -181,16 +181,16 @@
       "status": 405
     },
     {
+      "cls": "unknown",
+      "count": 6,
+      "route": "/",
+      "status": 405
+    },
+    {
       "cls": "browser",
       "count": 6,
       "route": "/wp-json/batch/v1",
       "status": 404
-    },
-    {
-      "cls": "unknown",
-      "count": 5,
-      "route": "/",
-      "status": 405
     },
     {
       "cls": "unknown",
@@ -302,6 +302,12 @@
     },
     {
       "cls": "automation",
+      "count": 1,
+      "route": "/.netlify/functions/visit",
+      "status": 404
+    },
+    {
+      "cls": "unknown",
       "count": 1,
       "route": "/.netlify/functions/visit",
       "status": 404
