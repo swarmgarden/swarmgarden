@@ -1,45 +1,4 @@
 {
-  "bot_auth": {
-    "absent_total": 37250,
-    "by_name": [
-      {
-        "name": "(no claimed name)",
-        "records_with_signature_headers": 188
-      },
-      {
-        "name": "meta-webindexer",
-        "records_with_signature_headers": 25
-      }
-    ],
-    "note": "Signature-header presence (Signature, Signature-Input, or Signature-Agent) by claimed name. Presence is a claim, not a verification: no signature has been verified, and the platform's verified-bot verdict cannot fire on this hosting tier. signature_agent_hosts is deployment-forward from Oct 18, 2026 (evening): the hostnames signers name for their key directories, stored as claims.",
-    "present_total": 213,
-    "signature_agent_hosts": [
-      {
-        "host": "ahrefs.com",
-        "records": 101
-      },
-      {
-        "host": "crawler.exa.ai",
-        "records": 72
-      },
-      {
-        "host": "shapbot.parallel.ai",
-        "records": 9
-      },
-      {
-        "host": "www.meta.com",
-        "records": 7
-      },
-      {
-        "host": "anticlone.de",
-        "records": 4
-      },
-      {
-        "host": "domainsbot.com",
-        "records": 2
-      }
-    ]
-  },
   "columns": [
     "name",
     "claimed",
@@ -54,20 +13,20 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 8111
+          "(none recorded)": 8187
         },
         "kind": "link-preview",
         "name": "facebookexternalhit",
         "operator": "Meta",
         "rdns": {
-          "not-offered": 8099
+          "not-offered": 8175
         },
-        "rdns_era_records": 8099,
-        "requests": 8104,
+        "rdns_era_records": 8175,
+        "requests": 8180,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 8104,
+          "unverifiable-no-list": 8180,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -296,20 +255,20 @@
       },
       {
         "by_purpose": {
-          "undeclared": 61
+          "undeclared": 62
         },
         "kind": "undeclared",
         "name": "Amazonbot",
         "operator": "Amazon",
         "rdns": {
-          "not-offered": 61
+          "not-offered": 62
         },
-        "rdns_era_records": 61,
-        "requests": 61,
+        "rdns_era_records": 62,
+        "requests": 62,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 61,
+          "unverifiable-no-list": 62,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -598,14 +557,14 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 17, 2026, 6:53:01 AM PT",
-  "generated_at_utc": "2026-11-17T14:53:01Z",
+  "generated_at_pt": "Nov 17, 2026, 12:53:00 PM PT",
+  "generated_at_utc": "2026-11-17T20:53:00Z",
   "rows": [
     {
-      "claimed": 8104,
+      "claimed": 8180,
       "name": "facebookexternalhit",
       "not-checked": 0,
-      "unverifiable-no-list": 8104,
+      "unverifiable-no-list": 8180,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -701,10 +660,10 @@
       "wrong-range": 0
     },
     {
-      "claimed": 61,
+      "claimed": 62,
       "name": "Amazonbot",
       "not-checked": 0,
-      "unverifiable-no-list": 61,
+      "unverifiable-no-list": 62,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -1758,7 +1717,7 @@
         }
       },
       "2026-11-03": {
-        "digest_requests": 827,
+        "digest_requests": 826,
         "distinct_sources": 464,
         "names_per_source": {
           "0": 120,
@@ -1828,7 +1787,7 @@
         }
       },
       "2026-11-04": {
-        "digest_requests": 548,
+        "digest_requests": 547,
         "distinct_sources": 392,
         "names_per_source": {
           "0": 93,
@@ -2019,7 +1978,7 @@
         }
       },
       "2026-11-07": {
-        "digest_requests": 1339,
+        "digest_requests": 1337,
         "distinct_sources": 403,
         "names_per_source": {
           "0": 142,
@@ -2134,7 +2093,7 @@
         }
       },
       "2026-11-09": {
-        "digest_requests": 762,
+        "digest_requests": 761,
         "distinct_sources": 389,
         "names_per_source": {
           "0": 78,
@@ -2203,10 +2162,10 @@
         }
       },
       "2026-11-10": {
-        "digest_requests": 611,
-        "distinct_sources": 379,
+        "digest_requests": 612,
+        "distinct_sources": 380,
         "names_per_source": {
-          "0": 85,
+          "0": 86,
           "1": 292,
           "2": 2,
           "3": 0,
@@ -2235,7 +2194,7 @@
             "4+": 0
           },
           "not-checked": {
-            "0": 6,
+            "0": 7,
             "1": 13,
             "2": 0,
             "3": 0,
@@ -2261,7 +2220,7 @@
         }
       },
       "2026-11-11": {
-        "digest_requests": 659,
+        "digest_requests": 663,
         "distinct_sources": 401,
         "names_per_source": {
           "0": 86,
@@ -2391,10 +2350,10 @@
         }
       },
       "2026-11-13": {
-        "digest_requests": 828,
-        "distinct_sources": 396,
+        "digest_requests": 829,
+        "distinct_sources": 397,
         "names_per_source": {
-          "0": 91,
+          "0": 92,
           "1": 301,
           "2": 4,
           "3": 0,
@@ -2430,7 +2389,7 @@
             "4+": 0
           },
           "not-checked": {
-            "0": 4,
+            "0": 5,
             "1": 5,
             "2": 0,
             "3": 0,
@@ -2601,7 +2560,7 @@
         }
       },
       "2026-11-16": {
-        "digest_requests": 958,
+        "digest_requests": 957,
         "distinct_sources": 615,
         "names_per_source": {
           "0": 312,
@@ -2667,49 +2626,50 @@
         }
       },
       "2026-11-17": {
-        "digest_requests": 142,
-        "distinct_sources": 120,
+        "digest_requests": 348,
+        "distinct_sources": 302,
         "names_per_source": {
-          "0": 23,
-          "1": 97,
+          "0": 137,
+          "1": 165,
           "2": 0,
           "3": 0,
           "4+": 0
         },
         "names_per_source_by_origin": {
           "cloud-hosting": {
-            "0": 3,
+            "0": 6,
             "1": 0,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "named-other": {
-            "0": 2,
-            "1": 0,
+            "0": 51,
+            "1": 1,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "none": {
-            "0": 18,
-            "1": 96,
+            "0": 74,
+            "1": 161,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "not-checked": {
-            "0": 0,
-            "1": 1,
+            "0": 6,
+            "1": 3,
             "2": 0,
             "3": 0,
             "4+": 0
           }
         },
         "sources_by_name": {
+          "Amazonbot": 1,
           "GPTBot": 2,
           "OAI-SearchBot": 3,
-          "facebookexternalhit": 92
+          "facebookexternalhit": 159
         }
       }
     },
@@ -2719,7 +2679,7 @@
     "folds": {
       "agent_claimed_operator_purpose": {
         "Amazon": {
-          "undeclared": 61
+          "undeclared": 62
         },
         "Anthropic": {
           "training": 178
@@ -2748,7 +2708,7 @@
           "other": 1244
         },
         "Meta": {
-          "(none recorded)": 8256,
+          "(none recorded)": 8332,
           "training": 41,
           "user-triggered": 2
         },
@@ -2771,98 +2731,34 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 2239,
-        "cloud-hosting": 2993,
+        "cdn": 2243,
+        "cloud-hosting": 2999,
         "education": 1,
-        "other": 18274,
+        "other": 18467,
         "search-platform": 13864,
-        "security-research": 10,
-        "telecom-isp": 82
+        "security-research": 11,
+        "telecom-isp": 83
       },
-      "by_class": {
-        "agent-claimed": {},
-        "automation": {
-          "generic-bot-token": 649,
-          "http-library/tool: axios": 5,
-          "http-library/tool: curl": 524,
-          "http-library/tool: go-http-client": 37,
-          "http-library/tool: headless-chrome": 6,
-          "http-library/tool: java": 1,
-          "http-library/tool: okhttp": 2,
-          "http-library/tool: python-aiohttp": 22,
-          "http-library/tool: python-httpx": 6,
-          "http-library/tool: python-requests": 53,
-          "named-crawler (dictionary)": 8495,
-          "other-automation": 2
-        },
-        "browser": {
-          "chrome": 8662,
-          "edge": 284,
-          "firefox": 430,
-          "opera": 33,
-          "other-mozilla": 1,
-          "safari": 1908
-        },
-        "unknown": {
-          "library/tool: scrapy": 4,
-          "no-UA": 232,
-          "token: (all other tokens, small-n folded)": 40,
-          "token: Chrome": 7,
-          "token: Dalvik": 15,
-          "token: Hello": 78,
-          "token: Mozilla": 3173,
-          "token: Mozlila": 60,
-          "token: Opera": 5,
-          "token: facebookexternalhit": 8111,
-          "token: fasthttp": 12,
-          "token: http:": 1295,
-          "token: metabase-cve-2026-72898-detect": 8,
-          "token: swarm-garden-snapshot": 182,
-          "token: webapp-mapper": 9
-        }
-      },
+      "by_class": null,
       "header_profile": {
-        "browser-like": 1310,
-        "minimal": 15413,
-        "partial": 12876
-      },
-      "headless_markers_by_class": {
-        "automation": 6
+        "browser-like": 1412,
+        "minimal": 15502,
+        "partial": 12890
       },
       "origin_category": {
-        "cloud-hosting": 3681,
+        "cloud-hosting": 3684,
         "commercial-bot": 95,
-        "named-other": 1743,
-        "none": 16108,
-        "not-checked": 555,
+        "named-other": 1795,
+        "none": 16248,
+        "not-checked": 565,
         "operator-crawler": 7413,
         "residential-network": 4
       },
       "protocol": {
-        "h1.0": 247,
-        "h1.1": 17390,
-        "h2": 11883,
+        "h1.0": 248,
+        "h1.1": 17510,
+        "h2": 11967,
         "h3": 79
-      },
-      "ua_completeness": {
-        "comment-no-version": 3,
-        "empty": 232,
-        "full": 34845,
-        "product+version": 1052,
-        "product-only": 1331
-      },
-      "ua_family": {
-        "axios": 5,
-        "curl": 524,
-        "go-http-client": 37,
-        "headless-chrome": 6,
-        "java": 1,
-        "okhttp": 2,
-        "other": 36803,
-        "python-aiohttp": 22,
-        "python-httpx": 6,
-        "python-requests": 53,
-        "scrapy": 4
       }
     },
     "note": "Cross-tab views over the frozen top classes \u2014 never reclassifications. UA-derived folds are computed from the stored UA strings; origin, header-profile and protocol folds are era-forward from the Oct 19, 2026 W6 deployment. The ASN operator type is a descriptive keyword heuristic over the AS organisation string."
