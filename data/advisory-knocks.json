@@ -3,7 +3,7 @@
     "human-press": 1,
     "intake-other": 1,
     "render-claim": 4,
-    "unrouted": 394
+    "unrouted": 396
   },
   "by_channel_code": {
     "human-press": {
@@ -17,17 +17,17 @@
       "rate-limited": 2
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 394
+      "no-code (non-JSON refusal)": 396
     }
   },
   "by_cls": {
     "agent-claimed": 4,
     "automation": 19,
     "browser": 283,
-    "unknown": 94
+    "unknown": 96
   },
   "by_cname": {
-    "": 391,
+    "": 393,
     "Applebot": 1,
     "Baiduspider": 1,
     "Bingbot": 2,
@@ -38,7 +38,7 @@
     "Googlebot": 1
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 395,
+    "no-code (non-JSON refusal)": 397,
     "off-format": 3,
     "rate-limited": 2
   },
@@ -67,7 +67,7 @@
     "2026-11-14": 4,
     "2026-11-15": 23,
     "2026-11-16": 9,
-    "2026-11-17": 2
+    "2026-11-17": 4
   },
   "by_day_pt": {
     "2026-10-18": 4,
@@ -92,18 +92,18 @@
     "2026-11-10": 2,
     "2026-11-14": 4,
     "2026-11-15": 28,
-    "2026-11-16": 6
+    "2026-11-16": 8
   },
   "by_length": {
     "0": 21,
-    "1-100": 297,
+    "1-100": 298,
     "1001-10000": 11,
-    "101-1000": 38,
+    "101-1000": 39,
     "not recorded": 20,
     "over 10000": 13
   },
   "by_origin": {
-    "external": 398,
+    "external": 400,
     "steward-test": 2
   },
   "by_route": {
@@ -131,27 +131,27 @@
     "/wp-json/batch/v1/": 8,
     "/wp-json/batch/v1/..;/batch/v1": 3,
     "/wp/wp-json/batch/v1": 8,
-    "/xmlrpc.php": 10
+    "/xmlrpc.php": 11
   },
-  "by_route_folded": 40,
+  "by_route_folded": 41,
   "by_status": {
     "400": 3,
-    "404": 269,
+    "404": 271,
     "405": 126,
     "429": 2
   },
-  "distinct_routes": 60,
+  "distinct_routes": 61,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Nov 16, 2026, 6:53:10 PM PT",
-  "generated_at_utc": "2026-11-17T02:53:10Z",
+  "generated_at_pt": "Nov 17, 2026, 12:52:58 AM PT",
+  "generated_at_utc": "2026-11-17T08:52:58Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "advisory",
   "successes": {
-    "as_of": "2026-11-17T02:53:20.944Z",
+    "as_of": "2026-11-17T08:53:11.105Z",
     "human_presses": 4,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate."
   },
-  "total": 400,
+  "total": 402,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -268,15 +268,15 @@
       "status": 404
     },
     {
-      "cls": "browser",
-      "count": 6,
-      "route": "/wp-json/batch%2fv1",
+      "cls": "unknown",
+      "count": 7,
+      "route": "/xmlrpc.php",
       "status": 404
     },
     {
-      "cls": "unknown",
+      "cls": "browser",
       "count": 6,
-      "route": "/xmlrpc.php",
+      "route": "/wp-json/batch%2fv1",
       "status": 404
     },
     {
@@ -370,6 +370,12 @@
       "status": 404
     },
     {
+      "cls": "unknown",
+      "count": 1,
+      "route": "/.netlify/functions/visit",
+      "status": 404
+    },
+    {
       "cls": "browser",
       "count": 1,
       "route": "/_data/app/app/down",
@@ -445,12 +451,6 @@
       "cls": "browser",
       "count": 1,
       "route": "/api/init",
-      "status": 404
-    },
-    {
-      "cls": "browser",
-      "count": 1,
-      "route": "/api/kf-fe/qrcode/check",
       "status": 404
     }
   ]
