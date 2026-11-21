@@ -5,7 +5,7 @@
     "questions": 1,
     "render-claim": 1,
     "signal": 1,
-    "unrouted": 169
+    "unrouted": 173
   },
   "by_channel_code": {
     "human-press": {
@@ -25,24 +25,24 @@
       "unknown-nonce": 1
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 169
+      "no-code (non-JSON refusal)": 173
     }
   },
   "by_cls": {
     "agent-claimed": 4,
     "automation": 19,
-    "browser": 125,
-    "unknown": 27
+    "browser": 128,
+    "unknown": 28
   },
   "by_cname": {
-    "": 170,
+    "": 174,
     "ChatGPT-User": 1,
     "Meta Web Indexer": 1,
     "Meta-ExternalFetcher": 1,
     "OAI-SearchBot": 2
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 169,
+    "no-code (non-JSON refusal)": 173,
     "off-format": 3,
     "rate-limited": 1,
     "render-not-open": 1,
@@ -75,7 +75,8 @@
     "2026-11-16": 5,
     "2026-11-17": 1,
     "2026-11-18": 2,
-    "2026-11-20": 1
+    "2026-11-20": 1,
+    "2026-11-21": 4
   },
   "by_day_pt": {
     "2026-10-18": 7,
@@ -104,17 +105,19 @@
     "2026-11-16": 2,
     "2026-11-17": 1,
     "2026-11-18": 1,
-    "2026-11-19": 1
+    "2026-11-19": 1,
+    "2026-11-20": 3,
+    "2026-11-21": 1
   },
   "by_length": {
     "0": 3,
-    "1-100": 124,
+    "1-100": 127,
     "1001-10000": 13,
-    "101-1000": 21,
+    "101-1000": 22,
     "not recorded": 14
   },
   "by_origin": {
-    "external": 169,
+    "external": 173,
     "steward-test": 6
   },
   "by_route": {
@@ -124,9 +127,9 @@
     "/_flight": 1,
     "/_next/rsc": 1,
     "/api": 6,
+    "/api/audit": 1,
     "/api/gql": 4,
     "/api/graphql": 5,
-    "/api/rsc": 1,
     "/api/v1/human-press": 2,
     "/blog/wp-json/batch/v1": 2,
     "/cgi-bin/php": 2,
@@ -142,24 +145,24 @@
     "/wp-json/batch/v1": 10,
     "/wp-json/batch/v1/": 2,
     "/wp/wp-json/batch/v1": 2,
-    "/xmlrpc.php": 3
+    "/xmlrpc.php": 4
   },
-  "by_route_folded": 13,
+  "by_route_folded": 16,
   "by_status": {
     "400": 3,
-    "404": 84,
+    "404": 88,
     "405": 86,
     "429": 1,
     "503": 1
   },
-  "distinct_routes": 38,
+  "distinct_routes": 41,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Nov 20, 2026, 6:53:01 PM PT",
-  "generated_at_utc": "2026-11-21T02:53:01Z",
+  "generated_at_pt": "Nov 21, 2026, 6:53:00 AM PT",
+  "generated_at_utc": "2026-11-21T14:53:00Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "garden",
   "successes": {
-    "as_of": "2026-11-21T02:53:08.385Z",
+    "as_of": "2026-11-21T14:53:06.252Z",
     "human_presses": 17,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate.",
     "notes": {
@@ -170,7 +173,7 @@
     "signals_completed": 1,
     "submissions_receipts_issued": 0
   },
-  "total": 175,
+  "total": 179,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -337,6 +340,18 @@
     {
       "cls": "browser",
       "count": 1,
+      "route": "/api/audit",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/check",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
       "route": "/api/graphql",
       "status": 404
     },
@@ -344,6 +359,12 @@
       "cls": "browser",
       "count": 1,
       "route": "/api/rsc",
+      "status": 404
+    },
+    {
+      "cls": "browser",
+      "count": 1,
+      "route": "/api/scan",
       "status": 404
     },
     {
@@ -428,6 +449,12 @@
       "cls": "browser",
       "count": 1,
       "route": "/wp-json/batch/v1/..;/batch/v1",
+      "status": 404
+    },
+    {
+      "cls": "unknown",
+      "count": 1,
+      "route": "/xmlrpc.php",
       "status": 404
     }
   ]
