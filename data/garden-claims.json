@@ -1,10 +1,10 @@
 {
   "bot_auth": {
-    "absent_total": 44609,
+    "absent_total": 44979,
     "by_name": [
       {
         "name": "(no claimed name)",
-        "records_with_signature_headers": 124
+        "records_with_signature_headers": 126
       },
       {
         "name": "meta-webindexer",
@@ -12,11 +12,11 @@
       }
     ],
     "note": "Signature-header presence (Signature, Signature-Input, or Signature-Agent) by claimed name. Presence is a claim, not a verification: no signature has been verified, and the platform's verified-bot verdict cannot fire on this hosting tier. signature_agent_hosts is deployment-forward from Oct 18, 2026 (evening): the hostnames signers name for their key directories, stored as claims.",
-    "present_total": 152,
+    "present_total": 154,
     "signature_agent_hosts": [
       {
         "host": "ahrefs.com",
-        "records": 96
+        "records": 98
       },
       {
         "host": "www.meta.com",
@@ -54,20 +54,20 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 9657
+          "(none recorded)": 9736
         },
         "kind": "link-preview",
         "name": "facebookexternalhit",
         "operator": "Meta",
         "rdns": {
-          "not-offered": 9649
+          "not-offered": 9728
         },
-        "rdns_era_records": 9649,
-        "requests": 9652,
+        "rdns_era_records": 9728,
+        "requests": 9731,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 9652,
+          "unverifiable-no-list": 9731,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -76,26 +76,27 @@
       },
       {
         "by_purpose": {
-          "(none recorded)": 611
+          "(none recorded)": 622
         },
         "kind": "search-engine",
         "name": "Googlebot",
         "operator": "Google",
         "rdns": {
-          "match": 469,
+          "match": 475,
           "mismatch": 4,
-          "none": 20
+          "none": 24,
+          "not-checked": 1
         },
-        "rdns_era_records": 493,
-        "requests": 591,
+        "rdns_era_records": 504,
+        "requests": 602,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
           "unverifiable-no-list": 0,
-          "verified-range": 567,
-          "wrong-range": 24
+          "verified-range": 574,
+          "wrong-range": 28
         },
-        "verified_share_of_checkable": "95.9%",
+        "verified_share_of_checkable": "95.3%",
         "wba_present": 0
       },
       {
@@ -123,20 +124,40 @@
       },
       {
         "by_purpose": {
-          "undeclared": 108
+          "undeclared": 114
         },
         "kind": "undeclared",
         "name": "Amazonbot",
         "operator": "Amazon",
         "rdns": {
-          "not-offered": 108
+          "not-offered": 114
         },
-        "rdns_era_records": 108,
-        "requests": 108,
+        "rdns_era_records": 114,
+        "requests": 114,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 108,
+          "unverifiable-no-list": 114,
+          "verified-range": 0,
+          "wrong-range": 0
+        },
+        "verified_share_of_checkable": "\u2014",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {},
+        "kind": "(unlisted)",
+        "name": "AhrefsBot",
+        "operator": "(unlisted)",
+        "rdns": {
+          "not-offered": 98
+        },
+        "rdns_era_records": 98,
+        "requests": 98,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 98,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -163,26 +184,6 @@
           "wrong-range": 4
         },
         "verified_share_of_checkable": "95.9%",
-        "wba_present": 0
-      },
-      {
-        "by_purpose": {},
-        "kind": "(unlisted)",
-        "name": "AhrefsBot",
-        "operator": "(unlisted)",
-        "rdns": {
-          "not-offered": 96
-        },
-        "rdns_era_records": 96,
-        "requests": 96,
-        "top_class": "agent-claimed",
-        "verdicts": {
-          "not-checked": 0,
-          "unverifiable-no-list": 96,
-          "verified-range": 0,
-          "wrong-range": 0
-        },
-        "verified_share_of_checkable": "\u2014",
         "wba_present": 0
       },
       {
@@ -336,6 +337,28 @@
       },
       {
         "by_purpose": {
+          "user-triggered": 24
+        },
+        "kind": "user-triggered",
+        "name": "ChatGPT-User",
+        "operator": "OpenAI",
+        "rdns": {
+          "not-offered": 24
+        },
+        "rdns_era_records": 24,
+        "requests": 24,
+        "top_class": "agent-claimed",
+        "verdicts": {
+          "not-checked": 0,
+          "unverifiable-no-list": 0,
+          "verified-range": 5,
+          "wrong-range": 19
+        },
+        "verified_share_of_checkable": "20.8%",
+        "wba_present": 0
+      },
+      {
+        "by_purpose": {
           "(none recorded)": 21
         },
         "kind": "search-engine",
@@ -355,28 +378,6 @@
           "wrong-range": 1
         },
         "verified_share_of_checkable": "95.2%",
-        "wba_present": 0
-      },
-      {
-        "by_purpose": {
-          "user-triggered": 18
-        },
-        "kind": "user-triggered",
-        "name": "ChatGPT-User",
-        "operator": "OpenAI",
-        "rdns": {
-          "not-offered": 18
-        },
-        "rdns_era_records": 18,
-        "requests": 18,
-        "top_class": "agent-claimed",
-        "verdicts": {
-          "not-checked": 0,
-          "unverifiable-no-list": 0,
-          "verified-range": 5,
-          "wrong-range": 13
-        },
-        "verified_share_of_checkable": "small n (18 checkable)",
         "wba_present": 0
       },
       {
@@ -617,26 +618,26 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 22, 2026, 6:53:03 AM PT",
-  "generated_at_utc": "2026-11-22T14:53:03Z",
+  "generated_at_pt": "Nov 22, 2026, 12:53:08 PM PT",
+  "generated_at_utc": "2026-11-22T20:53:08Z",
   "rows": [
     {
-      "claimed": 9652,
+      "claimed": 9731,
       "name": "facebookexternalhit",
       "not-checked": 0,
-      "unverifiable-no-list": 9652,
+      "unverifiable-no-list": 9731,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
     },
     {
-      "claimed": 591,
+      "claimed": 602,
       "name": "Googlebot",
       "not-checked": 0,
       "unverifiable-no-list": 0,
-      "verified-range": 567,
-      "verified_share_of_checkable": "95.9%",
-      "wrong-range": 24
+      "verified-range": 574,
+      "verified_share_of_checkable": "95.3%",
+      "wrong-range": 28
     },
     {
       "claimed": 196,
@@ -648,10 +649,19 @@
       "wrong-range": 0
     },
     {
-      "claimed": 108,
+      "claimed": 114,
       "name": "Amazonbot",
       "not-checked": 0,
-      "unverifiable-no-list": 108,
+      "unverifiable-no-list": 114,
+      "verified-range": 0,
+      "verified_share_of_checkable": "\u2014",
+      "wrong-range": 0
+    },
+    {
+      "claimed": 98,
+      "name": "AhrefsBot",
+      "not-checked": 0,
+      "unverifiable-no-list": 98,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -664,15 +674,6 @@
       "verified-range": 93,
       "verified_share_of_checkable": "95.9%",
       "wrong-range": 4
-    },
-    {
-      "claimed": 96,
-      "name": "AhrefsBot",
-      "not-checked": 0,
-      "unverifiable-no-list": 96,
-      "verified-range": 0,
-      "verified_share_of_checkable": "\u2014",
-      "wrong-range": 0
     },
     {
       "claimed": 94,
@@ -738,6 +739,15 @@
       "wrong-range": 0
     },
     {
+      "claimed": 24,
+      "name": "ChatGPT-User",
+      "not-checked": 0,
+      "unverifiable-no-list": 0,
+      "verified-range": 5,
+      "verified_share_of_checkable": "20.8%",
+      "wrong-range": 19
+    },
+    {
       "claimed": 21,
       "name": "Bingbot",
       "not-checked": 0,
@@ -745,15 +755,6 @@
       "verified-range": 20,
       "verified_share_of_checkable": "95.2%",
       "wrong-range": 1
-    },
-    {
-      "claimed": 18,
-      "name": "ChatGPT-User",
-      "not-checked": 0,
-      "unverifiable-no-list": 0,
-      "verified-range": 5,
-      "verified_share_of_checkable": "small n (18 checkable)",
-      "wrong-range": 13
     },
     {
       "claimed": 9,
@@ -2896,57 +2897,59 @@
         }
       },
       "2026-11-22": {
-        "digest_requests": 262,
-        "distinct_sources": 124,
+        "digest_requests": 635,
+        "distinct_sources": 240,
         "names_per_source": {
-          "0": 32,
-          "1": 92,
-          "2": 0,
+          "0": 59,
+          "1": 180,
+          "2": 1,
           "3": 0,
           "4+": 0
         },
         "names_per_source_by_origin": {
           "cloud-hosting": {
-            "0": 5,
+            "0": 10,
             "1": 0,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "named-other": {
-            "0": 2,
-            "1": 2,
+            "0": 5,
+            "1": 10,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "none": {
-            "0": 24,
-            "1": 85,
-            "2": 0,
+            "0": 43,
+            "1": 161,
+            "2": 1,
             "3": 0,
             "4+": 0
           },
           "not-checked": {
             "0": 1,
-            "1": 2,
+            "1": 3,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "operator-crawler": {
             "0": 0,
-            "1": 3,
+            "1": 6,
             "2": 0,
             "3": 0,
             "4+": 0
           }
         },
         "sources_by_name": {
-          "Amazonbot": 2,
-          "Googlebot": 3,
+          "AhrefsBot": 2,
+          "Amazonbot": 8,
+          "ChatGPT-User": 2,
+          "Googlebot": 8,
           "OAI-SearchBot": 2,
-          "facebookexternalhit": 85
+          "facebookexternalhit": 160
         }
       }
     },
@@ -2956,7 +2959,7 @@
     "folds": {
       "agent_claimed_operator_purpose": {
         "Amazon": {
-          "undeclared": 108
+          "undeclared": 114
         },
         "Anthropic": {
           "training": 99
@@ -2977,12 +2980,12 @@
           "training": 2
         },
         "Google": {
-          "(none recorded)": 611,
+          "(none recorded)": 622,
           "mixed": 15,
           "other": 23
         },
         "Meta": {
-          "(none recorded)": 9730,
+          "(none recorded)": 9809,
           "training": 37,
           "user-triggered": 2
         },
@@ -2992,7 +2995,7 @@
         "OpenAI": {
           "search": 96,
           "training": 94,
-          "user-triggered": 18
+          "user-triggered": 24
         },
         "Perplexity": {
           "search": 4,
@@ -3003,10 +3006,10 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 18177,
-        "cloud-hosting": 2380,
+        "cdn": 18318,
+        "cloud-hosting": 2392,
         "education": 1,
-        "other": 17995,
+        "other": 18200,
         "search-platform": 6085,
         "security-research": 17,
         "telecom-isp": 121
@@ -3014,7 +3017,7 @@
       "by_class": {
         "agent-claimed": {},
         "automation": {
-          "generic-bot-token": 744,
+          "generic-bot-token": 748,
           "http-library/tool: axios": 4,
           "http-library/tool: curl": 793,
           "http-library/tool: go-http-client": 75,
@@ -3023,62 +3026,62 @@
           "http-library/tool: python-aiohttp": 22,
           "http-library/tool: python-httpx": 11,
           "http-library/tool: python-requests": 60,
-          "named-crawler (dictionary)": 905
+          "named-crawler (dictionary)": 916
         },
         "browser": {
-          "chrome": 7454,
-          "edge": 230,
-          "firefox": 396,
+          "chrome": 7475,
+          "edge": 231,
+          "firefox": 403,
           "opera": 14,
-          "safari": 2080
+          "safari": 2096
         },
         "unknown": {
           "library/tool: scrapy": 4,
-          "no-UA": 15213,
+          "no-UA": 15423,
           "token: (all other tokens, small-n folded)": 86,
-          "token: Bun": 122,
+          "token: Bun": 123,
           "token: Dalvik": 14,
-          "token: Hello": 140,
+          "token: Hello": 144,
           "token: Mozilla": 4111,
           "token: Mozlila": 48,
           "token: TLM-Audit-Scanner": 66,
-          "token: facebookexternalhit": 9657,
+          "token: facebookexternalhit": 9736,
           "token: fasthttp": 12,
-          "token: http:": 1348,
+          "token: http:": 1351,
           "token: panscient.com": 45,
-          "token: swarm-garden-export": 189,
-          "token: swarm-garden-snapshot": 403
+          "token: swarm-garden-export": 190,
+          "token: swarm-garden-snapshot": 405
         }
       },
       "header_profile": {
-        "browser-like": 1730,
-        "minimal": 33289,
-        "partial": 5675
+        "browser-like": 1752,
+        "minimal": 33597,
+        "partial": 5718
       },
       "headless_markers_by_class": {
         "automation": 7
       },
       "origin_category": {
-        "cloud-hosting": 5397,
+        "cloud-hosting": 5403,
         "commercial-bot": 60,
-        "named-other": 1577,
-        "none": 32106,
-        "not-checked": 851,
-        "operator-crawler": 689,
+        "named-other": 1590,
+        "none": 32453,
+        "not-checked": 852,
+        "operator-crawler": 695,
         "residential-network": 14
       },
       "protocol": {
         "h1.0": 30,
-        "h1.1": 15234,
-        "h2": 25330,
+        "h1.1": 15437,
+        "h2": 25500,
         "h3": 100
       },
       "ua_completeness": {
         "comment-no-version": 1,
-        "empty": 15213,
-        "full": 26132,
-        "product+version": 1984,
-        "product-only": 1431
+        "empty": 15423,
+        "full": 26283,
+        "product+version": 1992,
+        "product-only": 1434
       },
       "ua_family": {
         "axios": 4,
@@ -3086,7 +3089,7 @@
         "go-http-client": 75,
         "headless-chrome": 7,
         "java": 1,
-        "other": 43784,
+        "other": 44156,
         "python-aiohttp": 22,
         "python-httpx": 11,
         "python-requests": 60,
