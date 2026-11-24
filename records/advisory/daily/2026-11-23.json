@@ -1,24 +1,24 @@
 {
   "claimed_crawlers": [],
   "claimed_purposes": {
-    "": 38224,
+    "": 38574,
     "mixed": 1138,
     "other": 1244,
-    "search": 336,
+    "search": 341,
     "training": 311,
-    "undeclared": 71,
+    "undeclared": 73,
     "user-triggered": 111
   },
   "classes": {
-    "agent-claimed": 3211,
-    "automation": 10095,
-    "browser": 12182,
-    "unknown": 15946
+    "agent-claimed": 3218,
+    "automation": 10135,
+    "browser": 12243,
+    "unknown": 16196
   },
   "counting_window": {
     "ae_retention": "Analytics Engine retains raw records three months, rolling; aggregates here are cumulative over the current dataset window.",
     "dataset_first_record_utc": "2026-10-17 21:40:07",
-    "dataset_last_record_utc": "2026-11-23 08:51:15"
+    "dataset_last_record_utc": "2026-11-24 02:53:07"
   },
   "countries": {
     "AE": 13,
@@ -31,15 +31,15 @@
     "BG": 1,
     "BH": 2,
     "BO": 10,
-    "BR": 266,
+    "BR": 272,
     "BY": 2,
     "CA": 400,
     "CH": 37,
     "CL": 14,
-    "CN": 380,
+    "CN": 383,
     "CO": 26,
     "CZ": 1,
-    "DE": 2012,
+    "DE": 2036,
     "DK": 1,
     "DO": 6,
     "DZ": 4,
@@ -49,15 +49,15 @@
     "ES": 11,
     "FI": 80,
     "FR": 419,
-    "GB": 1153,
+    "GB": 1194,
     "GY": 2,
-    "HK": 257,
+    "HK": 258,
     "HR": 3,
     "HU": 1,
     "ID": 103,
     "IE": 11,
     "IL": 6,
-    "IN": 242,
+    "IN": 243,
     "IQ": 2,
     "IS": 3,
     "IT": 3,
@@ -74,7 +74,7 @@
     "MX": 28,
     "MY": 9,
     "NG": 6,
-    "NL": 2247,
+    "NL": 2250,
     "NO": 3,
     "NP": 2,
     "NZ": 1,
@@ -82,16 +82,16 @@
     "PE": 8,
     "PH": 2,
     "PK": 15,
-    "PL": 1411,
+    "PL": 1413,
     "PT": 1,
     "PY": 2,
     "QA": 2,
     "RO": 352,
-    "RU": 1371,
+    "RU": 1379,
     "SA": 1,
     "SE": 43,
-    "SG": 2219,
-    "SI": 5,
+    "SG": 2240,
+    "SI": 6,
     "T1": 2,
     "TG": 1,
     "TH": 29,
@@ -100,28 +100,28 @@
     "TT": 2,
     "TW": 606,
     "UA": 42,
-    "US": 24396,
+    "US": 24640,
     "UY": 3,
     "UZ": 2,
     "VE": 10,
-    "VN": 6,
+    "VN": 8,
     "XK": 1,
     "ZA": 21
   },
   "dataset": "advisory_visits",
-  "dataset_total": 41434,
+  "dataset_total": 41792,
   "date_pt": "2026-11-23",
   "distinct_referrer_values_steward_copy": 201,
   "events": {
     "arrival-board-view": 93,
     "briefs-read": 12,
     "changed-read": 9,
-    "counts-read": 287,
-    "data-read": 1353,
+    "counts-read": 292,
+    "data-read": 1371,
     "guestbook-view": 17,
     "ledger-read": 6,
     "notes-read": 9,
-    "pageview": 39564,
+    "pageview": 39899,
     "receipt-check": 24,
     "registry-read": 6,
     "render-howto-read": 11,
@@ -1005,33 +1005,51 @@
     "2026-11-23T05": 22,
     "2026-11-23T06": 14,
     "2026-11-23T07": 19,
-    "2026-11-23T08": 18
+    "2026-11-23T08": 21,
+    "2026-11-23T09": 17,
+    "2026-11-23T10": 18,
+    "2026-11-23T11": 22,
+    "2026-11-23T12": 20,
+    "2026-11-23T13": 19,
+    "2026-11-23T14": 21,
+    "2026-11-23T15": 16,
+    "2026-11-23T16": 18,
+    "2026-11-23T17": 13,
+    "2026-11-23T18": 17,
+    "2026-11-23T19": 23,
+    "2026-11-23T20": 40,
+    "2026-11-23T21": 22,
+    "2026-11-23T22": 14,
+    "2026-11-23T23": 20,
+    "2026-11-24T00": 18,
+    "2026-11-24T01": 21,
+    "2026-11-24T02": 15
   },
-  "markdown_preference_records": 125,
+  "markdown_preference_records": 129,
   "methods": {
-    "GET": 41263,
-    "HEAD": 171
+    "GET": 41619,
+    "HEAD": 173
   },
   "networks": [
     {
-      "as_organization": "Google LLC",
-      "asn": "15169",
-      "requests": 10289
-    },
-    {
       "as_organization": "Meta Platforms Ireland Limited",
       "asn": "32934",
-      "requests": 10086
+      "requests": 10325
+    },
+    {
+      "as_organization": "Google LLC",
+      "asn": "15169",
+      "requests": 10295
     },
     {
       "as_organization": "Google LLC",
       "asn": "396982",
-      "requests": 4458
+      "requests": 4461
     },
     {
       "as_organization": "Cloudflare, Inc.",
       "asn": "13335",
-      "requests": 2313
+      "requests": 2326
     },
     {
       "as_organization": "TECHOFF SRV LIMITED",
@@ -1051,22 +1069,22 @@
     {
       "as_organization": "6 COLLYER QUAY",
       "asn": "132203",
-      "requests": 904
+      "requests": 915
     },
     {
       "as_organization": "Microsoft Corporation",
       "asn": "8075",
-      "requests": 401
+      "requests": 407
     },
     {
       "as_organization": "Microsoft Limited",
       "asn": "8075",
-      "requests": 391
+      "requests": 396
     },
     {
       "as_organization": "16 COLLYER QUAY # 18-29 INCOME AT RAFFLES",
       "asn": "132203",
-      "requests": 362
+      "requests": 365
     },
     {
       "as_organization": "RouterHosting LLC",
@@ -1121,7 +1139,7 @@
     {
       "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
       "asn": "132203",
-      "requests": 140
+      "requests": 141
     },
     {
       "as_organization": "HostPapa",
@@ -1129,9 +1147,19 @@
       "requests": 125
     },
     {
+      "as_organization": "CustodianDC Limited",
+      "asn": "50300",
+      "requests": 121
+    },
+    {
       "as_organization": "Amazon Data Services Northern Virginia",
       "asn": "14618",
-      "requests": 117
+      "requests": 118
+    },
+    {
+      "as_organization": "Amazon Technologies Inc.",
+      "asn": "14618",
+      "requests": 114
     },
     {
       "as_organization": "Datacamp Limited",
@@ -1144,19 +1172,14 @@
       "requests": 112
     },
     {
-      "as_organization": "Amazon Technologies Inc.",
-      "asn": "14618",
-      "requests": 110
-    },
-    {
       "as_organization": "Palo Alto Networks, Inc",
       "asn": "396982",
-      "requests": 109
+      "requests": 111
     },
     {
       "as_organization": "TechTies Inc.",
       "asn": "197170",
-      "requests": 108
+      "requests": 109
     },
     {
       "as_organization": "Virtualine Technologies",
@@ -1164,9 +1187,9 @@
       "requests": 103
     },
     {
-      "as_organization": "CustodianDC Limited",
-      "asn": "50300",
-      "requests": 98
+      "as_organization": "SEMrush CY LTD",
+      "asn": "209366",
+      "requests": 90
     },
     {
       "as_organization": "Alibaba Cloud - US",
@@ -1176,12 +1199,7 @@
     {
       "as_organization": "Tencent cloud computing (Beijing) Co., Ltd.",
       "asn": "45090",
-      "requests": 85
-    },
-    {
-      "as_organization": "SEMrush CY LTD",
-      "asn": "209366",
-      "requests": 84
+      "requests": 87
     },
     {
       "as_organization": "Ahrefs Pte Ltd Dmytro",
@@ -1214,6 +1232,11 @@
       "requests": 52
     },
     {
+      "as_organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
+      "asn": "45090",
+      "requests": 52
+    },
+    {
       "as_organization": "Blatant Technologies, LLC",
       "asn": "403005",
       "requests": 52
@@ -1221,11 +1244,6 @@
     {
       "as_organization": "Shanghai UCloud Information Technology Company Limited",
       "asn": "4811",
-      "requests": 51
-    },
-    {
-      "as_organization": "Tencent Cloud Computing (Beijing) Co., Ltd",
-      "asn": "45090",
       "requests": 51
     },
     {
@@ -1249,6 +1267,11 @@
       "requests": 43
     },
     {
+      "as_organization": "Technische Universitaet Muenchen",
+      "asn": "12816",
+      "requests": 42
+    },
+    {
       "as_organization": "PRCDN Consumer Pool",
       "asn": "137409",
       "requests": 40
@@ -1259,24 +1282,19 @@
       "requests": 40
     },
     {
-      "as_organization": "Plot No. 16, Phase IV, Sector 18, Gurugram, Haryana 122015",
-      "asn": "24560",
-      "requests": 39
+      "as_organization": "ReflectionAI Inc",
+      "asn": "396982",
+      "requests": 40
     },
     {
-      "as_organization": "Technische Universitaet Muenchen",
-      "asn": "12816",
+      "as_organization": "Plot No. 16, Phase IV, Sector 18, Gurugram, Haryana 122015",
+      "asn": "24560",
       "requests": 39
     },
     {
       "as_organization": "ACEVILLE PTE.LTD.",
       "asn": "132203",
       "requests": 38
-    },
-    {
-      "as_organization": "ReflectionAI Inc",
-      "asn": "396982",
-      "requests": 37
     },
     {
       "as_organization": "OVH Hosting, Inc.",
@@ -1324,8 +1342,18 @@
       "requests": 32
     },
     {
+      "as_organization": "Code200 UAB",
+      "asn": "18779",
+      "requests": 32
+    },
+    {
       "as_organization": "111 8th Avenue, New York, New York, 10011",
       "asn": "6079",
+      "requests": 31
+    },
+    {
+      "as_organization": "Amazon.com, Inc.",
+      "asn": "16509",
       "requests": 31
     },
     {
@@ -1344,11 +1372,6 @@
       "requests": 30
     },
     {
-      "as_organization": "Amazon.com, Inc.",
-      "asn": "16509",
-      "requests": 29
-    },
-    {
       "as_organization": "SERV.HOST GROUP LTD",
       "asn": "207957",
       "requests": 29
@@ -1364,6 +1387,11 @@
       "requests": 29
     },
     {
+      "as_organization": "Flux Telecom, LLC",
+      "asn": "6079",
+      "requests": 27
+    },
+    {
       "as_organization": "Datacamp Limited",
       "asn": "60068",
       "requests": 27
@@ -1376,11 +1404,6 @@
     {
       "as_organization": "CHINANET SHANGHAI PROVINCE NETWORK",
       "asn": "4811",
-      "requests": 26
-    },
-    {
-      "as_organization": "Code200 UAB",
-      "asn": "18779",
       "requests": 26
     },
     {
@@ -1417,11 +1440,6 @@
       "as_organization": "Amazon.com, Inc.",
       "asn": "14618",
       "requests": 22
-    },
-    {
-      "as_organization": "Flux Telecom, LLC",
-      "asn": "6079",
-      "requests": 21
     },
     {
       "as_organization": "Datadelivery s.r.o.",
@@ -1749,6 +1767,11 @@
       "requests": 8
     },
     {
+      "as_organization": "Dedicated Servers IP Range",
+      "asn": "201814",
+      "requests": 8
+    },
+    {
       "as_organization": "Tech Futures Interactive Inc.",
       "asn": "394256",
       "requests": 8
@@ -1839,13 +1862,13 @@
       "requests": 6
     },
     {
-      "as_organization": "Vietnam Posts and Telecommunications Group",
-      "asn": "45899",
+      "as_organization": "Internet",
+      "asn": "197769",
       "requests": 6
     },
     {
-      "as_organization": "Dedicated Servers IP Range",
-      "asn": "201814",
+      "as_organization": "Vietnam Posts and Telecommunications Group",
+      "asn": "45899",
       "requests": 6
     },
     {
@@ -1911,11 +1934,6 @@
     {
       "as_organization": "Private Customer",
       "asn": "209854",
-      "requests": 5
-    },
-    {
-      "as_organization": "Internet",
-      "asn": "197769",
       "requests": 5
     },
     {
@@ -2269,13 +2287,13 @@
       "requests": 3
     },
     {
-      "as_organization": "Md. Maniruzzaman Manir t/a Doly IT Corner",
-      "asn": "134971",
+      "as_organization": "IENTC S DE RL DE CV",
+      "asn": "28458",
       "requests": 3
     },
     {
-      "as_organization": "IENTC S DE RL DE CV",
-      "asn": "28458",
+      "as_organization": "Md. Maniruzzaman Manir t/a Doly IT Corner",
+      "asn": "134971",
       "requests": 3
     },
     {
@@ -2379,13 +2397,13 @@
       "requests": 2
     },
     {
-      "as_organization": "Wana Corporate",
-      "asn": "36884",
+      "as_organization": "M247 LTD Luxembourg Infrastructure",
+      "asn": "9009",
       "requests": 2
     },
     {
-      "as_organization": "M247 LTD Luxembourg Infrastructure",
-      "asn": "9009",
+      "as_organization": "Wana Corporate",
+      "asn": "36884",
       "requests": 2
     },
     {
@@ -2484,13 +2502,13 @@
       "requests": 2
     },
     {
-      "as_organization": "PT XLSMART Telecom Sejahtera Tbk",
-      "asn": "24203",
+      "as_organization": "RCN-Upstream",
+      "asn": "6079",
       "requests": 2
     },
     {
-      "as_organization": "RCN-Upstream",
-      "asn": "6079",
+      "as_organization": "PT XLSMART Telecom Sejahtera Tbk",
+      "asn": "24203",
       "requests": 2
     },
     {
@@ -2554,6 +2572,11 @@
       "requests": 2
     },
     {
+      "as_organization": "Secure Internet Hong Kong Operations",
+      "asn": "199457",
+      "requests": 2
+    },
+    {
       "as_organization": "EVEO S.A.",
       "asn": "53107",
       "requests": 2
@@ -2561,6 +2584,11 @@
     {
       "as_organization": "Entel S.A. - EntelNet",
       "asn": "6568",
+      "requests": 2
+    },
+    {
+      "as_organization": "FPT Telecom Company",
+      "asn": "18403",
       "requests": 2
     },
     {
@@ -3124,13 +3152,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Biterika Grupp LLC",
-      "asn": "214574",
+      "as_organization": "31173 Services AB infrastructure in Z\u00fcrich, CH.",
+      "asn": "39351",
       "requests": 1
     },
     {
-      "as_organization": "31173 Services AB infrastructure in Z\u00fcrich, CH.",
-      "asn": "39351",
+      "as_organization": "Biterika Grupp LLC",
+      "asn": "214574",
       "requests": 1
     },
     {
@@ -3139,13 +3167,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Nayapara Fiber Online",
-      "asn": "154720",
+      "as_organization": "Jms-Telecom Ltda",
+      "asn": "269705",
       "requests": 1
     },
     {
-      "as_organization": "Jms-Telecom Ltda",
-      "asn": "269705",
+      "as_organization": "Nayapara Fiber Online",
+      "asn": "154720",
       "requests": 1
     },
     {
@@ -3474,6 +3502,11 @@
       "requests": 1
     },
     {
+      "as_organization": "Interworks Networking Services",
+      "asn": "20012",
+      "requests": 1
+    },
+    {
       "as_organization": "ACESSOLINE TELECOMUNICACOES LTDA",
       "asn": "268367",
       "requests": 1
@@ -3499,13 +3532,13 @@
       "requests": 1
     },
     {
-      "as_organization": "RAPIDA TELECOM",
-      "asn": "265972",
+      "as_organization": "InternetVikings Ltd",
+      "asn": "42708",
       "requests": 1
     },
     {
-      "as_organization": "InternetVikings Ltd",
-      "asn": "42708",
+      "as_organization": "RAPIDA TELECOM",
+      "asn": "265972",
       "requests": 1
     },
     {
@@ -4079,13 +4112,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Hetzner Online GmbH",
-      "asn": "213230",
+      "as_organization": "Shree Padma Technology",
+      "asn": "132116",
       "requests": 1
     },
     {
-      "as_organization": "Shree Padma Technology",
-      "asn": "132116",
+      "as_organization": "Hetzner Online GmbH",
+      "asn": "213230",
       "requests": 1
     },
     {
@@ -4116,6 +4149,11 @@
     {
       "as_organization": "Columbus Communications Trinidad Limited.",
       "asn": "27665",
+      "requests": 1
+    },
+    {
+      "as_organization": "VPN-Consumer-US",
+      "asn": "262287",
       "requests": 1
     },
     {
@@ -4159,13 +4197,13 @@
       "requests": 1
     },
     {
-      "as_organization": "VIA ONDAS TELECOMUNICACOES LTDA",
-      "asn": "268229",
+      "as_organization": "UNINET",
+      "asn": "8151",
       "requests": 1
     },
     {
-      "as_organization": "UNINET",
-      "asn": "8151",
+      "as_organization": "VIA ONDAS TELECOMUNICACOES LTDA",
+      "asn": "268229",
       "requests": 1
     },
     {
@@ -4199,13 +4237,13 @@
       "requests": 1
     },
     {
-      "as_organization": "OoredooTN",
-      "asn": "37693",
+      "as_organization": "Orixinet Telecom Ltda - Epp",
+      "asn": "61726",
       "requests": 1
     },
     {
-      "as_organization": "Orixinet Telecom Ltda - Epp",
-      "asn": "61726",
+      "as_organization": "OoredooTN",
+      "asn": "37693",
       "requests": 1
     },
     {
@@ -4374,13 +4412,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Television Internacional, S.A. de C.V.",
-      "asn": "270161",
+      "as_organization": "FBW NETWORKS SAS",
+      "asn": "211590",
       "requests": 1
     },
     {
-      "as_organization": "FBW NETWORKS SAS",
-      "asn": "211590",
+      "as_organization": "Television Internacional, S.A. de C.V.",
+      "asn": "270161",
       "requests": 1
     },
     {
@@ -4451,6 +4489,11 @@
     {
       "as_organization": "Internetbolaget Hosting in Germany",
       "asn": "51747",
+      "requests": 1
+    },
+    {
+      "as_organization": "VPN Consumer Los Angeles, United States",
+      "asn": "206092",
       "requests": 1
     },
     {
@@ -4679,23 +4722,23 @@
       "requests": 1
     },
     {
-      "as_organization": "Pfcloud UG",
-      "asn": "51396",
-      "requests": 1
-    },
-    {
       "as_organization": "wifiber IKE",
       "asn": "397373",
       "requests": 1
     },
     {
-      "as_organization": "NS Internet Ltda ME",
-      "asn": "61796",
+      "as_organization": "Pfcloud UG",
+      "asn": "51396",
       "requests": 1
     },
     {
       "as_organization": "Amber IT Limited",
       "asn": "23956",
+      "requests": 1
+    },
+    {
+      "as_organization": "NS Internet Ltda ME",
+      "asn": "61796",
       "requests": 1
     },
     {
@@ -4719,13 +4762,13 @@
       "requests": 1
     },
     {
-      "as_organization": "Zenlayer IP Block @Kuala Lumpur",
-      "asn": "21859",
+      "as_organization": "FTTB_Almaty",
+      "asn": "21299",
       "requests": 1
     },
     {
-      "as_organization": "FTTB_Almaty",
-      "asn": "21299",
+      "as_organization": "Zenlayer IP Block @Kuala Lumpur",
+      "asn": "21859",
       "requests": 1
     },
     {
@@ -4794,131 +4837,131 @@
       "requests": 1
     }
   ],
-  "no_referer_recorded": 37420,
+  "no_referer_recorded": 37747,
   "paths": [
     {
       "path": "/",
       "status": {
-        "200": 13924
+        "200": 14201
       },
-      "total": 13924
+      "total": 14201
     },
     {
       "path": "/robots.txt",
       "status": {
-        "200": 1832,
+        "200": 1848,
         "304": 1
       },
-      "total": 1833
+      "total": 1849
     },
     {
       "path": "/wp-admin/install.php",
       "status": {
-        "404": 1401
+        "404": 1409
       },
-      "total": 1401
+      "total": 1409
     },
     {
       "path": "/research",
       "status": {
-        "200": 574
+        "200": 576
       },
-      "total": 574
+      "total": 576
     },
     {
       "path": "/blog",
       "status": {
-        "200": 464
+        "200": 470
       },
-      "total": 464
+      "total": 470
     },
     {
       "path": "/data",
       "status": {
-        "200": 333
+        "200": 336
       },
-      "total": 333
+      "total": 336
     },
     {
       "path": "/research.html",
       "status": {
         "200": 23,
-        "307": 278
+        "307": 279
       },
-      "total": 301
+      "total": 302
     },
     {
       "path": "/.netlify/functions/counts",
       "status": {
-        "200": 288
+        "200": 292
       },
-      "total": 288
+      "total": 292
     },
     {
       "path": "/data/garden",
       "status": {
-        "200": 275
+        "200": 282
       },
-      "total": 275
+      "total": 282
     },
     {
       "path": "/index.html",
       "status": {
         "200": 2,
-        "307": 237
+        "307": 238
       },
-      "total": 239
-    },
-    {
-      "path": "/blog.html",
-      "status": {
-        "200": 3,
-        "307": 233
-      },
-      "total": 236
-    },
-    {
-      "path": "/agent-page",
-      "status": {
-        "200": 234
-      },
-      "total": 234
+      "total": 240
     },
     {
       "path": "/agent-page.html",
       "status": {
         "200": 11,
-        "307": 223
+        "307": 227
       },
-      "total": 234
+      "total": 238
+    },
+    {
+      "path": "/blog.html",
+      "status": {
+        "200": 3,
+        "307": 235
+      },
+      "total": 238
+    },
+    {
+      "path": "/agent-page",
+      "status": {
+        "200": 237
+      },
+      "total": 237
     },
     {
       "path": "/data/advisory",
       "status": {
-        "200": 232
+        "200": 237
       },
-      "total": 232
+      "total": 237
     },
     {
       "path": "/sitemap.xml",
       "status": {
-        "200": 209
+        "200": 211
       },
-      "total": 209
+      "total": 211
     },
     {
       "path": "/hypothesis-register",
       "status": {
-        "200": 173
+        "200": 175
       },
-      "total": 173
+      "total": 175
     },
     {
       "path": "/wp-login.php",
       "status": {
-        "404": 172
+        "404": 174
       },
-      "total": 172
+      "total": 174
     },
     {
       "path": "/.git/config",
@@ -4944,9 +4987,9 @@
     {
       "path": "/index.md",
       "status": {
-        "200": 98
+        "200": 99
       },
-      "total": 98
+      "total": 99
     },
     {
       "path": "/blog.md",
@@ -4959,10 +5002,10 @@
     {
       "path": "/reports/traffic-report-2026-10-19.pdf",
       "status": {
-        "200": 92,
+        "200": 93,
         "304": 2
       },
-      "total": 94
+      "total": 95
     },
     {
       "path": "/dashboard",
@@ -5094,7 +5137,14 @@
     {
       "path": "/reports/traffic-3days-report-2026-10-23.pdf",
       "status": {
-        "200": 48
+        "200": 49
+      },
+      "total": 49
+    },
+    {
+      "path": "/.git/HEAD",
+      "status": {
+        "404": 48
       },
       "total": 48
     },
@@ -5107,13 +5157,6 @@
     },
     {
       "path": "/.env.development",
-      "status": {
-        "404": 47
-      },
-      "total": 47
-    },
-    {
-      "path": "/.git/HEAD",
       "status": {
         "404": 47
       },
@@ -5380,6 +5423,13 @@
       "total": 38
     },
     {
+      "path": "/hypothesis-register.md",
+      "status": {
+        "200": 38
+      },
+      "total": 38
+    },
+    {
       "path": "/staging/.env",
       "status": {
         "404": 38
@@ -5422,9 +5472,9 @@
       "total": 37
     },
     {
-      "path": "/hypothesis-register.md",
+      "path": "/index.php",
       "status": {
-        "200": 37
+        "404": 37
       },
       "total": 37
     },
@@ -5471,13 +5521,6 @@
       "total": 36
     },
     {
-      "path": "/index.php",
-      "status": {
-        "404": 36
-      },
-      "total": 36
-    },
-    {
       "path": "/wp/",
       "status": {
         "404": 36
@@ -5507,6 +5550,13 @@
     },
     {
       "path": "/data/advisory-recent.json",
+      "status": {
+        "200": 35
+      },
+      "total": 35
+    },
+    {
+      "path": "/data/advisory-responses.json",
       "status": {
         "200": 35
       },
@@ -5615,13 +5665,6 @@
       "path": "/console/",
       "status": {
         "404": 33
-      },
-      "total": 33
-    },
-    {
-      "path": "/data/advisory-responses.json",
-      "status": {
-        "200": 33
       },
       "total": 33
     },
@@ -6141,6 +6184,13 @@
       "total": 25
     },
     {
+      "path": "/data/garden-series.json",
+      "status": {
+        "200": 25
+      },
+      "total": 25
+    },
+    {
       "path": "/dist/.env",
       "status": {
         "404": 25
@@ -6228,13 +6278,6 @@
       "path": "/credentials.ini",
       "status": {
         "404": 24
-      },
-      "total": 24
-    },
-    {
-      "path": "/data/garden-series.json",
-      "status": {
-        "200": 24
       },
       "total": 24
     },
@@ -12429,6 +12472,13 @@
       "total": 6
     },
     {
+      "path": "/null",
+      "status": {
+        "404": 6
+      },
+      "total": 6
+    },
+    {
       "path": "/password/reset",
       "status": {
         "404": 6
@@ -12668,13 +12718,6 @@
     },
     {
       "path": "/litellm/config.yaml",
-      "status": {
-        "404": 5
-      },
-      "total": 5
-    },
-    {
-      "path": "/null",
       "status": {
         "404": 5
       },
@@ -17560,6 +17603,13 @@
       "total": 1
     },
     {
+      "path": "/enhancecp",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/env.bak",
       "status": {
         "404": 1
@@ -18596,6 +18646,13 @@
       "total": 1
     },
     {
+      "path": "/some-old-post-2019/",
+      "status": {
+        "404": 1
+      },
+      "total": 1
+    },
+    {
       "path": "/sql/backup.sql",
       "status": {
         "404": 1
@@ -19331,7 +19388,7 @@
     "basbotterman.nl": 4,
     "batmantotojams.site": 4,
     "bay-area-swarm-warning.redacted-staging-hostname": 21,
-    "bayareaswarmwarning.com": 2884,
+    "bayareaswarmwarning.com": 2898,
     "bayareaswarmwarning.com.": 19,
     "binance.com": 14,
     "caitriaoneill.com": 127,
@@ -19341,14 +19398,14 @@
     "unparseable-referrer-value": 4,
     "www.ayusudha.com": 3,
     "www.baidu.com": 5,
-    "www.bayareaswarmwarning.com": 653,
+    "www.bayareaswarmwarning.com": 662,
     "www.facebook.com": 1,
-    "www.google.com": 148,
+    "www.google.com": 155,
     "www.google.it": 1,
     "www.linkedin.com": 2
   },
   "regions": {
-    "": 3271,
+    "": 3293,
     "Abai Region": 1,
     "Abu Dhabi": 5,
     "Aktobe": 2,
@@ -19359,12 +19416,13 @@
     "Alberta": 9,
     "Almaty": 1,
     "Amazonas": 1,
+    "An Giang": 2,
     "Ankara": 2,
     "Antalya": 1,
     "Antioquia": 3,
     "Aragua": 1,
     "Araucania": 1,
-    "Arizona": 29,
+    "Arizona": 30,
     "Astana": 1,
     "Asuncion": 1,
     "Atl\u00e1ntico": 1,
@@ -19378,8 +19436,8 @@
     "Bangkok": 29,
     "Barinas": 1,
     "Barisal Division": 1,
-    "Bavaria": 65,
-    "Beijing": 32,
+    "Bavaria": 68,
+    "Beijing": 33,
     "Blida": 1,
     "Bogota D.C.": 11,
     "Bol\u00edvar": 1,
@@ -19391,7 +19449,7 @@
     "Bucharest": 120,
     "Buenos Aires": 18,
     "Buenos Aires F.D.": 6,
-    "California": 2779,
+    "California": 2829,
     "Capital Region": 4,
     "Carabobo": 1,
     "Casablanca-Settat": 9,
@@ -19406,7 +19464,7 @@
     "Chongqing": 4,
     "Cochabamba": 1,
     "Cocl\u00e9": 1,
-    "Colorado": 848,
+    "Colorado": 865,
     "Col\u00f3n": 1,
     "Cordoba": 6,
     "Couva-Tabaquite-Talparo": 1,
@@ -19414,27 +19472,27 @@
     "Delhi": 87,
     "Demerara-Mahaica": 2,
     "Dhaka Division": 56,
-    "District of Columbia": 35,
+    "District of Columbia": 36,
     "Distrito Federal": 4,
     "Drenthe": 1,
     "Dubai": 7,
     "East Java": 4,
-    "England": 1136,
+    "England": 1177,
     "Entre Rios": 1,
     "Esp\u00edrito Santo": 1,
     "Federal District": 3,
     "Fes-Meknes": 2,
     "Flanders": 3,
-    "Florida": 840,
+    "Florida": 859,
     "Formosa": 1,
     "Free State": 2,
     "Galicia": 2,
     "Gauteng": 12,
-    "Georgia": 1187,
+    "Georgia": 1210,
     "Goi\u00e1s": 5,
     "Grand Est": 68,
     "Groningen": 26,
-    "Guangdong": 55,
+    "Guangdong": 56,
     "Guangxi": 9,
     "Guayas": 1,
     "Guizhou": 4,
@@ -19447,21 +19505,21 @@
     "Hebei": 10,
     "Heilongjiang": 4,
     "Henan": 4,
-    "Hesse": 1333,
+    "Hesse": 1354,
     "Hidalgo": 1,
     "Hunan": 3,
     "Idaho": 9,
-    "Illinois": 945,
+    "Illinois": 963,
     "Imbabura": 1,
     "Inner Mongolia": 5,
-    "Iowa": 466,
+    "Iowa": 477,
     "Islamabad": 3,
     "Istanbul": 14,
     "Jakarta": 75,
     "Jalisco": 2,
-    "Jiangsu": 31,
+    "Jiangsu": 32,
     "J\u00f6nk\u00f6ping": 1,
-    "Karnataka": 64,
+    "Karnataka": 65,
     "Khulna Division": 1,
     "Khyber Pakhtunkhwa": 1,
     "Kiambu County": 1,
@@ -19480,7 +19538,7 @@
     "Liaoning": 8,
     "Lima Province": 4,
     "Lima region": 3,
-    "Limburg": 106,
+    "Limburg": 108,
     "Limpopo": 1,
     "Lombardy": 3,
     "Los R\u00edos": 1,
@@ -19496,7 +19554,7 @@
     "Massachusetts": 87,
     "Mato Grosso": 2,
     "Mato Grosso do Sul": 1,
-    "Mazovia": 1131,
+    "Mazovia": 1133,
     "Mendoza": 1,
     "Mexico City": 7,
     "Michigan": 8,
@@ -19506,7 +19564,7 @@
     "Missouri": 5,
     "Monse\u00f1or Nouel": 1,
     "Montevideo Department": 2,
-    "Moscow": 1369,
+    "Moscow": 1377,
     "Mount Lebanon": 1,
     "Mpumalanga": 1,
     "Muharraq": 1,
@@ -19522,18 +19580,18 @@
     "New Jersey": 407,
     "New Mexico": 1,
     "New South Wales": 103,
-    "New York": 1243,
+    "New York": 1273,
     "Niger State": 1,
     "Ningxia": 8,
     "North Carolina": 5814,
-    "North Holland": 1979,
+    "North Holland": 1980,
     "North Rhine-Westphalia": 198,
     "North West": 1,
     "Odesa": 1,
     "Ohio": 206,
     "Oklahoma": 1,
     "Ontario": 26,
-    "Oregon": 204,
+    "Oregon": 206,
     "Osaka": 191,
     "Oslo": 3,
     "Panam\u00e1": 3,
@@ -19594,7 +19652,7 @@
     "State of Berlin": 13,
     "Stockholm": 36,
     "Sylhet Division": 1,
-    "S\u00e3o Paulo": 198,
+    "S\u00e3o Paulo": 204,
     "S\u00e9tif": 3,
     "Tacna": 1,
     "Taiwan": 606,
@@ -19604,7 +19662,7 @@
     "Tashkent": 2,
     "Tel Aviv": 3,
     "Tennessee": 20,
-    "Texas": 972,
+    "Texas": 991,
     "Tianjin": 22,
     "Tibet": 4,
     "Ticino": 24,
@@ -19613,7 +19671,7 @@
     "Tolima Department": 1,
     "Trujillo": 1,
     "Tunis Governorate": 3,
-    "Urban Municipality of Maribor": 5,
+    "Urban Municipality of Maribor": 6,
     "Utah": 280,
     "Uttar Pradesh": 11,
     "Uusimaa": 66,
@@ -19622,9 +19680,9 @@
     "Victoria": 2,
     "Vienna": 2,
     "Vinnytsia": 1,
-    "Virginia": 2026,
+    "Virginia": 2058,
     "V\u00e4stra G\u00f6taland": 1,
-    "Washington": 981,
+    "Washington": 1002,
     "West Java": 4,
     "Western Cape": 2,
     "Wyoming": 14,
@@ -19641,14 +19699,14 @@
   },
   "site": "advisory",
   "site_label": "Advisory \u2014 bayareaswarmwarning.com",
-  "snapshot_at_pt": "2026-11-23T00:53:02.243797-08:00",
-  "snapshot_at_utc": "2026-11-23T08:53:02Z",
+  "snapshot_at_pt": "2026-11-23T18:53:02.877832-08:00",
+  "snapshot_at_utc": "2026-11-24T02:53:02Z",
   "status": {
-    "200": 19983,
+    "200": 20318,
     "304": 4,
-    "307": 1238,
+    "307": 1246,
     "402": 17,
-    "404": 20182,
+    "404": 20197,
     "503": 10
   },
   "ua_anomaly_redactions": 0,
@@ -19660,7 +19718,7 @@
     "signals_total": 0
   },
   "web_bot_auth_verdicts": {
-    "absent": 41181,
-    "present": 254
+    "absent": 41532,
+    "present": 260
   }
 }
