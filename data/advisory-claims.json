@@ -13,20 +13,20 @@
     "rows": [
       {
         "by_purpose": {
-          "(none recorded)": 10534
+          "(none recorded)": 10612
         },
         "kind": "link-preview",
         "name": "facebookexternalhit",
         "operator": "Meta",
         "rdns": {
-          "not-offered": 10522
+          "not-offered": 10600
         },
-        "rdns_era_records": 10522,
-        "requests": 10527,
+        "rdns_era_records": 10600,
+        "requests": 10605,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 10527,
+          "unverifiable-no-list": 10605,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -178,14 +178,14 @@
         "name": "Meta Web Indexer",
         "operator": "(unlisted)",
         "rdns": {
-          "not-offered": 164
+          "not-offered": 166
         },
-        "rdns_era_records": 164,
-        "requests": 172,
+        "rdns_era_records": 166,
+        "requests": 174,
         "top_class": "agent-claimed",
         "verdicts": {
           "not-checked": 0,
-          "unverifiable-no-list": 172,
+          "unverifiable-no-list": 174,
           "verified-range": 0,
           "wrong-range": 0
         },
@@ -580,14 +580,14 @@
   },
   "era_note": "Verdicts exist only on records written since the verdict fields began (the Oct 18, 2026 deployment). Earlier records carry no verdict and are not counted here.",
   "format": "swarm-garden-data/v1",
-  "generated_at_pt": "Nov 25, 2026, 12:53:08 AM PT",
-  "generated_at_utc": "2026-11-25T08:53:08Z",
+  "generated_at_pt": "Nov 25, 2026, 6:53:01 AM PT",
+  "generated_at_utc": "2026-11-25T14:53:01Z",
   "rows": [
     {
-      "claimed": 10527,
+      "claimed": 10605,
       "name": "facebookexternalhit",
       "not-checked": 0,
-      "unverifiable-no-list": 10527,
+      "unverifiable-no-list": 10605,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -647,10 +647,10 @@
       "wrong-range": 19
     },
     {
-      "claimed": 172,
+      "claimed": 174,
       "name": "Meta Web Indexer",
       "not-checked": 0,
-      "unverifiable-no-list": 172,
+      "unverifiable-no-list": 174,
       "verified-range": 0,
       "verified_share_of_checkable": "\u2014",
       "wrong-range": 0
@@ -3153,33 +3153,40 @@
         }
       },
       "2026-11-25": {
-        "digest_requests": 20,
-        "distinct_sources": 20,
+        "digest_requests": 154,
+        "distinct_sources": 124,
         "names_per_source": {
-          "0": 3,
-          "1": 17,
+          "0": 30,
+          "1": 94,
           "2": 0,
           "3": 0,
           "4+": 0
         },
         "names_per_source_by_origin": {
+          "cloud-hosting": {
+            "0": 2,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4+": 0
+          },
           "named-other": {
-            "0": 0,
+            "0": 2,
             "1": 2,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "none": {
-            "0": 3,
-            "1": 13,
+            "0": 25,
+            "1": 89,
             "2": 0,
             "3": 0,
             "4+": 0
           },
           "not-checked": {
-            "0": 0,
-            "1": 1,
+            "0": 1,
+            "1": 2,
             "2": 0,
             "3": 0,
             "4+": 0
@@ -3196,7 +3203,8 @@
           "AhrefsBot": 2,
           "Bingbot": 1,
           "GPTBot": 1,
-          "facebookexternalhit": 13
+          "Meta Web Indexer": 2,
+          "facebookexternalhit": 88
         }
       }
     },
@@ -3235,7 +3243,7 @@
           "other": 1244
         },
         "Meta": {
-          "(none recorded)": 10716,
+          "(none recorded)": 10796,
           "training": 41,
           "user-triggered": 2
         },
@@ -3261,33 +3269,33 @@
         }
       },
       "asn_operator_type": {
-        "cdn": 2390,
-        "cloud-hosting": 3309,
+        "cdn": 2395,
+        "cloud-hosting": 3315,
         "education": 2,
-        "other": 21815,
-        "search-platform": 15064,
+        "other": 21937,
+        "search-platform": 15065,
         "security-research": 15,
         "telecom-isp": 84
       },
       "by_class": null,
       "header_profile": {
-        "browser-like": 1595,
-        "minimal": 19499,
-        "partial": 13721
+        "browser-like": 1596,
+        "minimal": 19591,
+        "partial": 13762
       },
       "origin_category": {
-        "cloud-hosting": 4841,
+        "cloud-hosting": 4845,
         "commercial-bot": 112,
-        "named-other": 2033,
-        "none": 19580,
-        "not-checked": 666,
+        "named-other": 2035,
+        "none": 19705,
+        "not-checked": 669,
         "operator-crawler": 7579,
         "residential-network": 4
       },
       "protocol": {
         "h1.0": 248,
-        "h1.1": 18717,
-        "h2": 15765,
+        "h1.1": 18767,
+        "h2": 15849,
         "h3": 85
       }
     },
