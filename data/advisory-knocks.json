@@ -3,7 +3,7 @@
     "human-press": 1,
     "intake-other": 2,
     "render-claim": 25,
-    "unrouted": 437
+    "unrouted": 438
   },
   "by_channel_code": {
     "human-press": {
@@ -17,17 +17,17 @@
       "rate-limited": 9
     },
     "unrouted": {
-      "no-code (non-JSON refusal)": 437
+      "no-code (non-JSON refusal)": 438
     }
   },
   "by_cls": {
     "agent-claimed": 5,
     "automation": 23,
     "browser": 312,
-    "unknown": 125
+    "unknown": 126
   },
   "by_cname": {
-    "": 451,
+    "": 452,
     "Applebot": 1,
     "Baiduspider": 5,
     "Bingbot": 2,
@@ -39,7 +39,7 @@
     "Googlebot": 1
   },
   "by_code": {
-    "no-code (non-JSON refusal)": 439,
+    "no-code (non-JSON refusal)": 440,
     "off-format": 17,
     "rate-limited": 9
   },
@@ -78,7 +78,8 @@
     "2026-11-24": 6,
     "2026-11-25": 10,
     "2026-11-26": 6,
-    "2026-11-27": 1
+    "2026-11-27": 1,
+    "2026-11-28": 1
   },
   "by_day_pt": {
     "2026-10-18": 4,
@@ -113,18 +114,19 @@
     "2026-11-23": 2,
     "2026-11-24": 6,
     "2026-11-25": 13,
-    "2026-11-26": 2
+    "2026-11-26": 2,
+    "2026-11-27": 1
   },
   "by_length": {
     "0": 36,
     "1-100": 313,
     "1001-10000": 11,
-    "101-1000": 72,
+    "101-1000": 73,
     "not recorded": 20,
     "over 10000": 13
   },
   "by_origin": {
-    "external": 463,
+    "external": 464,
     "steward-test": 2
   },
   "by_route": {
@@ -152,27 +154,27 @@
     "/wp-json/batch/v1/": 8,
     "/wp-json/batch/v1/..;/batch/v1": 3,
     "/wp/wp-json/batch/v1": 8,
-    "/xmlrpc.php": 40
+    "/xmlrpc.php": 41
   },
   "by_route_folded": 43,
   "by_status": {
     "400": 17,
-    "404": 305,
+    "404": 306,
     "405": 134,
     "429": 9
   },
   "distinct_routes": 62,
   "format": "swarm-garden-knocks/v2",
-  "generated_at_pt": "Nov 27, 2026, 6:53:04 PM PT",
-  "generated_at_utc": "2026-11-28T02:53:04Z",
+  "generated_at_pt": "Nov 28, 2026, 12:52:58 AM PT",
+  "generated_at_utc": "2026-11-28T08:52:58Z",
   "note": "Refused POST attempts, recorded since the attempt counter began (the Oct 18, 2026 deployment). An attempt is a knock, not a submission: successful POSTs are not counted here \u2014 each channel counts its own (see successes) \u2014 and request bodies are never stored. A stored refusal code of '' means the refusal body was not JSON; it is published here as 'no-code (non-JSON refusal)'. Days are UTC days in by_day, as recorded; by_day_pt folds the same rows by Pacific day. Origin (Oct 19, 2026): 'steward-test' knocks are the stewards' own verification attempts, labelled at write time from this build forward and backfilled once for the rows already on record from the Oct 18/19 build record; everything else is 'external'. content_length records a refused POST's declared body size in bytes (by_length) \u2014 a number, never the body; rows from before Oct 19, 2026 carry none and fold into 'not recorded'.",
   "site": "advisory",
   "successes": {
-    "as_of": "2026-11-28T02:53:16.103Z",
+    "as_of": "2026-11-28T08:53:08.753Z",
     "human_presses": 4,
     "note": "The same channels' successes, read from the channels' own counters in the same keyed pull as the refusals above. A refusal count beside a success count is context, not a rate."
   },
-  "total": 465,
+  "total": 466,
   "unrouted_by_route": [
     {
       "cls": "browser",
@@ -181,15 +183,15 @@
       "status": 405
     },
     {
-      "cls": "browser",
-      "count": 36,
-      "route": "/index.php",
+      "cls": "unknown",
+      "count": 37,
+      "route": "/xmlrpc.php",
       "status": 404
     },
     {
-      "cls": "unknown",
+      "cls": "browser",
       "count": 36,
-      "route": "/xmlrpc.php",
+      "route": "/index.php",
       "status": 404
     },
     {
